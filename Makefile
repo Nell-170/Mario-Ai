@@ -5,7 +5,6 @@ FRAMEWORK := mario_ai_framework
 BIN := $(FRAMEWORK)/bin
 SRC := $(FRAMEWORK)/src
 LEVELS := levels
-DEFAULT_LEVEL := $(LEVELS)/nivel0/mm2_3005554.txt
 
 JAVAC := javac
 JAVA := java
@@ -37,7 +36,7 @@ validate: compile convert
 	@cd "$(FRAMEWORK)" && $(JAVA) "-Djava.awt.headless=true" -cp bin ValidateLevels ..\$(LEVELS)\converted ..\$(LEVELS)\nivel0 60
 
 play-human: compile
-	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman "..\$(DEFAULT_LEVEL)" 200
+	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman
 
 clean:
 	@if exist "$(BIN)" rmdir /S /Q "$(BIN)"
