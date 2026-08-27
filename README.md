@@ -13,7 +13,7 @@ convertidor al formato del framework, y la validación de jugabilidad con el age
 operará el pipeline generativo.
 
 > ⚠️ **Estas instrucciones están escritas para Windows (PowerShell).** Requisitos: JDK 17+,
-> Python 3.8+, Git.
+> Python 3.8+, Git y GNU Make (por ejemplo, `make` incluido en Git Bash).
 
 ---
 
@@ -37,7 +37,28 @@ Mario-Ai/
 ├── tools/
 │   ├── ValidateLevels.java      # Validador headless con agente A*
 │   └── PlayHuman.java           # Lanzador local para jugar con teclado
+├── Makefile                     # Automatiza setup, compilación y ejecución
 └── README.md
+```
+
+---
+
+## Compilación rápida con Make
+
+Desde la raíz del proyecto:
+
+```bash
+make compile
+```
+
+El primer uso clona automáticamente `mario_ai_framework/` si no existe y
+compila el framework junto con `ValidateLevels` y `PlayHuman`. Otros comandos:
+
+```bash
+make convert     # Genera levels/converted/
+make validate    # Ejecuta la validación con A*
+make play-human  # Abre el nivel por defecto para jugar con teclado
+make help        # Muestra todos los targets disponibles
 ```
 
 ---
