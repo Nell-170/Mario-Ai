@@ -1,0 +1,9 @@
+# External clone (reproducible via `git clone` + javac; see README).
+# Our custom addition ValidateLevels.java is tracked under tools/.
+mario_ai_framework/
+dataset/mm2_selected_levels.pkl
+
+# Python
+__pycache__/
+*.pyc
+.cache/
