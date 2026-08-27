@@ -19,7 +19,7 @@ help:
 	@echo   compile    Compile the framework and custom Java tools
 	@echo   convert    Convert selected MM2 levels to MAF format
 	@echo   validate   Validate converted levels with the A* agent
-	@echo   play-human Play a Nivel 0 level with the keyboard
+	@echo   play-human Play a Nivel 0 level with the keyboard and save telemetry
 	@echo   clean      Remove generated framework class files
 
 setup:

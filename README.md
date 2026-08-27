@@ -176,6 +176,17 @@ indicar otro nivel y el tiempo límite:
 java -cp bin PlayHuman ..\levels\nivel0\mm2_3001459.txt 200
 ```
 
+Al terminar, `PlayHuman` guarda la telemetría en `telemetry/latest.json`.
+También se puede indicar una ruta de salida como tercer argumento:
+
+```powershell
+java -cp bin PlayHuman ..\levels\nivel0\mm2_3001459.txt 200 ..\telemetry\run-01.json
+```
+
+El JSON contiene el estado, completitud, tiempo usado, saltos, bajas, daños,
+monedas, velocidad promedio, preferencia estimada de ruta (`high`/`low`) y
+posiciones de daño. Está pensado como entrada para un LLM mediante una API.
+
 ## Niveles validados (Nivel 0)
 
 El A* completó **8 de 25 niveles** convertidos. Estos son los "Nivel 0" del

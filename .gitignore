@@ -11,3 +11,6 @@ __pycache__/
 # Generated level files
 levels/converted/
 levels/test_output/
+
+# Generated telemetry
+telemetry/
