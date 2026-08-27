@@ -10,7 +10,7 @@ DEFAULT_LEVEL := $(LEVELS)/nivel0/mm2_3005554.txt
 JAVAC := javac
 JAVA := java
 PYTHON := python
-PS := powershell -NoProfile -ExecutionPolicy Bypass -Command
+PS := powershell -NoProfile -ExecutionPolicy Bypass
 
 .PHONY: help setup compile tools convert validate play-human clean
 
@@ -27,11 +27,7 @@ setup:
 	@if not exist "$(FRAMEWORK)\.git" git clone https://github.com/amidos2006/Mario-AI-Framework "$(FRAMEWORK)"
 
 compile: setup
-	@if not exist "$(BIN)" mkdir "$(BIN)"
-	@$(PS) "$files = Get-ChildItem -Path '$(SRC)' -Filter *.java -Recurse | Select-Object -ExpandProperty FullName; & '$(JAVAC)' -d '$(BIN)' -encoding UTF-8 $$files"
-	@copy /Y "tools\ValidateLevels.java" "$(SRC)\ValidateLevels.java" >NUL
-	@copy /Y "tools\PlayHuman.java" "$(SRC)\PlayHuman.java" >NUL
-	@$(JAVAC) -cp "$(BIN)" -d "$(BIN)" "$(SRC)\ValidateLevels.java" "$(SRC)\PlayHuman.java"
+	@$(PS) -File tools\compile-framework.ps1 -Framework "$(FRAMEWORK)"
 
 convert:
 	@$(PYTHON) dataset\convert_mm2_to_maf.py
