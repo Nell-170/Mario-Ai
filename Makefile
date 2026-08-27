@@ -27,6 +27,7 @@ setup:
 	@if not exist "$(FRAMEWORK)\.git" git clone https://github.com/amidos2006/Mario-AI-Framework "$(FRAMEWORK)"
 
 compile: setup
+	@echo Compiling Mario AI Framework...
 	@$(PS) -File tools\compile-framework.ps1 -Framework "$(FRAMEWORK)"
 
 convert:
