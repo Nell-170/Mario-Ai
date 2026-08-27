@@ -31,7 +31,7 @@ Mario-Ai/
 │   ├── mm2_selected.csv         # Metadata de los 25 niveles seleccionados
 │   └── mm2_selected_levels.pkl  # Blobs binarios de esos 25 niveles
 ├── levels/
-│   ├── converted/               # Los 25 niveles convertidos a formato MAF (.txt)
+│   ├── converted/               # Salida regenerable (ignorada por Git)
 │   ├── nivel0/                  # Niveles humanos VALIDADOS como jugables (8)
 │   └── validation_results.csv   # Resultado de A* por nivel
 ├── tools/
@@ -123,12 +123,13 @@ python dataset/convert_mm2_to_maf.py
 ```
 
 Genera una grilla de texto de 16 filas × N columnas en `levels/converted/`.
+Esta carpeta es una salida regenerable y está excluida de Git.
 
 ---
 
 ### Paso 7 — Validar jugabilidad con A*
 
-> ℹ️ **Este paso ya está hecho** — Ejecutar solo si se quieren regenerar 8 los niveles convertidos.
+> ℹ️ **Este paso ya está hecho** — Ejecutar solo si se quieren regenerar los 8 niveles validados.
 
 ```powershell
 cd mario_ai_framework
