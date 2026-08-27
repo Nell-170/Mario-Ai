@@ -55,6 +55,7 @@ El primer uso clona automáticamente `mario_ai_framework/` si no existe y
 compila el framework junto con `ValidateLevels` y `PlayHuman`. Otros comandos:
 
 ```bash
+make filter       # Selecciona niveles MM2
 make convert     # Genera levels/converted/
 make validate    # Ejecuta la validación con A*
 make play-human  # Abre el nivel por defecto para jugar con teclado
@@ -126,7 +127,7 @@ python -c "import datasets, kaitaistruct; print('OK')"
 Desde la **raíz del proyecto**:
 
 ```powershell
-python dataset/filter_mm2.py --want 25 --max-scan 40000
+make filter
 ```
 
 Esto escanea ~40 000 registros del dataset (streaming, sin descargar los ~100 GB)
