@@ -7,3 +7,7 @@ dataset/mm2_selected_levels.pkl
 __pycache__/
 *.pyc
 .cache/
+
+# Generated level files
+levels/converted/
+levels/test_output/
