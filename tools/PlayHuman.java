@@ -16,7 +16,7 @@ import engine.helper.EventType;
 public class PlayHuman {
     public static void main(String[] args) throws Exception {
         String levelPath = args.length > 0 ? args[0] : chooseRandomLevel();
-        int timer = args.length > 1 ? Integer.parseInt(args[1]) : 200;
+        int timer = args.length > 1 ? Integer.parseInt(args[1]) : 60;
         String telemetryPath = args.length > 2 ? args[2] : "../telemetry/latest.json";
         System.out.println("Nivel:      " + levelPath);
         String level = new String(Files.readAllBytes(Paths.get(levelPath)));

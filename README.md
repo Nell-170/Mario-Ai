@@ -170,11 +170,11 @@ java -cp bin PlayHuman
 ```
 
 Sin argumentos, se elige aleatoriamente uno de los 8 niveles de
-`levels/nivel0/`, con gráficos y un límite de 200 segundos. También se puede
+`levels/nivel0/`, con gráficos y un límite de 60 segundos. También se puede
 indicar otro nivel y el tiempo límite:
 
 ```powershell
-java -cp bin PlayHuman ..\levels\nivel0\mm2_3001459.txt 200
+java -cp bin PlayHuman ..\levels\nivel0\mm2_3001459.txt 60
 ```
 
 Al terminar, `PlayHuman` guarda la telemetría en `telemetry/latest.json`.
