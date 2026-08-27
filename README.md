@@ -22,7 +22,7 @@ operará el pipeline generativo.
 ```
 Mario-Ai/
 ├── mario_ai_framework/          # Repo clonado y compilado (Java)
-│   ├── src/                     # Fuentes (incluye ValidateLevels.java, añadido)
+│   ├── src/                     # Fuentes del framework + herramientas locales
 │   └── bin/                     # .class compilados
 ├── dataset/
 │   ├── filter_mm2.py            # Filtrado por streaming del dataset de HF
@@ -35,7 +35,8 @@ Mario-Ai/
 │   ├── nivel0/                  # Niveles humanos VALIDADOS como jugables (8)
 │   └── validation_results.csv   # Resultado de A* por nivel
 ├── tools/
-│   └── ValidateLevels.java      # Validador headless con agente A*
+│   ├── ValidateLevels.java      # Validador headless con agente A*
+│   └── PlayHuman.java           # Lanzador local para jugar con teclado
 └── README.md
 ```
 
@@ -68,18 +69,19 @@ javac -d bin -encoding UTF-8 $javaFiles
 cd ..
 ```
 
-### Paso 3 — Agregar y compilar ValidateLevels
+### Paso 3 — Agregar y compilar herramientas personalizadas
 
-`ValidateLevels.java` no viene en el repo original del framework. Está en la
-carpeta `tools/` de este proyecto. Cópialo y compílalo:
+`ValidateLevels.java` y `PlayHuman.java` no vienen en el repo original del
+framework. Están en la carpeta `tools/` de este proyecto. Cópialos y compílalos:
 
 ```powershell
 # Copiar al src/ del framework
 Copy-Item tools\ValidateLevels.java -Destination mario_ai_framework\src\
+Copy-Item tools\PlayHuman.java -Destination mario_ai_framework\src\
 
-# Compilarlo
+# Compilarlas
 cd mario_ai_framework
-javac -cp bin -d bin src\ValidateLevels.java
+javac -cp bin -d bin src\ValidateLevels.java src\PlayHuman.java
 cd ..
 ```
 
@@ -135,6 +137,21 @@ Esta carpeta es una salida regenerable y está excluida de Git.
 cd mario_ai_framework
 java "-Djava.awt.headless=true" -cp bin ValidateLevels ..\levels\converted ..\levels\nivel0 60
 cd ..
+```
+
+### Paso 8 — Jugar un nivel como humano
+
+Desde la carpeta `mario_ai_framework`:
+
+```powershell
+java -cp bin PlayHuman
+```
+
+Por defecto se abre `levels/nivel0/mm2_3005554.txt` con gráficos y un límite de
+200 segundos. También se puede indicar otro nivel y el tiempo límite:
+
+```powershell
+java -cp bin PlayHuman ..\levels\nivel0\mm2_3001459.txt 200
 ```
 
 ## Niveles validados (Nivel 0)
