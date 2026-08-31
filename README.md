@@ -184,9 +184,50 @@ También se puede indicar una ruta de salida como tercer argumento:
 java -cp bin PlayHuman ..\levels\nivel0\mm2_3001459.txt 200 ..\telemetry\run-01.json
 ```
 
+Y al usar el atajo del proyecto:
+
+```powershell
+make play-human
+```
+
+se ejecuta la partida y luego se transforma automáticamente `telemetry/latest.json`
+en una string de diseño para MarioGPT con la herramienta de traducción de
+telemetría. Si no hay clave de Ollama configurada, el flujo sigue funcionando y
+usa el prompt local de respaldo.
+
 El JSON contiene el estado, completitud, tiempo usado, saltos, bajas, daños,
 monedas, velocidad promedio, preferencia estimada de ruta (`high`/`low`) y
 posiciones de daño. Está pensado como entrada para un LLM mediante una API.
+
+### Traducir telemetría a una cadena para MarioGPT
+
+Una vez que exista un `telemetry/latest.json`, puedes convertirlo en una cadena
+compacta y útil para un prompt de MarioGPT con:
+
+```powershell
+python tools\telemetry_to_mariogpt_prompt.py --telemetry telemetry\latest.json
+```
+
+O usando el atajo del `Makefile`:
+
+```powershell
+make prompt-telemetry
+```
+
+La salida es una sola línea, lista para pegarse como prompt de diseño. Si se
+especifica `--allow-cloud` y existe una `OLLAMA_API_KEY` o un archivo
+`mario_ai_framework/Ollama-Key.txt`, la misma herramienta intenta consultar el
+endpoint de Ollama Cloud antes de usar la versión determinista local.
+
+Ejemplo con Ollama Cloud:
+
+```powershell
+python tools\telemetry_to_mariogpt_prompt.py --telemetry telemetry\latest.json --allow-cloud --ollama-model gpt-oss:120b --ollama-url https://ollama.com/api/chat
+```
+
+La clave puede estar en la variable de entorno `OLLAMA_API_KEY` o guardada en
+`mario_ai_framework/Ollama-Key.txt`, que ya queda fuera del repositorio por la
+configuración de Git.
 
 ## Niveles validados (Nivel 0)
 
