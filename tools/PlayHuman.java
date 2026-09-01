@@ -1,6 +1,8 @@
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,8 +19,12 @@ public class PlayHuman {
     public static void main(String[] args) throws Exception {
         String levelPath = args.length > 0 ? args[0] : chooseRandomLevel();
         int timer = args.length > 1 ? Integer.parseInt(args[1]) : 60;
-        String telemetryPath = args.length > 2 ? args[2] : "../telemetry/latest.json";
+        int sessionSeed = new Random().nextInt(1_000_000);
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String sessionFileName = "session_" + timestamp + "_seed" + sessionSeed + ".json";
+        String telemetryPath = args.length > 2 ? args[2] : "../telemetry/" + sessionFileName;
         System.out.println("Nivel:      " + levelPath);
+        System.out.println("Seed:       " + sessionSeed);
         String level = new String(Files.readAllBytes(Paths.get(levelPath)));
 
         MarioGame game = new MarioGame();
@@ -26,15 +32,26 @@ public class PlayHuman {
                 new agents.human.Agent(),
                 level,
                 timer,
-                0,
+                sessionSeed,
                 true);
 
         System.out.println("Estado:     " + result.getGameStatus());
         System.out.println("Completado: " + (result.getCompletionPercentage() * 100) + "%");
         System.out.println("Muertes:    " + result.getKillsTotal());
         System.out.println("Saltos:     " + result.getNumJumps());
-        writeTelemetry(result, levelPath, timer, telemetryPath);
+        writeTelemetry(result, levelPath, timer, telemetryPath, sessionSeed);
+        writeTelemetry(result, levelPath, timer, "../telemetry/latest.json", sessionSeed);
+        writePointer(telemetryPath);
         System.out.println("Telemetria: " + telemetryPath);
+    }
+
+    private static void writePointer(String telemetryPath) throws Exception {
+        Path pointer = Paths.get("../telemetry/.last_session");
+        if (pointer.getParent() != null) {
+            Files.createDirectories(pointer.getParent());
+        }
+        String fileName = Paths.get(telemetryPath).getFileName().toString();
+        Files.write(pointer, fileName.getBytes());
     }
 
     private static String chooseRandomLevel() throws Exception {
@@ -53,17 +70,17 @@ public class PlayHuman {
     }
 
     private static void writeTelemetry(
-            MarioResult result, String levelPath, int timer, String telemetryPath)
+            MarioResult result, String levelPath, int timer, String telemetryPath, int sessionSeed)
             throws Exception {
         Path output = Paths.get(telemetryPath);
         if (output.getParent() != null) {
             Files.createDirectories(output.getParent());
         }
-        Files.write(output, buildTelemetryJson(result, levelPath, timer).getBytes());
+        Files.write(output, buildTelemetryJson(result, levelPath, timer, sessionSeed).getBytes());
     }
 
     private static String buildTelemetryJson(
-            MarioResult result, String levelPath, int timer) {
+            MarioResult result, String levelPath, int timer, int sessionSeed) {
         List<String> deathPositions = new ArrayList<>();
         for (MarioEvent event : result.getGameEvents()) {
             if (event.getEventType() == EventType.HURT.getValue()) {
@@ -84,6 +101,7 @@ public class PlayHuman {
 
         return "{\n"
                 + "  \"level\": \"" + escapeJson(levelPath) + "\",\n"
+                + "  \"seed\": " + sessionSeed + ",\n"
                 + "  \"status\": \"" + result.getGameStatus() + "\",\n"
                 + String.format(Locale.US, "  \"completion\": %.4f,%n", result.getCompletionPercentage())
                 + String.format(Locale.US, "  \"time_used_seconds\": %.3f,%n", timeUsed)
