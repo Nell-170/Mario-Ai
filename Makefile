@@ -11,7 +11,7 @@ JAVA := java
 PYTHON := python
 PS := powershell -NoProfile -ExecutionPolicy Bypass
 
-.PHONY: help setup compile filter tools convert validate play-human prompt-telemetry clean
+.PHONY: help setup compile filter tools convert validate play-human play-and-generate prompt-telemetry generate-level clean
 
 help:
 	@echo Targets:
@@ -21,6 +21,7 @@ help:
 	@echo   convert    Convert selected MM2 levels to MAF format
 	@echo   validate   Validate converted levels with the A* agent
 	@echo   play-human      Play a Nivel 0 level with the keyboard and save telemetry
+	@echo   play-and-generate  Play a level, build the prompt, and generate a level with MarioGPT
 	@echo   prompt-telemetry Build a compact MarioGPT prompt from telemetry/latest.json
 	@echo   clean           Remove generated framework class files
 
@@ -41,7 +42,11 @@ validate: compile convert
 	@cd "$(FRAMEWORK)" && $(JAVA) "-Djava.awt.headless=true" -cp bin ValidateLevels ..\$(LEVELS)\converted ..\$(LEVELS)\nivel0 60
 
 play-human: compile
-	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman && $(PYTHON) ..\tools\telemetry_to_mariogpt_prompt.py --telemetry ..\telemetry\latest.json --allow-cloud
+	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman
+	@$(PYTHON) tools\telemetry_to_mariogpt_prompt.py --telemetry telemetry\latest.json --allow-cloud
+
+play-and-generate: play-human
+	@$(PYTHON) tools\mario_gpt_generate.py --telemetry telemetry\latest.json
 
 prompt-telemetry:
 	@$(PYTHON) tools\telemetry_to_mariogpt_prompt.py --telemetry telemetry\latest.json

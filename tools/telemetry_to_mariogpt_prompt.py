@@ -10,15 +10,19 @@ DEFAULT_OLLAMA_CLOUD_URL = "https://ollama.com/api/chat"
 DEFAULT_OLLAMA_CLOUD_MODEL = "gpt-oss:120b"
 
 DEFAULT_SYSTEM_PROMPT = (
-    "Eres un traductor especializado en telemetría de Mario. Tu tarea es convertir "
-    "un JSON de telemetría de un jugador humano en una sola cadena descriptiva, "
-    "breve y útil para MarioGPT. Regla principal: no inventes información. "
-    "Devuelve solo una cadena de texto que describa el diseño del nivel. "
-    "Debe ser técnica, compacta y orientada a generación procedimental. "
-    "Si la telemetría sugiere fracaso o frustración, reduce huecos imposibles, "
-    "trap sections y enemigos agresivos. Si la telemetría sugiere avance parcial, "
-    "mantén claridad de ruta y dificultad moderada.\n"
-    "Formato de salida: una sola línea, sin markdown, sin explicaciones, sin texto extra."
+    "Eres un adaptador de telemetría para MarioGPT. Tu tarea es convertir un JSON "
+    "de telemetría de un jugador humano en una sola línea de prompt lista para "
+    "MarioGPT. No inventes información. Usa solo los datos del JSON.\n"
+    "Formato de salida exacto: una sola línea en este esquema:\n"
+    "difficulty=...; route=...; jump=...; enemies=...; hazards=...; rewards=...; "
+    "progression=...; avoid=...; must_have=...\n"
+    "Reglas:\n"
+    "- Usa SMB1 / Mario classic style.\n"
+    "- Mantén la salida compacta, técnica y utilizable para generación procedural.\n"
+    "- No agregues markdown, explicaciones ni texto extra.\n"
+    "- Si la telemetría sugiere fracaso o frustración, reduce huecos imposibles, traps y enemigos agresivos.\n"
+    "- Si la telemetría sugiere avance parcial, prioriza rutas claras y saltos cortos.\n"
+    "- Si la telemetría sugiere buen progreso, mantiene una progresión segura con pequeñas curvas de dificultad."
 )
 
 
@@ -127,14 +131,18 @@ def build_compact_prompt(data):
     else:
         risk_note = "maintain readable routes and a forgiving rhythm with moderate risk"
 
+    route_desc = "high" if path_pref == "high" else "low" if path_pref == "low" else "mixed"
+    avoid = "impossible gaps, trap sections, unfair enemy placement"
+    must_have = "clear progression, readable platforms, short jump arcs, safe reward area"
+
+    if status == "WIN":
+        avoid = "unfair traps, chaotic enemy flow"
+        must_have = "clear progression, readable rhythm, small challenge spikes"
+
     return (
-        "Generate a Mario level in classic SMB1 style with "
-        f"difficulty={difficulty}, path_preference={path_pref}, completion={completion_bucket}, "
-        f"speed={speed_bucket}, jump_complexity={jump_complexity}, enemy_density={enemy_density}, "
-        f"hazard_density={hazard_density}, reward={reward}, progression={progression}. "
-        f"Use a {'high' if path_pref == 'high' else 'low' if path_pref == 'low' else 'mixed'} route structure, "
-        f"keep the level readable and fair, and {risk_note}. "
-        "Avoid impossible gaps, unfair traps, and unclear progression. Keep the layout playable and compact."
+        f"difficulty={difficulty}; route={route_desc}; jump={jump_complexity}; enemies={enemy_density}; "
+        f"hazards={hazard_density}; rewards={reward}; progression={progression}; "
+        f"speed={speed_bucket}; completion={completion_bucket}; avoid={avoid}; must_have={must_have}"
     )
 
 
@@ -142,7 +150,7 @@ def build_user_message(data):
     return (
         "JSON de telemetría del jugador:\n"
         + json.dumps(data, ensure_ascii=False, separators=(",", ":"))
-        + "\n\nProduce una sola cadena descriptiva de diseño de nivel para MarioGPT."
+        + "\n\nGenera exactamente una línea en el formato requerido para MarioGPT."
     )
 
 
@@ -228,7 +236,7 @@ def main():
     if args.allow_cloud:
         try:
             result = call_ollama(args.ollama_model, telemetry, args.ollama_url)
-            print("String para MarioGPT (Ollama):", file=sys.stderr)
+            print("\nString para MarioGPT (Ollama):", file=sys.stderr)
             if args.json_output:
                 print(json.dumps({"prompt": result}, ensure_ascii=False))
             else:
@@ -241,7 +249,7 @@ def main():
     if args.json_output:
         print(json.dumps({"prompt": fallback_prompt}, ensure_ascii=False))
     else:
-        print("String para MarioGPT (fallback local):")
+        print("\nString para MarioGPT (fallback local):")
         print(fallback_prompt)
     return 0
 

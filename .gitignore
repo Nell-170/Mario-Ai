@@ -1,6 +1,7 @@
-# External clone (reproducible via `git clone` + javac; see README).
-# Our custom addition ValidateLevels.java is tracked under tools/.
+# External clones (reproducible via `git clone` + javac/workflow; see README).
+# Our custom additions are tracked under tools/.
 mario_ai_framework/
+mario_gpt/
 dataset/mm2_selected_levels.pkl
 
 # Python
@@ -10,6 +11,7 @@ __pycache__/
 
 # Generated level files
 levels/converted/
+levels/generated/
 levels/test_output/
 
 # Generated telemetry
