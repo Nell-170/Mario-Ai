@@ -22,8 +22,12 @@ import csv
 import heapq
 import pickle
 import argparse
+import warnings
+
+warnings.filterwarnings("ignore")
 
 from datasets import load_dataset
+
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -104,3 +108,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    os._exit(0)
+

@@ -1,0 +1,9 @@
+# Dependencias de Python para Mario AI Pipeline y MarioGPT
+kaitaistruct
+datasets
+huggingface_hub
+torch
+transformers
+scipy
+pillow
+accelerate
