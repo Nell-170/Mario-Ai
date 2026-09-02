@@ -67,13 +67,14 @@ def main():
     print(prompt_text)
     print("\nGenerando nivel con MarioGPT...")
 
+    mario_lm = MarioLM()
+
     if torch.cuda.is_available():
         mario_lm = mario_lm.to(torch.device("cuda"))
-        print("✓ Usando GPU (CUDA)")
+        print("\nUsando GPU (CUDA)\n")
     else:
-        print("GPU no disponible, usando CPU en su lugar")
+        print("\nGPU no disponible, usando CPU en su lugar\n")
 
-    mario_lm = MarioLM()
     generated = mario_lm.sample(
         prompts=[prompt_text],
         num_steps=args.steps,
