@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import torch
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -65,6 +66,12 @@ def main():
     print("Prompt para MarioGPT:")
     print(prompt_text)
     print("\nGenerando nivel con MarioGPT...")
+
+    if torch.cuda.is_available():
+        mario_lm = mario_lm.to(torch.device("cuda"))
+        print("✓ Usando GPU (CUDA)")
+    else:
+        print("GPU no disponible, usando CPU en su lugar")
 
     mario_lm = MarioLM()
     generated = mario_lm.sample(
