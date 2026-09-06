@@ -3,8 +3,8 @@ import argparse
 import json
 import torch
 import sys
-from datetime import datetime
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "mario_gpt") not in sys.path:
@@ -45,6 +45,16 @@ def resolve_prompt(telemetry_path: Path, explicit_prompt: str | None):
     )
 
 
+def next_level_number(output_dir: Path) -> int:
+    pattern = re.compile(r"^Nivel generado (\d+)\.txt$")
+    numbers = []
+    for path in output_dir.iterdir():
+        match = pattern.match(path.name)
+        if match:
+            numbers.append(int(match.group(1)))
+    return max(numbers, default=0) + 1
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Generate a Mario level from a MarioGPT-ready prompt.")
     parser.add_argument("--prompt", help="Prompt literal listo para MarioGPT. Si no se indica, se usa telemetry/latest.json.")
@@ -82,8 +92,8 @@ def main():
         use_tqdm=False,
     )
 
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    level_path = output_dir / f"generated_{timestamp}.txt"
+    level_number = next_level_number(output_dir)
+    level_path = output_dir / f"Nivel generado {level_number}.txt"
     generated.save(str(level_path))
 
     print(f"\nNivel guardado en: {level_path}")
