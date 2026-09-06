@@ -195,6 +195,15 @@ en una string de diseño para MarioGPT con la herramienta de traducción de
 telemetría. Si no hay clave de Ollama configurada, el flujo sigue funcionando y
 usa el prompt local de respaldo.
 
+Para seleccionar y jugar un nivel generado desde una ventana gráfica:
+
+```powershell
+make play-levels-generated
+```
+
+El selector muestra los archivos `.txt` de `levels/generated/`. Puedes seleccionar
+un nivel y pulsar **Jugar nivel seleccionado**, o hacer doble clic sobre él.
+
 El JSON contiene el estado, completitud, tiempo usado, saltos, bajas, daños,
 monedas, velocidad promedio, preferencia estimada de ruta (`high`/`low`) y
 posiciones de daño. Está pensado como entrada para un LLM mediante una API.

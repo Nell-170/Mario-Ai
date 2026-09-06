@@ -23,10 +23,12 @@ if ($LASTEXITCODE -ne 0) {
 Write-Output "Installing custom tools..."
 Copy-Item "tools\ValidateLevels.java" (Join-Path $src "ValidateLevels.java") -Force
 Copy-Item "tools\PlayHuman.java" (Join-Path $src "PlayHuman.java") -Force
+Copy-Item "tools\LevelSelector.java" (Join-Path $src "LevelSelector.java") -Force
 Write-Output "Compiling custom tools..."
 & javac -cp $bin -d $bin `
     (Join-Path $src "ValidateLevels.java") `
-    (Join-Path $src "PlayHuman.java")
+    (Join-Path $src "PlayHuman.java") `
+    (Join-Path $src "LevelSelector.java")
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }

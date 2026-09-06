@@ -9,6 +9,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import javax.swing.JOptionPane;
+
 import engine.core.MarioGame;
 import engine.core.MarioAgentEvent;
 import engine.core.MarioEvent;
@@ -27,22 +29,46 @@ public class PlayHuman {
         System.out.println("Seed:       " + sessionSeed);
         String level = new String(Files.readAllBytes(Paths.get(levelPath)));
 
-        MarioGame game = new MarioGame();
-        MarioResult result = game.runGame(
-                new agents.human.Agent(),
-                level,
-                timer,
-                sessionSeed,
-                true);
+        MarioResult result = runSession(level, timer, sessionSeed);
 
         System.out.println("Estado:     " + result.getGameStatus());
         System.out.println("Completado: " + (result.getCompletionPercentage() * 100) + "%");
         System.out.println("Muertes:    " + result.getKillsTotal());
+        while (shouldRestart()) {
+            sessionSeed = new Random().nextInt(1_000_000);
+            result = runSession(level, timer, sessionSeed);
+            System.out.println("Estado:     " + result.getGameStatus());
+            System.out.println("Completado: " + (result.getCompletionPercentage() * 100) + "%");
+            System.out.println("Muertes:    " + result.getKillsTotal());
+        }
         System.out.println("Saltos:     " + result.getNumJumps());
         writeTelemetry(result, levelPath, timer, telemetryPath, sessionSeed);
         writeTelemetry(result, levelPath, timer, "../telemetry/latest.json", sessionSeed);
         writePointer(telemetryPath);
         System.out.println("Telemetria: " + telemetryPath);
+    }
+
+    private static MarioResult runSession(String level, int timer, int sessionSeed) {
+        MarioGame game = new MarioGame();
+        return game.runGame(
+                new agents.human.Agent(),
+                level,
+                timer,
+                sessionSeed,
+                true);
+    }
+
+    private static boolean shouldRestart() {
+        int choice = JOptionPane.showOptionDialog(
+                null,
+                "La partida terminó. ¿Quieres reiniciar este nivel?",
+                "Partida terminada",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[] {"Reiniciar nivel", "Continuar"},
+                "Continuar");
+        return choice == 0;
     }
 
     private static void writePointer(String telemetryPath) throws Exception {

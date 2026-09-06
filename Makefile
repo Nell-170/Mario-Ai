@@ -41,7 +41,7 @@ endif
 
 # ── Phony targets ─────────────────────────────────────────────
 .PHONY: help setup install-deps setup-mariogpt install-mariogpt compile \
-        filter convert validate play-human play-and-generate \
+        filter convert validate play-human play-levels-generated play-and-generate \
         generate-level prompt-telemetry clean
 
 # ── help ──────────────────────────────────────────────────────
@@ -58,6 +58,7 @@ help:
 	@echo "  convert            Convert selected MM2 levels to MAF format"
 	@echo "  validate           Validate converted levels with the A* agent"
 	@echo "  play-human         Play a Nivel 0 level and save telemetry"
+	@echo "  play-levels-generated  Select and play a generated level graphically"
 	@echo "  generate-level     Generate a level from the latest telemetry"
 	@echo "  play-and-generate  play-human + generate-level"
 	@echo "  prompt-telemetry   Build a compact MarioGPT prompt from telemetry/latest.json"
@@ -110,6 +111,10 @@ validate: compile convert
 play-human: compile
 	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman
 	@$(PYTHON) tools/telemetry_to_mariogpt_prompt.py --telemetry telemetry/latest.json --allow-cloud
+
+# ── play-levels-generated ───────────────────────────────────────
+play-levels-generated: compile
+	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin LevelSelector
 
 # ── generate-level ────────────────────────────────────────────
 generate-level: setup-mariogpt
