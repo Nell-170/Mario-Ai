@@ -81,7 +81,10 @@ public class PlayHuman {
     }
 
     private static String chooseRandomLevel() throws Exception {
-        Path levelDirectory = Paths.get("../levels/nivel0");
+        Path levelDirectory = Paths.get("../src/levels/nivel0");
+        if (!Files.exists(levelDirectory)) {
+            levelDirectory = Paths.get("../levels/nivel0");
+        }
         List<Path> levels;
         try (java.util.stream.Stream<Path> files = Files.list(levelDirectory)) {
             levels = files
@@ -94,6 +97,7 @@ public class PlayHuman {
         }
         return levels.get(new Random().nextInt(levels.size())).toString();
     }
+
 
     private static void writeTelemetry(
             MarioResult result, String levelPath, int timer, String telemetryPath, int sessionSeed)
