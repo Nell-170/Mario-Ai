@@ -3,21 +3,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import engine.core.MarioGame;
 import engine.core.MarioResult;
 import engine.helper.GameStatus;
 
 /**
- * Headless batch validator.
+ * Parallel Headless Batch Validator.
  *
  * Usage: java ValidateLevels <inputDir> <outputDir> [timerSeconds]
  *
- * Runs the robinBaumgarten A* agent (no visuals) over every .txt level in
- * <inputDir>. Levels the agent completes (GameStatus.WIN) are copied to
- * <outputDir> and reported as "beatable". Prints a per-level line plus a
- * final summary. Each level is wrapped in try/catch so one bad level never
- * aborts the whole batch.
+ * Runs the robinBaumgarten A* agent (no visuals) in parallel over every .txt level in
+ * <inputDir> using all available CPU cores. Levels the agent completes (GameStatus.WIN)
+ * are copied to <outputDir> and reported as "beatable".
  */
 public class ValidateLevels {
     static String getLevel(String filepath) throws IOException {
@@ -34,9 +33,14 @@ public class ValidateLevels {
         if (files == null) files = new File[0];
         Arrays.sort(files);
 
-        int beatable = 0, total = 0;
-        for (File f : files) {
-            total++;
+        int total = files.length;
+        AtomicInteger beatable = new AtomicInteger(0);
+        AtomicInteger processed = new AtomicInteger(0);
+
+        int numCores = Runtime.getRuntime().availableProcessors();
+        System.out.printf("Validando %d niveles en paralelo usando %d núcleos CPU...%n", total, numCores);
+
+        Arrays.stream(files).parallel().forEach(f -> {
             String name = f.getName();
             try {
                 String level = getLevel(f.getAbsolutePath());
@@ -44,18 +48,23 @@ public class ValidateLevels {
                 MarioResult r = game.runGame(
                         new agents.robinBaumgarten.Agent(), level, timer, 0, false);
                 boolean win = r.getGameStatus() == GameStatus.WIN;
-                System.out.printf("%-24s %-8s completion=%.3f time_left=%d%n",
-                        name, r.getGameStatus(), r.getCompletionPercentage(),
+
+                int done = processed.incrementAndGet();
+                System.out.printf("[%d/%d] %-24s %-8s completion=%.3f time_left=%d%n",
+                        done, total, name, r.getGameStatus(), r.getCompletionPercentage(),
                         (int) Math.ceil(r.getRemainingTime() / 1000f));
+
                 if (win) {
-                    beatable++;
+                    beatable.incrementAndGet();
                     Files.write(Paths.get(outDir, name), level.getBytes());
                 }
             } catch (Throwable t) {
+                processed.incrementAndGet();
                 System.out.printf("%-24s ERROR    %s%n", name, t.toString());
             }
-        }
+        });
+
         System.out.println("========================================");
-        System.out.printf("BEATABLE %d / %d levels%n", beatable, total);
+        System.out.printf("BEATABLE %d / %d levels%n", beatable.get(), total);
     }
 }
