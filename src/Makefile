@@ -3,11 +3,11 @@
 #  Detection: ifeq on OS variable (Windows sets OS=Windows_NT)
 # ─────────────────────────────────────────────────────────────
 
-FRAMEWORK  := mario_ai_framework
+FRAMEWORK  := ../mario_ai_framework
 BIN        := $(FRAMEWORK)/bin
 SRC        := $(FRAMEWORK)/src
 LEVELS     := levels
-MARIO_GPT  := mario_gpt
+MARIO_GPT  := ../mario_gpt
 
 JAVAC      := javac
 JAVA       := java
@@ -49,9 +49,9 @@ help:
 	@echo ""
 	@echo "  Mario AI — available targets  [platform: $(PLATFORM)]"
 	@echo "  ──────────────────────────────────────────────────────"
-	@echo "  setup              Clone the Mario AI Framework (if absent)"
+	@echo "  setup              Clone the Mario AI Framework to repo root (if absent)"
 	@echo "  install-deps       Install Python dependencies from requirements.txt"
-	@echo "  setup-mariogpt     Clone the local MarioGPT dependency (if absent)"
+	@echo "  setup-mariogpt     Clone the local MarioGPT dependency to repo root (if absent)"
 	@echo "  install-mariogpt   Install MarioGPT in editable mode"
 	@echo "  compile            Compile the framework and custom Java tools"
 	@echo "  filter             Select MM2 levels from the Hugging Face dataset"
@@ -109,8 +109,7 @@ convert:
 # ── validate ──────────────────────────────────────────────────
 validate: compile convert
 	@cd "$(FRAMEWORK)" && $(JAVA) "-Djava.awt.headless=true" \
-	    -cp bin ValidateLevels ../$(LEVELS)/converted ../$(LEVELS)/nivel0 $(VALIDATE_TIMER)
-
+	    -cp bin ValidateLevels ../src/$(LEVELS)/converted ../src/$(LEVELS)/nivel0 $(VALIDATE_TIMER)
 
 # ── play-human ────────────────────────────────────────────────
 play-human: compile
