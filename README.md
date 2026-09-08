@@ -55,11 +55,12 @@ El primer uso clona automáticamente `mario_ai_framework/` si no existe y
 compila el framework junto con `ValidateLevels` y `PlayHuman`. Otros comandos:
 
 ```bash
-make filter       # Selecciona niveles MM2
-make convert     # Genera levels/converted/
-make validate    # Ejecuta la validación con A*
-make play-human  # Abre el nivel por defecto para jugar con teclado
-make help        # Muestra todos los targets disponibles
+make filter                           # Selecciona niveles MM2
+make filter WANT=100 MAX_SCAN=200000  # 100 levels
+make convert                          # Genera levels/converted/
+make validate                         # Ejecuta la validación con A*
+make play-human                       # Abre el nivel por defecto para jugar con teclado
+make help                             # Muestra todos los targets disponibles
 ```
 
 ---
@@ -237,6 +238,19 @@ python tools\telemetry_to_mariogpt_prompt.py --telemetry telemetry\latest.json -
 La clave puede estar en la variable de entorno `OLLAMA_API_KEY` o guardada en
 `mario_ai_framework/Ollama-Key.txt`, que ya queda fuera del repositorio por la
 configuración de Git.
+
+---
+
+## Instalation and setup for Linux (Arch Linux)
+
+### Step 1:
+### Step 2:
+### Step 3:
+### Step 4:
+### Step 5:
+### Step 6:
+### Step 7:
+### Step 8:
 
 ## Niveles validados (Nivel 0)
 
