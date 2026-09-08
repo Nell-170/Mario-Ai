@@ -6,9 +6,12 @@ Parquet, 196 shards) WITHOUT downloading it fully, and select a small subset
 of high-quality human-made SMB1 levels to use as "Nivel 0" base levels.
 
 Selection criteria:
-  * gamestyle == 0            -> Super Mario Bros 1 style (what MAF/MarioGPT use)
-  * 15.0 <= clear_rate <= 70.0 -> not trivial, not (near) impossible
-  * ranked by `attempts` (popularity / proven, well-designed human levels)
+  * gamestyle == 0              -> Super Mario Bros 1 style (what MAF/MarioGPT use)
+  * 15.0 <= clear_rate <= 70.0  -> not trivial, not (near) impossible
+  * attempts >= min_attempts    -> clear_rate estadísticamente confiable
+  * likes >= min_likes          -> calidad subjetiva validada por jugadores
+  * timer >= min_timer          -> proxy de nivel largo (sin decodificar el blob)
+  * ranked by `likes` (quality signal)
 
 Only the raw level_data blobs of the selected levels are kept (pickled), so the
 converter step does not need to re-stream the dataset.
@@ -50,11 +53,15 @@ def main():
     ap.add_argument("--gamestyle", type=int, default=0)  # 0 = SMB1
     ap.add_argument("--min-attempts", type=int, default=200,
                     help="ignore levels with very few attempts (noisy clear_rate)")
+    ap.add_argument("--min-likes", type=int, default=50,
+                    help="minimum likes (calidad subjetiva validada por jugadores)")
+    ap.add_argument("--min-timer", type=int, default=300,
+                    help="proxy de nivel largo: timer mínimo en segundos (sin decodificar blob)")
     args = ap.parse_args()
 
     ds = load_dataset("TheGreatRambler/mm2_level", streaming=True, split="train")
 
-    # Min-heap of (attempts, data_id, record-dict, level_data) keeping the top-N by attempts.
+    # Min-heap of (likes, data_id, record-dict, level_data) keeping the top-N by likes.
     heap = []
     scanned = 0
     matched = 0
@@ -68,31 +75,41 @@ def main():
 
         if rec["gamestyle"] != args.gamestyle:
             continue
+
         cr = rec["clear_rate"]
         if cr is None or cr < args.min_clear or cr > args.max_clear:
             continue
+
         attempts = rec["attempts"] or 0
         if attempts < args.min_attempts:
             continue
 
+        likes = rec.get("likes") or 0
+        if likes < args.min_likes:
+            continue
+
+        timer = rec.get("timer") or 0
+        if timer < args.min_timer:
+            continue
+
         matched += 1
         meta = {k: rec.get(k) for k in META_FIELDS}
-        entry = (attempts, rec["data_id"], meta, rec["level_data"])
+        entry = (likes, rec["data_id"], meta, rec["level_data"])
         if len(heap) < args.want:
             heapq.heappush(heap, entry)
-        elif attempts > heap[0][0]:
+        elif likes > heap[0][0]:
             heapq.heapreplace(heap, entry)
 
     print(f"\nDone. scanned={scanned} matched={matched} selected={len(heap)}")
 
-    selected = sorted(heap, key=lambda e: -e[0])  # most popular first
+    selected = sorted(heap, key=lambda e: -e[0])  # most liked first
 
     # Write metadata CSV
     csv_path = os.path.join(HERE, "mm2_selected.csv")
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=META_FIELDS + ["gamestyle_name"])
         w.writeheader()
-        for attempts, data_id, meta, _ in selected:
+        for likes, data_id, meta, _ in selected:
             row = dict(meta)
             row["gamestyle_name"] = GAMESTYLES.get(meta["gamestyle"], "?")
             w.writerow(row)
@@ -109,4 +126,3 @@ def main():
 if __name__ == "__main__":
     main()
     os._exit(0)
-
