@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-FRAMEWORK="${1:-mario_ai_framework}"
+FRAMEWORK="${1:-../mario_ai_framework}"
 BIN="$FRAMEWORK/bin"
 SRC="$FRAMEWORK/src"
 
@@ -24,10 +24,12 @@ javac -d "$BIN" -encoding UTF-8 "${java_files[@]}"
 echo "Installing custom tools..."
 cp -f "tools/ValidateLevels.java" "$SRC/ValidateLevels.java"
 cp -f "tools/PlayHuman.java"      "$SRC/PlayHuman.java"
+cp -f "tools/LevelSelector.java"  "$SRC/LevelSelector.java"
 
 echo "Compiling custom tools..."
 javac -cp "$BIN" -d "$BIN" \
     "$SRC/ValidateLevels.java" \
-    "$SRC/PlayHuman.java"
+    "$SRC/PlayHuman.java" \
+    "$SRC/LevelSelector.java"
 
 echo "Compilation complete."
