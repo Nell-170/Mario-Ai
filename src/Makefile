@@ -94,9 +94,13 @@ compile: setup
 	@echo "Compiling Mario AI Framework..."
 	@$(COMPILE_CMD)
 
+WANT            ?= 80
+MAX_SCAN        ?= 150000
+VALIDATE_TIMER  ?= 40
+
 # ── filter ────────────────────────────────────────────────────
 filter:
-	@$(PYTHON) dataset/filter_mm2.py --want 25 --max-scan 40000
+	@$(PYTHON) dataset/filter_mm2.py --want $(WANT) --max-scan $(MAX_SCAN)
 
 # ── convert ───────────────────────────────────────────────────
 convert:
@@ -105,7 +109,8 @@ convert:
 # ── validate ──────────────────────────────────────────────────
 validate: compile convert
 	@cd "$(FRAMEWORK)" && $(JAVA) "-Djava.awt.headless=true" \
-	    -cp bin ValidateLevels ../$(LEVELS)/converted ../$(LEVELS)/nivel0 60
+	    -cp bin ValidateLevels ../$(LEVELS)/converted ../$(LEVELS)/nivel0 $(VALIDATE_TIMER)
+
 
 # ── play-human ────────────────────────────────────────────────
 play-human: compile
