@@ -3,6 +3,7 @@
 mario_ai_framework/
 mario_gpt/
 dataset/mm2_selected_levels.pkl
+src/dataset/mm2_selected_levels.pkl
 
 # Python
 __pycache__/
@@ -13,6 +14,10 @@ __pycache__/
 levels/converted/
 levels/generated/
 levels/test_output/
+src/levels/converted/
+src/levels/generated/
+src/levels/test_output/
+src/levels/nivel0/
 
 # Generated telemetry
 telemetry/
