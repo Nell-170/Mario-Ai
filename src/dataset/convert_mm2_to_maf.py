@@ -174,8 +174,20 @@ def convert(level):
     if bottom_ground_count < 10:
         return None, {"skipped": "no_solid_ground", "ground_count": bottom_ground_count}
 
+    # C) Reject solid wall / cave levels (> 60% of grid filled with solid X or #)
+    total_solids = sum(r.count("X") + r.count("#") for r in grid)
+    solid_ratio = total_solids / (stats["width"] * HEIGHT)
+    if solid_ratio > 0.60:
+        return None, {"skipped": "too_many_solids", "ratio": round(solid_ratio, 2)}
+
+    # D) Reject levels with artificial ceiling overload (top rows > 50% '#')
+    top_hash_ratio = (grid[0].count("#") + grid[1].count("#")) / (stats["width"] * 2)
+    if top_hash_ratio > 0.50:
+        return None, {"skipped": "ceiling_hash_overload", "ratio": round(top_hash_ratio, 2)}
+
     lines = ["".join(r) for r in grid]
     return lines, stats
+
 
 
 
