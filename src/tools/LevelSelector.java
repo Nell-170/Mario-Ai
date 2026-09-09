@@ -106,20 +106,28 @@ public class LevelSelector {
         List<File> directories = new ArrayList<>();
 
         if ("Niveles base (Nivel 0)".equals(selectedCategory)) {
+            directories.add(new File("../src/levels/nivel0"));
             directories.add(new File("../levels/nivel0"));
         } else if ("Niveles generados por MarioGPT".equals(selectedCategory)) {
+            directories.add(new File("../src/levels/generated"));
             directories.add(new File("../levels/generated"));
         } else {
+            directories.add(new File("../src/levels/converted"));
             directories.add(new File("../levels/converted"));
         }
 
         for (File dir : directories) {
+            if (!dir.exists()) continue;
             File[] files = dir.listFiles(file -> file.isFile() && file.getName().endsWith(".txt"));
             if (files != null) {
                 List<File> sorted = Arrays.stream(files)
                         .sorted(Comparator.comparing(File::getName))
                         .collect(Collectors.toList());
-                sorted.forEach(levelModel::addElement);
+                sorted.forEach(file -> {
+                    if (!levelModel.contains(file)) {
+                        levelModel.addElement(file);
+                    }
+                });
             }
         }
         updateCount();
