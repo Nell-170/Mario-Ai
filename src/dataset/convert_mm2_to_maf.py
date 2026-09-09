@@ -164,8 +164,19 @@ def convert(level):
         grid = [row[c0:c1 + 1] for row in grid]
     stats["width"] = len(grid[0])
 
+    # ---- 4) MAF Structural Validation Checks ----------------------------
+    # A) Reject vertical or short 1-screen levels (MAF requires horizontal levels >= 60 cols)
+    if stats["width"] < 60:
+        return None, {"skipped": "width_too_short", "width": stats["width"]}
+
+    # B) Reject levels without a solid ground floor 'X' in the bottom 2 rows (rows 14 & 15)
+    bottom_ground_count = grid[14].count("X") + grid[15].count("X")
+    if bottom_ground_count < 10:
+        return None, {"skipped": "no_solid_ground", "ground_count": bottom_ground_count}
+
     lines = ["".join(r) for r in grid]
     return lines, stats
+
 
 
 def main():
@@ -186,6 +197,9 @@ def main():
         try:
             level = parse_level(blob)
             lines, stats = convert(level)
+            if lines is None:
+                print(f"  mm2_{data_id}: REJECTED {stats}")
+                continue
             path = os.path.join(out_dir, f"mm2_{data_id}.txt")
             with open(path, "w", encoding="utf-8") as f:
                 f.write("\n".join(lines) + "\n")
@@ -193,6 +207,7 @@ def main():
             print(f"  mm2_{data_id}: {len(lines[0])} cols  {stats}")
         except Exception as e:
             print(f"  mm2_{data_id}: FAILED {type(e).__name__}: {e}")
+
     print(f"\nConverted {ok}/{len(blobs)} levels.")
 
 
