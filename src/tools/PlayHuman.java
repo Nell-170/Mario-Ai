@@ -24,7 +24,7 @@ public class PlayHuman {
         int sessionSeed = new Random().nextInt(1_000_000);
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
         String sessionFileName = "session_" + timestamp + "_seed" + sessionSeed + ".json";
-        String telemetryPath = args.length > 2 ? args[2] : "../telemetry/" + sessionFileName;
+        String telemetryPath = args.length > 2 ? args[2] : "../src/telemetry/" + sessionFileName;
         System.out.println("Nivel:      " + levelPath);
         System.out.println("Seed:       " + sessionSeed);
         String level = new String(Files.readAllBytes(Paths.get(levelPath)));
@@ -43,7 +43,7 @@ public class PlayHuman {
         }
         System.out.println("Saltos:     " + result.getNumJumps());
         writeTelemetry(result, levelPath, timer, telemetryPath, sessionSeed);
-        writeTelemetry(result, levelPath, timer, "../telemetry/latest.json", sessionSeed);
+        writeTelemetry(result, levelPath, timer, "../src/telemetry/latest.json", sessionSeed);
         writePointer(telemetryPath);
         System.out.println("Telemetria: " + telemetryPath);
     }
@@ -72,7 +72,8 @@ public class PlayHuman {
     }
 
     private static void writePointer(String telemetryPath) throws Exception {
-        Path pointer = Paths.get("../telemetry/.last_session");
+        Path pointer = Paths.get("../src/telemetry/.last_session");
+
         if (pointer.getParent() != null) {
             Files.createDirectories(pointer.getParent());
         }
