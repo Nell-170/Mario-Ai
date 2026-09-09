@@ -22,3 +22,4 @@ src/levels/nivel0/
 
 # Generated telemetry
 telemetry/
+src/telemetry/
