@@ -29,18 +29,22 @@ public class PlayHuman {
         System.out.println("Seed:       " + sessionSeed);
         String level = new String(Files.readAllBytes(Paths.get(levelPath)));
 
-        MarioResult result = runSession(level, timer, sessionSeed);
+        GameSession session = runSession(level, timer, sessionSeed);
+        MarioResult result = session.result;
 
         System.out.println("Estado:     " + result.getGameStatus());
         System.out.println("Completado: " + (result.getCompletionPercentage() * 100) + "%");
         System.out.println("Muertes:    " + result.getKillsTotal());
         while (shouldRestart()) {
+            session.close();
             sessionSeed = new Random().nextInt(1_000_000);
-            result = runSession(level, timer, sessionSeed);
+            session = runSession(level, timer, sessionSeed);
+            result = session.result;
             System.out.println("Estado:     " + result.getGameStatus());
             System.out.println("Completado: " + (result.getCompletionPercentage() * 100) + "%");
             System.out.println("Muertes:    " + result.getKillsTotal());
         }
+        session.close();
         System.out.println("Saltos:     " + result.getNumJumps());
         writeTelemetry(result, levelPath, timer, telemetryPath, sessionSeed);
         writeTelemetry(result, levelPath, timer, "../src/telemetry/latest.json", sessionSeed);
@@ -48,14 +52,29 @@ public class PlayHuman {
         System.out.println("Telemetria: " + telemetryPath);
     }
 
-    private static MarioResult runSession(String level, int timer, int sessionSeed) {
+    private static GameSession runSession(String level, int timer, int sessionSeed) {
         MarioGame game = new MarioGame();
-        return game.runGame(
+        MarioResult result = game.runGame(
                 new agents.human.Agent(),
                 level,
                 timer,
                 sessionSeed,
                 true);
+        return new GameSession(game, result);
+    }
+
+    private static class GameSession {
+        private final MarioGame game;
+        private final MarioResult result;
+
+        private GameSession(MarioGame game, MarioResult result) {
+            this.game = game;
+            this.result = result;
+        }
+
+        private void close() {
+            game.closeWindow();
+        }
     }
 
     private static boolean shouldRestart() {
