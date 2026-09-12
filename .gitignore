@@ -23,3 +23,6 @@ src/levels/nivel0/
 # Generated telemetry
 telemetry/
 src/telemetry/
+
+# Local TeaVM build output
+web/teavm-proof/target/
