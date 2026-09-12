@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prueba Java a navegador</title>
+    <style>
+        #stage { position: relative; width: 640px; height: 180px; background: #5c94fc; overflow: hidden; }
+        #mario { position: absolute; left: 0; bottom: 20px; width: 24px; height: 24px; background: #e52521; }
+        #ground { position: absolute; left: 0; right: 0; bottom: 0; height: 20px; background: #7c4a22; }
+    </style>
+</head>
+<body>
+    <h1>Prueba de lógica Java compilada para el navegador</h1>
+    <p id="status">La lógica Java compilada está lista.</p>
+    <div id="stage" tabindex="0">
+        <div id="mario" aria-label="Mario"></div>
+        <div id="ground"></div>
+    </div>
+    <p>Presiona ArrowRight para mover a Mario. R reinicia la posición.</p>
+    <script type="module">
+        import { load } from './wasm-gc-module-runtime.js';
+
+        const stage = document.querySelector('#stage');
+        const mario = document.querySelector('#mario');
+        const status = document.querySelector('#status');
+        const teavm = await load('./classes.wasm');
+
+        const updateMario = () => {
+            mario.style.left = `${teavm.exports.getX()}px`;
+        };
+
+        teavm.exports.main([]);
+        updateMario();
+        status.textContent = 'WebAssembly GC cargado: lógica Java ejecutándose.';
+        stage.focus();
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'ArrowRight') {
+                teavm.exports.step(true);
+                updateMario();
+            } else if (event.key.toLowerCase() === 'r') {
+                teavm.exports.reset();
+                updateMario();
+            }
+        });
+    </script>
+</body>
+</html>
