@@ -5,45 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Prueba Java a navegador</title>
     <style>
-        #stage { position: relative; width: 640px; height: 180px; background: #5c94fc; overflow: hidden; }
-        #mario { position: absolute; left: 0; bottom: 20px; width: 24px; height: 24px; background: #e52521; }
-        #ground { position: absolute; left: 0; right: 0; bottom: 0; height: 20px; background: #7c4a22; }
+        #stage { width: min(100%, 900px); overflow: hidden; background: #5c94fc; }
+        #level { display: block; image-rendering: pixelated; }
     </style>
 </head>
 <body>
     <h1>Prueba de lógica Java compilada para el navegador</h1>
-    <p id="status">La lógica Java compilada está lista.</p>
+    <p id="status">Cargando nivel...</p>
     <div id="stage" tabindex="0">
-        <div id="mario" aria-label="Mario"></div>
-        <div id="ground"></div>
+        <canvas id="level" aria-label="Nivel Mario"></canvas>
     </div>
-    <p>Presiona ArrowRight para mover a Mario. R reinicia la posición.</p>
+    <p>El nivel se conserva en el formato de texto del framework. ArrowRight mueve a Mario y R reinicia su posición.</p>
     <script type="module">
-        import { load } from './wasm-gc-module-runtime.js';
-
-        const stage = document.querySelector('#stage');
-        const mario = document.querySelector('#mario');
+        const canvas = document.querySelector('#level');
+        const context = canvas.getContext('2d');
         const status = document.querySelector('#status');
-        const teavm = await load('./classes.wasm');
-
-        const updateMario = () => {
-            mario.style.left = `${teavm.exports.getX()}px`;
+        const showError = error => {
+            console.error(error);
+            status.textContent = `Error al cargar la prueba: ${error.message}`;
         };
 
-        teavm.exports.main([]);
-        updateMario();
-        status.textContent = 'WebAssembly GC cargado: lógica Java ejecutándose.';
-        stage.focus();
-
-        document.addEventListener('keydown', event => {
-            if (event.key === 'ArrowRight') {
-                teavm.exports.step(true);
-                updateMario();
-            } else if (event.key.toLowerCase() === 'r') {
-                teavm.exports.reset();
-                updateMario();
+        try {
+            const { load } = await import('./wasm-gc-module-runtime.js');
+            const teavm = await load('./classes.wasm');
+            const response = await fetch('./level.txt');
+            if (!response.ok) {
+                throw new Error(`level.txt respondió HTTP ${response.status}`);
             }
-        });
+            const levelText = await response.text();
+            const tileSize = 16;
+            const viewportWidth = 900;
+            const cameraLead = 300;
+            const tileColors = {
+                '-': '#5c94fc',
+                'X': '#7c4a22',
+                'S': '#9b5de5',
+                '?': '#f5c542',
+                'o': '#ffd166',
+                'g': '#6a994e',
+                '<': '#e76f51',
+                '>': '#e76f51'
+            };
+
+            const clamp = (value, minimum, maximum) =>
+                Math.max(minimum, Math.min(value, maximum));
+
+            const getCameraX = () => {
+                const levelWidth = teavm.exports.getLevelColumns() * tileSize;
+                const maxCameraX = Math.max(0, levelWidth - canvas.width);
+                return clamp(teavm.exports.getX() - cameraLead, 0, maxCameraX);
+            };
+
+            const drawMario = cameraX => {
+                context.fillStyle = '#e52521';
+                context.fillRect(
+                    teavm.exports.getX() - cameraX,
+                    canvas.height - tileSize * 2,
+                    tileSize,
+                    tileSize
+                );
+            };
+
+            const drawLevel = () => {
+                const rows = teavm.exports.getLevelRows();
+                const columns = teavm.exports.getLevelColumns();
+                canvas.width = Math.min(viewportWidth, columns * tileSize);
+                canvas.height = rows * tileSize;
+                const cameraX = getCameraX();
+                const firstColumn = Math.floor(cameraX / tileSize);
+                const lastColumn = Math.min(
+                    columns,
+                    Math.ceil((cameraX + canvas.width) / tileSize)
+                );
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                for (let row = 0; row < rows; row++) {
+                    for (let column = firstColumn; column < lastColumn; column++) {
+                        const tile = String.fromCharCode(teavm.exports.getTile(row, column));
+                        const color = tileColors[tile];
+                        if (color) {
+                            context.fillStyle = color;
+                            context.fillRect(
+                                column * tileSize - cameraX,
+                                row * tileSize,
+                                tileSize,
+                                tileSize
+                            );
+                        }
+                    }
+                }
+                drawMario(cameraX);
+            };
+
+            teavm.exports.loadLevel(levelText);
+            teavm.exports.main([]);
+            drawLevel();
+            status.textContent = `Nivel cargado desde texto: ${teavm.exports.getLevelColumns()} columnas. La cámara sigue a Mario.`;
+
+            document.addEventListener('keydown', event => {
+                if (event.key === 'ArrowRight') {
+                    teavm.exports.step(true);
+                    drawLevel();
+                } else if (event.key.toLowerCase() === 'r') {
+                    teavm.exports.reset();
+                    drawLevel();
+                }
+            });
+        } catch (error) {
+            showError(error);
+        }
     </script>
 </body>
 </html>
