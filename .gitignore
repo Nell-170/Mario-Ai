@@ -26,3 +26,4 @@ src/telemetry/
 
 # Local TeaVM build output
 web/teavm-proof/target/
+web/teavm-proof/.tools/

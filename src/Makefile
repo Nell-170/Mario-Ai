@@ -8,6 +8,7 @@ BIN        := $(FRAMEWORK)/bin
 SRC        := $(FRAMEWORK)/src
 LEVELS     := levels
 MARIO_GPT  := ../mario_gpt
+WEB_PROOF  := ../web/teavm-proof
 
 JAVAC      := javac
 JAVA       := java
@@ -42,7 +43,7 @@ endif
 # ── Phony targets ─────────────────────────────────────────────
 .PHONY: help setup install-deps setup-mariogpt install-mariogpt compile \
         filter convert validate play-human play-levels-generated play-and-generate \
-        generate-level prompt-telemetry clean
+        generate-level prompt-telemetry install-web-tools web-proof clean
 
 # ── help ──────────────────────────────────────────────────────
 help:
@@ -62,6 +63,8 @@ help:
 	@echo "  generate-level     Generate a level from the latest telemetry"
 	@echo "  play-and-generate  play-human + generate-level"
 	@echo "  prompt-telemetry   Build a compact MarioGPT prompt from telemetry/latest.json"
+	@echo "  install-web-tools Install JDK 17 and Maven for the browser proof"
+	@echo "  web-proof          Compile and serve the Java/WebAssembly browser proof"
 	@echo "  clean              Remove generated framework class files"
 	@echo ""
 
@@ -130,6 +133,22 @@ play-and-generate: play-human generate-level
 # ── prompt-telemetry ──────────────────────────────────────────
 prompt-telemetry:
 	@$(PYTHON) tools/telemetry_to_mariogpt_prompt.py --telemetry telemetry/latest.json
+
+# ── install-web-tools ────────────────────────────────────────
+install-web-tools:
+ifeq ($(PLATFORM),windows)
+	@powershell -NoProfile -ExecutionPolicy Bypass -File "..\web\teavm-proof\install-tools.ps1"
+else
+	@sh "$(WEB_PROOF)/install-tools.sh"
+endif
+
+# ── web-proof ────────────────────────────────────────────────
+web-proof:
+ifeq ($(PLATFORM),windows)
+	@powershell -NoProfile -ExecutionPolicy Bypass -File "$(WEB_PROOF)\run-proof.ps1"
+else
+	@sh "$(WEB_PROOF)/run-proof.sh"
+endif
 
 # ── clean ─────────────────────────────────────────────────────
 clean:
