@@ -1,5 +1,5 @@
 param(
-    [string]$Framework = "mario_ai_framework"
+    [string]$Framework = "../mario_ai_framework"
 )
 
 $ErrorActionPreference = "Stop"
