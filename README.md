@@ -106,7 +106,10 @@ make prompt-telemetry                  # Genera el prompt de MarioGPT a partir d
 make generate-level                    # Genera un nuevo nivel con MarioGPT basado en telemetría
 make play-levels-generated             # Abre la interfaz gráfica para seleccionar y jugar niveles
 make play-and-generate                 # Flujo continuo: Jugar -> Generar automáticamente
-make clean                             # Limpia los binarios compilados de Java
+make clean                             # Limpia los binarios compilados de Java (.class)
+make clean-telemetry                   # Limpia los archivos de telemetría registrados
+make clean-levels                      # Limpia niveles convertidos, generados y de nivel0
+make clean-all                         # Limpia TODO (binarios, telemetría, niveles y cachés)
 make help                              # Muestra la ayuda de todos los targets disponibles
 ```
 

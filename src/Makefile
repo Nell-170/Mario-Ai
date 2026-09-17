@@ -42,7 +42,7 @@ endif
 # ── Phony targets ─────────────────────────────────────────────
 .PHONY: help setup install-deps setup-mariogpt install-mariogpt compile \
         filter convert validate play-human play-levels-generated play-and-generate \
-        generate-level prompt-telemetry clean
+        generate-level prompt-telemetry clean clean-telemetry clean-levels clean-all
 
 # ── help ──────────────────────────────────────────────────────
 help:
@@ -62,7 +62,10 @@ help:
 	@echo "  generate-level     Generate a level from the latest telemetry"
 	@echo "  play-and-generate  play-human + generate-level"
 	@echo "  prompt-telemetry   Build a compact MarioGPT prompt from telemetry/latest.json"
-	@echo "  clean              Remove generated framework class files"
+	@echo "  clean              Remove generated Java class files"
+	@echo "  clean-telemetry    Remove all recorded telemetry files"
+	@echo "  clean-levels       Remove converted, generated and validated levels"
+	@echo "  clean-all          Remove ALL generated files (bin, levels, telemetry, caches)"
 	@echo ""
 
 # ── setup ─────────────────────────────────────────────────────
@@ -138,3 +141,22 @@ ifeq ($(PLATFORM),windows)
 else
 	@rm -rf "$(BIN)"
 endif
+	@echo "Java class files removed."
+
+# ── clean-telemetry ───────────────────────────────────────────
+clean-telemetry:
+	@$(PYTHON) -c "import os, glob; [os.remove(f) for f in glob.glob('telemetry/*') if os.path.isfile(f) and not f.endswith('.gitkeep')]; print('Telemetry files removed.')"
+
+# ── clean-levels ──────────────────────────────────────────────
+clean-levels:
+	@$(PYTHON) -c "import os, glob, shutil; \
+		[shutil.rmtree(d, ignore_errors=True) or os.makedirs(d, exist_ok=True) for d in ['levels/converted', 'levels/generated', 'levels/nivel0', 'levels/test_output']]; \
+		[os.remove(f) for f in glob.glob('levels/*.csv') if os.path.isfile(f)]; \
+		print('Levels (converted, generated, nivel0) removed.')"
+
+# ── clean-all ─────────────────────────────────────────────────
+clean-all: clean clean-telemetry clean-levels
+	@$(PYTHON) -c "import os, glob, shutil; \
+		[os.remove(f) for f in glob.glob('dataset/*.pkl') + glob.glob('dataset/*.csv') if os.path.isfile(f)]; \
+		[shutil.rmtree(p, ignore_errors=True) for p in glob.glob('**/__pycache__', recursive=True)]; \
+		print('✨ Full clean complete (bin, telemetry, levels, dataset caches).')"

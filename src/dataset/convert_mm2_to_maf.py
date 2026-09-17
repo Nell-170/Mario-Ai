@@ -164,26 +164,50 @@ def convert(level):
         grid = [row[c0:c1 + 1] for row in grid]
     stats["width"] = len(grid[0])
 
-    # ---- 4) MAF Structural Validation Checks ----------------------------
+    # ---- 4) MAF Structural & Geometric Viability Checks -----------------
     # A) Reject vertical or short 1-screen levels (MAF requires horizontal levels >= 60 cols)
     if stats["width"] < 60:
         return None, {"skipped": "width_too_short", "width": stats["width"]}
+    if stats["width"] > 350:
+        return None, {"skipped": "width_too_long", "width": stats["width"]}
 
-    # B) Reject levels without a solid ground floor 'X' in the bottom 2 rows (rows 14 & 15)
-    bottom_ground_count = grid[14].count("X") + grid[15].count("X")
-    if bottom_ground_count < 10:
-        return None, {"skipped": "no_solid_ground", "ground_count": bottom_ground_count}
+    # B) Spawn ground check (Mario spawns at col 0, bottom rows 10-15)
+    # Mario needs solid footing at the start or he falls to death immediately.
+    has_spawn_ground = any(grid[r][x] in "XS#" for r in range(10, HEIGHT) for x in range(min(5, stats["width"])))
+    if not has_spawn_ground:
+        return None, {"skipped": "no_spawn_ground"}
 
-    # C) Reject solid wall / cave levels (> 60% of grid filled with solid X or #)
-    total_solids = sum(r.count("X") + r.count("#") for r in grid)
+    # C) Goal ground check (Goal flag is placed at the final columns)
+    has_goal_ground = any(grid[r][x] in "XS#" for r in range(10, HEIGHT) for x in range(max(0, stats["width"] - 5), stats["width"]))
+    if not has_goal_ground:
+        return None, {"skipped": "no_goal_ground"}
+
+    # D) Max continuous abyss check (Max running jump in SMB1 is ~5 tiles)
+    consecutive_void = 0
+    max_void = 0
+    walkable_chars = set("XS#?<>[]Bb")
+    for x in range(stats["width"]):
+        has_walkable = any(grid[r][x] in walkable_chars for r in range(HEIGHT))
+        if not has_walkable:
+            consecutive_void += 1
+            max_void = max(max_void, consecutive_void)
+        else:
+            consecutive_void = 0
+    if max_void > 5:
+        return None, {"skipped": "impossible_abyss", "max_void": max_void}
+
+    # E) Reject empty void levels or solid rock walls
+    total_solids = sum(r.count("X") + r.count("#") + r.count("S") for r in grid)
     solid_ratio = total_solids / (stats["width"] * HEIGHT)
-    if solid_ratio > 0.60:
+    if solid_ratio < 0.05:
+        return None, {"skipped": "too_few_solids", "ratio": round(solid_ratio, 2)}
+    if solid_ratio > 0.55:
         return None, {"skipped": "too_many_solids", "ratio": round(solid_ratio, 2)}
 
-    # D) Reject levels with artificial ceiling overload (top rows > 50% '#')
-    top_hash_ratio = (grid[0].count("#") + grid[1].count("#")) / (stats["width"] * 2)
-    if top_hash_ratio > 0.50:
-        return None, {"skipped": "ceiling_hash_overload", "ratio": round(top_hash_ratio, 2)}
+    # F) Reject levels with artificial ceiling overload (top 2 rows > 40% solid)
+    top_solid_ratio = (sum(grid[0].count(c) + grid[1].count(c) for c in "X#S")) / (stats["width"] * 2)
+    if top_solid_ratio > 0.40:
+        return None, {"skipped": "ceiling_overload", "ratio": round(top_solid_ratio, 2)}
 
     lines = ["".join(r) for r in grid]
     return lines, stats
@@ -199,6 +223,13 @@ def main():
 
     out_dir = os.path.abspath(args.out)
     os.makedirs(out_dir, exist_ok=True)
+    # Clean stale converted files
+    for fname in os.listdir(out_dir):
+        if fname.endswith(".txt"):
+            try:
+                os.remove(os.path.join(out_dir, fname))
+            except OSError:
+                pass
 
     with open(args.pkl, "rb") as f:
         blobs = pickle.load(f)

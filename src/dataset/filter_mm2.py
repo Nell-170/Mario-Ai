@@ -30,6 +30,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from datasets import load_dataset
+from convert_mm2_to_maf import parse_level, convert
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -45,17 +46,17 @@ META_FIELDS = [
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--want", type=int, default=25, help="levels to keep")
-    ap.add_argument("--max-scan", type=int, default=40000,
+    ap.add_argument("--want", type=int, default=50, help="levels to keep")
+    ap.add_argument("--max-scan", type=int, default=80000,
                     help="max streamed records to inspect")
     ap.add_argument("--min-clear", type=float, default=15.0)
     ap.add_argument("--max-clear", type=float, default=70.0)
     ap.add_argument("--gamestyle", type=int, default=0)  # 0 = SMB1
-    ap.add_argument("--min-attempts", type=int, default=200,
+    ap.add_argument("--min-attempts", type=int, default=150,
                     help="ignore levels with very few attempts (noisy clear_rate)")
-    ap.add_argument("--min-likes", type=int, default=50,
+    ap.add_argument("--min-likes", type=int, default=30,
                     help="minimum likes (calidad subjetiva validada por jugadores)")
-    ap.add_argument("--min-timer", type=int, default=300,
+    ap.add_argument("--min-timer", type=int, default=250,
                     help="proxy de nivel largo: timer mínimo en segundos (sin decodificar blob)")
     args = ap.parse_args()
 
@@ -65,11 +66,13 @@ def main():
     heap = []
     scanned = 0
     matched = 0
+    viable = 0
 
+    print(f"Streaming dataset (seeking {args.want} structurally viable MAF levels)...")
     for rec in ds:
         scanned += 1
         if scanned % 5000 == 0:
-            print(f"  scanned={scanned} matched={matched} kept={len(heap)}")
+            print(f"  scanned={scanned} matched_meta={matched} viable_maf={viable} kept={len(heap)}")
         if scanned > args.max_scan:
             break
 
@@ -93,6 +96,18 @@ def main():
             continue
 
         matched += 1
+
+        # ---- In-stream MAF Structural & Geometric Viability Check ----
+        # Verify immediately in memory: spawn footing, goal footing, no giant voids.
+        try:
+            level = parse_level(rec["level_data"])
+            lines, stats = convert(level)
+            if lines is None:
+                continue
+        except Exception:
+            continue
+
+        viable += 1
         meta = {k: rec.get(k) for k in META_FIELDS}
         entry = (likes, rec["data_id"], meta, rec["level_data"])
         if len(heap) < args.want:
@@ -100,7 +115,7 @@ def main():
         elif likes > heap[0][0]:
             heapq.heapreplace(heap, entry)
 
-    print(f"\nDone. scanned={scanned} matched={matched} selected={len(heap)}")
+    print(f"\nDone. scanned={scanned} matched_meta={matched} viable_maf={viable} selected={len(heap)}")
 
     selected = sorted(heap, key=lambda e: -e[0])  # most liked first
 

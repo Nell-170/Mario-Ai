@@ -73,7 +73,7 @@ public class PlayHuman {
         }
 
         private void close() {
-            game.closeWindow();
+            // Window is managed and disposed by MarioGame lifecycle
         }
     }
 

@@ -8,10 +8,13 @@ FRAMEWORK="${1:-../mario_ai_framework}"
 BIN="$FRAMEWORK/bin"
 SRC="$FRAMEWORK/src"
 
-echo "Compiling framework sources in $SRC..."
+echo "Installing custom tools..."
 mkdir -p "$BIN"
+cp -f "tools/ValidateLevels.java" "$SRC/ValidateLevels.java"
+cp -f "tools/PlayHuman.java"      "$SRC/PlayHuman.java"
+cp -f "tools/LevelSelector.java"  "$SRC/LevelSelector.java"
 
-# Collect all .java files
+echo "Compiling framework and tools in $SRC..."
 mapfile -t java_files < <(find "$SRC" -name "*.java")
 
 if [ "${#java_files[@]}" -eq 0 ]; then
@@ -20,16 +23,4 @@ if [ "${#java_files[@]}" -eq 0 ]; then
 fi
 
 javac -d "$BIN" -encoding UTF-8 "${java_files[@]}"
-
-echo "Installing custom tools..."
-cp -f "tools/ValidateLevels.java" "$SRC/ValidateLevels.java"
-cp -f "tools/PlayHuman.java"      "$SRC/PlayHuman.java"
-cp -f "tools/LevelSelector.java"  "$SRC/LevelSelector.java"
-
-echo "Compiling custom tools..."
-javac -cp "$BIN" -d "$BIN" \
-    "$SRC/ValidateLevels.java" \
-    "$SRC/PlayHuman.java" \
-    "$SRC/LevelSelector.java"
-
 echo "Compilation complete."
