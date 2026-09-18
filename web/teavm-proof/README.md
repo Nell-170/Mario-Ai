@@ -46,6 +46,76 @@ El flujo de compilación es:
 Java + JDK + Maven + TeaVM -> classes.wasm -> navegador
 ```
 
+### Flujo completo
+
+Al ejecutar `make web-proof` desde `src/`, ocurre lo siguiente:
+
+```text
+┌──────────────────────────────┐
+│ make web-proof                │
+└──────────────┬───────────────┘
+               │ delega según el sistema operativo
+               v
+┌──────────────────────────────┐
+│ run-proof.ps1 / run-proof.sh │
+└──────────────┬───────────────┘
+               │ ejecuta Maven package
+               v
+┌──────────────────────────────┐
+│ pom.xml                      │
+│ configuración del proyecto   │
+└──────────────┬───────────────┘
+               │ Maven usa JDK y TeaVM
+               v
+┌──────────────────────────────┐
+│ MarioSimulation.java         │
+│ Java compatible              │
+└──────────────┬───────────────┘
+               │ TeaVM compila una vez
+               v
+┌──────────────────────────────┐
+│ classes.wasm                 │
+│ lógica Java compilada        │
+└──────────────┬───────────────┘
+               │ el script prepara los archivos
+               v
+┌─────────────────────────────────────────────┐
+│ target/web/                                 │
+│                                             │
+│  index.html                                 │
+│  classes.wasm                               │
+│  wasm-gc-module-runtime.js                  │
+│  level.txt                                  │
+└──────────────────────┬──────────────────────┘
+                       │ servidor HTTP local
+                       v
+┌─────────────────────────────────────────────┐
+│ navegador: http://localhost:8080/           │
+│                                             │
+│ index.html                                  │
+│   ├─ carga el runtime de TeaVM              │
+│   ├─ carga classes.wasm                      │
+│   ├─ lee level.txt                           │
+│   ├─ recibe el teclado                       │
+│   └─ dibuja el Canvas                       │
+│                                             │
+│ wasm-gc-module-runtime.js                   │
+│   └─ conecta el módulo WebAssembly          │
+│                                             │
+│ classes.wasm                                │
+│   └─ ejecuta step(), reset(), getX(), etc.  │
+└─────────────────────────────────────────────┘
+```
+
+La compilación ocurre antes de abrir la página. Al pulsar una tecla no se
+vuelve a traducir Java: el JavaScript de `index.html` llama funciones que ya
+están compiladas dentro de `classes.wasm`, y después redibuja el Canvas.
+
+El runtime de TeaVM no es un reloj ni controla por sí solo el tiempo de la
+partida. Es el adaptador JavaScript que carga `classes.wasm` y prepara la
+conexión entre el módulo WebAssembly y el navegador. El JavaScript que maneja
+el teclado, la cámara y el dibujo del Canvas está escrito en `index.html`.
+
 ## Probar
 
 No abras el archivo con `file://`, porque el navegador puede bloquear módulos
