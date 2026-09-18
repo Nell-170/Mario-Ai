@@ -8,14 +8,18 @@ $repositoryRoot = Split-Path -Parent (Split-Path -Parent $proofRoot)
 $targetRoot = Join-Path $proofRoot "target"
 $webRoot = Join-Path $targetRoot "web"
 $levelDirectory = Join-Path $repositoryRoot "src\levels\nivel0"
-$localMaven = Join-Path $proofRoot ".tools\apache-maven-3.9.11\bin\mvn.cmd"
+# Maven se instala globalmente en el perfil del usuario (ver install-tools.ps1).
+# Este fallback cubre el caso de una terminal que aun no recargo el PATH tras
+# la instalacion.
+$globalMavenBin = Join-Path $env:LOCALAPPDATA "MarioAiTools\apache-maven-3.9.11\bin"
+$globalMaven = Join-Path $globalMavenBin "mvn.cmd"
 
 if (Get-Command mvn -ErrorAction SilentlyContinue) {
     $maven = "mvn"
-} elseif (Test-Path $localMaven) {
-    $maven = $localMaven
+} elseif (Test-Path $globalMaven) {
+    $maven = $globalMaven
 } else {
-    throw "Maven no esta instalado. Ejecuta make install-web-tools."
+    throw "Maven no esta instalado. Ejecuta make install-web-tools y abre una terminal nueva si es la primera instalacion."
 }
 
 Push-Location $proofRoot

@@ -57,16 +57,35 @@ if (Test-Java17) {
     }
 }
 
-$proofRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$toolsRoot = Join-Path $proofRoot ".tools"
-$mavenVersion = "3.9.11"
-$mavenRoot = Join-Path $toolsRoot "apache-maven-$mavenVersion"
-$mavenExecutable = Join-Path $mavenRoot "bin\mvn.cmd"
+# Maven se instala de forma global (fuera del repositorio) para que no
+# dependa del working tree ni se borre con `git clean` u OneDrive: queda en
+# el perfil del usuario y se agrega al PATH de usuario de forma persistente.
+$mavenVersion   = "3.9.11"
+$toolsRoot      = Join-Path $env:LOCALAPPDATA "MarioAiTools"
+$mavenRoot      = Join-Path $toolsRoot "apache-maven-$mavenVersion"
+$mavenBin       = Join-Path $mavenRoot "bin"
+$mavenExecutable = Join-Path $mavenBin "mvn.cmd"
+
+function Add-MavenToUserPath {
+    param([string]$BinPath)
+    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+    $entries = @()
+    if ($userPath) { $entries = $userPath -split ";" }
+    if ($entries -notcontains $BinPath) {
+        $newUserPath = if ($userPath) { "$userPath;$BinPath" } else { $BinPath }
+        [Environment]::SetEnvironmentVariable("Path", $newUserPath, "User")
+        Write-Host "Se agrego Maven al PATH del usuario. Abre una terminal nueva para que las nuevas sesiones lo vean."
+    }
+    if ($env:Path -notlike "*$BinPath*") {
+        $env:Path = "$BinPath;$env:Path"
+    }
+}
 
 if (Get-Command mvn -ErrorAction SilentlyContinue) {
-    Write-Host "Maven ya esta instalado."
+    Write-Host "Maven ya esta instalado globalmente."
 } elseif (Test-Path $mavenExecutable) {
-    Write-Host "Maven local ya esta instalado."
+    Write-Host "Maven global ya esta instalado en $mavenRoot."
+    Add-MavenToUserPath -BinPath $mavenBin
 } else {
     Write-Host "Descargando Maven $mavenVersion..."
     $archive = Join-Path $env:TEMP "apache-maven-$mavenVersion-bin.zip"
@@ -76,9 +95,10 @@ if (Get-Command mvn -ErrorAction SilentlyContinue) {
     Expand-Archive -LiteralPath $archive -DestinationPath $toolsRoot -Force
     Remove-Item -LiteralPath $archive -Force
     if (-not (Test-Path $mavenExecutable)) {
-        throw "No se pudo instalar Maven localmente."
+        throw "No se pudo instalar Maven globalmente."
     }
-    Write-Host "Maven instalado en $mavenRoot."
+    Add-MavenToUserPath -BinPath $mavenBin
+    Write-Host "Maven instalado globalmente en $mavenRoot."
 }
 
-Write-Host "Herramientas listas. Abre una terminal nueva si instalaste JDK 17."
+Write-Host "Herramientas listas. Abre una terminal nueva si instalaste JDK 17 o Maven por primera vez."
