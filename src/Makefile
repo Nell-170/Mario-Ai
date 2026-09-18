@@ -63,7 +63,7 @@ help:
 	@echo "  generate-level     Generate a level from the latest telemetry"
 	@echo "  play-and-generate  play-human + generate-level"
 	@echo "  prompt-telemetry   Build a compact MarioGPT prompt from telemetry/latest.json"
-	@echo "  install-web-tools Install JDK 17 and Maven for the browser proof"
+	@echo "  install-web-tools Install JDK 25 and Maven for the browser proof"
 	@echo "  web-proof          Compile and serve the Java/WebAssembly browser proof"
 	@echo "  clean              Remove generated framework class files"
 	@echo ""

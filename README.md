@@ -12,7 +12,7 @@ convertidor al formato del framework, y la validación de jugabilidad con el age
 (robinBaumgarten). Los niveles humanos validados son el **"Nivel 0"** — la base sobre la que
 operará el pipeline generativo.
 
-> ⚠️ **Estas instrucciones están escritas para Windows (PowerShell).** Requisitos: JDK 17+,
+> ⚠️ **Estas instrucciones están escritas para Windows (PowerShell).** Requisitos: JDK 25+,
 > Python 3.8+, Git y GNU Make (por ejemplo, `make` incluido en Git Bash).
 
 ---

@@ -6,7 +6,7 @@ Swing, AWT ni del Mario AI Framework todavía.
 
 ## Requisitos
 
-- JDK 17 o superior.
+- JDK 25 o superior.
 - Maven 3.9 o superior.
 - Un navegador moderno.
 
@@ -23,12 +23,12 @@ repositorio:
 make install-web-tools
 ```
 
-En Windows usa `winget` para JDK 17 y descarga Maven desde su distribución
+En Windows usa `winget` para JDK 25 y descarga Maven desde su distribución
 oficial a `%LOCALAPPDATA%\MarioAiTools\`, agregándolo de forma permanente al
 `PATH` del usuario (instalación global, no depende del repositorio ni se
 borra con `git clean`). En Linux usa `apt-get` y en macOS usa Homebrew, que
 instalan Maven globalmente en el sistema. Después de la instalación, abre una
-terminal nueva si se instaló JDK 17 o Maven por primera vez para que la nueva
+terminal nueva si se instaló JDK 25 o Maven por primera vez para que la nueva
 sesión vea el `PATH` actualizado.
 
 ## Compilar

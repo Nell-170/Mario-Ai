@@ -8,6 +8,6 @@ scipy
 pillow
 accelerate
 
-# The browser proof uses JDK 17+ and Maven 3.9+.
+# The browser proof uses JDK 25+ and Maven 3.9+.
 # They are system tools, not Python packages, so they are documented here
 # instead of being passed to pip.

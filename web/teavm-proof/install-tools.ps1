@@ -1,28 +1,28 @@
 $ErrorActionPreference = "Stop"
 
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-    throw "winget no esta disponible. Instala App Installer desde Microsoft Store o instala JDK 17 y Maven manualmente."
+    throw "winget no esta disponible. Instala App Installer desde Microsoft Store o instala JDK 25 y Maven manualmente."
 }
 
-function Test-Java17 {
+function Test-Java25 {
     param([string]$JavaPath = "java")
     if ($JavaPath -eq "java" -and -not (Get-Command java -ErrorAction SilentlyContinue)) {
         return $false
     }
     $version = (cmd /c "`"$JavaPath`" -version 2>&1" | Out-String)
-    return $version -match 'version "17([.]|")'
+    return $version -match 'version "25([.]|")'
 }
 
-function Use-InstalledJava17 {
+function Use-InstalledJava25 {
     $candidates = @()
     if ($env:JAVA_HOME) {
         $candidates += Join-Path $env:JAVA_HOME "bin\java.exe"
     }
-    $candidates += Get-ChildItem "C:\Program Files\Eclipse Adoptium\jdk-17*\bin\java.exe" -ErrorAction SilentlyContinue
-    $candidates += Get-ChildItem "C:\Program Files\Java\jdk-17*\bin\java.exe" -ErrorAction SilentlyContinue
+    $candidates += Get-ChildItem "C:\Program Files\Eclipse Adoptium\jdk-25*\bin\java.exe" -ErrorAction SilentlyContinue
+    $candidates += Get-ChildItem "C:\Program Files\Java\jdk-25*\bin\java.exe" -ErrorAction SilentlyContinue
     foreach ($candidate in $candidates) {
         $path = if ($candidate -is [string]) { $candidate } else { $candidate.FullName }
-        if ((Test-Path $path) -and (Test-Java17 -JavaPath $path)) {
+        if ((Test-Path $path) -and (Test-Java25 -JavaPath $path)) {
             $javaHome = Split-Path (Split-Path $path -Parent) -Parent
             $env:JAVA_HOME = $javaHome
             $env:Path = (Join-Path $javaHome "bin") + ";" + $env:Path
@@ -32,26 +32,26 @@ function Use-InstalledJava17 {
     return $false
 }
 
-function Test-WingetJava17Installed {
-    winget list --id "EclipseAdoptium.Temurin.17.JDK" --exact --accept-source-agreements 2>&1 | Out-Null
+function Test-WingetJava25Installed {
+    winget list --id "EclipseAdoptium.Temurin.25.JDK" --exact --accept-source-agreements 2>&1 | Out-Null
     return $LASTEXITCODE -eq 0
 }
 
-if (Test-Java17) {
-    Write-Host "JDK 17 ya esta instalado."
-} elseif (Use-InstalledJava17) {
-    Write-Host "JDK 17 ya esta instalado y se selecciono para esta terminal."
+if (Test-Java25) {
+    Write-Host "JDK 25 ya esta instalado."
+} elseif (Use-InstalledJava25) {
+    Write-Host "JDK 25 ya esta instalado y se selecciono para esta terminal."
 } else {
     if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        throw "winget no esta disponible y no se encontro JDK 17. Instala JDK 17 manualmente."
+        throw "winget no esta disponible y no se encontro JDK 25. Instala JDK 25 manualmente."
     }
-    Write-Host "Instalando JDK 17..."
-    winget install --id "EclipseAdoptium.Temurin.17.JDK" --exact --accept-source-agreements --accept-package-agreements
-    if ($LASTEXITCODE -ne 0 -and -not (Test-WingetJava17Installed)) {
-        throw "No se pudo instalar JDK 17 con winget."
+    Write-Host "Instalando JDK 25..."
+    winget install --id "EclipseAdoptium.Temurin.25.JDK" --exact --accept-source-agreements --accept-package-agreements
+    if ($LASTEXITCODE -ne 0 -and -not (Test-WingetJava25Installed)) {
+        throw "No se pudo instalar JDK 25 con winget."
     }
-    if (-not (Use-InstalledJava17) -and -not (Test-Java17)) {
-        Write-Warning "JDK 17 se instalo, pero esta terminal no tiene actualizada la ruta de Java."
+    if (-not (Use-InstalledJava25) -and -not (Test-Java25)) {
+        Write-Warning "JDK 25 se instalo, pero esta terminal no tiene actualizada la ruta de Java."
         Write-Host "Cierra y vuelve a abrir PowerShell; luego ejecuta make install-web-tools otra vez."
         exit 0
     }
@@ -101,4 +101,4 @@ if (Get-Command mvn -ErrorAction SilentlyContinue) {
     Write-Host "Maven instalado globalmente en $mavenRoot."
 }
 
-Write-Host "Herramientas listas. Abre una terminal nueva si instalaste JDK 17 o Maven por primera vez."
+Write-Host "Herramientas listas. Abre una terminal nueva si instalaste JDK 25 o Maven por primera vez."
