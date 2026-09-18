@@ -15,7 +15,7 @@
     <div id="stage" tabindex="0">
         <canvas id="level" aria-label="Nivel Mario"></canvas>
     </div>
-    <p>El nivel se conserva en el formato de texto del framework. ArrowRight mueve a Mario y R reinicia su posición.</p>
+    <p>El nivel se conserva en el formato de texto del framework. ArrowLeft/ArrowRight mueven a Mario, A corre (SPEED), S salta (JUMP) y R reinicia su posición.</p>
     <script type="module">
         const canvas = document.querySelector('#level');
         const context = canvas.getContext('2d');
@@ -60,7 +60,7 @@
                 context.fillStyle = '#e52521';
                 context.fillRect(
                     teavm.exports.getX() - cameraX,
-                    canvas.height - tileSize * 2,
+                    canvas.height - tileSize * 2 + teavm.exports.getY(),
                     tileSize,
                     tileSize
                 );
@@ -101,15 +101,56 @@
             drawLevel();
             status.textContent = `Nivel cargado desde texto: ${teavm.exports.getLevelColumns()} columnas. La cámara sigue a Mario.`;
 
+            // Estado de teclas presionadas, igual al enfoque de keydown/keyup
+            // de agents.human.Agent en el framework (sin depender del
+            // autorepeat del sistema operativo).
+            const pressedKeys = {
+                moveLeft: false,
+                moveRight: false,
+                speed: false,
+                jump: false
+            };
+
+            const keyToState = {
+                arrowleft: 'moveLeft',
+                arrowright: 'moveRight',
+                a: 'speed',
+                s: 'jump'
+            };
+
             document.addEventListener('keydown', event => {
-                if (event.key === 'ArrowRight') {
-                    teavm.exports.step(true);
-                    drawLevel();
-                } else if (event.key.toLowerCase() === 'r') {
+                const key = event.key.toLowerCase();
+                if (key === 'r') {
                     teavm.exports.reset();
                     drawLevel();
+                    return;
+                }
+                const state = keyToState[key];
+                if (state) {
+                    pressedKeys[state] = true;
+                    event.preventDefault();
                 }
             });
+
+            document.addEventListener('keyup', event => {
+                const state = keyToState[event.key.toLowerCase()];
+                if (state) {
+                    pressedKeys[state] = false;
+                    event.preventDefault();
+                }
+            });
+
+            const tick = () => {
+                teavm.exports.step(
+                    pressedKeys.moveLeft,
+                    pressedKeys.moveRight,
+                    pressedKeys.speed,
+                    pressedKeys.jump
+                );
+                drawLevel();
+                requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
         } catch (error) {
             showError(error);
         }
