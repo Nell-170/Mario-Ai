@@ -1,0 +1,5 @@
+# Cuestionario MiniPXI (PROVISIONAL). Una pregunta por linea; las lineas que empiezan con # se ignoran.
+# Escala de respuesta: 1 (totalmente en desacuerdo) a 7 (totalmente de acuerdo).
+[Pregunta MiniPXI 1 pendiente]
+[Pregunta MiniPXI 2 pendiente]
+[Pregunta MiniPXI 3 pendiente]
