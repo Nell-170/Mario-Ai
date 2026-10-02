@@ -160,3 +160,8 @@ clean-all: clean clean-telemetry clean-levels
 		[os.remove(f) for f in glob.glob('dataset/*.pkl') + glob.glob('dataset/*.csv') if os.path.isfile(f)]; \
 		[shutil.rmtree(p, ignore_errors=True) for p in glob.glob('**/__pycache__', recursive=True)]; \
 		print('✨ Full clean complete (bin, telemetry, levels, dataset caches).')"
+
+# ── start-experiment ──────────────────────────────────────────
+.PHONY: start-experiment
+start-experiment: compile
+	@cd "$(FRAMEWORK)" && $(JAVAC) --release 25 -encoding UTF-8 -cp bin -d bin ../src/tools/ExperimentRunner.java && $(JAVA) -cp bin ExperimentRunner "$(PYTHON)"
