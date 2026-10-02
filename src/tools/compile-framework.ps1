@@ -20,7 +20,7 @@ if ($javaFiles.Count -eq 0) {
     throw "No Java source files found in $src"
 }
 
-& javac -d $bin -encoding UTF-8 $javaFiles
+& javac --release 25 -d $bin -encoding UTF-8 $javaFiles
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }

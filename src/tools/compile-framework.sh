@@ -22,5 +22,5 @@ if [ "${#java_files[@]}" -eq 0 ]; then
     exit 1
 fi
 
-javac -d "$BIN" -encoding UTF-8 "${java_files[@]}"
+javac --release 25 -d "$BIN" -encoding UTF-8 "${java_files[@]}"
 echo "Compilation complete."

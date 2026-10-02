@@ -62,7 +62,7 @@ Mario-Ai/
 
 | Requisito | Versión Mínima | Propósito |
 |---|---|---|
-| **Java JDK** | 17 o superior | Compilar y ejecutar Mario AI Framework, A* y PlayHuman |
+| **Java JDK** | 25 o superior | Compilar y ejecutar Mario AI Framework, A* y PlayHuman |
 | **Python** | 3.8+ (recomendado 3.10+) | Scripts de dataset, telemetría y modelo MarioGPT |
 | **Git** | 2.x | Clonar repositorios externos |
 | **GNU Make** | 3.81+ *(Opcional pero recomendado)* | Automatizar comandos cross-platform (`make`) |
