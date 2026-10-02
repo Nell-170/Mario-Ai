@@ -129,7 +129,7 @@ public class PlayHuman {
         Files.write(output, buildTelemetryJson(result, levelPath, timer, sessionSeed).getBytes());
     }
 
-    private static String buildTelemetryJson(
+    static String buildTelemetryJson(
             MarioResult result, String levelPath, int timer, int sessionSeed) {
         List<String> deathPositions = new ArrayList<>();
         for (MarioEvent event : result.getGameEvents()) {
