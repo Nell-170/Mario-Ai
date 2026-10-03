@@ -75,7 +75,7 @@ public class ExperimentRunner {
             if (!showConsent()) {
                 generation.cancel();
                 deleteRecursively(dir);
-                info("Gracias por tu tiempo. El experimento ha finalizado.");
+                info("Gracias por tu tiempo en esta actividad. La sesion ha finalizado.");
                 System.exit(0);
             }
 
