@@ -14,6 +14,7 @@ JAVA       := java
 
 # ── OS detection ──────────────────────────────────────────────
 ifeq ($(OS),Windows_NT)
+    PATCH_CMD  = powershell -NoProfile -ExecutionPolicy Bypass -File tools/apply-framework-patch.ps1 -Framework "$(FRAMEWORK)"
     PLATFORM   := windows
     PYTHON     := python
     PIP_FLAGS  :=
@@ -26,6 +27,7 @@ ifeq ($(OS),Windows_NT)
     # Use PowerShell for the compile step on Windows
     COMPILE_CMD = powershell -NoProfile -ExecutionPolicy Bypass -File tools\compile-framework.ps1 -Framework "$(FRAMEWORK)"
 else
+    PATCH_CMD  = bash tools/apply-framework-patch.sh "$(FRAMEWORK)"
     PLATFORM   := unix
     # Prefer python3, fall back to python
     PYTHON     := $(shell command -v python3 2>/dev/null || echo python)
@@ -40,7 +42,7 @@ else
 endif
 
 # ── Phony targets ─────────────────────────────────────────────
-.PHONY: help setup install-deps setup-mariogpt install-mariogpt compile \
+.PHONY: patch-framework help setup install-deps setup-mariogpt install-mariogpt compile \
         filter convert validate play-human play-levels-generated play-and-generate \
         generate-level prompt-telemetry clean clean-telemetry clean-levels clean-all
 
@@ -100,6 +102,10 @@ compile: setup
 WANT            ?= 80
 MAX_SCAN        ?= 150000
 VALIDATE_TIMER  ?= 40
+
+# ── patch-framework ───────────────────────────────────────────
+patch-framework:
+	@$(PATCH_CMD)
 
 # ── filter ────────────────────────────────────────────────────
 filter:
