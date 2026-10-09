@@ -104,6 +104,10 @@ public class ExperimentRunner {
             if (!showConsent()) {
                 generation.cancel();
                 deleteRecursively(dir);
+                if (choose("No aceptaste participar, así que tus datos no se usarán en el experimento."
+                        + "\n\n¿Quieres jugar de todos modos?", "Sí, jugar", "No, terminar")) {
+                    freePlay(config, normal, timer);
+                }
                 info("Gracias por tu tiempo en esta actividad. La sesion ha finalizado.");
                 System.exit(0);
             }
@@ -130,6 +134,11 @@ public class ExperimentRunner {
                         concat(List.of("id", "group", "level_number", "level_type", "level_file"), ids(perLevel)), row);
             }
             info("¡Muchas gracias por participar! El experimento ha finalizado.");
+            if (choose("¿Quieres seguir jugando solo por diversión?\nLos niveles que juegues ahora no se registrarán.",
+                    "Jugar por jugar", "Terminar")) {
+                freePlay(config, normal, timer);
+            }
+            info("Gracias por tu tiempo. La sesión ha finalizado.");
         } catch (Exception e) {
             generation.cancel();
             JOptionPane.showMessageDialog(null, "Error en el experimento: " + e.getMessage(),
@@ -222,8 +231,35 @@ public class ExperimentRunner {
         MarioGame game = new MarioGame();
         MarioResult result = game.runGame(new agents.human.Agent(), level, timer, seed, true);
         game.closeWindow();
-        Files.writeString(telemetryFile, PlayHuman.buildTelemetryJson(result, levelFile.toString(), timer, seed));
+        if (telemetryFile != null) {
+            Files.writeString(telemetryFile, PlayHuman.buildTelemetryJson(result, levelFile.toString(), timer, seed));
+        }
         return telemetryFile;
+    }
+
+    private static boolean choose(String message, String yes, String no) {
+        Object[] options = {yes, no};
+        return JOptionPane.showOptionDialog(null, message, "Experimento", JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, options[0]) == 0;
+    }
+
+    private static void freePlay(Properties config, List<Path> normal, int timer) throws IOException {
+        Path humanDir = SRC.resolve(config.getProperty("human_dir").trim());
+        List<Path> pool;
+        try (Stream<Path> files = Files.list(humanDir)) {
+            pool = files.filter(f -> f.getFileName().toString().endsWith(".txt")).collect(Collectors.toList());
+        }
+        pool.addAll(normal);
+        Random random = new Random();
+        Path last = null;
+        do {
+            Path level;
+            do {
+                level = pool.get(random.nextInt(pool.size()));
+            } while (pool.size() > 1 && level.equals(last));
+            last = level;
+            playLevel(level, timer, null);
+        } while (choose("¿Quieres jugar otro nivel?", "Otro nivel", "Terminar"));
     }
 
     private static void info(String message) {
