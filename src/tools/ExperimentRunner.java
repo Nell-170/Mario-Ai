@@ -95,7 +95,7 @@ public class ExperimentRunner {
             List<Question> pair = questionsOf(questions, "pair");
             List<String> initialAnswers = new ArrayList<>(List.of(id, group));
             initialAnswers.addAll(Arrays.asList(ask("Encuesta inicial", "Responde las siguientes preguntas sobre ti.", initial)));
-            saveRow(dir.resolve("initial.csv"), concat(List.of("id", "group"), ids(initial)), initialAnswers);
+            saveRow(RESULTS.resolve("initial.tsv"), concat(List.of("id", "group"), ids(initial)), initialAnswers);
 
             List<String> played = new ArrayList<>();
             for (int i = 0; i < steps.size(); i++) {
@@ -112,7 +112,7 @@ public class ExperimentRunner {
                             levels, played.get(i - 1) + ";" + played.get(i)));
                     row.addAll(Arrays.asList(ask("Cuestionario - Niveles " + levels,
                             "Responde pensando en los dos niveles que acabas de jugar.", pair)));
-                    saveRow(dir.resolve("responses.csv"),
+                    saveRow(RESULTS.resolve("responses.tsv"),
                             concat(List.of("id", "group", "block", "level_type", "level_numbers", "level_files"), ids(pair)), row);
                 }
             }
@@ -367,18 +367,15 @@ public class ExperimentRunner {
         return getters.stream().map(Supplier::get).toArray(String[]::new);
     }
 
-    private static void saveRow(Path csv, List<String> headers, List<String> values) throws IOException {
+    private static void saveRow(Path tsv, List<String> headers, List<String> values) throws IOException {
         StringBuilder sb = new StringBuilder();
-        if (!Files.exists(csv)) {
-            sb.append(headers.stream().map(ExperimentRunner::csv).collect(Collectors.joining(","))).append('\n');
+        if (!Files.exists(tsv)) {
+            sb.append(String.join("\t", headers)).append('\n');
         }
-        sb.append(values.stream().map(ExperimentRunner::csv).collect(Collectors.joining(","))).append('\n');
-        Files.writeString(csv, sb.toString(), StandardCharsets.UTF_8, StandardOpenOption.CREATE,
+        sb.append(values.stream().map(v -> v.replaceAll("[\\t\\r\\n]+", " ")).collect(Collectors.joining("\t")))
+                .append('\n');
+        Files.writeString(tsv, sb.toString(), StandardCharsets.UTF_8, StandardOpenOption.CREATE,
                 StandardOpenOption.APPEND);
-    }
-
-    private static String csv(String value) {
-        return value.matches(".*[\",\\n].*") ? "\"" + value.replace("\"", "\"\"") + "\"" : value;
     }
 
     private static void deleteRecursively(Path dir) throws IOException {
