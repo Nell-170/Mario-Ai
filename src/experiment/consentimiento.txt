@@ -1,3 +1,15 @@
-[TEXTO DE CONSENTIMIENTO INFORMADO PENDIENTE]
+Este experimento es parte de una actividad de investigación. El objetivo es evaluar niveles de un videojuego tipo Mario, no su desempeño como jugador(a). Su desempeño no afectará su calificación en ningún curso.
 
-Este archivo es provisional. Reemplaza su contenido por el texto real del consentimiento informado.
+Consentimiento informado
+
+Durante el experimento jugará una serie de niveles. Después de cada nivel responderá un breve cuestionario de opinión sobre su experiencia. Mientras juega se registrarán datos de su partida (por ejemplo, movimientos, saltos, tiempo y resultado de cada nivel). Algunos de los niveles serán generados automáticamente a partir de estos datos mediante inteligencia artificial.
+
+Los datos de opinión y de juego recolectados se utilizarán para mejorar los programas de software estudiados en el curso de Investigación en Ciencias de la Computación y para la publicación de las mejoras en artículos científicos. Su participación se identifica únicamente con un código anónimo, sin nombre ni carnet, de modo que el análisis de datos sea anónimo. Su autorización es voluntaria y no influye en sus calificaciones.
+
+Durante la práctica es normal que sus compañeros(as) estén jugando niveles distintos a los suyos. Durante y después de finalizada la actividad, no comente con otros(as) estudiantes lo que vio o jugó, pues esto sesgará y afectará negativamente las opiniones que ellos(as) tendrán de los niveles y de las mejoras que puedan aportar.
+
+Si no pudiera completar un nivel, no afectará su nota, pero trate de jugarlos todos para proveer su opinión integral. Ante cualquier duda, consulte con confianza a la persona moderadora.
+
+Si rechaza el consentimiento, el experimento terminará y los datos recolectados hasta ese momento serán eliminados.
+
+¡Muchísimas gracias por su cooperación y atención a las instrucciones de la actividad para que esta sea todo un éxito!
