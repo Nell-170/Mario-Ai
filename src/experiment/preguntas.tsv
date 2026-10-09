@@ -1,15 +1,15 @@
 # Preguntas del experimento. Columnas separadas por TAB: id, bloque, tipo, texto, opciones. Las lineas que empiezan con # se ignoran.
-# bloque: initial (despues del consentimiento) | pair (despues de cada 2 niveles del mismo tipo).
+# bloque: initial (despues del consentimiento) | level (despues de cada nivel).
 # tipo: number (entero) | choice (opciones separadas por |; 'valor=etiqueta' guarda el valor) | scale (min|max|etiqueta_min|etiqueta_max).
-# El id es el nombre de la columna en initial.csv / responses.csv.
+# El id es el nombre de la columna en initial.tsv / responses.tsv.
 edad	initial	number	Edad (en años)	
 horas_juego	initial	choice	¿Cuántas horas a la semana juegas videojuegos, de cualquier tipo?	Menos de 1 hora|De 1 a 5 horas|De 6 a 10 horas|De 11 a 20 horas|Más de 20 horas
 horas_plataformas	initial	choice	De esas horas, ¿cuántas dedicas a juegos de plataformas en 2D (Mario, Celeste, Hollow Knight, Geometry Dash y similares)?	Ninguna|Menos de 1 hora|De 1 a 3 horas|De 4 a 7 horas|Más de 7 horas
 experiencia_mario	initial	choice	¿Cuál de estas frases describe mejor tu experiencia con los juegos de Mario en 2D?	Nunca he jugado ninguno|He jugado alguno, poco o hace mucho tiempo|He jugado varios con regularidad|Además, he jugado o creado niveles de Super Mario Maker
 control	initial	choice	¿Con qué sueles jugar normalmente?	Mando|Teclado
-disfrute	pair	scale	La pasé bien jugando estos dos niveles.	-3|3|Totalmente en desacuerdo|Totalmente de acuerdo
-competencia	pair	scale	Sentí que era bueno jugando estos dos niveles.	-3|3|Totalmente en desacuerdo|Totalmente de acuerdo
-dificultad	pair	choice	¿Cómo te pareció la dificultad de estos dos niveles para ti?	-3=demasiado fácil|-2=bastante fácil|-1=algo fácil|0=justa|1=algo difícil|2=bastante difícil|3=demasiado difícil
-ajuste_reto	pair	scale	¿Cuánto se ajustaba el reto de estos dos niveles a tu habilidad?	-3|3|No se ajustaba nada|Se ajustaba perfectamente
-variedad	pair	scale	¿Estos dos niveles se te hicieron variados o repetitivos?	-3|3|Muy repetitivos|Muy variados
-rejugar	pair	scale	Me gustaría jugar más niveles como estos.	-3|3|No me gustaría nada|Me gustaría mucho
+disfrute	level	scale	La pasé bien jugando este nivel.	-3|3|Totalmente en desacuerdo|Totalmente de acuerdo
+competencia	level	scale	Sentí que era bueno jugando este nivel.	-3|3|Totalmente en desacuerdo|Totalmente de acuerdo
+dificultad	level	choice	¿Cómo te pareció la dificultad de este nivel para ti?	-3=demasiado fácil|-2=bastante fácil|-1=algo fácil|0=justa|1=algo difícil|2=bastante difícil|3=demasiado difícil
+ajuste_reto	level	scale	¿Cuánto se ajustaba el reto de este nivel a tu habilidad?	-3|3|No se ajustaba nada|Se ajustaba perfectamente
+variedad	level	scale	¿Este nivel se te hizo variado o repetitivo?	-3|3|Muy repetitivos|Muy variados
+rejugar	level	scale	Me gustaría jugar más niveles como este.	-3|3|No me gustaría nada|Me gustaría mucho

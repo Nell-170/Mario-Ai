@@ -13,7 +13,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -41,8 +43,20 @@ public class ExperimentRunner {
     private static final Path SRC = Paths.get("../src");
     private static final Path EXPERIMENT = SRC.resolve("experiment");
     private static final Path RESULTS = EXPERIMENT.resolve("results");
-    private static final String[] GROUPS = {"A", "B", "C"};
-    private record Step(char type, Path level, int genIndex) {}
+    // Cuadrado latino de Williams 6x6. Letras: A = personalizado (P), B = generico (N), C = humano (H); el numero es el nivel (1 o 2) dentro del tipo.
+    private static final Map<String, String> SEQUENCES = new LinkedHashMap<>();
+    private static final String[] GROUPS;
+
+    static {
+        SEQUENCES.put("S1", "A1 C2 A2 C1 B1 B2");
+        SEQUENCES.put("S2", "A2 A1 B1 C2 B2 C1");
+        SEQUENCES.put("S3", "B1 A2 B2 A1 C1 C2");
+        SEQUENCES.put("S4", "B2 B1 C1 A2 C2 A1");
+        SEQUENCES.put("S5", "C1 B2 C2 B1 A1 A2");
+        SEQUENCES.put("S6", "C2 C1 A1 B2 A2 B1");
+        GROUPS = SEQUENCES.keySet().toArray(new String[0]);
+    }
+    private record Step(char type, int index, Path level) {}
 
     private record Question(String id, String block, String type, String text, String options) {}
 
@@ -68,11 +82,11 @@ public class ExperimentRunner {
         Files.writeString(dir.resolve("participant.txt"),
                 "id=" + id + "\ngroup=" + group + "\nsteps="
                         + steps.stream().map(s -> String.valueOf(s.type())).collect(Collectors.joining(",")) + "\n");
-        System.out.println("Participante: " + id + " (grupo " + group + ")");
+        System.out.println("Participante: " + id + " (secuencia " + group + ")");
 
         GenerationJob generation = new GenerationJob(python, dir);
         try {
-            info("Bienvenido. Participante: " + id + "\nTu grupo es: " + group
+            info("Bienvenido. Participante: " + id + "\nTu secuencia es: " + group
                     + "\n\nPrimero jugarás dos niveles de familiarización.");
             List<Path> famTelemetries = new ArrayList<>();
             for (int f = 0; f < familiarization.size(); f++) {
@@ -96,29 +110,24 @@ public class ExperimentRunner {
 
             List<Question> questions = loadQuestions();
             List<Question> initial = questionsOf(questions, "initial");
-            List<Question> pair = questionsOf(questions, "pair");
+            List<Question> perLevel = questionsOf(questions, "level");
             List<String> initialAnswers = new ArrayList<>(List.of(id, group));
             initialAnswers.addAll(Arrays.asList(ask("Encuesta inicial", "Responde las siguientes preguntas sobre ti.", initial)));
             saveRow(RESULTS.resolve("initial.tsv"), concat(List.of("id", "group"), ids(initial)), initialAnswers);
 
-            List<String> played = new ArrayList<>();
             for (int i = 0; i < steps.size(); i++) {
                 Step step = steps.get(i);
                 info("Nivel " + (i + 1) + " de " + steps.size() + ". Pulsa Aceptar para comenzar.");
                 Path levelFile = step.type() != 'P' ? step.level()
-                        : skipGeneration ? substitutes.get(step.genIndex()) : generation.await(step.genIndex());
+                        : skipGeneration ? substitutes.get(step.index()) : generation.await(step.index());
                 playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
-                played.add(levelFile.getFileName().toString());
 
-                if (i % 2 == 1) {
-                    String levels = (i) + "-" + (i + 1);
-                    List<String> row = new ArrayList<>(List.of(id, group, String.valueOf((i + 1) / 2), String.valueOf(step.type()),
-                            levels, played.get(i - 1) + ";" + played.get(i)));
-                    row.addAll(Arrays.asList(ask("Cuestionario - Niveles " + levels,
-                            "Responde pensando en los dos niveles que acabas de jugar.", pair)));
-                    saveRow(RESULTS.resolve("responses.tsv"),
-                            concat(List.of("id", "group", "block", "level_type", "level_numbers", "level_files"), ids(pair)), row);
-                }
+                List<String> row = new ArrayList<>(List.of(id, group, String.valueOf(i + 1),
+                        step.type() + String.valueOf(step.index() + 1), levelFile.getFileName().toString()));
+                row.addAll(Arrays.asList(ask("Cuestionario - Nivel " + (i + 1),
+                        "Responde pensando en el nivel que acabas de jugar.", perLevel)));
+                saveRow(RESULTS.resolve("responses.tsv"),
+                        concat(List.of("id", "group", "level_number", "level_type", "level_file"), ids(perLevel)), row);
             }
             info("¡Muchas gracias por participar! El experimento ha finalizado.");
         } catch (Exception e) {
@@ -131,21 +140,14 @@ public class ExperimentRunner {
     }
 
     private static List<Step> buildSteps(String group, List<Path> normal, List<Path> human) {
-        String layout = switch (group) {
-            case "A" -> "PPNNHH";
-            case "B" -> "NNPPHH";
-            default -> "NNHHPP";
-        };
         List<Step> steps = new ArrayList<>();
-        int n = 0;
-        int h = 0;
-        int p = 0;
-        for (char c : layout.toCharArray()) {
-            switch (c) {
-                case 'P' -> steps.add(new Step(c, null, p++));
-                case 'N' -> steps.add(new Step(c, normal.get(n++), -1));
-                default -> steps.add(new Step(c, human.get(h++), -1));
-            }
+        for (String code : SEQUENCES.get(group).split(" ")) {
+            int index = code.charAt(1) - '1';
+            steps.add(switch (code.charAt(0)) {
+                case 'A' -> new Step('P', index, null);
+                case 'B' -> new Step('N', index, normal.get(index));
+                default -> new Step('H', index, human.get(index));
+            });
         }
         return steps;
     }
