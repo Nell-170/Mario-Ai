@@ -47,7 +47,7 @@ public class ExperimentRunner {
         String python = args.length > 0 ? args[0] : "python";
         Properties config = loadConfig();
         int timer = Integer.parseInt(config.getProperty("timer", "60").trim());
-        Path familiarization = SRC.resolve(config.getProperty("familiarization").trim());
+        List<Path> familiarization = pathList(config, "familiarization");
         List<Path> normal = pathList(config, "normal");
         List<Path> human = randomHumanLevels(config, familiarization, 2);
 
@@ -65,12 +65,15 @@ public class ExperimentRunner {
         GenerationJob generation = new GenerationJob(python, dir);
         try {
             info("Bienvenido. Participante: " + id + "\nTu grupo es: " + group
-                    + "\n\nPrimero jugarás un nivel de familiarización.");
-            Path famTelemetry = playLevel(familiarization, timer, dir.resolve("telemetry_fam.json"));
-
-            if (group.equals("A")) {
-                generation.start(List.of(famTelemetry, famTelemetry));
+                    + "\n\nPrimero jugarás dos niveles de familiarización.");
+            List<Path> famTelemetries = new ArrayList<>();
+            for (int f = 0; f < familiarization.size(); f++) {
+                info("Nivel de familiarización " + (f + 1) + " de " + familiarization.size()
+                        + ". Pulsa Aceptar para comenzar.");
+                famTelemetries.add(playLevel(familiarization.get(f), timer,
+                        dir.resolve("telemetry_fam" + (f + 1) + ".json")));
             }
+            generation.start(famTelemetries);
 
             if (!showConsent()) {
                 generation.cancel();
@@ -80,19 +83,12 @@ public class ExperimentRunner {
             }
 
             List<String> questions = loadQuestions();
-            List<Path> telemetries = new ArrayList<>();
             for (int i = 0; i < steps.size(); i++) {
                 Step step = steps.get(i);
                 info("Nivel " + (i + 1) + " de " + steps.size() + ". Pulsa Aceptar para comenzar.");
                 Path levelFile = step.type() == 'P' ? generation.await(step.genIndex()) : step.level();
-                Path telemetry = playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
-                telemetries.add(telemetry);
+                playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
 
-                if (group.equals("B") && i == 1) {
-                    generation.start(List.of(telemetries.get(0), telemetries.get(1)));
-                } else if (group.equals("C") && i == 3) {
-                    generation.start(List.of(telemetries.get(2), telemetries.get(3)));
-                }
                 saveResponses(dir, i + 1, step.type(), levelFile, showQuestionnaire(questions, i + 1));
             }
             info("¡Muchas gracias por participar! El experimento ha finalizado.");
@@ -145,13 +141,13 @@ public class ExperimentRunner {
         return paths;
     }
 
-    private static List<Path> randomHumanLevels(Properties config, Path exclude, int count) throws IOException {
+    private static List<Path> randomHumanLevels(Properties config, List<Path> exclude, int count) throws IOException {
         Path humanDir = SRC.resolve(config.getProperty("human_dir").trim());
         List<Path> pool;
         try (Stream<Path> files = Files.list(humanDir)) {
             pool = files
                     .filter(f -> f.getFileName().toString().endsWith(".txt"))
-                    .filter(f -> !f.getFileName().equals(exclude.getFileName()))
+                    .filter(f -> exclude.stream().noneMatch(e -> e.getFileName().equals(f.getFileName())))
                     .collect(Collectors.toList());
         }
         if (pool.size() < count) {
@@ -431,16 +427,7 @@ public class ExperimentRunner {
             if (future.isDone()) {
                 return future.get();
             }
-            JDialog waiting = new JDialog((java.awt.Frame) null, "Generando nivel", false);
-            waiting.add(new JLabel("  Generando tu nivel personalizado, espera un momento...  "));
-            waiting.pack();
-            waiting.setLocationRelativeTo(null);
-            waiting.setVisible(true);
-            try {
-                return future.get();
-            } finally {
-                waiting.dispose();
-            }
+            return future.get();
         }
 
         void cancel() {
