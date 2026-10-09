@@ -1,7 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -18,9 +17,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -30,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import engine.core.MarioGame;
 import engine.core.MarioResult;
@@ -39,9 +42,9 @@ public class ExperimentRunner {
     private static final Path EXPERIMENT = SRC.resolve("experiment");
     private static final Path RESULTS = EXPERIMENT.resolve("results");
     private static final String[] GROUPS = {"A", "B", "C"};
-    private static final int SCALE_MAX = 7;
-
     private record Step(char type, Path level, int genIndex) {}
+
+    private record Question(String id, String block, String type, String text, String options) {}
 
     public static void main(String[] args) throws Exception {
         String python = args.length > 0 ? args[0] : "python";
@@ -87,15 +90,31 @@ public class ExperimentRunner {
                 System.exit(0);
             }
 
-            List<String> questions = loadQuestions();
+            List<Question> questions = loadQuestions();
+            List<Question> initial = questionsOf(questions, "initial");
+            List<Question> pair = questionsOf(questions, "pair");
+            List<String> initialAnswers = new ArrayList<>(List.of(id, group));
+            initialAnswers.addAll(Arrays.asList(ask("Encuesta inicial", "Responde las siguientes preguntas sobre ti.", initial)));
+            saveRow(dir.resolve("initial.csv"), concat(List.of("id", "group"), ids(initial)), initialAnswers);
+
+            List<String> played = new ArrayList<>();
             for (int i = 0; i < steps.size(); i++) {
                 Step step = steps.get(i);
                 info("Nivel " + (i + 1) + " de " + steps.size() + ". Pulsa Aceptar para comenzar.");
                 Path levelFile = step.type() != 'P' ? step.level()
                         : skipGeneration ? normal.get(step.genIndex() % normal.size()) : generation.await(step.genIndex());
                 playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
+                played.add(levelFile.getFileName().toString());
 
-                saveResponses(dir, i + 1, step.type(), levelFile, showQuestionnaire(questions, i + 1));
+                if (i % 2 == 1) {
+                    String levels = (i) + "-" + (i + 1);
+                    List<String> row = new ArrayList<>(List.of(id, group, String.valueOf((i + 1) / 2), String.valueOf(step.type()),
+                            levels, played.get(i - 1) + ";" + played.get(i)));
+                    row.addAll(Arrays.asList(ask("Cuestionario - Niveles " + levels,
+                            "Responde pensando en los dos niveles que acabas de jugar.", pair)));
+                    saveRow(dir.resolve("responses.csv"),
+                            concat(List.of("id", "group", "block", "level_type", "level_numbers", "level_files"), ids(pair)), row);
+                }
             }
             info("¡Muchas gracias por participar! El experimento ha finalizado.");
         } catch (Exception e) {
@@ -237,72 +256,129 @@ public class ExperimentRunner {
         return accepted[0];
     }
 
-    private static List<String> loadQuestions() throws IOException {
-        return Files.readAllLines(EXPERIMENT.resolve("minipxi.txt"), StandardCharsets.UTF_8).stream()
-                .map(String::trim)
-                .filter(s -> !s.isEmpty() && !s.startsWith("#"))
-                .collect(Collectors.toList());
+    private static List<Question> loadQuestions() throws IOException {
+        List<Question> questions = new ArrayList<>();
+        for (String line : Files.readAllLines(EXPERIMENT.resolve("preguntas.tsv"), StandardCharsets.UTF_8)) {
+            if (line.isBlank() || line.startsWith("#")) {
+                continue;
+            }
+            String[] c = line.split("\t", -1);
+            if (c.length < 5) {
+                throw new IllegalStateException("preguntas.tsv: línea con menos de 5 columnas: " + line);
+            }
+            questions.add(new Question(c[0].trim(), c[1].trim(), c[2].trim(), c[3].trim(), c[4].trim()));
+        }
+        return questions;
     }
 
-    private static int[] showQuestionnaire(List<String> questions, int levelNumber) {
-        JDialog dialog = new JDialog((java.awt.Frame) null, "Cuestionario - Nivel " + levelNumber, true);
-        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        int[] answers = new int[questions.size()];
-        JButton ok = new JButton("Continuar");
-        ok.setEnabled(questions.isEmpty());
+    private static List<Question> questionsOf(List<Question> all, String block) {
+        return all.stream().filter(q -> q.block().equals(block)).collect(Collectors.toList());
+    }
 
-        JPanel list = new JPanel(new GridLayout(questions.size(), 1, 0, 8));
+    private static List<String> ids(List<Question> questions) {
+        return questions.stream().map(Question::id).collect(Collectors.toList());
+    }
+
+    private static List<String> concat(List<String> a, List<String> b) {
+        List<String> result = new ArrayList<>(a);
+        result.addAll(b);
+        return result;
+    }
+
+    private static String[] ask(String title, String intro, List<Question> questions) {
+        JDialog dialog = new JDialog((java.awt.Frame) null, title, true);
+        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        List<Supplier<String>> getters = new ArrayList<>();
+        JPanel list = new JPanel();
+        list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
         for (int q = 0; q < questions.size(); q++) {
-            final int index = q;
+            Question question = questions.get(q);
             JPanel row = new JPanel(new BorderLayout());
-            row.add(new JLabel((q + 1) + ". " + questions.get(q)), BorderLayout.NORTH);
-            JPanel options = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            ButtonGroup group = new ButtonGroup();
-            for (int v = 1; v <= SCALE_MAX; v++) {
-                final int value = v;
-                JRadioButton button = new JRadioButton(String.valueOf(v));
-                button.addActionListener(e -> {
-                    answers[index] = value;
-                    ok.setEnabled(Arrays.stream(answers).allMatch(a -> a > 0));
-                });
-                group.add(button);
-                options.add(button);
+            row.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 8));
+            String text = question.text().replace("&", "&amp;").replace("<", "&lt;");
+            row.add(new JLabel("<html><body style='width:520px'>" + (q + 1) + ". " + text + "</body></html>"),
+                    BorderLayout.NORTH);
+            String[] selected = {null};
+            JPanel input = new JPanel();
+            switch (question.type()) {
+                case "number" -> {
+                    JTextField field = new JTextField(6);
+                    input.setLayout(new FlowLayout(FlowLayout.LEFT));
+                    input.add(field);
+                    getters.add(() -> {
+                        String value = field.getText().trim();
+                        return value.matches("\\d{1,3}") ? value : null;
+                    });
+                }
+                case "choice" -> {
+                    input.setLayout(new BoxLayout(input, BoxLayout.Y_AXIS));
+                    ButtonGroup group = new ButtonGroup();
+                    for (String option : question.options().split("\\|")) {
+                        String[] parts = option.contains("=") ? option.split("=", 2) : new String[] {option, option};
+                        String label = parts[0].equals(parts[1]) ? parts[1] : parts[0] + " - " + parts[1];
+                        JRadioButton button = new JRadioButton(label);
+                        button.addActionListener(e -> selected[0] = parts[0]);
+                        group.add(button);
+                        input.add(button);
+                    }
+                    getters.add(() -> selected[0]);
+                }
+                case "scale" -> {
+                    String[] o = question.options().split("\\|");
+                    input.setLayout(new BoxLayout(input, BoxLayout.Y_AXIS));
+                    JPanel radios = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                    ButtonGroup group = new ButtonGroup();
+                    for (int v = Integer.parseInt(o[0]); v <= Integer.parseInt(o[1]); v++) {
+                        String value = String.valueOf(v);
+                        JRadioButton button = new JRadioButton(value);
+                        button.addActionListener(e -> selected[0] = value);
+                        group.add(button);
+                        radios.add(button);
+                    }
+                    input.add(radios);
+                    input.add(new JLabel("   " + o[0] + " = " + o[2] + "   |   " + o[1] + " = " + o[3]));
+                    getters.add(() -> selected[0]);
+                }
+                default -> throw new IllegalStateException("preguntas.tsv: tipo desconocido '" + question.type() + "'");
             }
-            row.add(options, BorderLayout.CENTER);
+            row.add(input, BorderLayout.CENTER);
             list.add(row);
         }
-        ok.addActionListener(e -> dialog.dispose());
 
+        JButton ok = new JButton("Continuar");
+        ok.addActionListener(e -> {
+            if (getters.stream().allMatch(g -> g.get() != null)) {
+                dialog.dispose();
+            } else {
+                JOptionPane.showMessageDialog(dialog, "Responde todas las preguntas antes de continuar.");
+            }
+        });
         JPanel south = new JPanel(new FlowLayout(FlowLayout.CENTER));
         south.add(ok);
+        JScrollPane scroll = new JScrollPane(list);
+        scroll.setPreferredSize(new Dimension(640, 480));
         dialog.setLayout(new BorderLayout(8, 8));
-        dialog.add(new JLabel("Indica de 1 (totalmente en desacuerdo) a " + SCALE_MAX
-                + " (totalmente de acuerdo)."), BorderLayout.NORTH);
-        dialog.add(new JScrollPane(list), BorderLayout.CENTER);
+        dialog.add(new JLabel("  " + intro), BorderLayout.NORTH);
+        dialog.add(scroll, BorderLayout.CENTER);
         dialog.add(south, BorderLayout.SOUTH);
         dialog.pack();
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
-        return answers;
+        return getters.stream().map(Supplier::get).toArray(String[]::new);
     }
 
-    private static void saveResponses(Path dir, int levelNumber, char type, Path levelFile, int[] answers)
-            throws IOException {
-        Path csv = dir.resolve("responses.csv");
+    private static void saveRow(Path csv, List<String> headers, List<String> values) throws IOException {
         StringBuilder sb = new StringBuilder();
         if (!Files.exists(csv)) {
-            sb.append("level_number,level_type,level_file");
-            for (int q = 1; q <= answers.length; q++) {
-                sb.append(",q").append(q);
-            }
-            sb.append('\n');
+            sb.append(headers.stream().map(ExperimentRunner::csv).collect(Collectors.joining(","))).append('\n');
         }
-        sb.append(levelNumber).append(',').append(type).append(',').append(levelFile.getFileName());
-        for (int a : answers) {
-            sb.append(',').append(a);
-        }
-        sb.append('\n');
-        Files.writeString(csv, sb.toString(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        sb.append(values.stream().map(ExperimentRunner::csv).collect(Collectors.joining(","))).append('\n');
+        Files.writeString(csv, sb.toString(), StandardCharsets.UTF_8, StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND);
+    }
+
+    private static String csv(String value) {
+        return value.matches(".*[\",\\n].*") ? "\"" + value.replace("\"", "\"\"") + "\"" : value;
     }
 
     private static void deleteRecursively(Path dir) throws IOException {
