@@ -53,7 +53,11 @@ public class ExperimentRunner {
         int timer = Integer.parseInt(config.getProperty("timer", "60").trim());
         List<Path> familiarization = pathList(config, "familiarization");
         List<Path> normal = pathList(config, "normal");
-        List<Path> human = randomHumanLevels(config, familiarization, 2);
+        List<Path> used = new ArrayList<>(familiarization);
+        used.addAll(normal);
+        List<Path> drawn = randomHumanLevels(config, used, skipGeneration ? 4 : 2);
+        List<Path> human = drawn.subList(0, 2);
+        List<Path> substitutes = drawn.subList(2, drawn.size());
 
         String group = assignGroup();
         String id = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + "_" + group;
@@ -78,7 +82,7 @@ public class ExperimentRunner {
                         dir.resolve("telemetry_fam" + (f + 1) + ".json")));
             }
             if (skipGeneration) {
-                System.out.println("Modo prueba: se omite la generación; los niveles personalizados se sustituyen por niveles genéricos.");
+                System.out.println("Modo prueba: se omite la generación; los niveles personalizados se sustituyen por niveles distintos de nivel0.");
             } else {
                 generation.start(famTelemetries);
             }
@@ -102,7 +106,7 @@ public class ExperimentRunner {
                 Step step = steps.get(i);
                 info("Nivel " + (i + 1) + " de " + steps.size() + ". Pulsa Aceptar para comenzar.");
                 Path levelFile = step.type() != 'P' ? step.level()
-                        : skipGeneration ? normal.get(step.genIndex() % normal.size()) : generation.await(step.genIndex());
+                        : skipGeneration ? substitutes.get(step.genIndex()) : generation.await(step.genIndex());
                 playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
                 played.add(levelFile.getFileName().toString());
 
