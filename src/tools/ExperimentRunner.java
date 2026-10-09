@@ -45,6 +45,7 @@ public class ExperimentRunner {
 
     public static void main(String[] args) throws Exception {
         String python = args.length > 0 ? args[0] : "python";
+        boolean skipGeneration = args.length > 1 && args[1].equals("--skip-generation");
         Properties config = loadConfig();
         int timer = Integer.parseInt(config.getProperty("timer", "60").trim());
         List<Path> familiarization = pathList(config, "familiarization");
@@ -73,7 +74,11 @@ public class ExperimentRunner {
                 famTelemetries.add(playLevel(familiarization.get(f), timer,
                         dir.resolve("telemetry_fam" + (f + 1) + ".json")));
             }
-            generation.start(famTelemetries);
+            if (skipGeneration) {
+                System.out.println("Modo prueba: se omite la generación; los niveles personalizados se sustituyen por niveles genéricos.");
+            } else {
+                generation.start(famTelemetries);
+            }
 
             if (!showConsent()) {
                 generation.cancel();
@@ -86,7 +91,8 @@ public class ExperimentRunner {
             for (int i = 0; i < steps.size(); i++) {
                 Step step = steps.get(i);
                 info("Nivel " + (i + 1) + " de " + steps.size() + ". Pulsa Aceptar para comenzar.");
-                Path levelFile = step.type() == 'P' ? generation.await(step.genIndex()) : step.level();
+                Path levelFile = step.type() != 'P' ? step.level()
+                        : skipGeneration ? normal.get(step.genIndex() % normal.size()) : generation.await(step.genIndex());
                 playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
 
                 saveResponses(dir, i + 1, step.type(), levelFile, showQuestionnaire(questions, i + 1));

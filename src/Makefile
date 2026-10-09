@@ -165,3 +165,8 @@ clean-all: clean clean-telemetry clean-levels
 .PHONY: start-experiment
 start-experiment: compile
 	@cd "$(FRAMEWORK)" && $(JAVAC) --release 25 -encoding UTF-8 -cp bin -d bin ../src/tools/ExperimentRunner.java && $(JAVA) -cp bin ExperimentRunner "$(PYTHON)"
+
+# ── start-experiment-nogen ────────────────────────────────────
+.PHONY: start-experiment-nogen
+start-experiment-nogen: compile
+	@cd "$(FRAMEWORK)" && $(JAVAC) --release 25 -encoding UTF-8 -cp bin -d bin ../src/tools/ExperimentRunner.java && $(JAVA) -cp bin ExperimentRunner "$(PYTHON)" --skip-generation
