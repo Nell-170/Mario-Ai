@@ -1,0 +1,85 @@
+diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
+index 1f58d96b..5b43269b 100644
+--- a/src/engine/core/MarioGame.java
++++ b/src/engine/core/MarioGame.java
+@@ -73,6 +73,14 @@ public class MarioGame {
+         this.killEvents = killEvents;
+     }
+ 
++    public void closeWindow() {
++        if (this.window != null) {
++            this.window.dispose();
++            this.window = null;
++            this.render = null;
++        }
++    }
++
+     private int getDelay(int fps) {
+         if (fps <= 0) {
+             return 0;
+@@ -279,6 +287,10 @@ public class MarioGame {
+                 }
+             }
+         }
++        if (visual) {
++            this.render.renderWorld(this.world, renderTarget, backBuffer, currentBuffer);
++            this.render.renderGameStatus(this.world.gameStatus, backBuffer);
++        }
+         return new MarioResult(this.world, gameEvents, agentEvents);
+     }
+ }
+diff --git a/src/engine/core/MarioRender.java b/src/engine/core/MarioRender.java
+index aa278681..93f5a44f 100755
+--- a/src/engine/core/MarioRender.java
++++ b/src/engine/core/MarioRender.java
+@@ -3,6 +3,7 @@ package engine.core;
+ import javax.swing.*;
+ 
+ import engine.helper.Assets;
++import engine.helper.GameStatus;
+ import engine.helper.MarioActions;
+ 
+ import java.awt.*;
+@@ -52,6 +53,7 @@ public class MarioRender extends JComponent implements FocusListener {
+                 if (world.mario.actions[i]) {
+                     pressedButtons += MarioActions.getAction(i).getString() + " ";
+                 }
++
+             }
+             drawStringDropShadow(og, "Buttons: " + pressedButtons, 0, 2, 1);
+         }
+@@ -62,6 +64,34 @@ public class MarioRender extends JComponent implements FocusListener {
+         }
+     }
+ 
++    public void renderGameStatus(GameStatus status, Graphics g) {
++        String message;
++        switch (status) {
++            case WIN:
++                message = "GANASTE";
++                break;
++            case TIME_OUT:
++                message = "TIEMPO AGOTADO";
++                break;
++            case LOSE:
++                message = "PERDISTE";
++                break;
++            default:
++                return;
++        }
++
++        int width = (int) (256 * scale);
++        int height = (int) (240 * scale);
++        g.setColor(new Color(0, 0, 0, 190));
++        g.fillRect(0, 0, width, height);
++        g.setColor(Color.WHITE);
++        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) (24 * scale)));
++        FontMetrics metrics = g.getFontMetrics();
++        int x = (width - metrics.stringWidth(message)) / 2;
++        int y = (height + metrics.getAscent()) / 2;
++        g.drawString(message, x, y);
++    }
++
+     public void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {
+         drawString(g, text, x * 8 + 5, y * 8 + 5, 0);
+         drawString(g, text, x * 8 + 4, y * 8 + 4, c);
