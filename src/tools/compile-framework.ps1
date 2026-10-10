@@ -6,6 +6,11 @@ $ErrorActionPreference = "Stop"
 $bin = Join-Path $Framework "bin"
 $src = Join-Path $Framework "src"
 
+& (Join-Path $PSScriptRoot "apply-framework-patch.ps1") -Framework $Framework
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+
 Write-Output "Installing custom tools..."
 New-Item -ItemType Directory -Force -Path $bin | Out-Null
 Copy-Item "tools\ValidateLevels.java" (Join-Path $src "ValidateLevels.java") -Force

@@ -14,6 +14,7 @@ JAVA       := java
 
 # ── OS detection ──────────────────────────────────────────────
 ifeq ($(OS),Windows_NT)
+    PATCH_CMD  = powershell -NoProfile -ExecutionPolicy Bypass -File tools/apply-framework-patch.ps1 -Framework "$(FRAMEWORK)"
     PLATFORM   := windows
     PYTHON     := python
     PIP_FLAGS  :=
@@ -26,6 +27,7 @@ ifeq ($(OS),Windows_NT)
     # Use PowerShell for the compile step on Windows
     COMPILE_CMD = powershell -NoProfile -ExecutionPolicy Bypass -File tools\compile-framework.ps1 -Framework "$(FRAMEWORK)"
 else
+    PATCH_CMD  = bash tools/apply-framework-patch.sh "$(FRAMEWORK)"
     PLATFORM   := unix
     # Prefer python3, fall back to python
     PYTHON     := $(shell command -v python3 2>/dev/null || echo python)
@@ -40,7 +42,7 @@ else
 endif
 
 # ── Phony targets ─────────────────────────────────────────────
-.PHONY: help setup install-deps setup-mariogpt install-mariogpt compile \
+.PHONY: patch-framework help setup install-deps setup-mariogpt install-mariogpt compile \
         filter convert validate play-human play-levels-generated play-and-generate \
         generate-level prompt-telemetry clean clean-telemetry clean-levels clean-all
 
@@ -101,6 +103,10 @@ WANT            ?= 80
 MAX_SCAN        ?= 150000
 VALIDATE_TIMER  ?= 40
 
+# ── patch-framework ───────────────────────────────────────────
+patch-framework:
+	@$(PATCH_CMD)
+
 # ── filter ────────────────────────────────────────────────────
 filter:
 	@$(PYTHON) dataset/filter_mm2.py --want $(WANT) --max-scan $(MAX_SCAN)
@@ -160,3 +166,13 @@ clean-all: clean clean-telemetry clean-levels
 		[os.remove(f) for f in glob.glob('dataset/*.pkl') + glob.glob('dataset/*.csv') if os.path.isfile(f)]; \
 		[shutil.rmtree(p, ignore_errors=True) for p in glob.glob('**/__pycache__', recursive=True)]; \
 		print('✨ Full clean complete (bin, telemetry, levels, dataset caches).')"
+
+# ── start-experiment ──────────────────────────────────────────
+.PHONY: start-experiment
+start-experiment: compile
+	@cd "$(FRAMEWORK)" && $(JAVAC) --release 25 -encoding UTF-8 -cp bin -d bin ../src/tools/ExperimentRunner.java && $(JAVA) -cp bin ExperimentRunner "$(PYTHON)"
+
+# ── start-experiment-nogen ────────────────────────────────────
+.PHONY: start-experiment-nogen
+start-experiment-nogen: compile
+	@cd "$(FRAMEWORK)" && $(JAVAC) --release 25 -encoding UTF-8 -cp bin -d bin ../src/tools/ExperimentRunner.java && $(JAVA) -cp bin ExperimentRunner "$(PYTHON)" --skip-generation

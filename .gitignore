@@ -28,3 +28,5 @@ src/telemetry/
 
 # Claude science executable on Linux [./linux-x64 serve]
 doc/linux-x64
+# Resultados del experimento
+src/experiment/results/

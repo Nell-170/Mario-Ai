@@ -1,4 +1,5 @@
 # Dependencias de Python para Mario AI Pipeline y MarioGPT
+setuptools<81
 kaitaistruct
 datasets
 huggingface_hub

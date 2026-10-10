@@ -8,6 +8,8 @@ FRAMEWORK="${1:-../mario_ai_framework}"
 BIN="$FRAMEWORK/bin"
 SRC="$FRAMEWORK/src"
 
+bash "$(dirname "$0")/apply-framework-patch.sh" "$FRAMEWORK"
+
 echo "Installing custom tools..."
 mkdir -p "$BIN"
 cp -f "tools/ValidateLevels.java" "$SRC/ValidateLevels.java"
