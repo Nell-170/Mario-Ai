@@ -38,7 +38,7 @@ public class ValidateLevels {
         AtomicInteger processed = new AtomicInteger(0);
 
         int numCores = Runtime.getRuntime().availableProcessors();
-        System.out.printf("Validando %d niveles en paralelo usando %d núcleos CPU...%n", total, numCores);
+        System.out.printf("Iniciando validación: %d niveles en paralelo con %d núcleos CPU...%n", total, numCores);
 
         Arrays.stream(files).parallel().forEach(f -> {
             String name = f.getName();
@@ -49,22 +49,34 @@ public class ValidateLevels {
                         new agents.robinBaumgarten.Agent(), level, timer, 0, false);
                 boolean win = r.getGameStatus() == GameStatus.WIN;
 
-                int done = processed.incrementAndGet();
-                System.out.printf("[%d/%d] %-24s %-8s completion=%.3f time_left=%d%n",
-                        done, total, name, r.getGameStatus(), r.getCompletionPercentage(),
-                        (int) Math.ceil(r.getRemainingTime() / 1000f));
-
                 if (win) {
                     beatable.incrementAndGet();
                     Files.write(Paths.get(outDir, name), level.getBytes());
                 }
+
+                int done = processed.incrementAndGet();
+                printProgress(done, total, beatable.get(), name, r.getGameStatus().toString());
             } catch (Throwable t) {
-                processed.incrementAndGet();
-                System.out.printf("%-24s ERROR    %s%n", name, t.toString());
+                int done = processed.incrementAndGet();
+                printProgress(done, total, beatable.get(), name, "ERROR");
             }
         });
 
-        System.out.println("========================================");
-        System.out.printf("BEATABLE %d / %d levels%n", beatable.get(), total);
+        System.out.println("\n========================================");
+        System.out.printf("Validación finalizada: %d de %d niveles superables guardados en %s%n", beatable.get(), total, outDir);
+    }
+
+    private static synchronized void printProgress(int done, int total, int winCount, String name, String status) {
+        int width = 20;
+        int filled = total > 0 ? (done * width) / total : 0;
+        StringBuilder bar = new StringBuilder();
+        for (int i = 0; i < width; i++) {
+            bar.append(i < filled ? "█" : "░");
+        }
+        int pct = total > 0 ? (done * 100) / total : 100;
+        String shortName = name.length() > 22 ? name.substring(0, 19) + "..." : name;
+        System.out.printf("\r\033[1;36m[%3d%%]\033[0m \033[1;32m[%s]\033[0m (%d/%d) [Superables: %d] %-22s -> %-8s",
+                pct, bar.toString(), done, total, winCount, shortName, status);
+        System.out.flush();
     }
 }

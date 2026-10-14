@@ -234,24 +234,30 @@ def main():
     with open(args.pkl, "rb") as f:
         blobs = pickle.load(f)
 
-    print(f"Converting {len(blobs)} levels -> {out_dir}")
+    total = len(blobs)
+    print(f"Convirtiendo {total} niveles -> {out_dir}")
     ok = 0
+    done = 0
     for data_id, blob in blobs.items():
+        done += 1
+        pct = int(done / total * 100) if total > 0 else 100
+        filled = int(done / total * 20) if total > 0 else 20
+        bar = "█" * filled + "░" * (20 - filled)
+        sys.stdout.write(f"\r\033[1;36m[{pct:3d}%]\033[0m \033[1;32m[{bar}]\033[0m ({done}/{total}) [Válidos: {ok}] mm2_{data_id}")
+        sys.stdout.flush()
         try:
             level = parse_level(blob)
             lines, stats = convert(level)
             if lines is None:
-                print(f"  mm2_{data_id}: REJECTED {stats}")
                 continue
             path = os.path.join(out_dir, f"mm2_{data_id}.txt")
             with open(path, "w", encoding="utf-8") as f:
                 f.write("\n".join(lines) + "\n")
             ok += 1
-            print(f"  mm2_{data_id}: {len(lines[0])} cols  {stats}")
-        except Exception as e:
-            print(f"  mm2_{data_id}: FAILED {type(e).__name__}: {e}")
+        except Exception:
+            pass
 
-    print(f"\nConverted {ok}/{len(blobs)} levels.")
+    print(f"\n✨ Conversión finalizada: {ok}/{total} niveles convertidos exitosamente.")
 
 
 if __name__ == "__main__":

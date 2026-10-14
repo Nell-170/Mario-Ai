@@ -21,6 +21,7 @@ Outputs:
   * mm2_selected_levels.pkl  -> {data_id: level_data bytes} for the selected set
 """
 import os
+import sys
 import csv
 import heapq
 import pickle
@@ -68,11 +69,16 @@ def main():
     matched = 0
     viable = 0
 
-    print(f"Streaming dataset (seeking {args.want} structurally viable MAF levels)...")
+    print(f"Streaming dataset (buscando {args.want} niveles viables MAF, máx scan: {args.max_scan})...")
     for rec in ds:
         scanned += 1
-        if scanned % 5000 == 0:
-            print(f"  scanned={scanned} matched_meta={matched} viable_maf={viable} kept={len(heap)}")
+        if scanned % 250 == 0 or len(heap) == args.want:
+            ratio = min(1.0, len(heap) / args.want) if args.want > 0 else 1.0
+            pct = int(ratio * 100)
+            filled = int(ratio * 20)
+            bar = "█" * filled + "░" * (20 - filled)
+            sys.stdout.write(f"\r\033[1;36m[{pct:3d}%]\033[0m \033[1;32m[{bar}]\033[0m Encontrados: {len(heap)}/{args.want} (Escaneados: {scanned:,} | Viables: {viable})")
+            sys.stdout.flush()
         if scanned > args.max_scan:
             break
 

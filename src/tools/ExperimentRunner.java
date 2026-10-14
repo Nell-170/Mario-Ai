@@ -86,8 +86,11 @@ public class ExperimentRunner {
 
         GenerationJob generation = new GenerationJob(python, dir);
         try {
-            info("Bienvenido. Participante: " + id + "\nTu secuencia es: " + group
-                    + "\n\nPrimero jugarás dos niveles de familiarización.");
+            info("¡Bienvenido/a! Participante: " + id + " (Grupo: " + group + ")\n\n"
+                    + "Nota importante sobre la sesión:\n"
+                    + "• A lo largo de la actividad se te realizarán varias preguntas y cuestionarios para conocer tu opinión tras jugar los niveles.\n"
+                    + "• Al finalizar el experimento y completar las preguntas, podrás jugar libremente todos los niveles que desees sin cuestionarios.\n\n"
+                    + "Para comenzar, jugarás dos niveles iniciales de familiarización.");
             List<Path> famTelemetries = new ArrayList<>();
             for (int f = 0; f < familiarization.size(); f++) {
                 info("Nivel de familiarización " + (f + 1) + " de " + familiarization.size()
@@ -127,11 +130,12 @@ public class ExperimentRunner {
                 playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
 
                 List<String> row = new ArrayList<>(List.of(id, group, String.valueOf(i + 1),
-                        step.type() + String.valueOf(step.index() + 1), levelFile.getFileName().toString()));
+                        String.valueOf(step.type()), String.valueOf(step.index() + 1),
+                        levelFile.getFileName().toString()));
                 row.addAll(Arrays.asList(ask("Cuestionario - Nivel " + (i + 1),
                         "Responde pensando en el nivel que acabas de jugar.", perLevel)));
                 saveRow(RESULTS.resolve("responses.tsv"),
-                        concat(List.of("id", "group", "level_number", "level_type", "level_file"), ids(perLevel)), row);
+                        concat(List.of("id", "group", "level_number", "level_type", "level_index", "level_file"), ids(perLevel)), row);
             }
             info("¡Muchas gracias por participar! El experimento ha finalizado.");
             if (choose("¿Quieres seguir jugando solo por diversión?\nLos niveles que juegues ahora no se registrarán.",
@@ -229,7 +233,7 @@ public class ExperimentRunner {
         String level = Files.readString(levelFile);
         int seed = new Random().nextInt(1_000_000);
         MarioGame game = new MarioGame();
-        MarioResult result = game.runGame(new agents.human.Agent(), level, timer, seed, true);
+        MarioResult result = game.runGame(new agents.human.Agent(), level, timer, 0, true);
         game.closeWindow();
         if (telemetryFile != null) {
             Files.writeString(telemetryFile, PlayHuman.buildTelemetryJson(result, levelFile.toString(), timer, seed));

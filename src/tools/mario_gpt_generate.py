@@ -89,7 +89,7 @@ def main():
         prompts=[prompt_text],
         num_steps=args.steps,
         temperature=args.temperature,
-        use_tqdm=False,
+        use_tqdm=True,
     )
 
     level_number = next_level_number(output_dir)

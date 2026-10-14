@@ -8,15 +8,17 @@ FRAMEWORK="${1:-../mario_ai_framework}"
 BIN="$FRAMEWORK/bin"
 SRC="$FRAMEWORK/src"
 
+echo -e "\033[1;36m[ 25%]\033[0m \033[1;32m[█████░░░░░░░░░░░░░░░]\033[0m Aplicando parches al framework..."
 bash "$(dirname "$0")/apply-framework-patch.sh" "$FRAMEWORK"
 
-echo "Installing custom tools..."
+echo -e "\033[1;36m[ 50%]\033[0m \033[1;32m[██████████░░░░░░░░░░]\033[0m Instalando herramientas Java personalizadas..."
 mkdir -p "$BIN"
 cp -f "tools/ValidateLevels.java" "$SRC/ValidateLevels.java"
 cp -f "tools/PlayHuman.java"      "$SRC/PlayHuman.java"
 cp -f "tools/LevelSelector.java"  "$SRC/LevelSelector.java"
+cp -f "tools/ExperimentRunner.java" "$SRC/ExperimentRunner.java"
 
-echo "Compiling framework and tools in $SRC..."
+echo -e "\033[1;36m[ 75%]\033[0m \033[1;32m[███████████████░░░░░]\033[0m Compilando archivos Java con javac..."
 mapfile -t java_files < <(find "$SRC" -name "*.java")
 
 if [ "${#java_files[@]}" -eq 0 ]; then
@@ -25,4 +27,4 @@ if [ "${#java_files[@]}" -eq 0 ]; then
 fi
 
 javac --release 25 -d "$BIN" -encoding UTF-8 "${java_files[@]}"
-echo "Compilation complete."
+echo -e "\033[1;36m[100%]\033[0m \033[1;32m[████████████████████]\033[0m ¡Compilación completada exitosamente!"

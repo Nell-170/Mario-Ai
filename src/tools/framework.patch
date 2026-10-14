@@ -1,28 +1,381 @@
 diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
-index 1f58d96b..5b43269b 100644
+index 1f58d96b..0612746a 100644
 --- a/src/engine/core/MarioGame.java
 +++ b/src/engine/core/MarioGame.java
-@@ -75,0 +76,8 @@
+@@ -11,6 +11,12 @@ import agents.human.Agent;
+ import engine.helper.GameStatus;
+ import engine.helper.MarioActions;
+ 
++import java.awt.event.KeyEvent;
++import javax.swing.BorderFactory;
++import javax.swing.JButton;
++import javax.swing.JLabel;
++import javax.swing.JPanel;
++
+ public class MarioGame {
+     /**
+      * the maximum time that agent takes for each step
+@@ -73,6 +79,97 @@ public class MarioGame {
+         this.killEvents = killEvents;
+     }
+ 
 +    public void closeWindow() {
 +        if (this.window != null) {
++            try {
++                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
++                GraphicsDevice gd = ge.getDefaultScreenDevice();
++                if (gd.getFullScreenWindow() == this.window) {
++                    gd.setFullScreenWindow(null);
++                }
++            } catch (Exception ignored) {}
 +            this.window.dispose();
 +            this.window = null;
 +            this.render = null;
++            this.isFullScreen = false;
 +        }
 +    }
 +
-@@ -281,0 +290,4 @@
-+        if (visual) {
-+            this.render.renderWorld(this.world, renderTarget, backBuffer, currentBuffer);
-+            this.render.renderGameStatus(this.world.gameStatus, backBuffer);
++    private volatile boolean restartRequested = false;
++    private volatile boolean finishRequested = false;
++    private boolean isFullScreen = false;
++    private JButton fullscreenButton = null;
++
++    public void restartLevel() {
++        this.restartRequested = true;
++    }
++
++    public void finishLevel() {
++        this.finishRequested = true;
++    }
++
++    public static float getDefaultScale() {
++        try {
++            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
++            float calculated = (screenSize.height * 0.78f) / 240.0f;
++            return Math.max(2.5f, Math.min(5.0f, Math.round(calculated * 2.0f) / 2.0f));
++        } catch (Exception e) {
++            return 3.5f;
 +        }
++    }
++
++    public static boolean isFullScreenPreferred() {
++        String prop = System.getProperty("mario.fullscreen", System.getenv("MARIO_FULLSCREEN"));
++        if (prop != null) {
++            return !"false".equalsIgnoreCase(prop) && !"0".equals(prop);
++        }
++        return true;
++    }
++
++    public void setFullScreen(boolean enable) {
++        if (this.window == null || this.isFullScreen == enable) {
++            return;
++        }
++        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
++        this.isFullScreen = enable;
++
++        this.window.dispose();
++        if (enable) {
++            this.window.setUndecorated(true);
++            this.window.setResizable(false);
++            if (gd.isFullScreenSupported()) {
++                gd.setFullScreenWindow(this.window);
++            } else {
++                this.window.setExtendedState(JFrame.MAXIMIZED_BOTH);
++                this.window.setBounds(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
++                this.window.setVisible(true);
++            }
++            if (this.fullscreenButton != null) {
++                this.fullscreenButton.setText("Modo ventana [F11 / Esc]");
++            }
++        } else {
++            if (gd.getFullScreenWindow() == this.window) {
++                gd.setFullScreenWindow(null);
++            }
++            this.window.setUndecorated(false);
++            this.window.setResizable(true);
++            float scale = getDefaultScale();
++            this.window.setSize((int) (256 * scale), (int) (240 * scale) + 40);
++            this.window.setLocationRelativeTo(null);
++            this.window.setVisible(true);
++            if (this.fullscreenButton != null) {
++                this.fullscreenButton.setText("Pantalla completa [F11]");
++            }
++        }
++        if (this.render != null) {
++            this.render.requestFocusInWindow();
++        }
++    }
++
++    public void toggleFullScreen() {
++        setFullScreen(!this.isFullScreen);
++    }
++
+     private int getDelay(int fps) {
+         if (fps <= 0) {
+             return 0;
+@@ -82,8 +179,30 @@ public class MarioGame {
+ 
+     private void setAgent(MarioAgent agent) {
+         this.agent = agent;
+-        if (agent instanceof KeyAdapter) {
+-            this.render.addKeyListener((KeyAdapter) this.agent);
++        KeyAdapter globalShortcuts = new KeyAdapter() {
++            @Override
++            public void keyPressed(KeyEvent e) {
++                if (e.getKeyCode() == KeyEvent.VK_R) {
++                    restartLevel();
++                } else if (e.getKeyCode() == KeyEvent.VK_Q || e.getKeyCode() == KeyEvent.VK_T) {
++                    finishLevel();
++                } else if (e.getKeyCode() == KeyEvent.VK_F11 || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
++                    toggleFullScreen();
++                }
++            }
++        };
++
++        if (this.render != null) {
++            if (agent instanceof KeyAdapter) {
++                this.render.addKeyListener((KeyAdapter) this.agent);
++            }
++            this.render.addKeyListener(globalShortcuts);
++        }
++        if (this.window != null) {
++            if (agent instanceof KeyAdapter) {
++                this.window.addKeyListener((KeyAdapter) this.agent);
++            }
++            this.window.addKeyListener(globalShortcuts);
+         }
+     }
+ 
+@@ -204,15 +323,78 @@ public class MarioGame {
+      * @return statistics about the current game
+      */
+     public MarioResult runGame(MarioAgent agent, String level, int timer, int marioState, boolean visuals, int fps, float scale) {
++        if (scale <= 2.0f) {
++            scale = getDefaultScale();
++        }
+         if (visuals) {
++            boolean startFullScreen = isFullScreenPreferred();
++            this.isFullScreen = startFullScreen;
+             this.window = new JFrame("Mario AI Framework");
+             this.render = new MarioRender(scale);
+-            this.window.setContentPane(this.render);
+-            this.window.pack();
+-            this.window.setResizable(false);
++
++            JPanel mainPanel = new JPanel(new BorderLayout());
++            mainPanel.setBackground(Color.BLACK);
++            mainPanel.add(this.render, BorderLayout.CENTER);
++
++            JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 6));
++            controlPanel.setBackground(Color.BLACK);
++            controlPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(40, 40, 45)));
++
++            JButton restartButton = new JButton("Reiniciar nivel [R]");
++            restartButton.setFocusable(false);
++            restartButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
++            restartButton.setForeground(new Color(230, 230, 230));
++            restartButton.setBackground(new Color(45, 45, 50));
++            restartButton.setToolTipText("Reinicia tu posición al inicio si quedas atrapado. El temporizador sigue avanzando.");
++            restartButton.addActionListener(e -> restartLevel());
++            controlPanel.add(restartButton);
++
++            JButton finishButton = new JButton("Terminar nivel [Q]");
++            finishButton.setFocusable(false);
++            finishButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
++            finishButton.setForeground(new Color(245, 230, 230));
++            finishButton.setBackground(new Color(75, 35, 35));
++            finishButton.setToolTipText("Termina el nivel actual y avanza a la siguiente etapa o cuestionario.");
++            finishButton.addActionListener(e -> finishLevel());
++            controlPanel.add(finishButton);
++
++            this.fullscreenButton = new JButton(startFullScreen ? "Modo ventana [F11 / Esc]" : "Pantalla completa [F11]");
++            this.fullscreenButton.setFocusable(false);
++            this.fullscreenButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
++            this.fullscreenButton.setForeground(new Color(230, 230, 230));
++            this.fullscreenButton.setBackground(new Color(45, 45, 50));
++            this.fullscreenButton.setToolTipText("Alternar modo pantalla completa / ventana.");
++            this.fullscreenButton.addActionListener(e -> toggleFullScreen());
++            controlPanel.add(this.fullscreenButton);
++
++            JLabel hintsLabel = new JLabel("Controles: Flechas = Mover | S = Saltar | A = Correr | R = Reiniciar | Q = Terminar");
++            hintsLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
++            hintsLabel.setForeground(new Color(160, 160, 165));
++            controlPanel.add(hintsLabel);
++
++            mainPanel.add(controlPanel, BorderLayout.SOUTH);
++
++            this.window.setContentPane(mainPanel);
+             this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+             this.render.init();
+-            this.window.setVisible(true);
++
++            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
++            if (startFullScreen) {
++                this.window.setUndecorated(true);
++                this.window.setResizable(false);
++                if (gd.isFullScreenSupported()) {
++                    gd.setFullScreenWindow(this.window);
++                } else {
++                    this.window.setExtendedState(JFrame.MAXIMIZED_BOTH);
++                    this.window.setBounds(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
++                    this.window.setVisible(true);
++                }
++            } else {
++                this.window.pack();
++                this.window.setResizable(true);
++                this.window.setLocationRelativeTo(null);
++                this.window.setVisible(true);
++            }
+         }
+         this.setAgent(agent);
+         return this.gameLoop(level, timer, marioState, visuals, fps);
+@@ -232,11 +414,9 @@ public class MarioGame {
+ 
+         //initialize graphics
+         VolatileImage renderTarget = null;
+-        Graphics backBuffer = null;
+         Graphics currentBuffer = null;
+         if (visual) {
+             renderTarget = this.render.createVolatileImage(MarioGame.width, MarioGame.height);
+-            backBuffer = this.render.getGraphics();
+             currentBuffer = renderTarget.getGraphics();
+             this.render.addFocusListener(this.render);
+         }
+@@ -246,7 +426,30 @@ public class MarioGame {
+ 
+         ArrayList<MarioEvent> gameEvents = new ArrayList<>();
+         ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
++        boolean wasManualFinish = false;
+         while (this.world.gameStatus == GameStatus.RUNNING) {
++            if (this.finishRequested) {
++                this.finishRequested = false;
++                wasManualFinish = true;
++                this.world.lose();
++                break;
++            }
++            if (this.restartRequested) {
++                this.restartRequested = false;
++                int remainingTimer = this.world.currentTimer;
++                this.world = new MarioWorld(this.killEvents);
++                this.world.visuals = visual;
++                this.world.initializeLevel(level, remainingTimer);
++                if (visual) {
++                    this.world.initializeVisuals(this.render.getGraphicsConfiguration());
++                }
++                this.world.mario.isLarge = marioState > 0;
++                this.world.mario.isFire = marioState > 1;
++                this.world.update(new boolean[MarioActions.numberOfActions()]);
++                agentTimer = new MarioTimer(MarioGame.maxTime);
++                this.agent.initialize(new MarioForwardModel(this.world.clone()), agentTimer);
++                currentTime = System.currentTimeMillis();
++            }
+             if (!this.pause) {
+                 //get actions
+                 agentTimer = new MarioTimer(MarioGame.maxTime);
+@@ -267,7 +470,18 @@ public class MarioGame {
+ 
+             //render world
+             if (visual) {
+-                this.render.renderWorld(this.world, renderTarget, backBuffer, currentBuffer);
++                if (renderTarget == null || renderTarget.validate(this.render.getGraphicsConfiguration()) == VolatileImage.IMAGE_INCOMPATIBLE) {
++                    renderTarget = this.render.createVolatileImage(MarioGame.width, MarioGame.height);
++                    if (currentBuffer != null) {
++                        currentBuffer.dispose();
++                    }
++                    currentBuffer = renderTarget.getGraphics();
++                }
++                Graphics backBuffer = this.render.getGraphics();
++                if (backBuffer != null) {
++                    this.render.renderWorld(this.world, renderTarget, backBuffer, currentBuffer);
++                    backBuffer.dispose();
++                }
+             }
+             //check if delay needed
+             if (this.getDelay(fps) > 0) {
+@@ -279,6 +493,24 @@ public class MarioGame {
+                 }
+             }
+         }
++        if (visual) {
++            Graphics backBuffer = this.render.getGraphics();
++            if (backBuffer != null) {
++                this.render.renderWorld(this.world, renderTarget, backBuffer, currentBuffer);
++                if (wasManualFinish) {
++                    this.render.renderGameStatusMessage("NIVEL TERMINADO", backBuffer);
++                } else {
++                    this.render.renderGameStatus(this.world.gameStatus, backBuffer);
++                }
++                backBuffer.dispose();
++            }
++            try {
++                Thread.sleep(wasManualFinish ? 400 : 700);
++            } catch (InterruptedException ignored) {}
++        }
++        if (currentBuffer != null) {
++            currentBuffer.dispose();
++        }
+         return new MarioResult(this.world, gameEvents, agentEvents);
+     }
+ }
 diff --git a/src/engine/core/MarioRender.java b/src/engine/core/MarioRender.java
-index aa278681..93f5a44f 100755
+index aa278681..bc450986 100755
 --- a/src/engine/core/MarioRender.java
 +++ b/src/engine/core/MarioRender.java
-@@ -5,0 +6 @@
+@@ -3,6 +3,7 @@ package engine.core;
+ import javax.swing.*;
+ 
+ import engine.helper.Assets;
 +import engine.helper.GameStatus;
-@@ -64,0 +66,27 @@
+ import engine.helper.MarioActions;
+ 
+ import java.awt.*;
+@@ -29,8 +30,7 @@ public class MarioRender extends JComponent implements FocusListener {
+         Dimension size = new Dimension((int) (256 * scale), (int) (240 * scale));
+ 
+         setPreferredSize(size);
+-        setMinimumSize(size);
+-        setMaximumSize(size);
++        setMinimumSize(new Dimension(256, 240));
+ 
+         setFocusable(true);
+     }
+@@ -55,13 +55,72 @@ public class MarioRender extends JComponent implements FocusListener {
+             }
+             drawStringDropShadow(og, "Buttons: " + pressedButtons, 0, 2, 1);
+         }
+-        if (scale > 1) {
+-            g.drawImage(image, 0, 0, (int) (256 * scale), (int) (240 * scale), null);
+-        } else {
+-            g.drawImage(image, 0, 0, null);
++
++        int compW = getWidth();
++        int compH = getHeight();
++        if (compW <= 0) compW = (int) (256 * scale);
++        if (compH <= 0) compH = (int) (240 * scale);
++
++        float currentScale = Math.min((float) compW / 256.0f, (float) compH / 240.0f);
++        int targetW = (int) (256.0f * currentScale);
++        int targetH = (int) (240.0f * currentScale);
++        int xOffset = (compW - targetW) / 2;
++        int yOffset = (compH - targetH) / 2;
++
++        Graphics2D g2d = (Graphics2D) g;
++        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
++
++        if (xOffset > 0) {
++            g2d.setColor(Color.BLACK);
++            g2d.fillRect(0, 0, xOffset, compH);
++            g2d.fillRect(xOffset + targetW, 0, compW - (xOffset + targetW), compH);
++        }
++        if (yOffset > 0) {
++            g2d.setColor(Color.BLACK);
++            g2d.fillRect(0, 0, compW, yOffset);
++            g2d.fillRect(0, yOffset + targetH, compW, compH - (yOffset + targetH));
+         }
++
++        g2d.drawImage(image, xOffset, yOffset, targetW, targetH, null);
+     }
+ 
 +    public void renderGameStatus(GameStatus status, Graphics g) {
 +        String message;
 +        switch (status) {
@@ -38,15 +391,28 @@ index aa278681..93f5a44f 100755
 +            default:
 +                return;
 +        }
++        renderGameStatusMessage(message, g);
++    }
 +
-+        int width = (int) (256 * scale);
-+        int height = (int) (240 * scale);
++    public void renderGameStatusMessage(String message, Graphics g) {
++        if (message == null || g == null) {
++            return;
++        }
++        int compW = getWidth();
++        int compH = getHeight();
++        if (compW <= 0) compW = (int) (256 * scale);
++        if (compH <= 0) compH = (int) (240 * scale);
++
 +        g.setColor(new Color(0, 0, 0, 190));
-+        g.fillRect(0, 0, width, height);
++        g.fillRect(0, 0, compW, compH);
 +        g.setColor(Color.WHITE);
-+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, (int) (24 * scale)));
++        int fontSize = Math.max(28, (int) (compH * 0.08f));
++        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, fontSize));
 +        FontMetrics metrics = g.getFontMetrics();
-+        int x = (width - metrics.stringWidth(message)) / 2;
-+        int y = (height + metrics.getAscent()) / 2;
++        int x = (compW - metrics.stringWidth(message)) / 2;
++        int y = (compH + metrics.getAscent()) / 2;
 +        g.drawString(message, x, y);
 +    }
+     public void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {
+         drawString(g, text, x * 8 + 5, y * 8 + 5, 0);
+         drawString(g, text, x * 8 + 4, y * 8 + 4, c);
