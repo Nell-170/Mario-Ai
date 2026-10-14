@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mario AI — Control Center & Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="logo-badge">🍄</div>
+      <div class="brand-text">
+        <h1>Mario AI Studio</h1>
+        <span class="subtitle">Panel Gráfico de Control &amp; Experimentación</span>
+      </div>
+    </div>
+
+    <div class="header-status">
+      <div id="status-pill" class="status-pill status-idle">
+        <span class="status-dot"></span>
+        <span id="status-text">Listo (En reposo)</span>
+      </div>
+      <button id="btn-stop-task" class="btn-danger btn-sm hidden" onclick="stopCurrentTask()">
+        ⏹ Detener Proceso
+      </button>
+    </div>
+  </header>
+
+  <!-- Metrics Cards Row -->
+  <section class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon">🎮</div>
+      <div class="metric-info">
+        <span class="metric-value" id="stat-nivel0">—</span>
+        <span class="metric-label">Niveles Base (Nivel 0)</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">🤖</div>
+      <div class="metric-info">
+        <span class="metric-value" id="stat-generated">—</span>
+        <span class="metric-label">Generados por MarioGPT</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">📈</div>
+      <div class="metric-info">
+        <span class="metric-value" id="stat-telemetry">—</span>
+        <span class="metric-label">Sesiones de Telemetría</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">🧪</div>
+      <div class="metric-info">
+        <span class="metric-value" id="stat-participants">—</span>
+        <span class="metric-label">Participantes (Experimento)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="main-layout">
+    <!-- Left Column: Actions Sidebar -->
+    <aside class="sidebar-panel">
+      <div class="sidebar-header">
+        <h2>Acciones y Procesos</h2>
+        <span class="badge">Make targets</span>
+      </div>
+
+      <div class="actions-container">
+        <!-- Category: Juego y Experimento -->
+        <div class="action-category">
+          <div class="category-title">
+            <span class="icon">🎮</span> Juego y Experimento Humano
+          </div>
+          <div class="category-buttons">
+            <button class="action-btn primary" onclick="runTarget('play-human', 'Jugar nivel y capturar telemetría')">
+              <div class="btn-content">
+                <span class="btn-name">👤 Jugar (PlayHuman)</span>
+                <span class="btn-desc">Juega un nivel humano y guarda telemetría</span>
+              </div>
+              <span class="btn-tag">play-human</span>
+            </button>
+
+            <button class="action-btn highlight" onclick="runTarget('start-experiment', 'Experimento Formal 6x6 (MarioGPT)')">
+              <div class="btn-content">
+                <span class="btn-name">🧪 Iniciar Experimento 6x6</span>
+                <span class="btn-desc">Protocolo completo con IA y cuestionarios</span>
+              </div>
+              <span class="btn-tag">start-experiment</span>
+            </button>
+
+            <button class="action-btn" onclick="runTarget('start-experiment-nogen', 'Experimento rápido (sin generación IA)')">
+              <div class="btn-content">
+                <span class="btn-name">⚡ Experimento Rápido</span>
+                <span class="btn-desc">Modo prueba sin llamar a MarioGPT</span>
+              </div>
+              <span class="btn-tag">start-experiment-nogen</span>
+            </button>
+
+            <button class="action-btn" onclick="runTarget('play-levels-generated', 'Selector gráfico de niveles')">
+              <div class="btn-content">
+                <span class="btn-name">🗺️ Selector de Niveles (GUI)</span>
+                <span class="btn-desc">Abre LevelSelector Swing para elegir nivel</span>
+              </div>
+              <span class="btn-tag">play-levels-generated</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category: IA y MarioGPT -->
+        <div class="action-category">
+          <div class="category-title">
+            <span class="icon">🤖</span> Generación Procedural (MarioGPT)
+          </div>
+          <div class="category-buttons">
+            <button class="action-btn" onclick="runTarget('generate-level', 'Generar nivel con MarioGPT')">
+              <div class="btn-content">
+                <span class="btn-name">🧠 Generar Nivel con IA</span>
+                <span class="btn-desc">Crea nivel a partir de la última telemetría</span>
+              </div>
+              <span class="btn-tag">generate-level</span>
+            </button>
+
+            <button class="action-btn" onclick="runTarget('play-and-generate', 'Jugar y luego generar nivel')">
+              <div class="btn-content">
+                <span class="btn-name">🔁 Jugar y Generar Nivel</span>
+                <span class="btn-desc">play-human + generate-level encadenados</span>
+              </div>
+              <span class="btn-tag">play-and-generate</span>
+            </button>
+
+            <button class="action-btn" onclick="runTarget('prompt-telemetry', 'Construir prompt de telemetría')">
+              <div class="btn-content">
+                <span class="btn-name">📝 Prompt de Telemetría</span>
+                <span class="btn-desc">Convierte telemetry/latest.json a texto</span>
+              </div>
+              <span class="btn-tag">prompt-telemetry</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category: Compilación y Configuración -->
+        <div class="action-category">
+          <div class="category-title">
+            <span class="icon">⚙️</span> Compilación y Entorno
+          </div>
+          <div class="category-buttons">
+            <button class="action-btn accent" onclick="runTarget('compile', 'Compilar framework y herramientas')">
+              <div class="btn-content">
+                <span class="btn-name">🔨 Compilar Todo (Java)</span>
+                <span class="btn-desc">Parchea y compila framework + tools</span>
+              </div>
+              <span class="btn-tag">compile</span>
+            </button>
+
+            <button class="action-btn" onclick="runTarget('patch-framework', 'Aplicar parche local al framework')">
+              <div class="btn-content">
+                <span class="btn-name">🩹 Aplicar Parche al Framework</span>
+                <span class="btn-desc">tools/framework.patch en mario_ai_framework</span>
+              </div>
+              <span class="btn-tag">patch-framework</span>
+            </button>
+
+            <button class="action-btn" onclick="runTarget('install-deps', 'Instalar dependencias de Python')">
+              <div class="btn-content">
+                <span class="btn-name">📦 Instalar Dependencias</span>
+                <span class="btn-desc">pip install -r requirements.txt</span>
+              </div>
+              <span class="btn-tag">install-deps</span>
+            </button>
+
+            <button class="action-btn" onclick="runTarget('install-mariogpt', 'Instalar MarioGPT editable')">
+              <div class="btn-content">
+                <span class="btn-name">🤖 Instalar MarioGPT</span>
+                <span class="btn-desc">Clona e instala mario_gpt en modo -e</span>
+              </div>
+              <span class="btn-tag">install-mariogpt</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category: Pipeline de Dataset -->
+        <div class="action-category">
+          <div class="category-title">
+            <span class="icon">📦</span> Dataset Super Mario Maker 2
+          </div>
+          <div class="category-buttons">
+            <button class="action-btn" onclick="runTarget('filter', 'Filtrar niveles MM2 desde Hugging Face')">
+              <div class="btn-content">
+                <span class="btn-name">🔍 Filtrar MM2 (Hugging Face)</span>
+                <span class="btn-desc">Descarga y filtra niveles de alta calidad</span>
+              </div>
+              <span class="btn-tag">filter</span>
+            </button>
+
+            <button class="action-btn" onclick="runTarget('convert', 'Convertir niveles MM2 a formato texto MAF')">
+              <div class="btn-content">
+                <span class="btn-name">🔄 Convertir MM2 a MAF</span>
+                <span class="btn-desc">Guarda los grids 16xN en levels/converted</span>
+              </div>
+              <span class="btn-tag">convert</span>
+            </button>
+
+            <button class="action-btn" onclick="runTarget('validate', 'Validar niveles con agente A*')">
+              <div class="btn-content">
+                <span class="btn-name">🛡️ Validar con Agente A*</span>
+                <span class="btn-desc">Filtra niveles superables hacia nivel0</span>
+              </div>
+              <span class="btn-tag">validate</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Category: Limpieza -->
+        <div class="action-category">
+          <div class="category-title">
+            <span class="icon">🧹</span> Limpieza y Mantenimiento
+          </div>
+          <div class="category-buttons clean-group">
+            <button class="action-btn btn-outline" onclick="runTarget('clean', 'Limpiar binarios Java')">
+              <span>Limpiar Java (bin/)</span>
+            </button>
+            <button class="action-btn btn-outline" onclick="runTarget('clean-telemetry', 'Limpiar telemetría')">
+              <span>Limpiar Telemetría</span>
+            </button>
+            <button class="action-btn btn-outline" onclick="runTarget('clean-levels', 'Limpiar niveles')">
+              <span>Limpiar Niveles</span>
+            </button>
+            <button class="action-btn btn-outline-danger" onclick="confirmCleanAll()">
+              <span>⚠️ Limpieza Total</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Column: Interactive Workspace -->
+    <section class="workspace-panel">
+      <!-- Live Progress Bar Card -->
+      <div class="progress-card">
+        <div class="progress-header">
+          <div class="task-title-wrap">
+            <span class="task-icon" id="task-icon">⚡</span>
+            <div>
+              <h3 id="current-task-name">Listo para ejecutar</h3>
+              <p id="current-task-desc">Selecciona cualquier tarea del panel izquierdo para comenzar.</p>
+            </div>
+          </div>
+          <div class="task-meta">
+            <span class="timer-badge" id="task-timer">00:00s</span>
+            <span class="percent-badge" id="task-percent">0%</span>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div id="progress-bar-fill" class="progress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="console" onclick="switchTab('console')">
+          🖥️ Consola en Vivo
+        </button>
+        <button class="tab-btn" data-tab="levels" onclick="switchTab('levels')">
+          🗺️ Visor de Niveles
+        </button>
+        <button class="tab-btn" data-tab="experiment" onclick="switchTab('experiment')">
+          📊 Participantes del Experimento
+        </button>
+      </div>
+
+      <!-- Tab Contents -->
+      <!-- Tab 1: Terminal Console -->
+      <div id="tab-console" class="tab-content active">
+        <div class="console-card">
+          <div class="console-toolbar">
+            <div class="console-title">
+              <span class="terminal-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </span>
+              <span>Terminal Output (Stream en tiempo real)</span>
+            </div>
+            <div class="console-actions">
+              <label class="toggle-label">
+                <input type="checkbox" id="autoscroll-chk" checked>
+                <span>Auto-scroll</span>
+              </label>
+              <button class="btn-xs" onclick="clearConsole()">Limpiar</button>
+              <button class="btn-xs" onclick="copyConsoleLogs()">Copiar</button>
+            </div>
+          </div>
+          <div id="terminal-body" class="terminal-body">
+            <div class="terminal-welcome">
+              🍄 Bienvenido al Mario AI Control Center.<br>
+              Las tareas que ejecutes mostrarán aquí su salida en tiempo real.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Level Viewer -->
+      <div id="tab-levels" class="tab-content">
+        <div class="level-viewer-container">
+          <div class="viewer-controls">
+            <div class="control-group">
+              <label for="level-folder-select">Carpeta:</label>
+              <select id="level-folder-select" onchange="loadLevelList()">
+                <option value="nivel0">Niveles Base (Nivel 0)</option>
+                <option value="generated">Generados por MarioGPT</option>
+                <option value="converted">Convertidos MM2 (Todos)</option>
+                <option value="generics">Genéricos</option>
+                <option value="familiarization">Familiarización</option>
+              </select>
+            </div>
+            <div class="control-group fill">
+              <label for="level-file-select">Nivel:</label>
+              <select id="level-file-select" onchange="loadLevelContent()">
+                <option value="">Cargando niveles...</option>
+              </select>
+            </div>
+            <button class="btn-sm" onclick="loadLevelList()">↻ Actualizar</button>
+          </div>
+
+          <div class="level-meta-bar" id="level-meta-bar">
+            <span id="level-info-text">Selecciona un nivel para visualizar su mapa 2D.</span>
+            <div class="level-render-toggles">
+              <button class="btn-xs active" id="btn-view-canvas" onclick="setViewMode('canvas')">Mapa Gráfico 2D</button>
+              <button class="btn-xs" id="btn-view-text" onclick="setViewMode('text')">Grid de Texto</button>
+            </div>
+          </div>
+
+          <!-- 2D Graphical Canvas Render -->
+          <div class="level-canvas-wrap" id="canvas-wrapper">
+            <canvas id="level-canvas" height="320"></canvas>
+          </div>
+
+          <!-- Raw Text Viewer -->
+          <pre class="level-text-wrap hidden" id="level-text-view"></pre>
+        </div>
+      </div>
+
+      <!-- Tab 3: Experiment Results -->
+      <div id="tab-experiment" class="tab-content">
+        <div class="experiment-summary-card">
+          <div class="exp-header">
+            <h3>Sesiones de Participantes Registradas</h3>
+            <button class="btn-sm" onclick="loadExperimentSummary()">↻ Actualizar</button>
+          </div>
+          <div class="exp-table-wrap">
+            <table class="data-table" id="experiment-table">
+              <thead>
+                <tr>
+                  <th>ID Participante</th>
+                  <th>Grupo / Secuencia</th>
+                  <th>Pasos Registrados</th>
+                  <th>Fecha de Registro</th>
+                </tr>
+              </thead>
+              <tbody id="experiment-tbody">
+                <tr><td colspan="4" class="text-center">Cargando datos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
