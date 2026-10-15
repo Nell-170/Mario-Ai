@@ -21,6 +21,11 @@
     </div>
 
     <div class="header-status">
+      <div id="ollama-pill" class="status-pill status-ollama" onclick="openOllamaModal()" title="Haga clic para ver o configurar la clave de Ollama Cloud">
+        <span class="status-dot"></span>
+        <span id="ollama-text">Ollama: Comprobando...</span>
+      </div>
+
       <div id="status-pill" class="status-pill status-idle">
         <span class="status-dot"></span>
         <span id="status-text">Listo (En reposo)</span>
@@ -73,6 +78,30 @@
       </div>
 
       <div class="actions-container">
+        <!-- Category: Instalación & Configuración Inicial -->
+        <div class="action-category">
+          <div class="category-title">
+            <span class="icon">🚀</span> Instalación y Configuración Inicial
+          </div>
+          <div class="category-buttons">
+            <button class="action-btn highlight" onclick="runTarget('install', 'Instalador Unificado (8 pasos)')">
+              <div class="btn-content">
+                <span class="btn-name">⚡ Instalador Completo</span>
+                <span class="btn-desc">Repos, .venv, dependencias, compilación y niveles</span>
+              </div>
+              <span class="btn-tag">install</span>
+            </button>
+
+            <button class="action-btn accent" onclick="openOllamaModal()">
+              <div class="btn-content">
+                <span class="btn-name">🔑 Configurar Ollama API Key</span>
+                <span class="btn-desc">Pegar y guardar clave para síntesis de niveles IA</span>
+              </div>
+              <span class="btn-tag">Ollama Cloud</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Category: Juego y Experimento -->
         <div class="action-category">
           <div class="category-title">
@@ -372,7 +401,57 @@
         </div>
       </div>
     </section>
-  </main>
+  <!-- Modal: Configuración de Ollama API Key -->
+  <div id="ollama-modal" class="modal-backdrop hidden" onclick="handleModalBackdropClick(event)">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">🍄</span>
+          <h3 id="modal-title">Configuración de Ollama Cloud API Key</h3>
+        </div>
+        <button class="btn-close" onclick="closeOllamaModal()" title="Cerrar">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-desc">
+          Pega aquí tu API Key de <strong>Ollama Cloud</strong> para habilitar la generación de niveles con IA.
+          La clave se insertará y guardará automáticamente en el archivo requerido por el motor: <code>mario_ai_framework/Ollama-Key.txt</code>.
+        </p>
+
+        <div class="key-status-box" id="key-status-box">
+          <span class="status-icon" id="key-status-icon">⚪</span>
+          <div class="key-status-info">
+            <span class="key-status-title" id="key-status-title">Comprobando archivo de clave...</span>
+            <span class="key-status-sub" id="key-status-sub">mario_ai_framework/Ollama-Key.txt</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ollama-key-input">Clave de API (Ollama Cloud):</label>
+          <div class="input-with-button">
+            <input type="password" id="ollama-key-input" placeholder="Pega tu API Key aquí..." autocomplete="off">
+            <button type="button" class="btn-sm btn-subtle" id="btn-toggle-key" onclick="toggleKeyVisibility()" title="Mostrar u ocultar clave">👁️</button>
+            <button type="button" class="btn-sm btn-subtle" onclick="pasteKeyFromClipboard()" title="Pegar desde el portapapeles">📋 Pegar</button>
+          </div>
+          <span class="input-hint">El archivo no se sube a repositorios remotos (.gitignore activado).</span>
+        </div>
+
+        <div class="modal-extra-actions">
+          <button type="button" class="btn-link" onclick="openSystemKeyPrompt()">
+            🖥️ ¿Prefieres abrir la ventana nativa del sistema?
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-sm btn-outline" onclick="closeOllamaModal()">Cancelar</button>
+        <button class="btn-sm btn-primary" onclick="saveOllamaKeyFromModal()">💾 Guardar API Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
 
   <script src="app.js"></script>
 </body>

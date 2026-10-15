@@ -40,12 +40,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   refreshStats();
+  refreshOllamaStatus();
   startStatusPolling();
   loadLevelList();
   loadExperimentSummary();
 
-  // Periodic metrics refresh
-  setInterval(refreshStats, 5000);
+  // Periodic metrics & Ollama status refresh
+  setInterval(() => {
+    refreshStats();
+    refreshOllamaStatus();
+  }, 5000);
 });
 
 // Run a make target
@@ -522,3 +526,162 @@ async function loadExperimentSummary() {
     tbody.innerHTML = '<tr><td colspan="4" class="text-center" style="color:var(--accent-red);">Error al cargar resumen de experimentos</td></tr>';
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// Ollama API Key Management & Modal Dialog
+// ─────────────────────────────────────────────────────────────
+
+let currentOllamaStatus = { configured: false, masked_key: '', key_path: '' };
+
+async function refreshOllamaStatus() {
+  const pill = document.getElementById('ollama-pill');
+  const text = document.getElementById('ollama-text');
+  if (!pill || !text) return;
+
+  try {
+    const res = await fetch('/api/ollama-key');
+    const data = await res.json();
+    currentOllamaStatus = data;
+
+    pill.classList.remove('configured', 'missing');
+    if (data.configured) {
+      pill.classList.add('configured');
+      text.textContent = 'Ollama: Lista ✓';
+      pill.title = `Ollama Cloud activa (${data.masked_key})\nArchivo: ${data.key_path}\nHaga clic para ver o editar`;
+    } else {
+      pill.classList.add('missing');
+      text.textContent = 'Ollama: No configurada ⚠';
+      pill.title = 'No se encontró archivo de clave Ollama-Key.txt\nHaga clic para ingresar su API Key';
+    }
+
+    updateModalStatusBox(data);
+  } catch (err) {
+    console.error('Error fetching Ollama status:', err);
+  }
+}
+
+function updateModalStatusBox(data) {
+  const box = document.getElementById('key-status-box');
+  const icon = document.getElementById('key-status-icon');
+  const title = document.getElementById('key-status-title');
+  const sub = document.getElementById('key-status-sub');
+  if (!box || !title) return;
+
+  box.classList.remove('configured', 'missing');
+  if (data.configured) {
+    box.classList.add('configured');
+    icon.textContent = '🟢';
+    title.textContent = `Clave activa y vinculada (${data.masked_key})`;
+    sub.textContent = `Archivo destino: ${data.key_path}`;
+  } else {
+    box.classList.add('missing');
+    icon.textContent = '🟠';
+    title.textContent = 'No se detectó clave de Ollama Cloud';
+    sub.textContent = 'La síntesis de niveles usará el modo local determinista hasta ingresar la clave.';
+  }
+}
+
+function openOllamaModal() {
+  const modal = document.getElementById('ollama-modal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  refreshOllamaStatus();
+  const input = document.getElementById('ollama-key-input');
+  if (input) {
+    input.value = '';
+    setTimeout(() => input.focus(), 150);
+  }
+}
+
+function closeOllamaModal() {
+  const modal = document.getElementById('ollama-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function handleModalBackdropClick(event) {
+  if (event.target && event.target.id === 'ollama-modal') {
+    closeOllamaModal();
+  }
+}
+
+function toggleKeyVisibility() {
+  const input = document.getElementById('ollama-key-input');
+  const btn = document.getElementById('btn-toggle-key');
+  if (!input || !btn) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🔒';
+    btn.title = 'Ocultar clave';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+    btn.title = 'Mostrar clave';
+  }
+}
+
+async function pasteKeyFromClipboard() {
+  const input = document.getElementById('ollama-key-input');
+  if (!input) return;
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text) {
+      input.value = text.trim();
+      showToast('Clave pegada desde el portapapeles');
+    }
+  } catch (err) {
+    input.focus();
+    showToast('Presiona Ctrl+V para pegar manualmente', true);
+  }
+}
+
+async function saveOllamaKeyFromModal() {
+  const input = document.getElementById('ollama-key-input');
+  if (!input) return;
+  const key = input.value.trim();
+  if (!key) {
+    alert('Por favor, ingresa o pega una API Key válida de Ollama Cloud.');
+    input.focus();
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/ollama-key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key })
+    });
+    const data = await res.json();
+    if (res.ok && data.configured) {
+      showToast('✓ API Key guardada exitosamente en mario_ai_framework/Ollama-Key.txt');
+      input.value = '';
+      refreshOllamaStatus();
+      closeOllamaModal();
+    } else {
+      alert('Error al guardar la clave: ' + (data.error || 'Respuesta inválida'));
+    }
+  } catch (err) {
+    console.error('Error saving Ollama key:', err);
+    alert('Fallo de conexión al guardar la clave en el servidor.');
+  }
+}
+
+function openSystemKeyPrompt() {
+  closeOllamaModal();
+  runTarget('install-key', 'Configuración de Ollama (Ventana del Sistema)');
+}
+
+function showToast(message, isError = false) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast' + (isError ? ' toast-error' : '');
+  toast.innerHTML = `<span>${isError ? '⚠️' : '✓'}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+    toast.style.transition = 'all 0.3s ease';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+

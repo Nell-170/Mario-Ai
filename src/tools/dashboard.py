@@ -17,6 +17,7 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = ROOT.parent
 UI_DIR = Path(__file__).resolve().parent / "dashboard_ui"
 
 # Ensure JDK 25 is in PATH if not already present
@@ -28,6 +29,37 @@ def ensure_jdk_path():
             os.environ["PATH"] = f"{ide_java}:{current_path}"
 
 ensure_jdk_path()
+
+
+def get_ollama_status():
+    key_file = PROJECT_ROOT / "mario_ai_framework" / "Ollama-Key.txt"
+
+    key = ""
+    if key_file.exists() and key_file.read_text(encoding="utf-8").strip():
+        key = key_file.read_text(encoding="utf-8").strip()
+    elif os.environ.get("OLLAMA_API_KEY", "").strip():
+        key = os.environ.get("OLLAMA_API_KEY", "").strip()
+
+    masked = ""
+    if key:
+        if len(key) > 8:
+            masked = key[:4] + "••••••••" + key[-4:]
+        else:
+            masked = "••••••••"
+
+    return {
+        "configured": bool(key),
+        "masked_key": masked,
+        "key_path": str(key_file.relative_to(PROJECT_ROOT)) if key else "mario_ai_framework/Ollama-Key.txt"
+    }
+
+
+def save_ollama_key(key_value: str):
+    key_value = key_value.strip()
+    key_file = PROJECT_ROOT / "mario_ai_framework" / "Ollama-Key.txt"
+    key_file.parent.mkdir(parents=True, exist_ok=True)
+    key_file.write_text(key_value + "\n", encoding="utf-8")
+    return True
 
 # Reentrant lock to prevent self-deadlocks
 STATE_LOCK = threading.RLock()
@@ -85,6 +117,8 @@ def run_target_thread(target, label):
     # If it's a graphical task, warn the user that a Java window opens on their desktop
     if target in ("play-human", "play-levels-generated", "start-experiment", "start-experiment-nogen", "play-and-generate"):
         append_log("🎮 Se abrirá una ventana gráfica de Java en tu pantalla. La tarea se mantendrá activa mientras juegues.", "system")
+    elif target == "install":
+        append_log("🚀 Iniciando instalador unificado Mario AI (entorno virtual, repos, dependencias, compilación y niveles)...", "system")
 
     with STATE_LOCK:
         CURRENT_TASK["running"] = True
@@ -284,7 +318,11 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         query = parse_qs(url.query)
 
         if path == "/api/stats":
-            self.send_json(get_stats())
+            stats = get_stats()
+            stats["ollama"] = get_ollama_status()
+            self.send_json(stats)
+        elif path == "/api/ollama-key":
+            self.send_json(get_ollama_status())
         elif path == "/api/status":
             with STATE_LOCK:
                 task_data = dict(CURRENT_TASK)
@@ -315,7 +353,25 @@ class DashboardHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         url = urlparse(self.path)
-        if url.path == "/api/run":
+        if url.path == "/api/ollama-key":
+            content_len = int(self.headers.get("Content-Length", 0))
+            post_body = self.rfile.read(content_len).decode("utf-8")
+            try:
+                data = json.loads(post_body)
+            except Exception:
+                self.send_error(400, "JSON inválido")
+                return
+
+            key = data.get("key", "").strip()
+            if key:
+                save_ollama_key(key)
+                append_log("🔑 Clave de Ollama Cloud actualizada y guardada correctamente.", "system")
+                self.send_json({"status": "saved", "configured": True, "details": get_ollama_status()})
+            else:
+                self.send_error(400, "La clave no puede estar vacía")
+            return
+
+        elif url.path == "/api/run":
             content_len = int(self.headers.get("Content-Length", 0))
             post_body = self.rfile.read(content_len).decode("utf-8")
             try:

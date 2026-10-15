@@ -22,13 +22,23 @@ endif
 # ── OS detection ──────────────────────────────────────────────
 ifeq ($(OS),Windows_NT)
     PLATFORM    := windows
-    PYTHON      := python
+    ifeq ($(wildcard ../.venv/Scripts/python.exe),../.venv/Scripts/python.exe)
+        PYTHON  := ../.venv/Scripts/python.exe
+    else
+        PYTHON  := python
+    endif
     PIP_FLAGS   :=
     PATCH_CMD    = powershell -NoProfile -ExecutionPolicy Bypass -File tools/apply-framework-patch.ps1 -Framework "$(FRAMEWORK)"
     COMPILE_CMD  = powershell -NoProfile -ExecutionPolicy Bypass -File tools\compile-framework.ps1 -Framework "$(FRAMEWORK)"
 else
     PLATFORM    := unix
-    PYTHON      := $(shell command -v python3 2>/dev/null || echo python)
+    ifeq ($(wildcard ../.venv/bin/python),../.venv/bin/python)
+        PYTHON  := ../.venv/bin/python
+    else ifeq ($(wildcard .venv/bin/python),.venv/bin/python)
+        PYTHON  := .venv/bin/python
+    else
+        PYTHON  := $(shell command -v python3 2>/dev/null || echo python)
+    endif
     PIP_FLAGS   := --break-system-packages
     PATCH_CMD    = bash tools/apply-framework-patch.sh "$(FRAMEWORK)"
     COMPILE_CMD  = bash tools/compile-framework.sh "$(FRAMEWORK)"
@@ -40,7 +50,7 @@ define progress
 endef
 
 # ── Phony targets ─────────────────────────────────────────────
-.PHONY: help gui dashboard setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
+.PHONY: help install gui dashboard setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-levels-generated start-experiment \
         start-experiment-nogen generate-level prompt-telemetry play-and-generate \
         clean clean-telemetry clean-levels clean-all
@@ -50,6 +60,7 @@ help:
 	@echo ""
 	@echo "  Mario AI — available targets  [platform: $(PLATFORM)]"
 	@echo "  ──────────────────────────────────────────────────────"
+	@echo "  install                Run complete unified installer (clones, deps, compile, Ollama setup)"
 	@echo "  gui / dashboard        Launch modern Web Control Center GUI in browser"
 	@echo "  setup                  Clone the Mario AI Framework (if absent)"
 	@echo "  install-deps           Install Python dependencies from requirements.txt"
@@ -72,6 +83,13 @@ help:
 	@echo "  clean-levels           Remove converted, generated and validated levels"
 	@echo "  clean-all              Remove ALL generated files (bin, levels, telemetry, caches)"
 	@echo ""
+
+# ── install ───────────────────────────────────────────────────
+install:
+	@$(PYTHON) ../install.py $(ARGS)
+
+install-key:
+	@$(PYTHON) ../install.py --key-only
 
 # ── gui / dashboard ───────────────────────────────────────────
 gui: dashboard

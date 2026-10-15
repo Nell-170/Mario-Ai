@@ -10,6 +10,8 @@ src/dataset/mm2_selected.csv
 __pycache__/
 *.pyc
 .cache/
+.venv/
+venv/
 
 # Generated level files
 levels/converted/
@@ -18,7 +20,11 @@ levels/test_output/
 src/levels/converted/
 src/levels/generated/
 src/levels/test_output/
-src/levels/nivel0/
+
+# API keys and secrets
+*Ollama-Key.txt
+*.key
+.env
 
 # Generated telemetry
 telemetry/

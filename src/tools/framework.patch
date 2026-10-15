@@ -1,5 +1,22 @@
+diff --git a/src/agents/human/Agent.java b/src/agents/human/Agent.java
+index b888366b..a525aa15 100644
+--- a/src/agents/human/Agent.java
++++ b/src/agents/human/Agent.java
+@@ -50,9 +50,12 @@ public class Agent extends KeyAdapter implements MarioAgent {
+             case KeyEvent.VK_DOWN:
+                 this.actions[MarioActions.DOWN.getValue()] = isPressed;
+                 break;
++            case KeyEvent.VK_UP:
++            case KeyEvent.VK_SPACE:
+             case KeyEvent.VK_S:
+                 this.actions[MarioActions.JUMP.getValue()] = isPressed;
+                 break;
++            case KeyEvent.VK_SHIFT:
+             case KeyEvent.VK_A:
+                 this.actions[MarioActions.SPEED.getValue()] = isPressed;
+                 break;
 diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
-index 1f58d96b..0612746a 100644
+index 1f58d96b..d70e2a00 100644
 --- a/src/engine/core/MarioGame.java
 +++ b/src/engine/core/MarioGame.java
 @@ -11,6 +11,12 @@ import agents.human.Agent;
@@ -15,26 +32,44 @@ index 1f58d96b..0612746a 100644
  public class MarioGame {
      /**
       * the maximum time that agent takes for each step
-@@ -73,6 +79,97 @@ public class MarioGame {
+@@ -73,6 +79,121 @@ public class MarioGame {
          this.killEvents = killEvents;
      }
  
++    private JFrame externalWindow = null;
++
++    public void setExternalWindow(JFrame window) {
++        this.externalWindow = window;
++    }
++
++    public MarioResult runGameInWindow(JFrame window, MarioAgent agent, String level, int timer, int marioState) {
++        this.setExternalWindow(window);
++        return this.runGame(agent, level, timer, marioState, true, 30, 0);
++    }
++
 +    public void closeWindow() {
 +        if (this.window != null) {
-+            try {
-+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-+                GraphicsDevice gd = ge.getDefaultScreenDevice();
-+                if (gd.getFullScreenWindow() == this.window) {
-+                    gd.setFullScreenWindow(null);
-+                }
-+            } catch (Exception ignored) {}
-+            this.window.dispose();
++            if (this.externalWindow == null) {
++                try {
++                    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
++                    GraphicsDevice gd = ge.getDefaultScreenDevice();
++                    if (gd.getFullScreenWindow() == this.window) {
++                        gd.setFullScreenWindow(null);
++                    }
++                } catch (Exception ignored) {}
++                this.window.dispose();
++            }
 +            this.window = null;
 +            this.render = null;
 +            this.isFullScreen = false;
 +        }
++        if (this.globalDispatcher != null) {
++            KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this.globalDispatcher);
++            this.globalDispatcher = null;
++        }
 +    }
 +
++    private KeyEventDispatcher globalDispatcher = null;
 +    private volatile boolean restartRequested = false;
 +    private volatile boolean finishRequested = false;
 +    private boolean isFullScreen = false;
@@ -46,6 +81,12 @@ index 1f58d96b..0612746a 100644
 +
 +    public void finishLevel() {
 +        this.finishRequested = true;
++    }
++
++    private static Runnable emergencyExitHandler = null;
++
++    public static void setEmergencyExitHandler(Runnable handler) {
++        emergencyExitHandler = handler;
 +    }
 +
 +    public static float getDefaultScale() {
@@ -113,7 +154,7 @@ index 1f58d96b..0612746a 100644
      private int getDelay(int fps) {
          if (fps <= 0) {
              return 0;
-@@ -82,8 +179,30 @@ public class MarioGame {
+@@ -82,8 +203,58 @@ public class MarioGame {
  
      private void setAgent(MarioAgent agent) {
          this.agent = agent;
@@ -126,7 +167,9 @@ index 1f58d96b..0612746a 100644
 +                    restartLevel();
 +                } else if (e.getKeyCode() == KeyEvent.VK_Q || e.getKeyCode() == KeyEvent.VK_T) {
 +                    finishLevel();
-+                } else if (e.getKeyCode() == KeyEvent.VK_F11 || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
++                } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE && emergencyExitHandler != null) {
++                    emergencyExitHandler.run();
++                } else if ((e.getKeyCode() == KeyEvent.VK_F11 || e.getKeyCode() == KeyEvent.VK_ESCAPE) && externalWindow == null) {
 +                    toggleFullScreen();
 +                }
 +            }
@@ -143,10 +186,36 @@ index 1f58d96b..0612746a 100644
 +                this.window.addKeyListener((KeyAdapter) this.agent);
 +            }
 +            this.window.addKeyListener(globalShortcuts);
++        }
++
++        if (this.globalDispatcher == null) {
++            this.globalDispatcher = e -> {
++                if (MarioGame.this.agent instanceof KeyAdapter) {
++                    KeyAdapter ka = (KeyAdapter) MarioGame.this.agent;
++                    if (e.getID() == KeyEvent.KEY_PRESSED) {
++                        ka.keyPressed(e);
++                    } else if (e.getID() == KeyEvent.KEY_RELEASED) {
++                        ka.keyReleased(e);
++                    }
++                }
++                if (e.getID() == KeyEvent.KEY_PRESSED) {
++                    if (e.getKeyCode() == KeyEvent.VK_R) {
++                        restartLevel();
++                    } else if (e.getKeyCode() == KeyEvent.VK_Q || e.getKeyCode() == KeyEvent.VK_T) {
++                        finishLevel();
++                    } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE && emergencyExitHandler != null) {
++                        emergencyExitHandler.run();
++                    } else if ((e.getKeyCode() == KeyEvent.VK_F11 || e.getKeyCode() == KeyEvent.VK_ESCAPE) && externalWindow == null) {
++                        toggleFullScreen();
++                    }
++                }
++                return false;
++            };
++            KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this.globalDispatcher);
          }
      }
  
-@@ -204,15 +323,78 @@ public class MarioGame {
+@@ -204,18 +375,125 @@ public class MarioGame {
       * @return statistics about the current game
       */
      public MarioResult runGame(MarioAgent agent, String level, int timer, int marioState, boolean visuals, int fps, float scale) {
@@ -154,13 +223,20 @@ index 1f58d96b..0612746a 100644
 +            scale = getDefaultScale();
 +        }
          if (visuals) {
-+            boolean startFullScreen = isFullScreenPreferred();
-+            this.isFullScreen = startFullScreen;
-             this.window = new JFrame("Mario AI Framework");
+-            this.window = new JFrame("Mario AI Framework");
++            boolean isExternal = (this.externalWindow != null);
++            if (isExternal) {
++                this.window = this.externalWindow;
++                this.isFullScreen = true;
++            } else {
++                this.window = new JFrame("Mario AI Framework");
++                this.isFullScreen = isFullScreenPreferred();
++            }
              this.render = new MarioRender(scale);
 -            this.window.setContentPane(this.render);
 -            this.window.pack();
 -            this.window.setResizable(false);
+-            this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 +
 +            JPanel mainPanel = new JPanel(new BorderLayout());
 +            mainPanel.setBackground(Color.BLACK);
@@ -184,20 +260,33 @@ index 1f58d96b..0612746a 100644
 +            finishButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
 +            finishButton.setForeground(new Color(245, 230, 230));
 +            finishButton.setBackground(new Color(75, 35, 35));
-+            finishButton.setToolTipText("Termina el nivel actual y avanza a la siguiente etapa o cuestionario.");
++            finishButton.setToolTipText("Termina el nivel actual y continúa jugando.");
 +            finishButton.addActionListener(e -> finishLevel());
 +            controlPanel.add(finishButton);
 +
-+            this.fullscreenButton = new JButton(startFullScreen ? "Modo ventana [F11 / Esc]" : "Pantalla completa [F11]");
-+            this.fullscreenButton.setFocusable(false);
-+            this.fullscreenButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
-+            this.fullscreenButton.setForeground(new Color(230, 230, 230));
-+            this.fullscreenButton.setBackground(new Color(45, 45, 50));
-+            this.fullscreenButton.setToolTipText("Alternar modo pantalla completa / ventana.");
-+            this.fullscreenButton.addActionListener(e -> toggleFullScreen());
-+            controlPanel.add(this.fullscreenButton);
++            if (emergencyExitHandler != null) {
++                JButton emergencyButton = new JButton("Salir del juego [Esc]");
++                emergencyButton.setFocusable(false);
++                emergencyButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
++                emergencyButton.setForeground(new Color(254, 202, 202));
++                emergencyButton.setBackground(new Color(136, 19, 55));
++                emergencyButton.setToolTipText("Salir y cerrar el juego en cualquier momento [Esc].");
++                emergencyButton.addActionListener(e -> emergencyExitHandler.run());
++                controlPanel.add(emergencyButton);
++            }
 +
-+            JLabel hintsLabel = new JLabel("Controles: Flechas = Mover | S = Saltar | A = Correr | R = Reiniciar | Q = Terminar");
++            if (!isExternal) {
++                this.fullscreenButton = new JButton(this.isFullScreen ? "Modo ventana [F11 / Esc]" : "Pantalla completa [F11]");
++                this.fullscreenButton.setFocusable(false);
++                this.fullscreenButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
++                this.fullscreenButton.setForeground(new Color(230, 230, 230));
++                this.fullscreenButton.setBackground(new Color(45, 45, 50));
++                this.fullscreenButton.setToolTipText("Alternar modo pantalla completa / ventana.");
++                this.fullscreenButton.addActionListener(e -> toggleFullScreen());
++                controlPanel.add(this.fullscreenButton);
++            }
++
++            JLabel hintsLabel = new JLabel("Controles: Flechas = Mover | Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar | Esc = Salir");
 +            hintsLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 +            hintsLabel.setForeground(new Color(160, 160, 165));
 +            controlPanel.add(hintsLabel);
@@ -205,31 +294,61 @@ index 1f58d96b..0612746a 100644
 +            mainPanel.add(controlPanel, BorderLayout.SOUTH);
 +
 +            this.window.setContentPane(mainPanel);
-             this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++            if (!isExternal) {
++                this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++            }
++            this.window.revalidate();
++            this.window.repaint();
              this.render.init();
 -            this.window.setVisible(true);
++            this.render.setFocusable(true);
++            this.render.setFocusTraversalKeysEnabled(false);
++            this.render.addMouseListener(new java.awt.event.MouseAdapter() {
++                @Override
++                public void mousePressed(java.awt.event.MouseEvent e) {
++                    MarioGame.this.render.requestFocusInWindow();
++                }
++            });
++            javax.swing.SwingUtilities.invokeLater(() -> {
++                if (MarioGame.this.render != null) {
++                    MarioGame.this.render.requestFocusInWindow();
++                }
++            });
 +
-+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-+            if (startFullScreen) {
-+                this.window.setUndecorated(true);
-+                this.window.setResizable(false);
-+                if (gd.isFullScreenSupported()) {
-+                    gd.setFullScreenWindow(this.window);
++            if (!isExternal) {
++                GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
++                if (this.isFullScreen) {
++                    this.window.setUndecorated(true);
++                    this.window.setResizable(false);
++                    if (gd.isFullScreenSupported()) {
++                        gd.setFullScreenWindow(this.window);
++                    } else {
++                        this.window.setExtendedState(JFrame.MAXIMIZED_BOTH);
++                        this.window.setBounds(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
++                        this.window.setVisible(true);
++                    }
 +                } else {
-+                    this.window.setExtendedState(JFrame.MAXIMIZED_BOTH);
-+                    this.window.setBounds(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
++                    this.window.pack();
++                    this.window.setResizable(true);
++                    this.window.setLocationRelativeTo(null);
 +                    this.window.setVisible(true);
 +                }
-+            } else {
-+                this.window.pack();
-+                this.window.setResizable(true);
-+                this.window.setLocationRelativeTo(null);
-+                this.window.setVisible(true);
 +            }
          }
          this.setAgent(agent);
-         return this.gameLoop(level, timer, marioState, visuals, fps);
-@@ -232,11 +414,9 @@ public class MarioGame {
+-        return this.gameLoop(level, timer, marioState, visuals, fps);
++        try {
++            return this.gameLoop(level, timer, marioState, visuals, fps);
++        } finally {
++            if (this.globalDispatcher != null) {
++                KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this.globalDispatcher);
++                this.globalDispatcher = null;
++            }
++        }
+     }
+ 
+     private MarioResult gameLoop(String level, int timer, int marioState, boolean visual, int fps) {
+@@ -232,11 +510,9 @@ public class MarioGame {
  
          //initialize graphics
          VolatileImage renderTarget = null;
@@ -241,7 +360,7 @@ index 1f58d96b..0612746a 100644
              currentBuffer = renderTarget.getGraphics();
              this.render.addFocusListener(this.render);
          }
-@@ -246,7 +426,30 @@ public class MarioGame {
+@@ -246,7 +522,30 @@ public class MarioGame {
  
          ArrayList<MarioEvent> gameEvents = new ArrayList<>();
          ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
@@ -272,7 +391,7 @@ index 1f58d96b..0612746a 100644
              if (!this.pause) {
                  //get actions
                  agentTimer = new MarioTimer(MarioGame.maxTime);
-@@ -267,7 +470,18 @@ public class MarioGame {
+@@ -267,7 +566,18 @@ public class MarioGame {
  
              //render world
              if (visual) {
@@ -292,7 +411,7 @@ index 1f58d96b..0612746a 100644
              }
              //check if delay needed
              if (this.getDelay(fps) > 0) {
-@@ -279,6 +493,24 @@ public class MarioGame {
+@@ -279,6 +589,24 @@ public class MarioGame {
                  }
              }
          }
