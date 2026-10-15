@@ -16,7 +16,7 @@ index b888366b..a525aa15 100644
                  this.actions[MarioActions.SPEED.getValue()] = isPressed;
                  break;
 diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
-index 1f58d96b..d70e2a00 100644
+index 1f58d96b..1a20f60f 100644
 --- a/src/engine/core/MarioGame.java
 +++ b/src/engine/core/MarioGame.java
 @@ -11,6 +11,12 @@ import agents.human.Agent;
@@ -348,19 +348,38 @@ index 1f58d96b..d70e2a00 100644
      }
  
      private MarioResult gameLoop(String level, int timer, int marioState, boolean visual, int fps) {
-@@ -232,11 +510,9 @@ public class MarioGame {
+@@ -231,13 +509,25 @@ public class MarioGame {
+         long currentTime = System.currentTimeMillis();
  
          //initialize graphics
-         VolatileImage renderTarget = null;
+-        VolatileImage renderTarget = null;
 -        Graphics backBuffer = null;
++        Image renderTarget = null;
          Graphics currentBuffer = null;
          if (visual) {
-             renderTarget = this.render.createVolatileImage(MarioGame.width, MarioGame.height);
+-            renderTarget = this.render.createVolatileImage(MarioGame.width, MarioGame.height);
 -            backBuffer = this.render.getGraphics();
-             currentBuffer = renderTarget.getGraphics();
+-            currentBuffer = renderTarget.getGraphics();
++            try {
++                renderTarget = this.render.createVolatileImage(MarioGame.width, MarioGame.height);
++            } catch (Throwable ignored) {
++            }
++            if (renderTarget == null) {
++                renderTarget = new java.awt.image.BufferedImage(MarioGame.width, MarioGame.height, java.awt.image.BufferedImage.TYPE_INT_RGB);
++            }
++            try {
++                currentBuffer = renderTarget.getGraphics();
++            } catch (Throwable ignored) {
++                currentBuffer = null;
++            }
++            if (currentBuffer == null) {
++                renderTarget = new java.awt.image.BufferedImage(MarioGame.width, MarioGame.height, java.awt.image.BufferedImage.TYPE_INT_RGB);
++                currentBuffer = renderTarget.getGraphics();
++            }
              this.render.addFocusListener(this.render);
          }
-@@ -246,7 +522,30 @@ public class MarioGame {
+ 
+@@ -246,7 +536,30 @@ public class MarioGame {
  
          ArrayList<MarioEvent> gameEvents = new ArrayList<>();
          ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
@@ -391,33 +410,56 @@ index 1f58d96b..d70e2a00 100644
              if (!this.pause) {
                  //get actions
                  agentTimer = new MarioTimer(MarioGame.maxTime);
-@@ -267,7 +566,18 @@ public class MarioGame {
+@@ -267,7 +580,41 @@ public class MarioGame {
  
              //render world
              if (visual) {
 -                this.render.renderWorld(this.world, renderTarget, backBuffer, currentBuffer);
-+                if (renderTarget == null || renderTarget.validate(this.render.getGraphicsConfiguration()) == VolatileImage.IMAGE_INCOMPATIBLE) {
-+                    renderTarget = this.render.createVolatileImage(MarioGame.width, MarioGame.height);
-+                    if (currentBuffer != null) {
-+                        currentBuffer.dispose();
++                if (renderTarget instanceof VolatileImage) {
++                    VolatileImage vi = (VolatileImage) renderTarget;
++                    GraphicsConfiguration gc = this.render.getGraphicsConfiguration();
++                    if (gc != null && vi.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
++                        VolatileImage newVi = null;
++                        try {
++                            newVi = this.render.createVolatileImage(MarioGame.width, MarioGame.height);
++                        } catch (Throwable ignored) {
++                        }
++                        if (newVi != null) {
++                            if (currentBuffer != null) {
++                                try { currentBuffer.dispose(); } catch (Throwable ignored) {}
++                            }
++                            renderTarget = newVi;
++                            try {
++                                currentBuffer = renderTarget.getGraphics();
++                            } catch (Throwable ignored) {
++                                currentBuffer = null;
++                            }
++                        }
++                        if (currentBuffer == null) {
++                            renderTarget = new java.awt.image.BufferedImage(MarioGame.width, MarioGame.height, java.awt.image.BufferedImage.TYPE_INT_RGB);
++                            currentBuffer = renderTarget.getGraphics();
++                        }
 +                    }
++                } else if (renderTarget == null || currentBuffer == null) {
++                    renderTarget = new java.awt.image.BufferedImage(MarioGame.width, MarioGame.height, java.awt.image.BufferedImage.TYPE_INT_RGB);
 +                    currentBuffer = renderTarget.getGraphics();
 +                }
++
 +                Graphics backBuffer = this.render.getGraphics();
-+                if (backBuffer != null) {
++                if (backBuffer != null && currentBuffer != null) {
 +                    this.render.renderWorld(this.world, renderTarget, backBuffer, currentBuffer);
 +                    backBuffer.dispose();
 +                }
              }
              //check if delay needed
              if (this.getDelay(fps) > 0) {
-@@ -279,6 +589,24 @@ public class MarioGame {
+@@ -279,6 +626,26 @@ public class MarioGame {
                  }
              }
          }
 +        if (visual) {
 +            Graphics backBuffer = this.render.getGraphics();
-+            if (backBuffer != null) {
++            if (backBuffer != null && renderTarget != null && currentBuffer != null) {
 +                this.render.renderWorld(this.world, renderTarget, backBuffer, currentBuffer);
 +                if (wasManualFinish) {
 +                    this.render.renderGameStatusMessage("NIVEL TERMINADO", backBuffer);
@@ -431,13 +473,15 @@ index 1f58d96b..d70e2a00 100644
 +            } catch (InterruptedException ignored) {}
 +        }
 +        if (currentBuffer != null) {
-+            currentBuffer.dispose();
++            try {
++                currentBuffer.dispose();
++            } catch (Throwable ignored) {}
 +        }
          return new MarioResult(this.world, gameEvents, agentEvents);
      }
  }
 diff --git a/src/engine/core/MarioRender.java b/src/engine/core/MarioRender.java
-index aa278681..bc450986 100755
+index aa278681..d3df5b74 100755
 --- a/src/engine/core/MarioRender.java
 +++ b/src/engine/core/MarioRender.java
 @@ -3,6 +3,7 @@ package engine.core;
@@ -448,7 +492,7 @@ index aa278681..bc450986 100755
  import engine.helper.MarioActions;
  
  import java.awt.*;
-@@ -29,8 +30,7 @@ public class MarioRender extends JComponent implements FocusListener {
+@@ -29,14 +30,19 @@ public class MarioRender extends JComponent implements FocusListener {
          Dimension size = new Dimension((int) (256 * scale), (int) (240 * scale));
  
          setPreferredSize(size);
@@ -458,7 +502,19 @@ index aa278681..bc450986 100755
  
          setFocusable(true);
      }
-@@ -55,13 +55,72 @@ public class MarioRender extends JComponent implements FocusListener {
+ 
+     public void init() {
+         graphicsConfiguration = getGraphicsConfiguration();
++        if (graphicsConfiguration == null) {
++            try {
++                graphicsConfiguration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
++            } catch (Throwable ignored) {
++            }
++        }
+         Assets.init(graphicsConfiguration);
+     }
+ 
+@@ -55,13 +61,72 @@ public class MarioRender extends JComponent implements FocusListener {
              }
              drawStringDropShadow(og, "Buttons: " + pressedButtons, 0, 2, 1);
          }
@@ -493,8 +549,8 @@ index aa278681..bc450986 100755
          }
 +
 +        g2d.drawImage(image, xOffset, yOffset, targetW, targetH, null);
-     }
- 
++    }
++
 +    public void renderGameStatus(GameStatus status, Graphics g) {
 +        String message;
 +        switch (status) {
@@ -511,8 +567,8 @@ index aa278681..bc450986 100755
 +                return;
 +        }
 +        renderGameStatusMessage(message, g);
-+    }
-+
+     }
+ 
 +    public void renderGameStatusMessage(String message, Graphics g) {
 +        if (message == null || g == null) {
 +            return;
@@ -535,3 +591,105 @@ index aa278681..bc450986 100755
      public void drawStringDropShadow(Graphics g, String text, int x, int y, int c) {
          drawString(g, text, x * 8 + 5, y * 8 + 5, 0);
          drawString(g, text, x * 8 + 4, y * 8 + 4, c);
+diff --git a/src/engine/graphics/MarioBackground.java b/src/engine/graphics/MarioBackground.java
+index aefb824b..0feac59f 100644
+--- a/src/engine/graphics/MarioBackground.java
++++ b/src/engine/graphics/MarioBackground.java
+@@ -21,7 +21,21 @@ public class MarioBackground extends MarioGraphics {
+         this.height = indeces.length * 16;
+         this.screenWidth = screenWidth;
+ 
+-        image = graphicsConfiguration.createCompatibleImage(width, height, Transparency.BITMASK);
++        if (graphicsConfiguration == null) {
++            try {
++                graphicsConfiguration = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
++            } catch (Throwable ignored) {
++            }
++        }
++        if (graphicsConfiguration != null) {
++            try {
++                image = graphicsConfiguration.createCompatibleImage(width, height, Transparency.BITMASK);
++            } catch (Throwable ignored) {
++            }
++        }
++        if (image == null) {
++            image = new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_ARGB);
++        }
+         g = (Graphics2D) image.getGraphics();
+         g.setComposite(AlphaComposite.Src);
+ 
+diff --git a/src/engine/helper/Assets.java b/src/engine/helper/Assets.java
+index 7581d463..91b9ec25 100755
+--- a/src/engine/helper/Assets.java
++++ b/src/engine/helper/Assets.java
+@@ -28,6 +28,12 @@ public class Assets {
+     final static String img = curDir + "/img/";
+ 
+     public static void init(GraphicsConfiguration gc) {
++        if (gc == null) {
++            try {
++                gc = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
++            } catch (Throwable ignored) {
++            }
++        }
+         try {
+             mario = cutImage(gc, "mariosheet.png", 32, 32);
+             smallMario = cutImage(gc, "smallmariosheet.png", 16, 16);
+@@ -40,7 +46,6 @@ public class Assets {
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+-
+     }
+ 
+     private static Image getImage(GraphicsConfiguration gc, String imageName) throws IOException {
+@@ -63,7 +68,22 @@ public class Assets {
+             reader.setInput(iis, true);
+             source = reader.read(0);
+         }
+-        Image image = gc.createCompatibleImage(source.getWidth(), source.getHeight(), Transparency.BITMASK);
++        if (gc == null) {
++            try {
++                gc = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
++            } catch (Throwable ignored) {
++            }
++        }
++        Image image = null;
++        if (gc != null) {
++            try {
++                image = gc.createCompatibleImage(source.getWidth(), source.getHeight(), Transparency.BITMASK);
++            } catch (Throwable ignored) {
++            }
++        }
++        if (image == null) {
++            image = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_ARGB);
++        }
+         Graphics2D g = (Graphics2D) image.getGraphics();
+         g.setComposite(AlphaComposite.Src);
+         g.drawImage(source, 0, 0, null);
+@@ -74,9 +94,24 @@ public class Assets {
+     private static Image[][] cutImage(GraphicsConfiguration gc, String imageName, int xSize, int ySize) throws IOException {
+         Image source = getImage(gc, imageName);
+         Image[][] images = new Image[source.getWidth(null) / xSize][source.getHeight(null) / ySize];
++        if (gc == null) {
++            try {
++                gc = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
++            } catch (Throwable ignored) {
++            }
++        }
+         for (int x = 0; x < source.getWidth(null) / xSize; x++) {
+             for (int y = 0; y < source.getHeight(null) / ySize; y++) {
+-                Image image = gc.createCompatibleImage(xSize, ySize, Transparency.BITMASK);
++                Image image = null;
++                if (gc != null) {
++                    try {
++                        image = gc.createCompatibleImage(xSize, ySize, Transparency.BITMASK);
++                    } catch (Throwable ignored) {
++                    }
++                }
++                if (image == null) {
++                    image = new BufferedImage(xSize, ySize, BufferedImage.TYPE_INT_ARGB);
++                }
+                 Graphics2D g = (Graphics2D) image.getGraphics();
+                 g.setComposite(AlphaComposite.Src);
+                 g.drawImage(source, -x * xSize, -y * ySize, null);

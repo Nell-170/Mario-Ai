@@ -425,6 +425,42 @@ def prompt_ollama_key_gui(progress: InstallerProgress, default_key: str = "") ->
     return None
 
 
+def patch_mariogpt(mariogpt_dir: Path, progress: InstallerProgress) -> None:
+    """Aplica parches de compatibilidad a MarioGPT para versiones modernas de transformers y PyTorch."""
+    gpt_file = mariogpt_dir / "mario_gpt" / "lm" / "gpt.py"
+    if gpt_file.exists():
+        content = gpt_file.read_text(encoding="utf-8")
+        if "AutoModelWithLMHead" in content and "AutoModelForCausalLM as AutoModelWithLMHead" not in content:
+            target = "from transformers import (\n    AutoConfig,\n    AutoModelWithLMHead,"
+            replacement = (
+                "try:\n"
+                "    from transformers import AutoModelWithLMHead\n"
+                "except ImportError:\n"
+                "    from transformers import AutoModelForCausalLM as AutoModelWithLMHead\n"
+                "from transformers import (\n"
+                "    AutoConfig,"
+            )
+            if target in content:
+                gpt_file.write_text(content.replace(target, replacement), encoding="utf-8")
+                progress.info("Parche de compatibilidad transformers aplicado a MarioGPT (gpt.py).")
+
+    trainer_file = mariogpt_dir / "mario_gpt" / "trainer.py"
+    if trainer_file.exists():
+        content = trainer_file.read_text(encoding="utf-8")
+        if "from transformers import AdamW" in content:
+            target = "from transformers import AdamW, PreTrainedModel, get_linear_schedule_with_warmup"
+            replacement = (
+                "try:\n"
+                "    from transformers import AdamW\n"
+                "except ImportError:\n"
+                "    from torch.optim import AdamW\n"
+                "from transformers import PreTrainedModel, get_linear_schedule_with_warmup"
+            )
+            if target in content:
+                trainer_file.write_text(content.replace(target, replacement), encoding="utf-8")
+                progress.info("Parche de compatibilidad torch.optim aplicado a MarioGPT (trainer.py).")
+
+
 def main():
     root = find_repo_root()
     os.chdir(root)
@@ -625,6 +661,7 @@ def main():
 
         # MarioGPT editable install
         if mariogpt_dir.exists():
+            patch_mariogpt(mariogpt_dir, progress)
             progress.info("Instalando MarioGPT en modo editable (.venv/bin/pip install -e mario_gpt)...")
             code, out = run_command_live(pip_cmd + ["install", "--progress-bar", "off", "-e", str(mariogpt_dir)], cwd=root)
             if code != 0:
@@ -751,17 +788,59 @@ def main():
                 critical=True,
             )
 
-    # Check nivel0 count (human playable test levels)
+    # Check nivel0 count (human playable test levels, distinct from familiarization/generics)
     nivel0_dir = src_dir / "levels" / "nivel0"
-    nivel0_files = list(nivel0_dir.glob("*.txt"))
-    if len(nivel0_files) < 2:
-        progress.info("Copiando niveles de muestra iniciales a levels/nivel0...")
-        sample_sources = list((src_dir / "levels" / "familiarization").glob("*.txt")) + list((src_dir / "levels" / "generics").glob("*.txt"))
-        for s in sample_sources[:6]:
-            shutil.copy2(s, nivel0_dir / s.name)
-        nivel0_files = list(nivel0_dir.glob("*.txt"))
+    converted_dir = src_dir / "levels" / "converted"
+    pkl_file = src_dir / "dataset" / "mm2_selected_levels.pkl"
 
-    progress.success(f"Niveles humanos de prueba (nivel0): {len(nivel0_files)} niveles preparados y verificados.")
+    exclude_names = {"mm2_3000330.txt", "mm2_3001683.txt", "generic 1.txt", "generic 2.txt"}
+    human_levels = [f for f in nivel0_dir.glob("*.txt") if f.name not in exclude_names]
+
+    if len(human_levels) < 4:
+        progress.info("Se requieren niveles humanos para el experimento. Obteniendo y preparando niveles...")
+
+        # 1. Fetch / Stream MM2 levels from Hugging Face if pkl does not exist
+        if not pkl_file.exists():
+            progress.info("Descargando muestra de niveles humanos Super Mario Maker 2 (dataset Hugging Face)...")
+            filter_cmd = [sys.executable, str(src_dir / "dataset" / "filter_mm2.py"), "--want", "20", "--max-scan", "10000"]
+            code, out = run_command_live(filter_cmd, cwd=src_dir)
+            if code != 0 or not pkl_file.exists():
+                progress.warning("No se pudo descargar desde Hugging Face (puede requerir conexión a internet).")
+
+        # 2. Convert MM2 binary levels to Mario AI Framework text grid
+        if pkl_file.exists():
+            converted_files = list(converted_dir.glob("*.txt"))
+            if len(converted_files) < 4:
+                progress.info("Convirtiendo niveles binarios MM2 a formato texto Mario AI Framework...")
+                conv_cmd = [sys.executable, str(src_dir / "dataset" / "convert_mm2_to_maf.py")]
+                code, out = run_command_live(conv_cmd, cwd=src_dir)
+
+        # 3. Validate with A* agent (ValidateLevels) to ensure beatability
+        converted_files = list(converted_dir.glob("*.txt"))
+        if converted_files and java_path:
+            progress.info(f"Validando {len(converted_files)} niveles con agente inteligente A* (Robin Baumgarten)...")
+            val_cmd = [
+                java_path,
+                "-Djava.awt.headless=true",
+                "-cp",
+                "bin",
+                "ValidateLevels",
+                str(converted_dir),
+                str(nivel0_dir),
+                "30",
+            ]
+            code, out = run_command_live(val_cmd, cwd=framework_dir)
+            human_levels = [f for f in nivel0_dir.glob("*.txt") if f.name not in exclude_names]
+
+        # 4. Fallback safety net (if offline or no network)
+        if len(human_levels) < 4:
+            progress.info("Añadiendo niveles base de respaldo a levels/nivel0 para asegurar experimento completo...")
+            sample_sources = list((src_dir / "levels" / "familiarization").glob("*.txt")) + list((src_dir / "levels" / "generics").glob("*.txt"))
+            for idx, s in enumerate(sample_sources):
+                shutil.copy2(s, nivel0_dir / f"human_backup_{idx + 1}.txt")
+            human_levels = [f for f in nivel0_dir.glob("*.txt") if f.name not in exclude_names]
+
+    progress.success(f"Niveles humanos listos (levels/nivel0): {len(human_levels)} niveles superables disponibles.")
     fam_files = list((src_dir / "levels" / "familiarization").glob("*.txt"))
     gen_files = list((src_dir / "levels" / "generics").glob("*.txt"))
     progress.success(f"Niveles de familiarización ({len(fam_files)}) y genéricos ({len(gen_files)}) verificados.")

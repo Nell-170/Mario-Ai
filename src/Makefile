@@ -8,22 +8,27 @@ BIN        := $(FRAMEWORK)/bin
 LEVELS     := levels
 MARIO_GPT  := ../mario_gpt
 
-JAVAC      := javac
-JAVA       := java
+IDE_JAVA := /home/marioc/.antigravity-ide/extensions/redhat.java-1.57.0-linux-x64/jre/25.0.4.1-linux-x86_64/bin
 
-# Ensure JDK 25 from IDE extension is in PATH if not found globally
 ifeq ($(shell which javac 2>/dev/null),)
-    IDE_JAVA := /home/marioc/.antigravity-ide/extensions/redhat.java-1.57.0-linux-x64/jre/25.0.4.1-linux-x86_64/bin
     ifneq ($(wildcard $(IDE_JAVA)/javac),)
+        JAVAC := $(IDE_JAVA)/javac
+        JAVA  := $(IDE_JAVA)/java
         export PATH := $(IDE_JAVA):$(PATH)
+    else
+        JAVAC := javac
+        JAVA  := java
     endif
+else
+    JAVAC := javac
+    JAVA  := java
 endif
 
 # ── OS detection ──────────────────────────────────────────────
 ifeq ($(OS),Windows_NT)
     PLATFORM    := windows
     ifeq ($(wildcard ../.venv/Scripts/python.exe),../.venv/Scripts/python.exe)
-        PYTHON  := ../.venv/Scripts/python.exe
+        PYTHON  := $(abspath ../.venv/Scripts/python.exe)
     else
         PYTHON  := python
     endif
@@ -33,9 +38,9 @@ ifeq ($(OS),Windows_NT)
 else
     PLATFORM    := unix
     ifeq ($(wildcard ../.venv/bin/python),../.venv/bin/python)
-        PYTHON  := ../.venv/bin/python
+        PYTHON  := $(abspath ../.venv/bin/python)
     else ifeq ($(wildcard .venv/bin/python),.venv/bin/python)
-        PYTHON  := .venv/bin/python
+        PYTHON  := $(abspath .venv/bin/python)
     else
         PYTHON  := $(shell command -v python3 2>/dev/null || echo python)
     endif
@@ -53,7 +58,7 @@ endef
 .PHONY: help install gui dashboard setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-levels-generated start-experiment \
         start-experiment-nogen generate-level prompt-telemetry play-and-generate \
-        clean clean-telemetry clean-levels clean-all
+        clean clean-telemetry clean-levels clean-all clean-fresh
 
 # ── help ──────────────────────────────────────────────────────
 help:
@@ -246,3 +251,16 @@ clean-all:
 		[shutil.rmtree(p, ignore_errors=True) for p in glob.glob('**/__pycache__', recursive=True)]; \
 		print('✨ Full clean complete (bin, telemetry, levels, dataset caches).')"
 	$(call progress,100,Limpieza total completada.)
+
+# ── clean-fresh ───────────────────────────────────────────────
+clean-fresh:
+	$(call progress,0,Restableciendo repositorio al estado virgen inicial (0 absoluto)...)
+	@$(MAKE) clean-all
+ifeq ($(PLATFORM),windows)
+	@if exist "..\.venv" rmdir /S /Q "..\.venv"
+	@if exist "$(FRAMEWORK)" rmdir /S /Q "$(FRAMEWORK)"
+	@if exist "$(MARIO_GPT)" rmdir /S /Q "$(MARIO_GPT)"
+else
+	@rm -rf ../.venv "$(FRAMEWORK)" "$(MARIO_GPT)"
+endif
+	$(call progress,100,Repositorio restablecido al estado de un git clone fresco.)

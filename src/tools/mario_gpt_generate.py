@@ -7,8 +7,9 @@ from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "mario_gpt") not in sys.path:
-    sys.path.insert(0, str(ROOT / "mario_gpt"))
+for candidate in [ROOT / "mario_gpt", ROOT.parent / "mario_gpt"]:
+    if candidate.exists() and str(candidate) not in sys.path:
+        sys.path.insert(0, str(candidate))
 
 try:
     from mario_gpt import MarioLM

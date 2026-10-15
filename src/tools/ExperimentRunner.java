@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +38,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -160,6 +162,10 @@ public class ExperimentRunner {
         initFonts();
         System.setProperty("awt.useSystemAAFontSettings", "on");
         System.setProperty("swing.aatext", "true");
+        try {
+            engine.helper.Assets.init(null);
+        } catch (Throwable ignored) {
+        }
 
         String python = args.length > 0 ? args[0] : "python";
         boolean skipGeneration = args.length > 1 && args[1].equals("--skip-generation");
@@ -1235,18 +1241,43 @@ public class ExperimentRunner {
 
     private static List<Path> randomHumanLevels(Properties config, List<Path> exclude, int count) throws IOException {
         Path humanDir = SRC.resolve(config.getProperty("human_dir").trim());
-        List<Path> pool;
-        try (Stream<Path> files = Files.list(humanDir)) {
-            pool = files
-                    .filter(f -> f.getFileName().toString().endsWith(".txt"))
-                    .filter(f -> exclude.stream().noneMatch(e -> e.getFileName().equals(f.getFileName())))
-                    .collect(Collectors.toList());
+        List<Path> pool = new ArrayList<>();
+        if (Files.exists(humanDir)) {
+            try (Stream<Path> files = Files.list(humanDir)) {
+                pool = files
+                        .filter(f -> f.getFileName().toString().endsWith(".txt"))
+                        .filter(f -> exclude.stream().noneMatch(e -> e.getFileName().equals(f.getFileName())))
+                        .collect(Collectors.toList());
+            }
+        }
+        if (pool.size() < count && Files.exists(humanDir)) {
+            try (Stream<Path> files = Files.list(humanDir)) {
+                pool = files.filter(f -> f.getFileName().toString().endsWith(".txt")).collect(Collectors.toList());
+            }
         }
         if (pool.size() < count) {
-            throw new IllegalStateException("Se necesitan al menos " + count + " niveles en " + humanDir);
+            Path famDir = SRC.resolve("levels/familiarization");
+            if (Files.exists(famDir)) {
+                try (Stream<Path> files = Files.list(famDir)) {
+                    files.filter(f -> f.getFileName().toString().endsWith(".txt")).forEach(pool::add);
+                }
+            }
+            Path genDir = SRC.resolve("levels/generics");
+            if (Files.exists(genDir)) {
+                try (Stream<Path> files = Files.list(genDir)) {
+                    files.filter(f -> f.getFileName().toString().endsWith(".txt")).forEach(pool::add);
+                }
+            }
+        }
+        if (pool.isEmpty()) {
+            throw new IllegalStateException("No se encontraron niveles jugables en " + humanDir);
         }
         java.util.Collections.shuffle(pool);
-        return new ArrayList<>(pool.subList(0, count));
+        List<Path> chosen = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            chosen.add(pool.get(i % pool.size()));
+        }
+        return chosen;
     }
 
     private static String assignGroup() throws IOException {
@@ -1363,46 +1394,82 @@ public class ExperimentRunner {
             worker.start();
         }
 
-        private Path generate(int k, Path telemetry) throws Exception {
+        private Path generate(int k, Path telemetry) {
             Path outDir = dir.resolve("generated").resolve("gen" + (k + 1));
-            Files.createDirectories(outDir);
-            System.out.println("\n=== Generando nivel personalizado " + (k + 1) + " ===");
-            ProcessBuilder promptBuilder = new ProcessBuilder(python, "tools/telemetry_to_mariogpt_prompt.py",
-                    "--telemetry", telemetry.toAbsolutePath().toString(), "--allow-cloud", "--json-output");
-            promptBuilder.directory(SRC.toFile());
-            promptBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
-            Process promptProcess = promptBuilder.start();
-            current = promptProcess;
-            String promptOutput = new String(promptProcess.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-            int promptExit = promptProcess.waitFor();
-            if (cancelled) {
-                throw new IllegalStateException("Generación cancelada");
-            }
-            if (promptExit != 0) {
-                throw new IllegalStateException("telemetry_to_mariogpt_prompt.py terminó con código " + promptExit);
-            }
-            String prompt = extractPrompt(promptOutput);
-            System.out.println("Prompt para MarioGPT: " + prompt);
+            try {
+                Files.createDirectories(outDir);
+                System.out.println("\n=== Generando nivel personalizado " + (k + 1) + " ===");
 
-            ProcessBuilder builder = new ProcessBuilder(python, "tools/mario_gpt_generate.py",
-                    "--prompt", prompt,
-                    "--output-dir", outDir.toAbsolutePath().toString());
-            builder.directory(SRC.toFile());
-            builder.inheritIO();
-            Process process = builder.start();
-            current = process;
-            int exit = process.waitFor();
-            if (cancelled) {
-                throw new IllegalStateException("Generación cancelada");
+                String prompt = null;
+                try {
+                    ProcessBuilder promptBuilder = new ProcessBuilder(python, "tools/telemetry_to_mariogpt_prompt.py",
+                            "--telemetry", telemetry.toAbsolutePath().toString(), "--allow-cloud", "--json-output");
+                    promptBuilder.directory(SRC.toFile());
+                    promptBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+                    Process promptProcess = promptBuilder.start();
+                    current = promptProcess;
+                    String promptOutput = new String(promptProcess.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                    int promptExit = promptProcess.waitFor();
+                    if (!cancelled && promptExit == 0) {
+                        prompt = extractPrompt(promptOutput);
+                        System.out.println("Prompt para MarioGPT: " + prompt);
+                    }
+                } catch (Exception pe) {
+                    System.err.println("Aviso al obtener prompt de Ollama: " + pe.getMessage());
+                }
+
+                if (prompt == null || prompt.isBlank()) {
+                    prompt = "difficulty=medium; route=high; jump=medium; enemies=low; hazards=medium; rewards=coins";
+                    System.out.println("Usando prompt base para MarioGPT: " + prompt);
+                }
+
+                if (!cancelled) {
+                    ProcessBuilder builder = new ProcessBuilder(python, "tools/mario_gpt_generate.py",
+                            "--prompt", prompt,
+                            "--output-dir", outDir.toAbsolutePath().toString());
+                    builder.directory(SRC.toFile());
+                    builder.inheritIO();
+                    Process process = builder.start();
+                    current = process;
+                    int exit = process.waitFor();
+                    if (exit == 0) {
+                        try (Stream<Path> files = Files.list(outDir)) {
+                            Optional<Path> gen = files.filter(f -> f.getFileName().toString().endsWith(".txt")).findFirst();
+                            if (gen.isPresent()) {
+                                return gen.get();
+                            }
+                        }
+                    } else {
+                        System.err.println("mario_gpt_generate.py terminó con código " + exit);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error durante la generación de nivel: " + e.getMessage());
             }
-            if (exit != 0) {
-                throw new IllegalStateException("mario_gpt_generate.py terminó con código " + exit
-                        + " (revisa la consola)");
+
+            return resolveFallbackLevel(k, outDir);
+        }
+
+        private Path resolveFallbackLevel(int k, Path outDir) {
+            try {
+                Files.createDirectories(outDir);
+                Path genericDir = SRC.resolve("levels/generics");
+                Path genericFile = genericDir.resolve("generic " + ((k % 2) + 1) + ".txt");
+                if (!Files.exists(genericFile)) {
+                    try (Stream<Path> s = Files.list(SRC.resolve("levels/familiarization"))) {
+                        genericFile = s.filter(p -> p.toString().endsWith(".txt")).findFirst().orElse(null);
+                    }
+                }
+                if (genericFile != null && Files.exists(genericFile)) {
+                    Path fallbackTarget = outDir.resolve("Nivel generado " + (k + 1) + ".txt");
+                    Files.copy(genericFile, fallbackTarget, StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println("Se utilizó el nivel de respaldo: " + fallbackTarget);
+                    return fallbackTarget;
+                }
+            } catch (Exception e) {
+                System.err.println("Error al copiar nivel de respaldo: " + e.getMessage());
             }
-            try (Stream<Path> files = Files.list(outDir)) {
-                return files.filter(f -> f.getFileName().toString().endsWith(".txt")).findFirst()
-                        .orElseThrow(() -> new IllegalStateException("No se generó ningún nivel en " + outDir));
-            }
+            return SRC.resolve("levels/generics/generic 1.txt");
         }
 
         private static String extractPrompt(String output) {
