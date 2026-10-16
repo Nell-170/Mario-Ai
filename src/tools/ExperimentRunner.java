@@ -2,6 +2,7 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -43,7 +44,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,11 +67,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
@@ -109,15 +117,8 @@ public class ExperimentRunner {
     ) {
     }
 
-    private record AttributionAnswer(
-            int orderPlayed,
-            char type,
-            int levelIndex,
-            String stepCode,
-            Path levelFile,
-            String attribution,
-            int confidence
-    ) {
+    public enum GenStage {
+        PENDING, QUEUED, OLLAMA, MARIOGPT, SANITIZING, READY, FALLBACK_READY, FAILED
     }
 
     // Fonts & Theme
@@ -145,6 +146,15 @@ public class ExperimentRunner {
     private static boolean developMode = false;
     private static String currentDevBanner = "";
     private static JPanel currentDevCardPanel = null;
+    private static int personalizedPlayedCount = 0;
+    private static boolean devSidePanelCollapsed = false;
+
+    private static boolean shouldShowDevGenSidePanel() {
+        return developMode
+                && activeGenerationJob != null
+                && activeGenerationJob.isStarted()
+                && personalizedPlayedCount < 2;
+    }
 
     private static void initFonts() {
         try {
@@ -270,6 +280,8 @@ public class ExperimentRunner {
 
         GenerationJob generation = new GenerationJob(python, dir);
         activeGenerationJob = generation;
+        personalizedPlayedCount = 0;
+        devSidePanelCollapsed = false;
         MarioGame.setEmergencyExitHandler(() -> confirmAndExitExperiment());
         try {
             setDevContext(
@@ -301,8 +313,12 @@ public class ExperimentRunner {
                         "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n"
                                 + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar",
                         "Comenzar nivel " + (f + 1));
-                famTelemetries.add(playLevel(famLevel, timer,
-                        dir.resolve("telemetry_fam" + (f + 1) + ".json")));
+                Path telPath = playLevel(famLevel, timer,
+                        dir.resolve("telemetry_fam" + (f + 1) + ".json"));
+                famTelemetries.add(telPath);
+                if (!skipGeneration) {
+                    generation.enqueue(f, telPath);
+                }
             }
 
             if (skipGeneration) {
@@ -409,6 +425,9 @@ public class ExperimentRunner {
                 playedLevels.add(new PlayedLevelInfo(i + 1, step.type(), step.index(), stepCode, levelFile, levelContent, thumbnail));
 
                 playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
+                if (step.type() == 'P') {
+                    personalizedPlayedCount++;
+                }
 
                 List<String> row = new ArrayList<>(List.of(id, group, String.valueOf(i + 1),
                         String.valueOf(step.type()), String.valueOf(step.index() + 1),
@@ -434,7 +453,7 @@ public class ExperimentRunner {
                 freePlay(config, normal, playedLevels, timer);
             }
 
-            // 7. Fase 6: Cierre (Ranking con miniaturas interactivas, Atribución, Comentarios)
+            // 7. Fase 6: Cierre (Ranking con miniaturas interactivas, Comentarios finales)
             showClosureBlock(playedLevels, id, group, dir);
 
             // 8. Pantalla final de despedida
@@ -1081,7 +1100,7 @@ public class ExperimentRunner {
     private static void showClosureBlock(List<PlayedLevelInfo> playedLevels, String id, String group, Path dir)
             throws Exception {
         setDevContext(
-                "ID: " + id + " | Fase de Cierre (1/3): Clasificación de Niveles | Grupo " + group,
+                "ID: " + id + " | Fase de Cierre (1/2): Clasificación de Niveles | Grupo " + group,
                 "Fase de Cierre (Ranking)",
                 "N/A",
                 "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
@@ -1093,19 +1112,7 @@ public class ExperimentRunner {
         List<PlayedLevelInfo> ranked = showRankingScreen(playedLevels, id, group);
 
         setDevContext(
-                "ID: " + id + " | Fase de Cierre (2/3): Atribución de Autoría | Grupo " + group,
-                "Fase de Cierre (Atribución)",
-                "N/A",
-                "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
-                id,
-                0
-        );
-
-        // 2. Atribución de autoría (Persona vs Programa + Certeza 1-7)
-        List<AttributionAnswer> attributions = showAttributionScreen(playedLevels, id, group);
-
-        setDevContext(
-                "ID: " + id + " | Fase de Cierre (3/3): Comentarios Finales | Grupo " + group,
+                "ID: " + id + " | Fase de Cierre (2/2): Comentarios Finales | Grupo " + group,
                 "Fase de Cierre (Comentarios)",
                 "N/A",
                 "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
@@ -1113,11 +1120,11 @@ public class ExperimentRunner {
                 0
         );
 
-        // 3. Comentarios opcionales
+        // 2. Comentarios finales opcionales
         String feedback = showCommentsScreen(id, group);
 
-        // 4. Guardar resultados en TSV y carpeta del participante
-        saveClosureData(id, group, ranked, attributions, feedback, dir);
+        // 3. Guardar resultados en TSV y carpeta del participante
+        saveClosureData(id, group, ranked, feedback, dir);
     }
 
     private static List<PlayedLevelInfo> showRankingScreen(List<PlayedLevelInfo> playedLevels, String id, String group)
@@ -1129,7 +1136,7 @@ public class ExperimentRunner {
             JPanel bg = createScreenContainer();
             JPanel card = createModernCard(1080, 800);
 
-            card.add(createBadge("FASE DE CIERRE (1 DE 3) — CLASIFICACIÓN DE PREFERENCIA"));
+            card.add(createBadge("FASE DE CIERRE (1 DE 2) — CLASIFICACIÓN DE PREFERENCIA"));
             card.add(Box.createRigidArea(new Dimension(0, 10)));
 
             JLabel title = new JLabel("Ordena los niveles del que MÁS te gustó al que MENOS");
@@ -1288,217 +1295,13 @@ public class ExperimentRunner {
         return future.get();
     }
 
-    private static List<AttributionAnswer> showAttributionScreen(List<PlayedLevelInfo> playedLevels, String id,
-            String group) throws Exception {
-        CompletableFuture<List<AttributionAnswer>> future = new CompletableFuture<>();
-        SwingUtilities.invokeLater(() -> {
-            JPanel bg = createScreenContainer();
-            JPanel card = createModernCard(1080, 800);
-
-            card.add(createBadge("FASE DE CIERRE (2 DE 3) — ATRIBUCIÓN DE AUTORÍA"));
-            card.add(Box.createRigidArea(new Dimension(0, 10)));
-
-            JLabel title = new JLabel("¿Quién diseñó cada uno de los niveles?");
-            title.setFont(FONT_BOLD.deriveFont(28f));
-            title.setForeground(TEXT_WHITE);
-            title.setAlignmentX(Component.LEFT_ALIGNMENT);
-            card.add(title);
-            card.add(Box.createRigidArea(new Dimension(0, 6)));
-
-            if (developMode && currentDevBanner != null && !currentDevBanner.isBlank()) {
-                JLabel devSub = new JLabel("[DEV INFO] " + currentDevBanner);
-                devSub.setFont(FONT_SEMIBOLD.deriveFont(13f));
-                devSub.setForeground(new Color(250, 204, 21));
-                devSub.setAlignmentX(Component.LEFT_ALIGNMENT);
-                card.add(devSub);
-                card.add(Box.createRigidArea(new Dimension(0, 6)));
-            }
-
-            JLabel desc = new JLabel(
-                    "<html><body style='width: 980px; color: rgb(156, 163, 175);'>"
-                            + "Para cada uno de los 6 niveles jugados, indica si crees que fue <b>diseñado por una persona humana</b> "
-                            + "o <b>generado por una computadora / IA</b>, y qué tan seguro(a) estás de tu respuesta (escala de 1 a 7).<br>"
-                            + "Por favor completa ambas respuestas para los 6 niveles antes de continuar."
-                            + "</body></html>");
-            desc.setFont(FONT_REGULAR.deriveFont(16f));
-            desc.setAlignmentX(Component.LEFT_ALIGNMENT);
-            card.add(desc);
-            card.add(Box.createRigidArea(new Dimension(0, 14)));
-
-            JPanel listPanel = new JPanel();
-            listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-            listPanel.setBackground(CARD_BG);
-            listPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-            List<Supplier<AttributionAnswer>> answerGetters = new ArrayList<>();
-
-            for (int i = 0; i < playedLevels.size(); i++) {
-                PlayedLevelInfo info = playedLevels.get(i);
-                final int stepNum = info.orderPlayed();
-
-                JPanel itemCard = new JPanel();
-                itemCard.setLayout(new BoxLayout(itemCard, BoxLayout.Y_AXIS));
-                itemCard.setBackground(ITEM_BG);
-                itemCard.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
-                        new EmptyBorder(12, 16, 12, 16)));
-                itemCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-                itemCard.setMaximumSize(new Dimension(980, 210));
-
-                // Header of this level card
-                JPanel topRow = new JPanel(new BorderLayout(12, 0));
-                topRow.setBackground(ITEM_BG);
-                topRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-                topRow.setMaximumSize(new Dimension(940, 48));
-
-                String lvlTitle = "Nivel jugado en el Paso " + stepNum + " de la sesión";
-                if (developMode) {
-                    lvlTitle += " [" + info.stepCode() + " - " + info.levelFile().getFileName() + "]";
-                }
-                JLabel titleLbl = new JLabel(lvlTitle);
-                titleLbl.setFont(FONT_BOLD.deriveFont(16f));
-                titleLbl.setForeground(TEXT_WHITE);
-                topRow.add(titleLbl, BorderLayout.WEST);
-
-                JLabel miniThumb = new JLabel(new ImageIcon(renderLevelThumbnail(info.levelContent(), 300, 40)));
-                miniThumb.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true));
-                miniThumb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                miniThumb.setToolTipText("Haz clic para ampliar este nivel");
-                miniThumb.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        showLevelZoomModal(masterFrame, "Nivel del Paso " + stepNum, info.levelContent());
-                    }
-                });
-                topRow.add(miniThumb, BorderLayout.CENTER);
-
-                ModernButton zoomBtn = new ModernButton("Ver mapa", new Color(30, 41, 59), new Color(51, 65, 85),
-                        new Color(15, 23, 42), TEXT_WHITE, 8, 6, 10, 12f);
-                zoomBtn.addActionListener(e -> showLevelZoomModal(masterFrame, "Nivel del Paso " + stepNum, info.levelContent()));
-                topRow.add(zoomBtn, BorderLayout.EAST);
-
-                itemCard.add(topRow);
-                itemCard.add(Box.createRigidArea(new Dimension(0, 10)));
-
-                // Q1: Author choice
-                JLabel q1Label = new JLabel("1. ¿Quién crees que diseñó este nivel?");
-                q1Label.setFont(FONT_SEMIBOLD.deriveFont(15f));
-                q1Label.setForeground(TEXT_ACCENT);
-                q1Label.setAlignmentX(Component.LEFT_ALIGNMENT);
-                itemCard.add(q1Label);
-                itemCard.add(Box.createRigidArea(new Dimension(0, 6)));
-
-                JPanel q1Panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
-                q1Panel.setBackground(ITEM_BG);
-                q1Panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-                String[] authorChoice = { null };
-                ButtonGroup q1Group = new ButtonGroup();
-
-                ChoiceCard optPerson = new ChoiceCard("Una persona (Humano)", 300, 42);
-                optPerson.addActionListener(e -> authorChoice[0] = "Persona");
-                q1Group.add(optPerson);
-                q1Panel.add(optPerson);
-
-                ChoiceCard optProg = new ChoiceCard("Un programa (IA / Algoritmo)", 340, 42);
-                optProg.addActionListener(e -> authorChoice[0] = "Programa");
-                q1Group.add(optProg);
-                q1Panel.add(optProg);
-
-                itemCard.add(q1Panel);
-                itemCard.add(Box.createRigidArea(new Dimension(0, 10)));
-
-                // Q2: Confidence scale (1 to 7)
-                JLabel q2Label = new JLabel("2. ¿Qué tan seguro(a) estás de tu respuesta?");
-                q2Label.setFont(FONT_SEMIBOLD.deriveFont(15f));
-                q2Label.setForeground(TEXT_ACCENT);
-                q2Label.setAlignmentX(Component.LEFT_ALIGNMENT);
-                itemCard.add(q2Label);
-                itemCard.add(Box.createRigidArea(new Dimension(0, 6)));
-
-                JPanel q2Panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-                q2Panel.setBackground(ITEM_BG);
-                q2Panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-                Integer[] confChoice = { null };
-                ButtonGroup q2Group = new ButtonGroup();
-                for (int v = 1; v <= 7; v++) {
-                    final int val = v;
-                    LikertPill pill = new LikertPill(String.valueOf(v));
-                    pill.addActionListener(e -> confChoice[0] = val);
-                    q2Group.add(pill);
-                    q2Panel.add(pill);
-                }
-                itemCard.add(q2Panel);
-                itemCard.add(Box.createRigidArea(new Dimension(0, 4)));
-
-                JLabel scaleLegend = new JLabel("1 = Nada seguro   |   4 = Moderadamente seguro   |   7 = Totalmente seguro");
-                scaleLegend.setFont(FONT_REGULAR.deriveFont(13f));
-                scaleLegend.setForeground(new Color(148, 163, 184));
-                scaleLegend.setAlignmentX(Component.LEFT_ALIGNMENT);
-                itemCard.add(scaleLegend);
-
-                listPanel.add(itemCard);
-                listPanel.add(Box.createRigidArea(new Dimension(0, 12)));
-
-                answerGetters.add(() -> {
-                    if (authorChoice[0] == null || confChoice[0] == null) {
-                        return null;
-                    }
-                    return new AttributionAnswer(info.orderPlayed(), info.type(), info.levelIndex(), info.stepCode(),
-                            info.levelFile(), authorChoice[0], confChoice[0]);
-                });
-            }
-
-            JScrollPane scroll = new JScrollPane(listPanel);
-            scroll.setBorder(BorderFactory.createEmptyBorder());
-            scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            scroll.setPreferredSize(new Dimension(1020, 480));
-            scroll.setMaximumSize(new Dimension(1020, 480));
-            scroll.setAlignmentX(Component.LEFT_ALIGNMENT);
-            applyDarkScrollbar(scroll);
-            card.add(scroll);
-            card.add(Box.createRigidArea(new Dimension(0, 12)));
-
-            JLabel errorLabel = new JLabel(" ");
-            errorLabel.setFont(FONT_SEMIBOLD.deriveFont(15f));
-            errorLabel.setForeground(new Color(244, 63, 94));
-            errorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            card.add(errorLabel);
-            card.add(Box.createRigidArea(new Dimension(0, 10)));
-
-            ModernButton continueBtn = new ModernButton("Continuar", ACCENT_PRIMARY, ACCENT_HOVER, ACCENT_PRESSED,
-                    Color.WHITE, 12);
-            continueBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
-            continueBtn.addActionListener(e -> {
-                boolean allFilled = answerGetters.stream().allMatch(g -> g.get() != null);
-                if (!allFilled) {
-                    errorLabel.setText("Por favor responde ambas preguntas (autoría y certeza) para los 6 niveles antes de continuar.");
-                    card.revalidate();
-                    card.repaint();
-                    return;
-                }
-                List<AttributionAnswer> results = answerGetters.stream().map(Supplier::get).collect(Collectors.toList());
-                future.complete(results);
-            });
-            card.add(continueBtn);
-
-            bg.add(card);
-            masterFrame.setContentPane(bg);
-            masterFrame.revalidate();
-            masterFrame.repaint();
-            continueBtn.requestFocusInWindow();
-        });
-        return future.get();
-    }
-
     private static String showCommentsScreen(String id, String group) throws Exception {
         CompletableFuture<String> future = new CompletableFuture<>();
         SwingUtilities.invokeLater(() -> {
             JPanel bg = createScreenContainer();
             JPanel card = createModernCard(1000, 680);
 
-            card.add(createBadge("FASE DE CIERRE (3 DE 3) — COMENTARIOS FINALES"));
+            card.add(createBadge("FASE DE CIERRE (2 DE 2) — COMENTARIOS FINALES"));
             card.add(Box.createRigidArea(new Dimension(0, 12)));
 
             JLabel title = new JLabel("Comentarios y observaciones finales");
@@ -1562,7 +1365,7 @@ public class ExperimentRunner {
     }
 
     private static void saveClosureData(String id, String group, List<PlayedLevelInfo> ranked,
-            List<AttributionAnswer> attributions, String feedback, Path dir) throws IOException {
+            String feedback, Path dir) throws IOException {
         // 1. Ranking TSV
         List<String> rankingHeaders = List.of("id", "group", "rank", "order_played", "level_type", "level_index",
                 "step_code", "level_file");
@@ -1582,26 +1385,7 @@ public class ExperimentRunner {
             saveRow(dir.resolve("ranking.tsv"), rankingHeaders, row);
         }
 
-        // 2. Attribution TSV
-        List<String> attrHeaders = List.of("id", "group", "order_played", "level_type", "level_index",
-                "step_code", "level_file", "attribution", "confidence");
-        for (AttributionAnswer ans : attributions) {
-            List<String> row = List.of(
-                    id,
-                    group,
-                    String.valueOf(ans.orderPlayed()),
-                    String.valueOf(ans.type()),
-                    String.valueOf(ans.levelIndex() + 1),
-                    ans.stepCode(),
-                    ans.levelFile().getFileName().toString(),
-                    ans.attribution(),
-                    String.valueOf(ans.confidence())
-            );
-            saveRow(RESULTS.resolve("attribution.tsv"), attrHeaders, row);
-            saveRow(dir.resolve("attribution.tsv"), attrHeaders, row);
-        }
-
-        // 3. Feedback TSV
+        // 2. Feedback TSV
         List<String> feedbackHeaders = List.of("id", "group", "feedback", "timestamp");
         String sanitizedFeedback = (feedback == null || feedback.isBlank()) ? "SIN_COMENTARIOS" : feedback;
         List<String> fbRow = List.of(
@@ -1613,7 +1397,7 @@ public class ExperimentRunner {
         saveRow(RESULTS.resolve("feedback.tsv"), feedbackHeaders, fbRow);
         saveRow(dir.resolve("feedback.tsv"), feedbackHeaders, fbRow);
 
-        // 4. Resumen legible del cierre
+        // 3. Resumen legible del cierre
         StringBuilder sb = new StringBuilder();
         sb.append("============================================================\n");
         sb.append("FASE DE CIERRE - PROTOCOLO EXPERIMENTAL (PROTOCOLO MOSTRO)\n");
@@ -1629,14 +1413,7 @@ public class ExperimentRunner {
                     .append(" -> ").append(info.levelFile().getFileName()).append('\n');
         }
 
-        sb.append("\n2. ATRIBUCIÓN DE AUTORÍA:\n");
-        for (AttributionAnswer ans : attributions) {
-            sb.append("   - Paso ").append(ans.orderPlayed())
-                    .append(" (").append(ans.stepCode()).append(" - ").append(ans.levelFile().getFileName()).append("): ")
-                    .append(ans.attribution()).append(" | Certeza: ").append(ans.confidence()).append("/7\n");
-        }
-
-        sb.append("\n3. COMENTARIOS FINALES:\n");
+        sb.append("\n2. COMENTARIOS FINALES:\n");
         sb.append("   ").append(sanitizedFeedback).append('\n');
         sb.append("============================================================\n");
 
@@ -2069,8 +1846,385 @@ public class ExperimentRunner {
     // CUSTOM SWING UI STYLING & COMPONENTS
     // ==========================================
 
+    private static class DevGenerationSidePanel extends JPanel {
+        private final GenerationJob job;
+        private final Timer timer;
+        private final JLabel clockLabel;
+        private final JLabel p1Badge;
+        private final JLabel p1Detail;
+        private final JProgressBar p1Bar;
+        private final JLabel p2Badge;
+        private final JLabel p2Detail;
+        private final JProgressBar p2Bar;
+        private final JPanel summaryBox;
+        private final JLabel summaryTitle;
+        private final JLabel summarySubtitle;
+        private final JPanel contentPanel;
+        private final JPanel miniPanel;
+        private final JLabel miniClock;
+
+        public DevGenerationSidePanel(GenerationJob job) {
+            super(new BorderLayout());
+            this.job = job;
+            setBackground(CARD_BG);
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(55, 65, 81)),
+                    new EmptyBorder(14, 14, 14, 14)
+            ));
+
+            contentPanel = new JPanel();
+            contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+            contentPanel.setBackground(CARD_BG);
+
+            // 1. Header with Title, Badge and Toggle
+            JPanel topRow = new JPanel(new BorderLayout());
+            topRow.setBackground(CARD_BG);
+
+            JPanel leftBadges = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+            leftBadges.setBackground(CARD_BG);
+
+            JLabel devBadge = new JLabel(" DEV IA ");
+            devBadge.setFont(FONT_BOLD.deriveFont(10f));
+            devBadge.setForeground(Color.BLACK);
+            devBadge.setBackground(new Color(245, 158, 11));
+            devBadge.setOpaque(true);
+            devBadge.setBorder(new EmptyBorder(2, 5, 2, 5));
+            leftBadges.add(devBadge);
+
+            clockLabel = new JLabel("T+ 00:00");
+            clockLabel.setFont(FONT_BOLD.deriveFont(12f));
+            clockLabel.setForeground(new Color(253, 230, 138));
+            leftBadges.add(clockLabel);
+            topRow.add(leftBadges, BorderLayout.WEST);
+
+            JButton toggleBtn = new JButton("—");
+            toggleBtn.setFont(FONT_BOLD.deriveFont(13f));
+            toggleBtn.setForeground(TEXT_MUTED);
+            toggleBtn.setBackground(CARD_BG);
+            toggleBtn.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 6));
+            toggleBtn.setFocusPainted(false);
+            toggleBtn.setContentAreaFilled(false);
+            toggleBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            toggleBtn.setToolTipText("Minimizar barra de progreso");
+            toggleBtn.addActionListener(e -> toggleCollapse());
+            topRow.add(toggleBtn, BorderLayout.EAST);
+
+            contentPanel.add(topRow);
+            contentPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+
+            JLabel headerTitle = new JLabel("Progreso de Niveles");
+            headerTitle.setFont(FONT_BOLD.deriveFont(15f));
+            headerTitle.setForeground(TEXT_WHITE);
+            headerTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+            contentPanel.add(headerTitle);
+
+            JLabel headerSub = new JLabel("Personalizados (MarioGPT + Ollama)");
+            headerSub.setFont(FONT_REGULAR.deriveFont(11f));
+            headerSub.setForeground(TEXT_MUTED);
+            headerSub.setAlignmentX(Component.LEFT_ALIGNMENT);
+            contentPanel.add(headerSub);
+
+            contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            JSeparator sep = new JSeparator();
+            sep.setForeground(new Color(55, 65, 81));
+            sep.setBackground(new Color(55, 65, 81));
+            sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+            sep.setAlignmentX(Component.LEFT_ALIGNMENT);
+            contentPanel.add(sep);
+            contentPanel.add(Box.createRigidArea(new Dimension(0, 12)));
+
+            // 2. Personalizado 1 Card
+            JPanel p1Card = createLevelCardPanel();
+            JPanel p1Header = new JPanel(new BorderLayout());
+            p1Header.setBackground(ITEM_BG);
+
+            JLabel p1Title = new JLabel("Personalizado 1");
+            p1Title.setFont(FONT_BOLD.deriveFont(13f));
+            p1Title.setForeground(TEXT_WHITE);
+            p1Header.add(p1Title, BorderLayout.WEST);
+
+            p1Badge = createPillLabel("PENDIENTE", new Color(55, 65, 81), new Color(209, 213, 219));
+            p1Header.add(p1Badge, BorderLayout.EAST);
+            p1Card.add(p1Header);
+            p1Card.add(Box.createRigidArea(new Dimension(0, 6)));
+
+            p1Detail = new JLabel("Esperando telemetría...");
+            p1Detail.setFont(FONT_REGULAR.deriveFont(11f));
+            p1Detail.setForeground(new Color(156, 163, 175));
+            p1Detail.setAlignmentX(Component.LEFT_ALIGNMENT);
+            p1Card.add(p1Detail);
+            p1Card.add(Box.createRigidArea(new Dimension(0, 8)));
+
+            p1Bar = new JProgressBar(0, 100);
+            styleProgressBar(p1Bar);
+            p1Card.add(p1Bar);
+
+            contentPanel.add(p1Card);
+            contentPanel.add(Box.createRigidArea(new Dimension(0, 12)));
+
+            // 3. Personalizado 2 Card
+            JPanel p2Card = createLevelCardPanel();
+            JPanel p2Header = new JPanel(new BorderLayout());
+            p2Header.setBackground(ITEM_BG);
+
+            JLabel p2Title = new JLabel("Personalizado 2");
+            p2Title.setFont(FONT_BOLD.deriveFont(13f));
+            p2Title.setForeground(TEXT_WHITE);
+            p2Header.add(p2Title, BorderLayout.WEST);
+
+            p2Badge = createPillLabel("PENDIENTE", new Color(55, 65, 81), new Color(209, 213, 219));
+            p2Header.add(p2Badge, BorderLayout.EAST);
+            p2Card.add(p2Header);
+            p2Card.add(Box.createRigidArea(new Dimension(0, 6)));
+
+            p2Detail = new JLabel("Esperando telemetría...");
+            p2Detail.setFont(FONT_REGULAR.deriveFont(11f));
+            p2Detail.setForeground(new Color(156, 163, 175));
+            p2Detail.setAlignmentX(Component.LEFT_ALIGNMENT);
+            p2Card.add(p2Detail);
+            p2Card.add(Box.createRigidArea(new Dimension(0, 8)));
+
+            p2Bar = new JProgressBar(0, 100);
+            styleProgressBar(p2Bar);
+            p2Card.add(p2Bar);
+
+            contentPanel.add(p2Card);
+            contentPanel.add(Box.createRigidArea(new Dimension(0, 14)));
+
+            // 4. Overall Status Box
+            summaryBox = new JPanel();
+            summaryBox.setLayout(new BoxLayout(summaryBox, BoxLayout.Y_AXIS));
+            summaryBox.setBackground(new Color(30, 41, 59));
+            summaryBox.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(79, 70, 229, 120), 1, true),
+                    new EmptyBorder(10, 10, 10, 10)
+            ));
+            summaryBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            summaryTitle = new JLabel("• Generando en 2° plano");
+            summaryTitle.setFont(FONT_BOLD.deriveFont(12f));
+            summaryTitle.setForeground(new Color(224, 231, 255));
+            summaryTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+            summaryBox.add(summaryTitle);
+            summaryBox.add(Box.createRigidArea(new Dimension(0, 4)));
+
+            summarySubtitle = new JLabel("<html><body style='width: 250px; color: rgb(148, 163, 184); font-size: 10px;'>"
+                    + "Continúa normalmente con la sesión; los niveles se preparan de forma transparente."
+                    + "</body></html>");
+            summarySubtitle.setFont(FONT_REGULAR.deriveFont(10.5f));
+            summarySubtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+            summaryBox.add(summarySubtitle);
+
+            contentPanel.add(summaryBox);
+
+            // Mini collapsed panel
+            miniPanel = new JPanel();
+            miniPanel.setLayout(new BoxLayout(miniPanel, BoxLayout.Y_AXIS));
+            miniPanel.setBackground(CARD_BG);
+            miniPanel.setBorder(new EmptyBorder(8, 4, 8, 4));
+
+            JButton expandBtn = new JButton("◀");
+            expandBtn.setFont(FONT_BOLD.deriveFont(11f));
+            expandBtn.setForeground(new Color(245, 158, 11));
+            expandBtn.setBackground(CARD_BG);
+            expandBtn.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            expandBtn.setFocusPainted(false);
+            expandBtn.setContentAreaFilled(false);
+            expandBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            expandBtn.setToolTipText("Expandir barra de generación");
+            expandBtn.addActionListener(e -> toggleCollapse());
+            expandBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+            miniPanel.add(expandBtn);
+            miniPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+
+            JLabel miniBadge = new JLabel("DEV");
+            miniBadge.setFont(FONT_BOLD.deriveFont(9f));
+            miniBadge.setForeground(Color.BLACK);
+            miniBadge.setBackground(new Color(245, 158, 11));
+            miniBadge.setOpaque(true);
+            miniBadge.setBorder(new EmptyBorder(2, 3, 2, 3));
+            miniBadge.setAlignmentX(Component.CENTER_ALIGNMENT);
+            miniPanel.add(miniBadge);
+            miniPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+
+            miniClock = new JLabel("00m");
+            miniClock.setFont(FONT_SEMIBOLD.deriveFont(10f));
+            miniClock.setForeground(new Color(253, 230, 138));
+            miniClock.setAlignmentX(Component.CENTER_ALIGNMENT);
+            miniPanel.add(miniClock);
+
+            if (devSidePanelCollapsed) {
+                setPreferredSize(new Dimension(42, 0));
+                add(miniPanel, BorderLayout.NORTH);
+            } else {
+                setPreferredSize(new Dimension(315, 0));
+                add(contentPanel, BorderLayout.NORTH);
+            }
+
+            timer = new Timer(300, e -> updateProgress());
+            timer.start();
+            updateProgress();
+        }
+
+        private void toggleCollapse() {
+            devSidePanelCollapsed = !devSidePanelCollapsed;
+            removeAll();
+            if (devSidePanelCollapsed) {
+                setPreferredSize(new Dimension(42, 0));
+                add(miniPanel, BorderLayout.NORTH);
+            } else {
+                setPreferredSize(new Dimension(315, 0));
+                add(contentPanel, BorderLayout.NORTH);
+            }
+            Container parent = getParent();
+            if (parent instanceof ScreenContainer sc) {
+                sc.updateWestSpacer();
+            }
+            if (parent != null) {
+                parent.revalidate();
+                parent.repaint();
+            }
+        }
+
+        @Override
+        public void removeNotify() {
+            if (timer != null && timer.isRunning()) {
+                timer.stop();
+            }
+            super.removeNotify();
+        }
+
+        private void updateProgress() {
+            if (job == null) return;
+
+            long elapsed = job.getElapsedSeconds();
+            clockLabel.setText(String.format("T+ %02d:%02d", elapsed / 60, elapsed % 60));
+            miniClock.setText(String.format("%02dm", elapsed / 60));
+
+            updateLevelUI(0, p1Badge, p1Detail, p1Bar);
+            updateLevelUI(1, p2Badge, p2Detail, p2Bar);
+
+            boolean allDone = job.isAllDone();
+            if (allDone) {
+                summaryBox.setBackground(new Color(6, 78, 59, 140));
+                summaryBox.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(16, 185, 129), 1, true),
+                        new EmptyBorder(10, 10, 10, 10)
+                ));
+                summaryTitle.setText("✓ ¡Niveles listos!");
+                summaryTitle.setForeground(new Color(167, 243, 208));
+                summarySubtitle.setText("<html><body style='width: 250px; color: rgb(209, 250, 229); font-size: 10px;'>"
+                        + "2/2 niveles listos en disco. Cero tiempos de espera al jugarlos."
+                        + "</body></html>");
+            } else {
+                summaryBox.setBackground(new Color(30, 41, 59));
+                summaryBox.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(79, 70, 229, 120), 1, true),
+                        new EmptyBorder(10, 10, 10, 10)
+                ));
+                summaryTitle.setText("• Generando en 2° plano");
+                summaryTitle.setForeground(new Color(224, 231, 255));
+                summarySubtitle.setText("<html><body style='width: 250px; color: rgb(148, 163, 184); font-size: 10px;'>"
+                        + "Continúa normalmente con la sesión; los niveles se preparan de forma transparente."
+                        + "</body></html>");
+            }
+        }
+
+        private void updateLevelUI(int index, JLabel badge, JLabel detail, JProgressBar bar) {
+            GenStage stage = job.getStage(index);
+            String det = job.getStageDetail(index);
+            int pct = job.getProgressPercent(index);
+
+            bar.setValue(pct);
+            detail.setText("<html><body style='width: 250px; color: rgb(156, 163, 175); font-size: 10.5px;'>" + det + "</body></html>");
+
+            switch (stage) {
+                case PENDING -> {
+                    badge.setText("PENDIENTE");
+                    badge.setBackground(new Color(55, 65, 81));
+                    badge.setForeground(new Color(209, 213, 219));
+                    bar.setForeground(new Color(75, 85, 99));
+                }
+                case QUEUED -> {
+                    badge.setText("EN COLA");
+                    badge.setBackground(new Color(30, 58, 138));
+                    badge.setForeground(new Color(191, 219, 254));
+                    bar.setForeground(new Color(59, 130, 246));
+                }
+                case OLLAMA -> {
+                    badge.setText("1/3 OLLAMA");
+                    badge.setBackground(new Color(67, 56, 202));
+                    badge.setForeground(new Color(224, 231, 255));
+                    bar.setForeground(new Color(99, 102, 241));
+                }
+                case MARIOGPT -> {
+                    badge.setText("2/3 MARIOGPT");
+                    badge.setBackground(new Color(109, 40, 217));
+                    badge.setForeground(new Color(237, 233, 254));
+                    bar.setForeground(new Color(168, 85, 247));
+                }
+                case SANITIZING -> {
+                    badge.setText("3/3 SANITIZ.");
+                    badge.setBackground(new Color(180, 83, 9));
+                    badge.setForeground(new Color(254, 243, 199));
+                    bar.setForeground(new Color(245, 158, 11));
+                }
+                case READY -> {
+                    badge.setText("LISTO ✓");
+                    badge.setBackground(new Color(6, 95, 70));
+                    badge.setForeground(new Color(209, 250, 229));
+                    bar.setForeground(new Color(16, 185, 129));
+                }
+                case FALLBACK_READY -> {
+                    badge.setText("RESPALDO ⚠");
+                    badge.setBackground(new Color(146, 64, 14));
+                    badge.setForeground(new Color(254, 243, 199));
+                    bar.setForeground(new Color(245, 158, 11));
+                }
+                case FAILED -> {
+                    badge.setText("FALLÓ ✕");
+                    badge.setBackground(new Color(153, 27, 27));
+                    badge.setForeground(new Color(254, 202, 202));
+                    bar.setForeground(new Color(239, 68, 68));
+                }
+            }
+        }
+
+        private JPanel createLevelCardPanel() {
+            JPanel p = new JPanel();
+            p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+            p.setBackground(ITEM_BG);
+            p.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
+                    new EmptyBorder(10, 10, 10, 10)
+            ));
+            p.setAlignmentX(Component.LEFT_ALIGNMENT);
+            return p;
+        }
+
+        private JLabel createPillLabel(String text, Color bg, Color fg) {
+            JLabel l = new JLabel(text);
+            l.setFont(FONT_BOLD.deriveFont(9.5f));
+            l.setBackground(bg);
+            l.setForeground(fg);
+            l.setOpaque(true);
+            l.setBorder(new EmptyBorder(2, 6, 2, 6));
+            return l;
+        }
+
+        private void styleProgressBar(JProgressBar bar) {
+            bar.setBackground(new Color(17, 24, 39));
+            bar.setForeground(ACCENT_PRIMARY);
+            bar.setBorder(BorderFactory.createEmptyBorder());
+            bar.setPreferredSize(new Dimension(240, 8));
+            bar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 8));
+            bar.setAlignmentX(Component.LEFT_ALIGNMENT);
+        }
+    }
+
     private static class ScreenContainer extends JPanel {
         private final JPanel centerPanel = new JPanel(new GridBagLayout());
+        private JPanel westSpacer = null;
 
         public ScreenContainer(boolean showEmergency) {
             super(new BorderLayout());
@@ -2128,7 +2282,36 @@ public class ExperimentRunner {
                 super.add(topBar, BorderLayout.NORTH);
             }
 
+            if (shouldShowDevGenSidePanel()) {
+                DevGenerationSidePanel sidePanel = new DevGenerationSidePanel(activeGenerationJob);
+                super.add(sidePanel, BorderLayout.EAST);
+
+                int screenWidth = 1920;
+                try {
+                    if (masterFrame != null && masterFrame.getWidth() > 0) {
+                        screenWidth = masterFrame.getWidth();
+                    } else if (!GraphicsEnvironment.isHeadless()) {
+                        screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+                    }
+                } catch (Exception ignored) {
+                }
+                if (screenWidth >= 1500) {
+                    westSpacer = new JPanel();
+                    westSpacer.setOpaque(false);
+                    int spacerW = devSidePanelCollapsed ? 42 : 315;
+                    westSpacer.setPreferredSize(new Dimension(spacerW, 10));
+                    super.add(westSpacer, BorderLayout.WEST);
+                }
+            }
+
             super.add(centerPanel, BorderLayout.CENTER);
+        }
+
+        public void updateWestSpacer() {
+            if (westSpacer != null) {
+                int spacerW = devSidePanelCollapsed ? 42 : 315;
+                westSpacer.setPreferredSize(new Dimension(spacerW, 10));
+            }
         }
 
         @Override
@@ -2699,36 +2882,129 @@ public class ExperimentRunner {
     private static class GenerationJob {
         private final String python;
         private final Path dir;
-        private volatile List<CompletableFuture<Path>> futures = new ArrayList<>();
+        private final int totalLevels = 2;
+        private final List<CompletableFuture<Path>> futures = new ArrayList<>();
+        private final BlockingQueue<Integer> queue = new LinkedBlockingQueue<>();
+        private final ConcurrentHashMap<Integer, Path> telemetries = new ConcurrentHashMap<>();
+        private final AtomicReferenceArray<GenStage> stages = new AtomicReferenceArray<>(2);
+        private final AtomicReferenceArray<String> stageDetails = new AtomicReferenceArray<>(2);
+        private final AtomicReferenceArray<String> prompts = new AtomicReferenceArray<>(2);
+        private final AtomicReferenceArray<Path> resultPaths = new AtomicReferenceArray<>(2);
         private volatile Process current;
         private volatile boolean cancelled;
+        private volatile boolean started;
+        private volatile long jobStartTime = 0;
+        private volatile Thread workerThread;
 
         GenerationJob(String python, Path dir) {
             this.python = python;
             this.dir = dir;
+            for (int i = 0; i < totalLevels; i++) {
+                futures.add(new CompletableFuture<>());
+                stages.set(i, GenStage.PENDING);
+                stageDetails.set(i, "Pendiente de telemetría (Familiarización " + (i + 1) + ")");
+            }
         }
 
-        void start(List<Path> telemetries) {
-            List<CompletableFuture<Path>> jobs = new ArrayList<>();
-            for (int k = 0; k < telemetries.size(); k++) {
-                jobs.add(new CompletableFuture<>());
+        synchronized void enqueue(int k, Path telemetry) {
+            if (k < 0 || k >= totalLevels) return;
+            if (telemetries.containsKey(k)) return;
+            telemetries.put(k, telemetry);
+            if (stages.get(k) == GenStage.PENDING) {
+                stages.set(k, GenStage.QUEUED);
+                stageDetails.set(k, "En cola para generación");
             }
-            futures = jobs;
-            Thread worker = new Thread(() -> {
-                for (int k = 0; k < telemetries.size(); k++) {
-                    if (cancelled) {
-                        jobs.get(k).completeExceptionally(new IllegalStateException("Generación cancelada"));
-                        continue;
-                    }
+            if (!started) {
+                jobStartTime = System.currentTimeMillis();
+                started = true;
+            }
+            ensureWorkerStarted();
+            queue.offer(k);
+            System.out.println("[DEV] Nivel personalizado " + (k + 1) + " encolado inmediatamente (" + telemetry.getFileName() + ")");
+        }
+
+        synchronized void start(List<Path> telemetriesList) {
+            if (telemetriesList == null) return;
+            for (int k = 0; k < telemetriesList.size(); k++) {
+                enqueue(k, telemetriesList.get(k));
+            }
+        }
+
+        private synchronized void ensureWorkerStarted() {
+            if (workerThread != null && workerThread.isAlive()) {
+                return;
+            }
+            workerThread = new Thread(() -> {
+                while (!cancelled) {
                     try {
-                        jobs.get(k).complete(generate(k, telemetries.get(k)));
-                    } catch (Exception e) {
-                        jobs.get(k).completeExceptionally(e);
+                        Integer k = queue.poll(1, TimeUnit.SECONDS);
+                        if (k == null) {
+                            if (isAllDone()) {
+                                break;
+                            }
+                            continue;
+                        }
+                        Path tel = telemetries.get(k);
+                        if (tel != null) {
+                            try {
+                                Path res = generate(k, tel);
+                                resultPaths.set(k, res);
+                                futures.get(k).complete(res);
+                            } catch (Exception e) {
+                                stages.set(k, GenStage.FAILED);
+                                stageDetails.set(k, "Error: " + e.getMessage());
+                                futures.get(k).completeExceptionally(e);
+                            }
+                        }
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        break;
                     }
                 }
-            }, "level-generation");
-            worker.setDaemon(true);
-            worker.start();
+            }, "level-generation-worker");
+            workerThread.setDaemon(true);
+            workerThread.start();
+        }
+
+        boolean isStarted() {
+            return started;
+        }
+
+        boolean isAllDone() {
+            if (!started) return false;
+            for (int i = 0; i < totalLevels; i++) {
+                GenStage s = stages.get(i);
+                if (s != GenStage.READY && s != GenStage.FALLBACK_READY && s != GenStage.FAILED) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        GenStage getStage(int k) {
+            return (k >= 0 && k < totalLevels) ? stages.get(k) : GenStage.PENDING;
+        }
+
+        String getStageDetail(int k) {
+            return (k >= 0 && k < totalLevels) ? stageDetails.get(k) : "";
+        }
+
+        int getProgressPercent(int k) {
+            if (k < 0 || k >= totalLevels) return 0;
+            return switch (stages.get(k)) {
+                case PENDING -> 0;
+                case QUEUED -> 10;
+                case OLLAMA -> 35;
+                case MARIOGPT -> 75;
+                case SANITIZING -> 92;
+                case READY, FALLBACK_READY -> 100;
+                case FAILED -> 0;
+            };
+        }
+
+        long getElapsedSeconds() {
+            if (jobStartTime <= 0) return 0;
+            return (System.currentTimeMillis() - jobStartTime) / 1000;
         }
 
         private Path generate(int k, Path telemetry) {
@@ -2737,6 +3013,8 @@ public class ExperimentRunner {
                 Files.createDirectories(outDir);
                 System.out.println("\n=== Generando nivel personalizado " + (k + 1) + " ===");
 
+                stages.set(k, GenStage.OLLAMA);
+                stageDetails.set(k, "Analizando telemetría con Ollama...");
                 String prompt = null;
                 try {
                     ProcessBuilder promptBuilder = new ProcessBuilder(python, "tools/telemetry_to_mariogpt_prompt.py",
@@ -2749,6 +3027,7 @@ public class ExperimentRunner {
                     int promptExit = promptProcess.waitFor();
                     if (!cancelled && promptExit == 0) {
                         prompt = extractPrompt(promptOutput);
+                        prompts.set(k, prompt);
                         System.out.println("Prompt para MarioGPT: " + prompt);
                     }
                 } catch (Exception pe) {
@@ -2757,10 +3036,13 @@ public class ExperimentRunner {
 
                 if (prompt == null || prompt.isBlank()) {
                     prompt = "difficulty=medium; route=high; jump=medium; enemies=low; hazards=medium; rewards=coins";
+                    prompts.set(k, prompt);
                     System.out.println("Usando prompt base para MarioGPT: " + prompt);
                 }
 
                 if (!cancelled) {
+                    stages.set(k, GenStage.MARIOGPT);
+                    stageDetails.set(k, "Generando mapa con MarioGPT...");
                     ProcessBuilder builder = new ProcessBuilder(python, "tools/mario_gpt_generate.py",
                             "--prompt", prompt,
                             "--output-dir", outDir.toAbsolutePath().toString());
@@ -2770,6 +3052,8 @@ public class ExperimentRunner {
                     current = process;
                     int exit = process.waitFor();
                     if (exit == 0) {
+                        stages.set(k, GenStage.SANITIZING);
+                        stageDetails.set(k, "Sanitizando y validando estructura...");
                         try (Stream<Path> files = Files.list(outDir)) {
                             Optional<Path> gen = files.filter(f -> f.getFileName().toString().endsWith(".txt")).findFirst();
                             if (gen.isPresent()) {
@@ -2777,6 +3061,9 @@ public class ExperimentRunner {
                                 String raw = Files.readString(genFile);
                                 String sanitized = sanitizeLevel(raw);
                                 Files.writeString(genFile, sanitized, StandardCharsets.UTF_8);
+                                stages.set(k, GenStage.READY);
+                                stageDetails.set(k, "✔ Listo (" + genFile.getFileName() + ")");
+                                resultPaths.set(k, genFile);
                                 return genFile;
                             }
                         }
@@ -2788,7 +3075,11 @@ public class ExperimentRunner {
                 System.err.println("Error durante la generación de nivel: " + e.getMessage());
             }
 
-            return resolveFallbackLevel(k, outDir);
+            stages.set(k, GenStage.FALLBACK_READY);
+            stageDetails.set(k, "Nivel de respaldo listo");
+            Path fallback = resolveFallbackLevel(k, outDir);
+            resultPaths.set(k, fallback);
+            return fallback;
         }
 
         private Path resolveFallbackLevel(int k, Path outDir) {
@@ -2862,7 +3153,7 @@ public class ExperimentRunner {
         }
 
         boolean isReady(int index) {
-            if (futures == null || index < 0 || index >= futures.size()) {
+            if (index < 0 || index >= futures.size()) {
                 return false;
             }
             return futures.get(index).isDone();
@@ -2875,6 +3166,13 @@ public class ExperimentRunner {
 
         void cancel() {
             cancelled = true;
+            for (int i = 0; i < totalLevels; i++) {
+                if (!futures.get(i).isDone()) {
+                    stages.set(i, GenStage.FAILED);
+                    stageDetails.set(i, "Cancelado");
+                    futures.get(i).completeExceptionally(new IllegalStateException("Generación cancelada"));
+                }
+            }
             Process process = current;
             if (process != null) {
                 process.descendants().forEach(ProcessHandle::destroyForcibly);
