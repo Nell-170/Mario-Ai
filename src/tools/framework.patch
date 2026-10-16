@@ -16,7 +16,7 @@ index b888366b..a525aa15 100644
                  this.actions[MarioActions.SPEED.getValue()] = isPressed;
                  break;
 diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
-index 1f58d96b..d5f3ab79 100644
+index 1f58d96b..581b7b86 100644
 --- a/src/engine/core/MarioGame.java
 +++ b/src/engine/core/MarioGame.java
 @@ -11,6 +11,12 @@ import agents.human.Agent;
@@ -479,10 +479,32 @@ index 1f58d96b..d5f3ab79 100644
              }
              //check if delay needed
              if (this.getDelay(fps) > 0) {
-@@ -279,6 +652,26 @@ public class MarioGame {
+@@ -278,6 +651,47 @@ public class MarioGame {
+                     break;
                  }
              }
-         }
++
++            // Reintentos ilimitados dentro del presupuesto de tiempo (Protocolo Mostro)
++            if (this.world.gameStatus == GameStatus.LOSE && !wasManualFinish && this.world.currentTimer > 1000) {
++                try {
++                    Thread.sleep(300);
++                } catch (InterruptedException ignored) {}
++
++                int remainingTimer = this.world.currentTimer;
++                this.world = new MarioWorld(this.killEvents);
++                this.world.visuals = visual;
++                this.world.initializeLevel(level, remainingTimer);
++                if (visual) {
++                    this.world.initializeVisuals(this.render.getGraphicsConfiguration());
++                }
++                this.world.mario.isLarge = marioState > 0;
++                this.world.mario.isFire = marioState > 1;
++                this.world.update(new boolean[MarioActions.numberOfActions()]);
++                agentTimer = new MarioTimer(MarioGame.maxTime);
++                this.agent.initialize(new MarioForwardModel(this.world.clone()), agentTimer);
++                currentTime = System.currentTimeMillis();
++            }
++        }
 +        if (visual) {
 +            Graphics backBuffer = this.render.getGraphics();
 +            if (backBuffer != null && renderTarget != null && currentBuffer != null) {
@@ -502,10 +524,9 @@ index 1f58d96b..d5f3ab79 100644
 +            try {
 +                currentBuffer.dispose();
 +            } catch (Throwable ignored) {}
-+        }
+         }
          return new MarioResult(this.world, gameEvents, agentEvents);
      }
- }
 diff --git a/src/engine/core/MarioRender.java b/src/engine/core/MarioRender.java
 index aa278681..d3df5b74 100755
 --- a/src/engine/core/MarioRender.java

@@ -22,6 +22,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,6 +52,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -93,6 +96,28 @@ public class ExperimentRunner {
     }
 
     private record Question(String id, String block, String type, String text, String options) {
+    }
+
+    private record PlayedLevelInfo(
+            int orderPlayed,
+            char type,
+            int levelIndex,
+            String stepCode,
+            Path levelFile,
+            String levelContent,
+            BufferedImage thumbnail
+    ) {
+    }
+
+    private record AttributionAnswer(
+            int orderPlayed,
+            char type,
+            int levelIndex,
+            String stepCode,
+            Path levelFile,
+            String attribution,
+            int confidence
+    ) {
     }
 
     // Fonts & Theme
@@ -304,7 +329,7 @@ public class ExperimentRunner {
                         "No has aceptado el consentimiento para registrar datos de la partida.\n\n"
                                 + "¿Deseas jugar de todos modos libremente para divertirte?",
                         "Sí, jugar libremente", "No, salir del juego")) {
-                    freePlay(config, normal, timer);
+                    freePlay(config, normal, null, timer);
                 }
                 showExitScreen("¡Gracias!", "La sesión de juego ha finalizado.");
                 System.exit(0);
@@ -322,6 +347,7 @@ public class ExperimentRunner {
             saveRow(RESULTS.resolve("initial.tsv"), concat(List.of("id", "group"), ids(initial)), initialAnswers);
 
             // 5. Experiment Levels Loop
+            List<PlayedLevelInfo> playedLevels = new ArrayList<>();
             for (int i = 0; i < steps.size(); i++) {
                 Step step = steps.get(i);
                 String stepCode = SEQUENCES.get(group).split(" ")[i];
@@ -363,7 +389,9 @@ public class ExperimentRunner {
                             id,
                             timer
                     );
-                    showGeneratingScreen(i + 1, steps.size());
+                    if (!generation.isReady(step.index())) {
+                        showGeneratingScreen(i + 1, steps.size());
+                    }
                     levelFile = generation.await(step.index());
                 }
 
@@ -375,6 +403,10 @@ public class ExperimentRunner {
                         id,
                         timer
                 );
+
+                String levelContent = sanitizeLevel(Files.readString(levelFile));
+                BufferedImage thumbnail = renderLevelThumbnail(levelContent, 480, 64);
+                playedLevels.add(new PlayedLevelInfo(i + 1, step.type(), step.index(), stepCode, levelFile, levelContent, thumbnail));
 
                 playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
 
@@ -390,17 +422,26 @@ public class ExperimentRunner {
                         row);
             }
 
-            // 6. Final Thank You Screen
-            boolean wantFreePlay = showChoiceScreen("¡Completado con éxito!",
-                    "¡Muchísimas gracias por jugar y por tus respuestas!\n\n"
-                            + "Has completado todos los niveles principales de la sesión.\n"
-                            + "¿Deseas seguir jugando otros niveles libremente por diversión?",
-                    "Jugar más niveles", "Finalizar y salir");
+            // 6. Fase 5: Juego Voluntario (Opcional según protocolo)
+            boolean wantFreePlay = showChoiceScreen("Fase Voluntaria de Juego",
+                    "¡Has completado exitosamente los 6 niveles principales de la sesión!\n\n"
+                            + "La parte obligatoria del estudio ha concluido. Si deseas, puedes jugar libremente\n"
+                            + "durante unos minutos adicionales (hasta 5 minutos) por pura diversión,\n"
+                            + "o si prefieres, puedes pasar directamente a la fase final de cierre.\n\n"
+                            + "¿Deseas jugar libremente antes del cierre final?",
+                    "Jugar libremente", "Pasar al bloque de cierre");
             if (wantFreePlay) {
-                freePlay(config, normal, timer);
+                freePlay(config, normal, playedLevels, timer);
             }
 
-            showExitScreen("¡Gracias por jugar!", "Esperamos que te hayas divertido. ¡Hasta la próxima!");
+            // 7. Fase 6: Cierre (Ranking con miniaturas interactivas, Atribución, Comentarios)
+            showClosureBlock(playedLevels, id, group, dir);
+
+            // 8. Pantalla final de despedida
+            showExitScreen("¡Muchas gracias por participar!",
+                    "Tus respuestas y datos de juego han sido guardados con éxito.\n"
+                            + "Tu participación es invaluable para nuestra investigación.\n\n"
+                            + "¡Esperamos que te hayas divertido!");
         } catch (Exception e) {
             generation.cancel();
             showExitScreen("Ha ocurrido un problema", "Detalle: " + e.getMessage());
@@ -419,8 +460,77 @@ public class ExperimentRunner {
         System.exit(0);
     }
 
+    public static String sanitizeLevel(String content) {
+        if (content == null || content.isBlank()) {
+            return content;
+        }
+        String[] lines = content.split("\\r?\\n");
+        if (lines.length == 0) {
+            return content;
+        }
+        int numRows = lines.length;
+        int numCols = lines[0].length();
+        char[][] grid = new char[numRows][numCols];
+        for (int r = 0; r < numRows; r++) {
+            String line = lines[r];
+            for (int c = 0; c < numCols; c++) {
+                grid[r][c] = (c < line.length()) ? line.charAt(c) : '-';
+            }
+        }
+
+        // 1. Ensure solid ground at spawn area (columns 0..4)
+        int groundStartRow = Math.max(0, numRows - 2);
+        for (int c = 0; c < Math.min(5, numCols); c++) {
+            for (int r = groundStartRow; r < numRows; r++) {
+                grid[r][c] = 'X';
+            }
+        }
+
+        // 2. Clear hazards, enemies and blocks from columns 0..4 above ground
+        for (int c = 0; c < Math.min(5, numCols); c++) {
+            for (int r = 0; r < groundStartRow; r++) {
+                grid[r][c] = '-';
+            }
+        }
+
+        // 3. Clear any enemies in the first 7 columns to guarantee safe runway
+        for (int c = 0; c < Math.min(7, numCols); c++) {
+            for (int r = 0; r < numRows; r++) {
+                char ch = grid[r][c];
+                if (ch == 'E' || ch == 'g' || ch == 'G' || ch == 'k' || ch == 'K' ||
+                    ch == 'r' || ch == 'R' || ch == 'y' || ch == 'Y' || ch == 'T' ||
+                    ch == '*' || ch == 'B' || ch == 'b') {
+                    grid[r][c] = '-';
+                }
+            }
+        }
+
+        // 4. Place explicit Mario spawn marker 'M' at column 1, row groundStartRow - 1
+        int marioRow = Math.max(0, groundStartRow - 1);
+        if (numCols > 1) {
+            grid[marioRow][1] = 'M';
+        }
+
+        // 5. Ensure ground at level finish area (last 4 columns)
+        int lastColStart = Math.max(0, numCols - 4);
+        for (int c = lastColStart; c < numCols; c++) {
+            for (int r = groundStartRow; r < numRows; r++) {
+                grid[r][c] = 'X';
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int r = 0; r < numRows; r++) {
+            sb.append(new String(grid[r]));
+            if (r < numRows - 1) {
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
     private static Path playLevel(Path levelFile, int timer, Path telemetryFile) throws IOException {
-        String level = Files.readString(levelFile);
+        String level = sanitizeLevel(Files.readString(levelFile));
         int seed = new Random().nextInt(1_000_000);
         MarioGame game = new MarioGame();
         activeGame = game;
@@ -439,13 +549,22 @@ public class ExperimentRunner {
         return telemetryFile;
     }
 
-    private static void freePlay(Properties config, List<Path> normal, int timer) throws Exception {
+    private static void freePlay(Properties config, List<Path> normal, List<PlayedLevelInfo> playedLevels, int timer) throws Exception {
         Path humanDir = SRC.resolve(config.getProperty("human_dir").trim());
-        List<Path> pool;
-        try (Stream<Path> files = Files.list(humanDir)) {
-            pool = files.filter(f -> f.getFileName().toString().endsWith(".txt")).collect(Collectors.toList());
+        List<Path> pool = new ArrayList<>();
+        if (playedLevels != null && !playedLevels.isEmpty()) {
+            for (PlayedLevelInfo pli : playedLevels) {
+                if (pli.levelFile() != null && Files.exists(pli.levelFile())) {
+                    pool.add(pli.levelFile());
+                }
+            }
         }
-        pool.addAll(normal);
+        if (pool.isEmpty()) {
+            try (Stream<Path> files = Files.list(humanDir)) {
+                pool = files.filter(f -> f.getFileName().toString().endsWith(".txt")).collect(Collectors.toList());
+            }
+            pool.addAll(normal);
+        }
         Random random = new Random();
         Path last = null;
         do {
@@ -456,7 +575,7 @@ public class ExperimentRunner {
             last = level;
             playLevel(level, timer, null);
         } while (showChoiceScreen("Modo Juego Libre", "¿Deseas jugar otro nivel?", "Jugar otro nivel",
-                "Salir del juego"));
+                "Pasar al bloque de cierre"));
     }
 
     // ==========================================
@@ -603,7 +722,7 @@ public class ExperimentRunner {
 
             if (developMode && currentDevBanner != null && !currentDevBanner.isBlank()) {
                 card.add(Box.createRigidArea(new Dimension(0, 8)));
-                JLabel devDesc = new JLabel("<html><body style='width: 720px; color: rgb(250, 204, 21); font-weight: bold;'>🛠 DEV: " + currentDevBanner + "</body></html>");
+                JLabel devDesc = new JLabel("<html><body style='width: 720px; color: rgb(250, 204, 21); font-weight: bold;'>[DEV INFO] " + currentDevBanner + "</body></html>");
                 devDesc.setFont(FONT_SEMIBOLD.deriveFont(13f));
                 devDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
                 card.add(devDesc);
@@ -798,7 +917,7 @@ public class ExperimentRunner {
             card.add(Box.createRigidArea(new Dimension(0, 4)));
 
             if (developMode && currentDevBanner != null && !currentDevBanner.isBlank()) {
-                JLabel devSub = new JLabel("🛠 DEV INFO: " + currentDevBanner);
+                JLabel devSub = new JLabel("[DEV INFO] " + currentDevBanner);
                 devSub.setFont(FONT_SEMIBOLD.deriveFont(13f));
                 devSub.setForeground(new Color(250, 204, 21));
                 devSub.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -956,6 +1075,905 @@ public class ExperimentRunner {
     }
 
     // ==========================================
+    // BLOQUE DE CIERRE (FASE 6: CIERRE)
+    // ==========================================
+
+    private static void showClosureBlock(List<PlayedLevelInfo> playedLevels, String id, String group, Path dir)
+            throws Exception {
+        setDevContext(
+                "ID: " + id + " | Fase de Cierre (1/3): Clasificación de Niveles | Grupo " + group,
+                "Fase de Cierre (Ranking)",
+                "N/A",
+                "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
+                id,
+                0
+        );
+
+        // 1. Clasificación / Ranking (del que más me gustó al que menos) con miniaturas interactivas
+        List<PlayedLevelInfo> ranked = showRankingScreen(playedLevels, id, group);
+
+        setDevContext(
+                "ID: " + id + " | Fase de Cierre (2/3): Atribución de Autoría | Grupo " + group,
+                "Fase de Cierre (Atribución)",
+                "N/A",
+                "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
+                id,
+                0
+        );
+
+        // 2. Atribución de autoría (Persona vs Programa + Certeza 1-7)
+        List<AttributionAnswer> attributions = showAttributionScreen(playedLevels, id, group);
+
+        setDevContext(
+                "ID: " + id + " | Fase de Cierre (3/3): Comentarios Finales | Grupo " + group,
+                "Fase de Cierre (Comentarios)",
+                "N/A",
+                "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
+                id,
+                0
+        );
+
+        // 3. Comentarios opcionales
+        String feedback = showCommentsScreen(id, group);
+
+        // 4. Guardar resultados en TSV y carpeta del participante
+        saveClosureData(id, group, ranked, attributions, feedback, dir);
+    }
+
+    private static List<PlayedLevelInfo> showRankingScreen(List<PlayedLevelInfo> playedLevels, String id, String group)
+            throws Exception {
+        CompletableFuture<List<PlayedLevelInfo>> future = new CompletableFuture<>();
+        SwingUtilities.invokeLater(() -> {
+            List<PlayedLevelInfo> currentList = new ArrayList<>(playedLevels);
+
+            JPanel bg = createScreenContainer();
+            JPanel card = createModernCard(1080, 800);
+
+            card.add(createBadge("FASE DE CIERRE (1 DE 3) — CLASIFICACIÓN DE PREFERENCIA"));
+            card.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            JLabel title = new JLabel("Ordena los niveles del que MÁS te gustó al que MENOS");
+            title.setFont(FONT_BOLD.deriveFont(28f));
+            title.setForeground(TEXT_WHITE);
+            title.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(title);
+            card.add(Box.createRigidArea(new Dimension(0, 6)));
+
+            if (developMode && currentDevBanner != null && !currentDevBanner.isBlank()) {
+                JLabel devSub = new JLabel("[DEV INFO] " + currentDevBanner);
+                devSub.setFont(FONT_SEMIBOLD.deriveFont(13f));
+                devSub.setForeground(new Color(250, 204, 21));
+                devSub.setAlignmentX(Component.LEFT_ALIGNMENT);
+                card.add(devSub);
+                card.add(Box.createRigidArea(new Dimension(0, 6)));
+            }
+
+            JLabel desc = new JLabel(
+                    "<html><body style='width: 980px; color: rgb(156, 163, 175);'>"
+                            + "A continuación se presentan los 6 niveles jugados en tu sesión. Reordénalos de manera que la posición <b>#1 sea tu favorito</b> "
+                            + "(el que más te gustó) y la posición <b>#6 el que menos te gustó</b>.<br>"
+                            + "Usa los botones <b>Subir</b> y <b>Bajar</b> para cambiar de lugar, o haz clic en <b>Ampliar</b> sobre la miniatura para examinar el nivel completo."
+                            + "</body></html>");
+            desc.setFont(FONT_REGULAR.deriveFont(16f));
+            desc.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(desc);
+            card.add(Box.createRigidArea(new Dimension(0, 14)));
+
+            JPanel listPanel = new JPanel();
+            listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+            listPanel.setBackground(CARD_BG);
+            listPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            Runnable[] refreshRef = new Runnable[1];
+            refreshRef[0] = () -> {
+                listPanel.removeAll();
+                for (int i = 0; i < currentList.size(); i++) {
+                    final int idx = i;
+                    PlayedLevelInfo info = currentList.get(i);
+
+                    JPanel rowCard = new JPanel(new BorderLayout(12, 0));
+                    rowCard.setBackground(ITEM_BG);
+                    Color borderColor = (idx == 0) ? new Color(245, 158, 11) : (idx == 5 ? new Color(225, 29, 72) : ITEM_BORDER);
+                    rowCard.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(borderColor, (idx == 0 || idx == 5) ? 2 : 1, true),
+                            new EmptyBorder(8, 12, 8, 12)));
+                    rowCard.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    rowCard.setMaximumSize(new Dimension(980, 84));
+                    rowCard.setPreferredSize(new Dimension(980, 84));
+
+                    // Left Column: Badge + Subtitle
+                    JPanel leftCol = new JPanel();
+                    leftCol.setLayout(new BoxLayout(leftCol, BoxLayout.Y_AXIS));
+                    leftCol.setBackground(ITEM_BG);
+                    leftCol.setPreferredSize(new Dimension(210, 68));
+
+                    leftCol.add(createRankBadge(idx));
+                    leftCol.add(Box.createRigidArea(new Dimension(0, 4)));
+
+                    String stepTitle = "Nivel del Paso " + info.orderPlayed();
+                    if (developMode) {
+                        stepTitle = "Paso " + info.orderPlayed() + " (" + info.stepCode() + " - " + info.type() + (info.levelIndex() + 1) + ")";
+                    }
+                    JLabel stepLabel = new JLabel(stepTitle);
+                    stepLabel.setFont(FONT_SEMIBOLD.deriveFont(13f));
+                    stepLabel.setForeground(TEXT_MUTED);
+                    leftCol.add(stepLabel);
+
+                    if (developMode) {
+                        JLabel fileLabel = new JLabel(info.levelFile().getFileName().toString());
+                        fileLabel.setFont(FONT_REGULAR.deriveFont(11f));
+                        fileLabel.setForeground(new Color(250, 204, 21));
+                        leftCol.add(fileLabel);
+                    }
+                    rowCard.add(leftCol, BorderLayout.WEST);
+
+                    // Center Column: Interactive Miniature Thumbnail
+                    JLabel thumbLabel = new JLabel(new ImageIcon(info.thumbnail()));
+                    thumbLabel.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true));
+                    thumbLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    thumbLabel.setToolTipText("Haz clic para ampliar este nivel en pantalla completa");
+                    thumbLabel.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            String zoomTitle = "Nivel del Paso " + info.orderPlayed() + (developMode ? " (" + info.levelFile().getFileName() + ")" : "");
+                            showLevelZoomModal(masterFrame, zoomTitle, info.levelContent());
+                        }
+                    });
+                    rowCard.add(thumbLabel, BorderLayout.CENTER);
+
+                    // Right Column: Controls
+                    JPanel rightCol = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 12));
+                    rightCol.setBackground(ITEM_BG);
+                    rightCol.setPreferredSize(new Dimension(230, 68));
+
+                    ModernButton zoomBtn = new ModernButton("Ampliar", new Color(30, 41, 59), new Color(51, 65, 85),
+                            new Color(15, 23, 42), TEXT_WHITE, 8, 8, 12, 13f);
+                    zoomBtn.addActionListener(e -> {
+                        String zoomTitle = "Nivel del Paso " + info.orderPlayed() + (developMode ? " (" + info.levelFile().getFileName() + ")" : "");
+                        showLevelZoomModal(masterFrame, zoomTitle, info.levelContent());
+                    });
+                    rightCol.add(zoomBtn);
+
+                    ModernButton upBtn = new ModernButton("Subir", new Color(45, 52, 72), new Color(65, 75, 105),
+                            new Color(30, 35, 50), Color.WHITE, 8, 8, 12, 13f);
+                    upBtn.setEnabled(idx > 0);
+                    upBtn.addActionListener(e -> {
+                        Collections.swap(currentList, idx, idx - 1);
+                        refreshRef[0].run();
+                    });
+                    rightCol.add(upBtn);
+
+                    ModernButton downBtn = new ModernButton("Bajar", new Color(45, 52, 72), new Color(65, 75, 105),
+                            new Color(30, 35, 50), Color.WHITE, 8, 8, 12, 13f);
+                    downBtn.setEnabled(idx < currentList.size() - 1);
+                    downBtn.addActionListener(e -> {
+                        Collections.swap(currentList, idx, idx + 1);
+                        refreshRef[0].run();
+                    });
+                    rightCol.add(downBtn);
+
+                    rowCard.add(rightCol, BorderLayout.EAST);
+
+                    listPanel.add(rowCard);
+                    listPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                }
+                listPanel.revalidate();
+                listPanel.repaint();
+            };
+
+            refreshRef[0].run();
+
+            JScrollPane scroll = new JScrollPane(listPanel);
+            scroll.setBorder(BorderFactory.createEmptyBorder());
+            scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scroll.setPreferredSize(new Dimension(1020, 520));
+            scroll.setMaximumSize(new Dimension(1020, 520));
+            scroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+            applyDarkScrollbar(scroll);
+            card.add(scroll);
+            card.add(Box.createRigidArea(new Dimension(0, 16)));
+
+            ModernButton confirmBtn = new ModernButton("Confirmar mi clasificación y continuar", ACCENT_PRIMARY,
+                    ACCENT_HOVER, ACCENT_PRESSED, Color.WHITE, 12);
+            confirmBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+            confirmBtn.addActionListener(e -> future.complete(new ArrayList<>(currentList)));
+            card.add(confirmBtn);
+
+            bg.add(card);
+            masterFrame.setContentPane(bg);
+            masterFrame.revalidate();
+            masterFrame.repaint();
+            confirmBtn.requestFocusInWindow();
+        });
+        return future.get();
+    }
+
+    private static List<AttributionAnswer> showAttributionScreen(List<PlayedLevelInfo> playedLevels, String id,
+            String group) throws Exception {
+        CompletableFuture<List<AttributionAnswer>> future = new CompletableFuture<>();
+        SwingUtilities.invokeLater(() -> {
+            JPanel bg = createScreenContainer();
+            JPanel card = createModernCard(1080, 800);
+
+            card.add(createBadge("FASE DE CIERRE (2 DE 3) — ATRIBUCIÓN DE AUTORÍA"));
+            card.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            JLabel title = new JLabel("¿Quién diseñó cada uno de los niveles?");
+            title.setFont(FONT_BOLD.deriveFont(28f));
+            title.setForeground(TEXT_WHITE);
+            title.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(title);
+            card.add(Box.createRigidArea(new Dimension(0, 6)));
+
+            if (developMode && currentDevBanner != null && !currentDevBanner.isBlank()) {
+                JLabel devSub = new JLabel("[DEV INFO] " + currentDevBanner);
+                devSub.setFont(FONT_SEMIBOLD.deriveFont(13f));
+                devSub.setForeground(new Color(250, 204, 21));
+                devSub.setAlignmentX(Component.LEFT_ALIGNMENT);
+                card.add(devSub);
+                card.add(Box.createRigidArea(new Dimension(0, 6)));
+            }
+
+            JLabel desc = new JLabel(
+                    "<html><body style='width: 980px; color: rgb(156, 163, 175);'>"
+                            + "Para cada uno de los 6 niveles jugados, indica si crees que fue <b>diseñado por una persona humana</b> "
+                            + "o <b>generado por una computadora / IA</b>, y qué tan seguro(a) estás de tu respuesta (escala de 1 a 7).<br>"
+                            + "Por favor completa ambas respuestas para los 6 niveles antes de continuar."
+                            + "</body></html>");
+            desc.setFont(FONT_REGULAR.deriveFont(16f));
+            desc.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(desc);
+            card.add(Box.createRigidArea(new Dimension(0, 14)));
+
+            JPanel listPanel = new JPanel();
+            listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+            listPanel.setBackground(CARD_BG);
+            listPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            List<Supplier<AttributionAnswer>> answerGetters = new ArrayList<>();
+
+            for (int i = 0; i < playedLevels.size(); i++) {
+                PlayedLevelInfo info = playedLevels.get(i);
+                final int stepNum = info.orderPlayed();
+
+                JPanel itemCard = new JPanel();
+                itemCard.setLayout(new BoxLayout(itemCard, BoxLayout.Y_AXIS));
+                itemCard.setBackground(ITEM_BG);
+                itemCard.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
+                        new EmptyBorder(12, 16, 12, 16)));
+                itemCard.setAlignmentX(Component.LEFT_ALIGNMENT);
+                itemCard.setMaximumSize(new Dimension(980, 210));
+
+                // Header of this level card
+                JPanel topRow = new JPanel(new BorderLayout(12, 0));
+                topRow.setBackground(ITEM_BG);
+                topRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+                topRow.setMaximumSize(new Dimension(940, 48));
+
+                String lvlTitle = "Nivel jugado en el Paso " + stepNum + " de la sesión";
+                if (developMode) {
+                    lvlTitle += " [" + info.stepCode() + " - " + info.levelFile().getFileName() + "]";
+                }
+                JLabel titleLbl = new JLabel(lvlTitle);
+                titleLbl.setFont(FONT_BOLD.deriveFont(16f));
+                titleLbl.setForeground(TEXT_WHITE);
+                topRow.add(titleLbl, BorderLayout.WEST);
+
+                JLabel miniThumb = new JLabel(new ImageIcon(renderLevelThumbnail(info.levelContent(), 300, 40)));
+                miniThumb.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true));
+                miniThumb.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                miniThumb.setToolTipText("Haz clic para ampliar este nivel");
+                miniThumb.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        showLevelZoomModal(masterFrame, "Nivel del Paso " + stepNum, info.levelContent());
+                    }
+                });
+                topRow.add(miniThumb, BorderLayout.CENTER);
+
+                ModernButton zoomBtn = new ModernButton("Ver mapa", new Color(30, 41, 59), new Color(51, 65, 85),
+                        new Color(15, 23, 42), TEXT_WHITE, 8, 6, 10, 12f);
+                zoomBtn.addActionListener(e -> showLevelZoomModal(masterFrame, "Nivel del Paso " + stepNum, info.levelContent()));
+                topRow.add(zoomBtn, BorderLayout.EAST);
+
+                itemCard.add(topRow);
+                itemCard.add(Box.createRigidArea(new Dimension(0, 10)));
+
+                // Q1: Author choice
+                JLabel q1Label = new JLabel("1. ¿Quién crees que diseñó este nivel?");
+                q1Label.setFont(FONT_SEMIBOLD.deriveFont(15f));
+                q1Label.setForeground(TEXT_ACCENT);
+                q1Label.setAlignmentX(Component.LEFT_ALIGNMENT);
+                itemCard.add(q1Label);
+                itemCard.add(Box.createRigidArea(new Dimension(0, 6)));
+
+                JPanel q1Panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+                q1Panel.setBackground(ITEM_BG);
+                q1Panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                String[] authorChoice = { null };
+                ButtonGroup q1Group = new ButtonGroup();
+
+                ChoiceCard optPerson = new ChoiceCard("Una persona (Humano)", 300, 42);
+                optPerson.addActionListener(e -> authorChoice[0] = "Persona");
+                q1Group.add(optPerson);
+                q1Panel.add(optPerson);
+
+                ChoiceCard optProg = new ChoiceCard("Un programa (IA / Algoritmo)", 340, 42);
+                optProg.addActionListener(e -> authorChoice[0] = "Programa");
+                q1Group.add(optProg);
+                q1Panel.add(optProg);
+
+                itemCard.add(q1Panel);
+                itemCard.add(Box.createRigidArea(new Dimension(0, 10)));
+
+                // Q2: Confidence scale (1 to 7)
+                JLabel q2Label = new JLabel("2. ¿Qué tan seguro(a) estás de tu respuesta?");
+                q2Label.setFont(FONT_SEMIBOLD.deriveFont(15f));
+                q2Label.setForeground(TEXT_ACCENT);
+                q2Label.setAlignmentX(Component.LEFT_ALIGNMENT);
+                itemCard.add(q2Label);
+                itemCard.add(Box.createRigidArea(new Dimension(0, 6)));
+
+                JPanel q2Panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+                q2Panel.setBackground(ITEM_BG);
+                q2Panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                Integer[] confChoice = { null };
+                ButtonGroup q2Group = new ButtonGroup();
+                for (int v = 1; v <= 7; v++) {
+                    final int val = v;
+                    LikertPill pill = new LikertPill(String.valueOf(v));
+                    pill.addActionListener(e -> confChoice[0] = val);
+                    q2Group.add(pill);
+                    q2Panel.add(pill);
+                }
+                itemCard.add(q2Panel);
+                itemCard.add(Box.createRigidArea(new Dimension(0, 4)));
+
+                JLabel scaleLegend = new JLabel("1 = Nada seguro   |   4 = Moderadamente seguro   |   7 = Totalmente seguro");
+                scaleLegend.setFont(FONT_REGULAR.deriveFont(13f));
+                scaleLegend.setForeground(new Color(148, 163, 184));
+                scaleLegend.setAlignmentX(Component.LEFT_ALIGNMENT);
+                itemCard.add(scaleLegend);
+
+                listPanel.add(itemCard);
+                listPanel.add(Box.createRigidArea(new Dimension(0, 12)));
+
+                answerGetters.add(() -> {
+                    if (authorChoice[0] == null || confChoice[0] == null) {
+                        return null;
+                    }
+                    return new AttributionAnswer(info.orderPlayed(), info.type(), info.levelIndex(), info.stepCode(),
+                            info.levelFile(), authorChoice[0], confChoice[0]);
+                });
+            }
+
+            JScrollPane scroll = new JScrollPane(listPanel);
+            scroll.setBorder(BorderFactory.createEmptyBorder());
+            scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scroll.setPreferredSize(new Dimension(1020, 480));
+            scroll.setMaximumSize(new Dimension(1020, 480));
+            scroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+            applyDarkScrollbar(scroll);
+            card.add(scroll);
+            card.add(Box.createRigidArea(new Dimension(0, 12)));
+
+            JLabel errorLabel = new JLabel(" ");
+            errorLabel.setFont(FONT_SEMIBOLD.deriveFont(15f));
+            errorLabel.setForeground(new Color(244, 63, 94));
+            errorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(errorLabel);
+            card.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            ModernButton continueBtn = new ModernButton("Continuar", ACCENT_PRIMARY, ACCENT_HOVER, ACCENT_PRESSED,
+                    Color.WHITE, 12);
+            continueBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+            continueBtn.addActionListener(e -> {
+                boolean allFilled = answerGetters.stream().allMatch(g -> g.get() != null);
+                if (!allFilled) {
+                    errorLabel.setText("Por favor responde ambas preguntas (autoría y certeza) para los 6 niveles antes de continuar.");
+                    card.revalidate();
+                    card.repaint();
+                    return;
+                }
+                List<AttributionAnswer> results = answerGetters.stream().map(Supplier::get).collect(Collectors.toList());
+                future.complete(results);
+            });
+            card.add(continueBtn);
+
+            bg.add(card);
+            masterFrame.setContentPane(bg);
+            masterFrame.revalidate();
+            masterFrame.repaint();
+            continueBtn.requestFocusInWindow();
+        });
+        return future.get();
+    }
+
+    private static String showCommentsScreen(String id, String group) throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        SwingUtilities.invokeLater(() -> {
+            JPanel bg = createScreenContainer();
+            JPanel card = createModernCard(1000, 680);
+
+            card.add(createBadge("FASE DE CIERRE (3 DE 3) — COMENTARIOS FINALES"));
+            card.add(Box.createRigidArea(new Dimension(0, 12)));
+
+            JLabel title = new JLabel("Comentarios y observaciones finales");
+            title.setFont(FONT_BOLD.deriveFont(28f));
+            title.setForeground(TEXT_WHITE);
+            title.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(title);
+            card.add(Box.createRigidArea(new Dimension(0, 8)));
+
+            JLabel desc = new JLabel(
+                    "<html><body style='width: 900px; color: rgb(156, 163, 175);'>"
+                            + "¿Hay algo más que te gustaría comentar sobre la sesión, los niveles, la dificultad o los controles?<br>"
+                            + "<i>(Esta pregunta es totalmente opcional. Si no deseas dejar comentarios puedes pulsar 'Omitir y finalizar').</i>"
+                            + "</body></html>");
+            desc.setFont(FONT_REGULAR.deriveFont(16f));
+            desc.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(desc);
+            card.add(Box.createRigidArea(new Dimension(0, 20)));
+
+            JTextArea area = new JTextArea();
+            area.setFont(FONT_REGULAR.deriveFont(16f));
+            area.setForeground(TEXT_WHITE);
+            area.setBackground(ITEM_BG);
+            area.setCaretColor(TEXT_WHITE);
+            area.setLineWrap(true);
+            area.setWrapStyleWord(true);
+            area.setBorder(new EmptyBorder(14, 16, 14, 16));
+
+            JScrollPane scroll = new JScrollPane(area);
+            scroll.setBorder(BorderFactory.createLineBorder(ITEM_BORDER, 1, true));
+            scroll.setPreferredSize(new Dimension(920, 260));
+            scroll.setMaximumSize(new Dimension(920, 260));
+            scroll.setAlignmentX(Component.LEFT_ALIGNMENT);
+            applyDarkScrollbar(scroll);
+            card.add(scroll);
+            card.add(Box.createRigidArea(new Dimension(0, 24)));
+
+            JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 0));
+            actions.setBackground(CARD_BG);
+            actions.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            ModernButton saveBtn = new ModernButton("Guardar comentarios y finalizar", ACCENT_PRIMARY, ACCENT_HOVER,
+                    ACCENT_PRESSED, Color.WHITE, 12);
+            saveBtn.addActionListener(e -> future.complete(area.getText().trim()));
+            actions.add(saveBtn);
+
+            ModernButton skipBtn = new ModernButton("Omitir y finalizar", new Color(45, 48, 62), new Color(60, 64, 82),
+                    new Color(35, 38, 50), TEXT_WHITE, 12);
+            skipBtn.addActionListener(e -> future.complete(""));
+            actions.add(skipBtn);
+
+            card.add(actions);
+
+            bg.add(card);
+            masterFrame.setContentPane(bg);
+            masterFrame.revalidate();
+            masterFrame.repaint();
+            area.requestFocusInWindow();
+        });
+        return future.get();
+    }
+
+    private static void saveClosureData(String id, String group, List<PlayedLevelInfo> ranked,
+            List<AttributionAnswer> attributions, String feedback, Path dir) throws IOException {
+        // 1. Ranking TSV
+        List<String> rankingHeaders = List.of("id", "group", "rank", "order_played", "level_type", "level_index",
+                "step_code", "level_file");
+        for (int r = 0; r < ranked.size(); r++) {
+            PlayedLevelInfo info = ranked.get(r);
+            List<String> row = List.of(
+                    id,
+                    group,
+                    String.valueOf(r + 1),
+                    String.valueOf(info.orderPlayed()),
+                    String.valueOf(info.type()),
+                    String.valueOf(info.levelIndex() + 1),
+                    info.stepCode(),
+                    info.levelFile().getFileName().toString()
+            );
+            saveRow(RESULTS.resolve("ranking.tsv"), rankingHeaders, row);
+            saveRow(dir.resolve("ranking.tsv"), rankingHeaders, row);
+        }
+
+        // 2. Attribution TSV
+        List<String> attrHeaders = List.of("id", "group", "order_played", "level_type", "level_index",
+                "step_code", "level_file", "attribution", "confidence");
+        for (AttributionAnswer ans : attributions) {
+            List<String> row = List.of(
+                    id,
+                    group,
+                    String.valueOf(ans.orderPlayed()),
+                    String.valueOf(ans.type()),
+                    String.valueOf(ans.levelIndex() + 1),
+                    ans.stepCode(),
+                    ans.levelFile().getFileName().toString(),
+                    ans.attribution(),
+                    String.valueOf(ans.confidence())
+            );
+            saveRow(RESULTS.resolve("attribution.tsv"), attrHeaders, row);
+            saveRow(dir.resolve("attribution.tsv"), attrHeaders, row);
+        }
+
+        // 3. Feedback TSV
+        List<String> feedbackHeaders = List.of("id", "group", "feedback", "timestamp");
+        String sanitizedFeedback = (feedback == null || feedback.isBlank()) ? "SIN_COMENTARIOS" : feedback;
+        List<String> fbRow = List.of(
+                id,
+                group,
+                sanitizedFeedback,
+                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        );
+        saveRow(RESULTS.resolve("feedback.tsv"), feedbackHeaders, fbRow);
+        saveRow(dir.resolve("feedback.tsv"), feedbackHeaders, fbRow);
+
+        // 4. Resumen legible del cierre
+        StringBuilder sb = new StringBuilder();
+        sb.append("============================================================\n");
+        sb.append("FASE DE CIERRE - PROTOCOLO EXPERIMENTAL (PROTOCOLO MOSTRO)\n");
+        sb.append("Participante: ").append(id).append(" | Grupo: ").append(group).append('\n');
+        sb.append("Fecha: ").append(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).append('\n');
+        sb.append("============================================================\n\n");
+
+        sb.append("1. CLASIFICACIÓN DE PREFERENCIA (RANKING 1 A 6):\n");
+        for (int r = 0; r < ranked.size(); r++) {
+            PlayedLevelInfo info = ranked.get(r);
+            sb.append("   #").append(r + 1).append(": Paso ").append(info.orderPlayed())
+                    .append(" (").append(info.stepCode()).append(" - ").append(describeLevelType(info.type())).append(")")
+                    .append(" -> ").append(info.levelFile().getFileName()).append('\n');
+        }
+
+        sb.append("\n2. ATRIBUCIÓN DE AUTORÍA:\n");
+        for (AttributionAnswer ans : attributions) {
+            sb.append("   - Paso ").append(ans.orderPlayed())
+                    .append(" (").append(ans.stepCode()).append(" - ").append(ans.levelFile().getFileName()).append("): ")
+                    .append(ans.attribution()).append(" | Certeza: ").append(ans.confidence()).append("/7\n");
+        }
+
+        sb.append("\n3. COMENTARIOS FINALES:\n");
+        sb.append("   ").append(sanitizedFeedback).append('\n');
+        sb.append("============================================================\n");
+
+        Files.writeString(dir.resolve("cierre.txt"), sb.toString(), StandardCharsets.UTF_8);
+        System.out.println("Datos de fase de cierre guardados exitosamente para " + id);
+    }
+
+    // ==========================================
+    // 2D LEVEL THUMBNAIL & PREVIEW RENDERER
+    // ==========================================
+
+    private static BufferedImage renderLevelThumbnail(String content, int targetWidth, int targetHeight) {
+        String[] rawLines = content.split("\\r?\\n");
+        List<String> lines = new ArrayList<>();
+        for (String l : rawLines) {
+            if (!l.trim().isEmpty() && !l.startsWith("//") && !l.startsWith(";")) {
+                lines.add(l);
+            }
+        }
+        if (lines.isEmpty()) {
+            BufferedImage blank = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = blank.createGraphics();
+            g.setColor(new Color(92, 148, 252));
+            g.fillRect(0, 0, targetWidth, targetHeight);
+            g.dispose();
+            return blank;
+        }
+
+        int rows = lines.size();
+        int cols = 0;
+        for (String l : lines) {
+            cols = Math.max(cols, l.length());
+        }
+        if (cols == 0) cols = 1;
+
+        BufferedImage img = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        // Background Sky #5c94fc
+        g2.setColor(new Color(92, 148, 252));
+        g2.fillRect(0, 0, targetWidth, targetHeight);
+
+        for (int r = 0; r < rows; r++) {
+            String line = lines.get(r);
+            for (int c = 0; c < line.length(); c++) {
+                char ch = line.charAt(c);
+                if (ch == '-' || Character.isWhitespace(ch)) {
+                    continue;
+                }
+                int x0 = (int) Math.round((double) c * targetWidth / cols);
+                int x1 = (int) Math.round((double) (c + 1) * targetWidth / cols);
+                int w = Math.max(1, x1 - x0);
+                int y0 = (int) Math.round((double) r * targetHeight / rows);
+                int y1 = (int) Math.round((double) (r + 1) * targetHeight / rows);
+                int h = Math.max(1, y1 - y0);
+
+                drawTileOnGraphics(g2, ch, x0, y0, w, h);
+            }
+        }
+        g2.dispose();
+        return img;
+    }
+
+    private static BufferedImage renderLevelFull(String content, int tileSize) {
+        String[] rawLines = content.split("\\r?\\n");
+        List<String> lines = new ArrayList<>();
+        for (String l : rawLines) {
+            if (!l.trim().isEmpty() && !l.startsWith("//") && !l.startsWith(";")) {
+                lines.add(l);
+            }
+        }
+        if (lines.isEmpty()) {
+            return new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+        }
+        int rows = lines.size();
+        int cols = 0;
+        for (String l : lines) {
+            cols = Math.max(cols, l.length());
+        }
+        int width = cols * tileSize;
+        int height = rows * tileSize;
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(new Color(92, 148, 252));
+        g2.fillRect(0, 0, width, height);
+
+        for (int r = 0; r < rows; r++) {
+            String line = lines.get(r);
+            for (int c = 0; c < line.length(); c++) {
+                char ch = line.charAt(c);
+                if (ch == '-' || Character.isWhitespace(ch)) continue;
+                int x = c * tileSize;
+                int y = r * tileSize;
+                drawTileOnGraphics(g2, ch, x, y, tileSize, tileSize);
+            }
+        }
+        g2.dispose();
+        return img;
+    }
+
+    private static void drawTileOnGraphics(Graphics2D g, char ch, int x, int y, int w, int h) {
+        switch (ch) {
+            case 'X', 'x' -> { // Solid Ground
+                g.setColor(new Color(216, 104, 0)); // #d86800 SMB ground
+                g.fillRect(x, y, w, h);
+                // Grass top strip
+                g.setColor(new Color(0, 168, 0)); // #00a800
+                int grassH = Math.max(1, Math.min(3, h / 3));
+                g.fillRect(x, y, w, grassH);
+                if (w > 2 && h > 2) {
+                    g.setColor(new Color(108, 52, 0));
+                    g.drawRect(x, y, w - 1, h - 1);
+                }
+            }
+            case '#' -> { // Solid Platform / Block
+                g.setColor(new Color(252, 152, 56)); // #fc9838
+                g.fillRect(x, y, w, h);
+                if (w > 4 && h > 4) {
+                    g.setColor(new Color(108, 52, 0));
+                    g.fillRect(x + 1, y + 1, w - 2, h - 2);
+                }
+            }
+            case 'S' -> { // Breakable Brick
+                g.setColor(new Color(184, 68, 24)); // #b84418
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(20, 20, 20));
+                if (w > 2 && h > 2) {
+                    g.drawRect(x, y, w - 1, h - 1);
+                    if (h > 4) {
+                        g.drawLine(x, y + h / 2, x + w - 1, y + h / 2);
+                    }
+                }
+            }
+            case '?' -> { // Question Block
+                g.setColor(new Color(252, 176, 64)); // #fcb040
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(108, 52, 0));
+                if (w > 2 && h > 2) {
+                    g.drawRect(x, y, w - 1, h - 1);
+                }
+                if (w >= 10 && h >= 10) {
+                    g.setFont(new Font("SansSerif", Font.BOLD, Math.max(8, h - 4)));
+                    FontMetrics fm = g.getFontMetrics();
+                    int tx = x + (w - fm.stringWidth("?")) / 2;
+                    int ty = y + (h + fm.getAscent() - fm.getDescent()) / 2;
+                    g.drawString("?", tx, ty);
+                }
+            }
+            case 'o' -> { // Coin
+                g.setColor(new Color(252, 228, 64)); // #fce440
+                int cw = Math.max(2, (int) (w * 0.6));
+                int chH = Math.max(2, (int) (h * 0.75));
+                int cx = x + (w - cw) / 2;
+                int cy = y + (h - chH) / 2;
+                g.fillOval(cx, cy, cw, chH);
+                g.setColor(new Color(216, 144, 0));
+                g.drawOval(cx, cy, cw, chH);
+            }
+            case '<', '>' -> { // Pipe Top
+                g.setColor(new Color(0, 168, 0)); // #00a800
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(128, 208, 16)); // #80d010
+                g.fillRect(x + 1, y + 1, Math.max(1, w / 4), Math.max(1, h - 2));
+                g.setColor(new Color(0, 80, 0));
+                g.drawRect(x, y, w - 1, h - 1);
+            }
+            case '[', ']' -> { // Pipe Body
+                g.setColor(new Color(0, 168, 0));
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(128, 208, 16));
+                g.fillRect(x + 1, y, Math.max(1, w / 4), h);
+                g.setColor(new Color(0, 80, 0));
+                g.drawRect(x, y, w - 1, h - 1);
+            }
+            case 'g' -> { // Goomba
+                g.setColor(new Color(168, 64, 0)); // #a84000
+                g.fillOval(x, y, w, h);
+                if (w > 4 && h > 4) {
+                    g.setColor(new Color(252, 228, 160));
+                    g.fillRect(x + w / 4, y + h / 2, w / 2, h / 3);
+                }
+            }
+            case 'k' -> { // Koopa
+                g.setColor(new Color(0, 168, 0));
+                g.fillOval(x, y, w, h);
+                g.setColor(new Color(0, 60, 0));
+                g.drawOval(x, y, w - 1, h - 1);
+            }
+            case 'y' -> { // Spiny
+                g.setColor(new Color(252, 32, 0));
+                g.fillOval(x, y, w, h);
+            }
+            case 'E' -> { // Generic Enemy
+                g.setColor(new Color(225, 29, 72)); // #e11d48
+                g.fillOval(x, y, w, h);
+                g.setColor(Color.WHITE);
+                if (w > 4 && h > 4) {
+                    g.fillRect(x + w / 4, y + h / 4, Math.max(1, w / 4), Math.max(1, h / 4));
+                }
+            }
+            case 'B', 'b' -> { // Bullet Blaster
+                g.setColor(new Color(40, 40, 40));
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(70, 70, 70));
+                g.fillRect(x + 1, y + 1, w - 2, Math.max(1, h / 4));
+            }
+            case 'M' -> { // Mario
+                g.setColor(new Color(239, 68, 68));
+                g.fillRect(x, y, w, h);
+            }
+            case 'F' -> { // Flag
+                g.setColor(new Color(34, 197, 94));
+                g.fillRect(x, y, w, h);
+            }
+            default -> {
+                if (!Character.isWhitespace(ch) && ch != '-') {
+                    g.setColor(new Color(200, 200, 200));
+                    g.fillRect(x, y, w, h);
+                }
+            }
+        }
+    }
+
+    private static void showLevelZoomModal(JFrame parent, String levelTitle, String levelContent) {
+        JDialog dialog = new JDialog(parent, "Vista Detallada - " + levelTitle, true);
+        dialog.setLayout(new BorderLayout());
+        dialog.getContentPane().setBackground(BG_DARK);
+
+        JPanel header = new JPanel();
+        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+        header.setBackground(CARD_BG);
+        header.setBorder(new EmptyBorder(16, 20, 16, 20));
+
+        JLabel titleLabel = new JLabel("Mapa: " + levelTitle);
+        titleLabel.setFont(FONT_BOLD.deriveFont(22f));
+        titleLabel.setForeground(TEXT_WHITE);
+        header.add(titleLabel);
+        header.add(Box.createRigidArea(new Dimension(0, 6)));
+
+        JLabel subLabel = new JLabel("Desplaza la barra inferior hacia la derecha para recorrer todo el nivel horizontalmente.");
+        subLabel.setFont(FONT_REGULAR.deriveFont(15f));
+        subLabel.setForeground(TEXT_MUTED);
+        header.add(subLabel);
+
+        dialog.add(header, BorderLayout.NORTH);
+
+        BufferedImage fullImg = renderLevelFull(levelContent, 18);
+        JLabel imageLabel = new JLabel(new ImageIcon(fullImg));
+        imageLabel.setBackground(new Color(92, 148, 252));
+        imageLabel.setOpaque(true);
+
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        centerPanel.setBackground(BG_DARK);
+        centerPanel.add(imageLabel);
+
+        JScrollPane scroll = new JScrollPane(centerPanel);
+        scroll.setBorder(BorderFactory.createLineBorder(ITEM_BORDER, 1));
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        scroll.getHorizontalScrollBar().setUnitIncrement(36);
+        applyDarkScrollbar(scroll);
+
+        dialog.add(scroll, BorderLayout.CENTER);
+
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 12));
+        footer.setBackground(CARD_BG);
+
+        ModernButton closeBtn = new ModernButton("Cerrar vista previa (ESC)", ACCENT_PRIMARY, ACCENT_HOVER, ACCENT_PRESSED, Color.WHITE, 10, 10, 20, 14f);
+        closeBtn.addActionListener(e -> dialog.dispose());
+        footer.add(closeBtn);
+
+        dialog.add(footer, BorderLayout.SOUTH);
+
+        dialog.getRootPane().registerKeyboardAction(e -> dialog.dispose(),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        dialog.setSize(1060, 460);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+    }
+
+    private static JLabel createRankBadge(int rankIndex) {
+        String text;
+        Color bg;
+        Color border;
+        Color fg = Color.WHITE;
+        switch (rankIndex) {
+            case 0 -> {
+                text = "#1  (El que más me gustó)";
+                bg = new Color(146, 64, 14);
+                border = new Color(245, 158, 11);
+            }
+            case 1 -> {
+                text = "#2";
+                bg = new Color(51, 65, 85);
+                border = new Color(148, 163, 184);
+            }
+            case 2 -> {
+                text = "#3";
+                bg = new Color(120, 53, 15);
+                border = new Color(217, 119, 6);
+            }
+            case 3 -> {
+                text = "#4";
+                bg = new Color(30, 41, 59);
+                border = new Color(71, 85, 105);
+                fg = new Color(203, 213, 225);
+            }
+            case 4 -> {
+                text = "#5";
+                bg = new Color(30, 41, 59);
+                border = new Color(71, 85, 105);
+                fg = new Color(203, 213, 225);
+            }
+            default -> {
+                text = "#6  (El que menos me gustó)";
+                bg = new Color(136, 19, 55);
+                border = new Color(225, 29, 72);
+            }
+        }
+        JLabel badge = new JLabel("  " + text + "  ");
+        badge.setFont(FONT_BOLD.deriveFont(13f));
+        badge.setForeground(fg);
+        badge.setOpaque(true);
+        badge.setBackground(bg);
+        badge.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(border, 1, true),
+                new EmptyBorder(4, 10, 4, 10)));
+        badge.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return badge;
+    }
+
+    // ==========================================
     // DEVELOPER HELPERS & UI COMPONENTS
     // ==========================================
 
@@ -974,7 +1992,7 @@ public class ExperimentRunner {
         String[] codes = seq.split(" ");
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < codes.length; i++) {
-            if (i > 0) sb.append(" → ");
+            if (i > 0) sb.append(" -> ");
             if (i == currentStepIndex) {
                 sb.append("[").append(codes[i]).append("*]");
             } else {
@@ -1304,6 +2322,11 @@ public class ExperimentRunner {
         private boolean isPressed = false;
 
         public ModernButton(String text, Color normalBg, Color hoverBg, Color pressedBg, Color textColor, int radius) {
+            this(text, normalBg, hoverBg, pressedBg, textColor, radius, 14, 28, 17f);
+        }
+
+        public ModernButton(String text, Color normalBg, Color hoverBg, Color pressedBg, Color textColor, int radius,
+                int padTopBottom, int padLeftRight, float fontSize) {
             super(text);
             this.normalBg = normalBg;
             this.hoverBg = hoverBg;
@@ -1313,14 +2336,16 @@ public class ExperimentRunner {
             setBorderPainted(false);
             setFocusPainted(false);
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            setFont(FONT_BOLD.deriveFont(17f));
+            setFont(FONT_BOLD.deriveFont(fontSize));
             setForeground(textColor);
-            setBorder(new EmptyBorder(14, 28, 14, 28));
+            setBorder(new EmptyBorder(padTopBottom, padLeftRight, padTopBottom, padLeftRight));
 
             addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {
-                    isHovered = true;
-                    repaint();
+                    if (isEnabled()) {
+                        isHovered = true;
+                        repaint();
+                    }
                 }
 
                 public void mouseExited(MouseEvent e) {
@@ -1330,8 +2355,10 @@ public class ExperimentRunner {
                 }
 
                 public void mousePressed(MouseEvent e) {
-                    isPressed = true;
-                    repaint();
+                    if (isEnabled()) {
+                        isPressed = true;
+                        repaint();
+                    }
                 }
 
                 public void mouseReleased(MouseEvent e) {
@@ -1345,7 +2372,16 @@ public class ExperimentRunner {
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            Color bg = isPressed ? pressedBg : (isHovered ? hoverBg : normalBg);
+            Color bg;
+            if (!isEnabled()) {
+                bg = new Color(24, 27, 36);
+            } else if (isPressed) {
+                bg = pressedBg;
+            } else if (isHovered) {
+                bg = hoverBg;
+            } else {
+                bg = normalBg;
+            }
             g2.setColor(bg);
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
             g2.dispose();
@@ -1388,6 +2424,10 @@ public class ExperimentRunner {
 
     static class ChoiceCard extends JToggleButton {
         public ChoiceCard(String text) {
+            this(text, 920, 50);
+        }
+
+        public ChoiceCard(String text, int width, int height) {
             super(text);
             setFont(FONT_REGULAR.deriveFont(16f));
             setContentAreaFilled(false);
@@ -1395,8 +2435,8 @@ public class ExperimentRunner {
             setFocusPainted(false);
             setAlignmentX(Component.LEFT_ALIGNMENT);
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            setMaximumSize(new Dimension(920, 50));
-            setPreferredSize(new Dimension(920, 50));
+            setMaximumSize(new Dimension(width, height));
+            setPreferredSize(new Dimension(width, height));
         }
 
         @Override
@@ -1733,7 +2773,11 @@ public class ExperimentRunner {
                         try (Stream<Path> files = Files.list(outDir)) {
                             Optional<Path> gen = files.filter(f -> f.getFileName().toString().endsWith(".txt")).findFirst();
                             if (gen.isPresent()) {
-                                return gen.get();
+                                Path genFile = gen.get();
+                                String raw = Files.readString(genFile);
+                                String sanitized = sanitizeLevel(raw);
+                                Files.writeString(genFile, sanitized, StandardCharsets.UTF_8);
+                                return genFile;
                             }
                         }
                     } else {
@@ -1770,7 +2814,9 @@ public class ExperimentRunner {
                 }
                 if (genericFile != null && Files.exists(genericFile)) {
                     Path fallbackTarget = outDir.resolve("Nivel generado " + (k + 1) + ".txt");
-                    Files.copy(genericFile, fallbackTarget, StandardCopyOption.REPLACE_EXISTING);
+                    String raw = Files.readString(genericFile);
+                    String sanitized = sanitizeLevel(raw);
+                    Files.writeString(fallbackTarget, sanitized, StandardCharsets.UTF_8);
                     System.out.println("Se utilizó el nivel de respaldo: " + fallbackTarget);
                     return fallbackTarget;
                 }
@@ -1813,6 +2859,13 @@ public class ExperimentRunner {
                 throw new IllegalStateException("El prompt de Ollama llegó vacío");
             }
             return sb.toString();
+        }
+
+        boolean isReady(int index) {
+            if (futures == null || index < 0 || index >= futures.size()) {
+                return false;
+            }
+            return futures.get(index).isDone();
         }
 
         Path await(int index) throws Exception {
