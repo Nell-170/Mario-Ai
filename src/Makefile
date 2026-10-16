@@ -10,18 +10,23 @@ MARIO_GPT  := ../mario_gpt
 
 IDE_JAVA := /home/marioc/.antigravity-ide/extensions/redhat.java-1.57.0-linux-x64/jre/25.0.4.1-linux-x86_64/bin
 
-ifeq ($(shell which javac 2>/dev/null),)
-    ifneq ($(wildcard $(IDE_JAVA)/javac),)
-        JAVAC := $(IDE_JAVA)/javac
-        JAVA  := $(IDE_JAVA)/java
-        export PATH := $(IDE_JAVA):$(PATH)
+ifeq ($(OS),Windows_NT)
+    JAVAC := javac
+    JAVA  := java
+else
+    ifeq ($(shell command -v javac 2>/dev/null),)
+        ifneq ($(wildcard $(IDE_JAVA)/javac),)
+            JAVAC := $(IDE_JAVA)/javac
+            JAVA  := $(IDE_JAVA)/java
+            export PATH := $(IDE_JAVA):$(PATH)
+        else
+            JAVAC := javac
+            JAVA  := java
+        endif
     else
         JAVAC := javac
         JAVA  := java
     endif
-else
-    JAVAC := javac
-    JAVA  := java
 endif
 
 # ── OS detection ──────────────────────────────────────────────
@@ -50,9 +55,15 @@ else
 endif
 
 # ── Progress indicator ────────────────────────────────────────
+ifeq ($(OS),Windows_NT)
+define progress
+	@$(PYTHON) -c "import sys, unicodedata; p=$(1); w=20; f=int(p/100*w); b='#'*f + '-'*(w-f); msg=unicodedata.normalize('NFKD', '$(2)').encode('ascii', 'ignore').decode(); print(f'[{p:3d}%] [{b}] {msg}')"
+endef
+else
 define progress
 	@$(PYTHON) -c "import sys; p=$(1); w=20; f=int(p/100*w); b='█'*f + '░'*(w-f); sys.stdout.write(f'\033[1;36m[{p:3d}%]\033[0m \033[1;32m[{b}]\033[0m \033[1m$(2)\033[0m\n')"
 endef
+endif
 
 # ── Phony targets ─────────────────────────────────────────────
 .PHONY: help install gui dashboard setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
