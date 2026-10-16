@@ -16,7 +16,7 @@ index b888366b..a525aa15 100644
                  this.actions[MarioActions.SPEED.getValue()] = isPressed;
                  break;
 diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
-index 1f58d96b..1a20f60f 100644
+index 1f58d96b..d5f3ab79 100644
 --- a/src/engine/core/MarioGame.java
 +++ b/src/engine/core/MarioGame.java
 @@ -11,6 +11,12 @@ import agents.human.Agent;
@@ -32,7 +32,7 @@ index 1f58d96b..1a20f60f 100644
  public class MarioGame {
      /**
       * the maximum time that agent takes for each step
-@@ -73,6 +79,121 @@ public class MarioGame {
+@@ -73,6 +79,127 @@ public class MarioGame {
          this.killEvents = killEvents;
      }
  
@@ -87,6 +87,12 @@ index 1f58d96b..1a20f60f 100644
 +
 +    public static void setEmergencyExitHandler(Runnable handler) {
 +        emergencyExitHandler = handler;
++    }
++
++    private static String devBannerText = null;
++
++    public static void setDevBannerText(String text) {
++        devBannerText = text;
 +    }
 +
 +    public static float getDefaultScale() {
@@ -154,7 +160,7 @@ index 1f58d96b..1a20f60f 100644
      private int getDelay(int fps) {
          if (fps <= 0) {
              return 0;
-@@ -82,8 +203,58 @@ public class MarioGame {
+@@ -82,8 +209,58 @@ public class MarioGame {
  
      private void setAgent(MarioAgent agent) {
          this.agent = agent;
@@ -215,7 +221,7 @@ index 1f58d96b..1a20f60f 100644
          }
      }
  
-@@ -204,18 +375,125 @@ public class MarioGame {
+@@ -204,18 +381,145 @@ public class MarioGame {
       * @return statistics about the current game
       */
      public MarioResult runGame(MarioAgent agent, String level, int timer, int marioState, boolean visuals, int fps, float scale) {
@@ -293,6 +299,26 @@ index 1f58d96b..1a20f60f 100644
 +
 +            mainPanel.add(controlPanel, BorderLayout.SOUTH);
 +
++            if (devBannerText != null && !devBannerText.isBlank()) {
++                JPanel devBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 6));
++                devBar.setBackground(new Color(24, 24, 27));
++                devBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(245, 158, 11)));
++
++                JLabel devBadge = new JLabel("  DEV MODE  ");
++                devBadge.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
++                devBadge.setForeground(Color.BLACK);
++                devBadge.setOpaque(true);
++                devBadge.setBackground(new Color(245, 158, 11));
++                devBar.add(devBadge);
++
++                JLabel devMsg = new JLabel(devBannerText);
++                devMsg.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
++                devMsg.setForeground(new Color(253, 230, 138));
++                devBar.add(devMsg);
++
++                mainPanel.add(devBar, BorderLayout.NORTH);
++            }
++
 +            this.window.setContentPane(mainPanel);
 +            if (!isExternal) {
 +                this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -348,7 +374,7 @@ index 1f58d96b..1a20f60f 100644
      }
  
      private MarioResult gameLoop(String level, int timer, int marioState, boolean visual, int fps) {
-@@ -231,13 +509,25 @@ public class MarioGame {
+@@ -231,13 +535,25 @@ public class MarioGame {
          long currentTime = System.currentTimeMillis();
  
          //initialize graphics
@@ -379,7 +405,7 @@ index 1f58d96b..1a20f60f 100644
              this.render.addFocusListener(this.render);
          }
  
-@@ -246,7 +536,30 @@ public class MarioGame {
+@@ -246,7 +562,30 @@ public class MarioGame {
  
          ArrayList<MarioEvent> gameEvents = new ArrayList<>();
          ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
@@ -410,7 +436,7 @@ index 1f58d96b..1a20f60f 100644
              if (!this.pause) {
                  //get actions
                  agentTimer = new MarioTimer(MarioGame.maxTime);
-@@ -267,7 +580,41 @@ public class MarioGame {
+@@ -267,7 +606,41 @@ public class MarioGame {
  
              //render world
              if (visual) {
@@ -453,7 +479,7 @@ index 1f58d96b..1a20f60f 100644
              }
              //check if delay needed
              if (this.getDelay(fps) > 0) {
-@@ -279,6 +626,26 @@ public class MarioGame {
+@@ -279,6 +652,26 @@ public class MarioGame {
                  }
              }
          }

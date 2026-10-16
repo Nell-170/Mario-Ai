@@ -117,6 +117,9 @@ public class ExperimentRunner {
     private static JFrame masterFrame = null;
     private static GenerationJob activeGenerationJob = null;
     private static MarioGame activeGame = null;
+    private static boolean developMode = false;
+    private static String currentDevBanner = "";
+    private static JPanel currentDevCardPanel = null;
 
     private static void initFonts() {
         try {
@@ -168,11 +171,35 @@ public class ExperimentRunner {
         }
 
         String python = args.length > 0 ? args[0] : "python";
-        boolean skipGeneration = args.length > 1 && args[1].equals("--skip-generation");
+        boolean skipGeneration = false;
+        for (String a : args) {
+            if ("--skip-generation".equalsIgnoreCase(a)) {
+                skipGeneration = true;
+            } else if ("--dev".equalsIgnoreCase(a) || "--develop".equalsIgnoreCase(a)) {
+                developMode = true;
+            } else if ("--no-dev".equalsIgnoreCase(a)) {
+                developMode = false;
+            }
+        }
         Properties config = loadConfig();
         int timer = Integer.parseInt(config.getProperty("timer", "60").trim());
-        List<Path> familiarization = pathList(config, "familiarization");
-        List<Path> normal = pathList(config, "normal");
+        if (config.getProperty("develop") != null) {
+            developMode = Boolean.parseBoolean(config.getProperty("develop").trim());
+        }
+        for (String a : args) {
+            if ("--dev".equalsIgnoreCase(a) || "--develop".equalsIgnoreCase(a)) {
+                developMode = true;
+            } else if ("--no-dev".equalsIgnoreCase(a)) {
+                developMode = false;
+            }
+        }
+
+        Path famDir = resolveDirectory(config, "familiarization_dir", "familiarization", "levels/familiarization");
+        List<Path> familiarization = randomLevelsFromDir(famDir, 2, null);
+
+        Path genDir = resolveDirectory(config, "generics_dir", "normal", "levels/generics");
+        List<Path> normal = randomLevelsFromDir(genDir, 2, null);
+
         List<Path> used = new ArrayList<>(familiarization);
         used.addAll(normal);
         List<Path> drawn = randomHumanLevels(config, used, skipGeneration ? 4 : 2);
@@ -187,8 +214,21 @@ public class ExperimentRunner {
         List<Step> steps = buildSteps(group, normal, human);
         Files.writeString(dir.resolve("participant.txt"),
                 "id=" + id + "\ngroup=" + group + "\nsteps="
-                        + steps.stream().map(s -> String.valueOf(s.type())).collect(Collectors.joining(",")) + "\n");
+                        + steps.stream().map(s -> String.valueOf(s.type())).collect(Collectors.joining(","))
+                        + "\nfamiliarization=" + familiarization.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(","))
+                        + "\ngenerics=" + normal.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(","))
+                        + "\nhuman=" + human.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(","))
+                        + "\n");
         System.out.println("Participante: " + id + " (secuencia " + group + ")");
+        System.out.println("Niveles de familiarización (aleatorios): "
+                + familiarization.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(", ")));
+        System.out.println("Niveles no personalizados / genéricos (aleatorios): "
+                + normal.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(", ")));
+        System.out.println("Niveles humanos (aleatorios de nivel0): "
+                + human.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(", ")));
+        System.out.println("Modo Desarrollo (develop): "
+                + (developMode ? "ACTIVADO (develop=true: visualizando tipo de nivel, distribución de Cuadrado Latino e info en pantalla)"
+                               : "DESACTIVADO (develop=false: modo ciego para experimento formal)"));
 
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         masterFrame = new JFrame("Mario AI");
@@ -207,18 +247,36 @@ public class ExperimentRunner {
         activeGenerationJob = generation;
         MarioGame.setEmergencyExitHandler(() -> confirmAndExitExperiment());
         try {
+            setDevContext(
+                    "ID: " + id + " | Cuadrado Latino: " + group + " (" + SEQUENCES.get(group) + ")",
+                    "Bienvenida / Instrucciones",
+                    "N/A",
+                    "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
+                    id,
+                    timer
+            );
+
             // 1. Welcome & Instructions Screen
             showWelcomeScreen();
 
             // 2. Familiarization Levels
             List<Path> famTelemetries = new ArrayList<>();
             for (int f = 0; f < familiarization.size(); f++) {
+                Path famLevel = familiarization.get(f);
+                setDevContext(
+                        "Familiarización " + (f + 1) + "/" + familiarization.size() + " | Archivo: " + famLevel.getFileName() + " | Grupo asignado: " + group,
+                        "Familiarización (Práctica previa y captura basal de telemetría)",
+                        famLevel.getFileName().toString(),
+                        "Fase preliminar (Calibra telemetría para Personalizado " + (f + 1) + ")",
+                        id,
+                        timer
+                );
                 showLevelIntroScreen("Familiarización (" + (f + 1) + " de " + familiarization.size() + ")",
                         "Nivel de preparación " + (f + 1),
                         "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n"
                                 + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar",
                         "Comenzar nivel " + (f + 1));
-                famTelemetries.add(playLevel(familiarization.get(f), timer,
+                famTelemetries.add(playLevel(famLevel, timer,
                         dir.resolve("telemetry_fam" + (f + 1) + ".json")));
             }
 
@@ -228,6 +286,15 @@ public class ExperimentRunner {
             } else {
                 generation.start(famTelemetries);
             }
+
+            setDevContext(
+                    "ID: " + id + " | Consentimiento y Encuesta Inicial | Grupo " + group,
+                    "Consentimiento Informado",
+                    "N/A",
+                    "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
+                    id,
+                    timer
+            );
 
             // 3. Informed Consent
             if (!showConsentScreen()) {
@@ -257,6 +324,24 @@ public class ExperimentRunner {
             // 5. Experiment Levels Loop
             for (int i = 0; i < steps.size(); i++) {
                 Step step = steps.get(i);
+                String stepCode = SEQUENCES.get(group).split(" ")[i];
+                String typeName = describeLevelType(step.type());
+                String seqProgress = formatSequenceProgress(group, i);
+
+                String previewFileName = (step.type() != 'P')
+                        ? step.level().getFileName().toString()
+                        : (skipGeneration ? substitutes.get(step.index()).getFileName().toString()
+                                          : "Nivel generado " + (step.index() + 1) + ".txt (MarioGPT)");
+
+                setDevContext(
+                        "Cuadrado Latino " + group + " | Paso " + (i + 1) + "/6: " + stepCode + " [" + typeName + "] | " + previewFileName,
+                        typeName,
+                        previewFileName,
+                        "Grupo " + group + " : " + seqProgress + "  (A=Personalizado, B=Genérico, C=Humano)",
+                        id,
+                        timer
+                );
+
                 showLevelIntroScreen("Nivel " + (i + 1) + " de " + steps.size(),
                         "Nivel " + (i + 1),
                         "Juega a tu ritmo y explora el nivel lo mejor que puedas.\n"
@@ -270,9 +355,26 @@ public class ExperimentRunner {
                 } else if (skipGeneration) {
                     levelFile = substitutes.get(step.index());
                 } else {
+                    setDevContext(
+                            "Generando Personalizado " + (step.index() + 1) + " (MarioGPT) | Secuencia: " + group + " (" + stepCode + ")",
+                            typeName,
+                            "Generando con MarioGPT...",
+                            "Grupo " + group + " : " + seqProgress,
+                            id,
+                            timer
+                    );
                     showGeneratingScreen(i + 1, steps.size());
                     levelFile = generation.await(step.index());
                 }
+
+                setDevContext(
+                        "Cuadrado Latino " + group + " | Paso " + (i + 1) + "/6: " + stepCode + " [" + typeName + "] | " + levelFile.getFileName(),
+                        typeName,
+                        levelFile.getFileName().toString(),
+                        "Grupo " + group + " : " + seqProgress + "  (A=Personalizado, B=Genérico, C=Humano)",
+                        id,
+                        timer
+                );
 
                 playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
 
@@ -428,7 +530,7 @@ public class ExperimentRunner {
         CompletableFuture<Void> future = new CompletableFuture<>();
         SwingUtilities.invokeLater(() -> {
             JPanel bg = createScreenContainer();
-            JPanel card = createModernCard(860, 460);
+            JPanel card = createModernCard(880, developMode ? 600 : 460);
 
             card.add(createBadge(badge));
             card.add(Box.createRigidArea(new Dimension(0, 14)));
@@ -438,17 +540,22 @@ public class ExperimentRunner {
             title.setForeground(TEXT_WHITE);
             title.setAlignmentX(Component.LEFT_ALIGNMENT);
             card.add(title);
-            card.add(Box.createRigidArea(new Dimension(0, 16)));
+            card.add(Box.createRigidArea(new Dimension(0, 14)));
+
+            if (developMode && currentDevCardPanel != null) {
+                card.add(currentDevCardPanel);
+                card.add(Box.createRigidArea(new Dimension(0, 14)));
+            }
 
             for (String paragraph : descText.split("\n")) {
                 JLabel p = new JLabel(
-                        "<html><body style='width: 780px; color: rgb(156, 163, 175);'>" + paragraph + "</body></html>");
-                p.setFont(FONT_REGULAR.deriveFont(18f));
+                        "<html><body style='width: 800px; color: rgb(156, 163, 175);'>" + paragraph + "</body></html>");
+                p.setFont(FONT_REGULAR.deriveFont(17f));
                 p.setAlignmentX(Component.LEFT_ALIGNMENT);
                 card.add(p);
-                card.add(Box.createRigidArea(new Dimension(0, 8)));
+                card.add(Box.createRigidArea(new Dimension(0, 6)));
             }
-            card.add(Box.createRigidArea(new Dimension(0, 24)));
+            card.add(Box.createRigidArea(new Dimension(0, 20)));
 
             ModernButton btn = new ModernButton(btnText + " (Espacio / Enter)", ACCENT_PRIMARY, ACCENT_HOVER,
                     ACCENT_PRESSED, Color.WHITE, 12);
@@ -493,7 +600,15 @@ public class ExperimentRunner {
             desc.setFont(FONT_REGULAR.deriveFont(17f));
             desc.setAlignmentX(Component.LEFT_ALIGNMENT);
             card.add(desc);
-            card.add(Box.createRigidArea(new Dimension(0, 24)));
+
+            if (developMode && currentDevBanner != null && !currentDevBanner.isBlank()) {
+                card.add(Box.createRigidArea(new Dimension(0, 8)));
+                JLabel devDesc = new JLabel("<html><body style='width: 720px; color: rgb(250, 204, 21); font-weight: bold;'>🛠 DEV: " + currentDevBanner + "</body></html>");
+                devDesc.setFont(FONT_SEMIBOLD.deriveFont(13f));
+                devDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
+                card.add(devDesc);
+            }
+            card.add(Box.createRigidArea(new Dimension(0, 20)));
 
             JProgressBar progress = new JProgressBar();
             progress.setIndeterminate(true);
@@ -682,6 +797,15 @@ public class ExperimentRunner {
             card.add(title);
             card.add(Box.createRigidArea(new Dimension(0, 4)));
 
+            if (developMode && currentDevBanner != null && !currentDevBanner.isBlank()) {
+                JLabel devSub = new JLabel("🛠 DEV INFO: " + currentDevBanner);
+                devSub.setFont(FONT_SEMIBOLD.deriveFont(13f));
+                devSub.setForeground(new Color(250, 204, 21));
+                devSub.setAlignmentX(Component.LEFT_ALIGNMENT);
+                card.add(devSub);
+                card.add(Box.createRigidArea(new Dimension(0, 6)));
+            }
+
             JLabel intro = new JLabel(introText);
             intro.setFont(FONT_REGULAR.deriveFont(17f));
             intro.setForeground(TEXT_MUTED);
@@ -832,6 +956,98 @@ public class ExperimentRunner {
     }
 
     // ==========================================
+    // DEVELOPER HELPERS & UI COMPONENTS
+    // ==========================================
+
+    private static String describeLevelType(char type) {
+        return switch (type) {
+            case 'P', 'A' -> "Personalizado (MarioGPT adaptado por telemetría)";
+            case 'N', 'B' -> "No Personalizado (Genérico de control)";
+            case 'H', 'C' -> "Humano (Super Mario Maker 2 - Nivel 0)";
+            default -> "Familiarización (Preparatorio)";
+        };
+    }
+
+    private static String formatSequenceProgress(String group, int currentStepIndex) {
+        String seq = SEQUENCES.getOrDefault(group, "");
+        if (seq.isBlank()) return group;
+        String[] codes = seq.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < codes.length; i++) {
+            if (i > 0) sb.append(" → ");
+            if (i == currentStepIndex) {
+                sb.append("[").append(codes[i]).append("*]");
+            } else {
+                sb.append(codes[i]);
+            }
+        }
+        return sb.toString();
+    }
+
+    private static void setDevContext(String bannerText, String levelType, String fileName, String latinSquareDist, String participantId, int timerSec) {
+        currentDevBanner = bannerText;
+        try {
+            MarioGame.setDevBannerText(developMode ? bannerText : null);
+        } catch (Throwable ignored) {}
+
+        if (developMode) {
+            currentDevCardPanel = createDevCardPanel(levelType, latinSquareDist, fileName, participantId, timerSec);
+        } else {
+            currentDevCardPanel = null;
+        }
+    }
+
+    private static JPanel createDevCardPanel(String levelType, String latinSquareDist, String fileName, String participantId, int timerSec) {
+        JPanel devPanel = new JPanel();
+        devPanel.setLayout(new BoxLayout(devPanel, BoxLayout.Y_AXIS));
+        devPanel.setBackground(new Color(24, 21, 15));
+        devPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(245, 158, 11), 1, true),
+                new EmptyBorder(10, 16, 10, 16)));
+        devPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        devPanel.setMaximumSize(new Dimension(840, 160));
+
+        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        header.setBackground(new Color(24, 21, 15));
+        header.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel badge = new JLabel("  MODO DESARROLLO (develop=true)  ");
+        badge.setFont(FONT_BOLD.deriveFont(11f));
+        badge.setForeground(Color.BLACK);
+        badge.setBackground(new Color(245, 158, 11));
+        badge.setOpaque(true);
+        badge.setBorder(new EmptyBorder(2, 5, 2, 5));
+        header.add(badge);
+        devPanel.add(header);
+        devPanel.add(Box.createRigidArea(new Dimension(0, 6)));
+
+        devPanel.add(createDevRow("Tipo de Nivel:", levelType, new Color(254, 240, 138)));
+        devPanel.add(Box.createRigidArea(new Dimension(0, 3)));
+        devPanel.add(createDevRow("Cuadrado Latino (6x6):", latinSquareDist, new Color(253, 230, 138)));
+        devPanel.add(Box.createRigidArea(new Dimension(0, 3)));
+        devPanel.add(createDevRow("Archivo de Nivel:", fileName, TEXT_WHITE));
+        devPanel.add(Box.createRigidArea(new Dimension(0, 3)));
+        devPanel.add(createDevRow("Participante / Timer:", participantId + "   |   " + timerSec + "s", TEXT_MUTED));
+
+        return devPanel;
+    }
+
+    private static JPanel createDevRow(String label, String value, Color valueColor) {
+        JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row.setBackground(new Color(24, 21, 15));
+        row.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel l = new JLabel(label);
+        l.setFont(FONT_BOLD.deriveFont(13f));
+        l.setForeground(new Color(217, 119, 6));
+        row.add(l);
+
+        JLabel v = new JLabel(value);
+        v.setFont(FONT_SEMIBOLD.deriveFont(13f));
+        v.setForeground(valueColor);
+        row.add(v);
+        return row;
+    }
+
+    // ==========================================
     // CUSTOM SWING UI STYLING & COMPONENTS
     // ==========================================
 
@@ -843,24 +1059,54 @@ public class ExperimentRunner {
             setBackground(BG_DARK);
             centerPanel.setBackground(BG_DARK);
 
-            if (showEmergency) {
-                JPanel topBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 32, 18));
+            boolean hasDevBanner = developMode && currentDevBanner != null && !currentDevBanner.isBlank();
+            if (showEmergency || hasDevBanner) {
+                JPanel topBar = new JPanel(new BorderLayout());
                 topBar.setBackground(BG_DARK);
+                topBar.setBorder(new EmptyBorder(12, 28, 12, 28));
 
-                ModernButton emergencyBtn = new ModernButton(
-                        "Salir del juego",
-                        new Color(136, 19, 55),
-                        new Color(159, 18, 57),
-                        new Color(190, 18, 60),
-                        Color.WHITE,
-                        12);
-                emergencyBtn.setFont(FONT_BOLD.deriveFont(15f));
-                emergencyBtn.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(new Color(220, 38, 38), 1, true),
-                        new EmptyBorder(10, 20, 10, 20)));
-                emergencyBtn.setToolTipText("Salir y cerrar el juego en cualquier momento.");
-                emergencyBtn.addActionListener(e -> confirmAndExitExperiment());
-                topBar.add(emergencyBtn);
+                if (hasDevBanner) {
+                    JPanel devLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+                    devLeft.setBackground(BG_DARK);
+
+                    JLabel devBadge = new JLabel("  DEV MODE  ");
+                    devBadge.setFont(FONT_BOLD.deriveFont(11f));
+                    devBadge.setForeground(Color.BLACK);
+                    devBadge.setBackground(new Color(245, 158, 11));
+                    devBadge.setOpaque(true);
+                    devBadge.setBorder(new EmptyBorder(3, 6, 3, 6));
+                    devLeft.add(devBadge);
+
+                    JLabel devText = new JLabel(currentDevBanner);
+                    devText.setFont(FONT_SEMIBOLD.deriveFont(13f));
+                    devText.setForeground(new Color(253, 230, 138));
+                    devLeft.add(devText);
+
+                    topBar.add(devLeft, BorderLayout.WEST);
+                }
+
+                if (showEmergency) {
+                    JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+                    rightPanel.setBackground(BG_DARK);
+
+                    ModernButton emergencyBtn = new ModernButton(
+                            "Salir del juego",
+                            new Color(136, 19, 55),
+                            new Color(159, 18, 57),
+                            new Color(190, 18, 60),
+                            Color.WHITE,
+                            12);
+                    emergencyBtn.setFont(FONT_BOLD.deriveFont(14f));
+                    emergencyBtn.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(new Color(220, 38, 38), 1, true),
+                            new EmptyBorder(8, 18, 8, 18)));
+                    emergencyBtn.setToolTipText("Salir y cerrar el juego en cualquier momento.");
+                    emergencyBtn.addActionListener(e -> confirmAndExitExperiment());
+                    rightPanel.add(emergencyBtn);
+
+                    topBar.add(rightPanel, BorderLayout.EAST);
+                }
+
                 super.add(topBar, BorderLayout.NORTH);
             }
 
@@ -1227,6 +1473,57 @@ public class ExperimentRunner {
         return props;
     }
 
+    private static Path resolveDirectory(Properties config, String dirKey, String fallbackKey, String defaultPath) {
+        String val = config.getProperty(dirKey);
+        if (val == null || val.isBlank()) {
+            val = config.getProperty(fallbackKey);
+        }
+        if (val != null && !val.isBlank()) {
+            String candidate = val.trim();
+            if (candidate.contains(",")) {
+                String first = candidate.split(",")[0].trim();
+                Path p = SRC.resolve(first);
+                if (Files.isRegularFile(p) && p.getParent() != null) {
+                    return p.getParent();
+                }
+            } else {
+                Path p = SRC.resolve(candidate);
+                if (Files.isDirectory(p)) {
+                    return p;
+                } else if (Files.isRegularFile(p) && p.getParent() != null) {
+                    return p.getParent();
+                }
+            }
+        }
+        return SRC.resolve(defaultPath);
+    }
+
+    private static List<Path> randomLevelsFromDir(Path dir, int count, List<Path> exclude) throws IOException {
+        List<Path> pool = new ArrayList<>();
+        if (Files.exists(dir)) {
+            try (Stream<Path> files = Files.list(dir)) {
+                pool = files
+                        .filter(f -> f.getFileName().toString().endsWith(".txt"))
+                        .filter(f -> exclude == null || exclude.stream().noneMatch(e -> e.getFileName().equals(f.getFileName())))
+                        .collect(Collectors.toList());
+            }
+        }
+        if (pool.size() < count && Files.exists(dir)) {
+            try (Stream<Path> files = Files.list(dir)) {
+                pool = files.filter(f -> f.getFileName().toString().endsWith(".txt")).collect(Collectors.toList());
+            }
+        }
+        if (pool.isEmpty()) {
+            throw new IllegalStateException("No se encontraron niveles jugables (.txt) en " + dir);
+        }
+        java.util.Collections.shuffle(pool);
+        List<Path> chosen = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            chosen.add(pool.get(i % pool.size()));
+        }
+        return chosen;
+    }
+
     private static List<Path> pathList(Properties config, String key) {
         List<Path> paths = Arrays.stream(config.getProperty(key).split(","))
                 .map(String::trim)
@@ -1454,10 +1751,21 @@ public class ExperimentRunner {
             try {
                 Files.createDirectories(outDir);
                 Path genericDir = SRC.resolve("levels/generics");
-                Path genericFile = genericDir.resolve("generic " + ((k % 2) + 1) + ".txt");
-                if (!Files.exists(genericFile)) {
-                    try (Stream<Path> s = Files.list(SRC.resolve("levels/familiarization"))) {
-                        genericFile = s.filter(p -> p.toString().endsWith(".txt")).findFirst().orElse(null);
+                Path genericFile = null;
+                if (Files.exists(genericDir)) {
+                    try (Stream<Path> s = Files.list(genericDir)) {
+                        List<Path> list = s.filter(p -> p.toString().endsWith(".txt")).collect(Collectors.toList());
+                        if (!list.isEmpty()) {
+                            genericFile = list.get(k % list.size());
+                        }
+                    }
+                }
+                if (genericFile == null || !Files.exists(genericFile)) {
+                    Path famDir = SRC.resolve("levels/familiarization");
+                    if (Files.exists(famDir)) {
+                        try (Stream<Path> s = Files.list(famDir)) {
+                            genericFile = s.filter(p -> p.toString().endsWith(".txt")).findFirst().orElse(null);
+                        }
                     }
                 }
                 if (genericFile != null && Files.exists(genericFile)) {
