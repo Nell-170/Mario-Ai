@@ -71,8 +71,12 @@ public final class ProceduralEffects {
             while (playing) {
                 EventType event = events.take();
                 double[] notes = notesFor(event);
-                for (double frequency : notes) {
-                    int totalFrames = (int) (SAMPLE_RATE * 0.065);
+                for (int noteIndex = 0; noteIndex < notes.length; noteIndex++) {
+                    double frequency = notes[noteIndex];
+                    double noteSeconds = event == EventType.WIN
+                            ? (noteIndex == notes.length - 1 ? 0.32 : 0.09)
+                            : 0.065;
+                    int totalFrames = (int) (SAMPLE_RATE * noteSeconds);
                     for (int start = 0; start < totalFrames && playing; start += BUFFER_FRAMES) {
                         int frames = Math.min(BUFFER_FRAMES, totalFrames - start);
                         for (int frame = 0; frame < frames; frame++) {
@@ -122,7 +126,9 @@ public final class ProceduralEffects {
             case STOMP_KILL, FIRE_KILL, SHELL_KILL, FALL_KILL -> new double[] {587.33, 783.99};
             case BUMP -> new double[] {220.0, 164.81};
             case KICK -> new double[] {392.0};
-            case WIN -> new double[] {523.25, 659.25, 783.99};
+            case WIN -> new double[] {
+                    523.25, 659.25, 783.99, 1046.50, 880.00, 1046.50, 1318.51, 1567.98
+            };
             default -> new double[0];
         };
     }
