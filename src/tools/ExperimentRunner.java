@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -218,6 +219,11 @@ public class ExperimentRunner {
         }
         Properties config = loadConfig();
         int timer = Integer.parseInt(config.getProperty("timer", "60").trim());
+        String musicSetting = config.getProperty("music", "true").trim();
+        if (!"true".equalsIgnoreCase(musicSetting) && !"false".equalsIgnoreCase(musicSetting)) {
+            throw new IllegalArgumentException("config.properties: 'music' debe ser true o false");
+        }
+        System.setProperty("mario.audio", musicSetting.toLowerCase(Locale.ROOT));
         if (config.getProperty("develop") != null) {
             developMode = Boolean.parseBoolean(config.getProperty("develop").trim());
         }
@@ -311,7 +317,7 @@ public class ExperimentRunner {
                 showLevelIntroScreen("Familiarización (" + (f + 1) + " de " + familiarization.size() + ")",
                         "Nivel de preparación " + (f + 1),
                         "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n"
-                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar",
+                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar | M = Audio",
                         "Comenzar nivel " + (f + 1));
                 Path telPath = playLevel(famLevel, timer,
                         dir.resolve("telemetry_fam" + (f + 1) + ".json"));
@@ -388,7 +394,7 @@ public class ExperimentRunner {
                         "Nivel " + (i + 1),
                         "Juega a tu ritmo y explora el nivel lo mejor que puedas.\n"
                                 + "Al terminarlo, responderás una breve pregunta sobre tus impresiones de este nivel.\n"
-                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar",
+                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar | M = Audio",
                         "¡Jugar nivel " + (i + 1) + "!");
 
                 Path levelFile;
@@ -640,7 +646,7 @@ public class ExperimentRunner {
             controls.setAlignmentX(Component.LEFT_ALIGNMENT);
             controls.setMaximumSize(new Dimension(960, 60));
             JLabel cLabel = new JLabel(
-                    "Controles:  Flechas = Moverse  |  Flecha Arriba / S / Espacio = Saltar  |  A / Shift = Correr  |  R = Reiniciar  |  Q = Terminar");
+                    "Controles:  Flechas = Moverse  |  Flecha Arriba / S / Espacio = Saltar  |  A / Shift = Correr  |  R = Reiniciar  |  Q = Terminar  |  M = Audio");
             cLabel.setFont(FONT_SEMIBOLD.deriveFont(15f));
             cLabel.setForeground(TEXT_WHITE);
             controls.add(cLabel);
