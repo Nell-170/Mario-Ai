@@ -1,0 +1,154 @@
+diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
+--- a/src/engine/core/MarioGame.java
++++ b/src/engine/core/MarioGame.java
+@@ -10,6 +10,9 @@
+ import agents.human.Agent;
+ import engine.helper.GameStatus;
+ import engine.helper.MarioActions;
++import engine.audio.ProceduralMusic;
++import engine.audio.ProceduralEffects;
++import engine.helper.EventType;
+ 
+ import java.awt.event.KeyEvent;
+ import javax.swing.BorderFactory;
+@@ -62,6 +65,10 @@
+     private MarioRender render = null;
+     private MarioAgent agent = null;
+     private MarioWorld world = null;
++    private ProceduralMusic music = null;
++    private ProceduralEffects soundEffects = null;
++    private boolean musicEnabled = true;
++    private boolean musicToggleDown = false;
+ 
+     /**
+      * Create a mario game to be played
+@@ -91,6 +98,7 @@
+     }
+ 
+     public void closeWindow() {
++        stopMusic();
+         if (this.window != null) {
+             if (this.externalWindow == null) {
+                 try {
+@@ -247,11 +255,17 @@
+                         ka.keyReleased(e);
+                     }
+                 }
++                if (e.getID() == KeyEvent.KEY_RELEASED && e.getKeyCode() == KeyEvent.VK_M) {
++                    musicToggleDown = false;
++                }
+                 if (e.getID() == KeyEvent.KEY_PRESSED) {
+                     if (e.getKeyCode() == KeyEvent.VK_R) {
+                         restartLevel();
+                     } else if (e.getKeyCode() == KeyEvent.VK_Q || e.getKeyCode() == KeyEvent.VK_T) {
+                         finishLevel();
++                    } else if (e.getKeyCode() == KeyEvent.VK_M && !musicToggleDown) {
++                        musicToggleDown = true;
++                        toggleMusic();
+                     } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE && emergencyExitHandler != null) {
+                         emergencyExitHandler.run();
+                     } else if ((e.getKeyCode() == KeyEvent.VK_F11 || e.getKeyCode() == KeyEvent.VK_ESCAPE) && externalWindow == null) {
+@@ -261,6 +275,41 @@
+                 return false;
+             };
+             KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this.globalDispatcher);
++        }
++    }
++
++    private void startMusic() {
++        String setting = System.getProperty("mario.audio", System.getenv("MARIO_AUDIO"));
++        this.musicEnabled = setting == null
++                || (!"false".equalsIgnoreCase(setting) && !"0".equals(setting));
++        if (this.musicEnabled) {
++            this.music = new ProceduralMusic();
++            this.music.start();
++            this.soundEffects = new ProceduralEffects();
++            this.soundEffects.start();
++        }
++    }
++
++    private void toggleMusic() {
++        this.musicEnabled = !this.musicEnabled;
++        if (this.musicEnabled) {
++            this.music = new ProceduralMusic();
++            this.music.start();
++            this.soundEffects = new ProceduralEffects();
++            this.soundEffects.start();
++        } else {
++            stopMusic();
++        }
++    }
++
++    private void stopMusic() {
++        if (this.music != null) {
++            this.music.stop();
++            this.music = null;
++        }
++        if (this.soundEffects != null) {
++            this.soundEffects.stop();
++            this.soundEffects = null;
+         }
+     }
+ 
+@@ -443,7 +492,7 @@
+                 controlPanel.add(this.fullscreenButton);
+             }
+ 
+-            JLabel hintsLabel = new JLabel("Controles: Flechas = Mover | Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar | Esc = Salir");
++            JLabel hintsLabel = new JLabel("Controles: Flechas = Mover | Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar | M = Audio | Esc = Salir");
+             hintsLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+             hintsLabel.setForeground(new Color(160, 160, 165));
+             controlPanel.add(hintsLabel);
+@@ -512,9 +561,13 @@
+             }
+         }
+         this.setAgent(agent);
++        if (visuals) {
++            startMusic();
++        }
+         try {
+             return this.gameLoop(level, timer, marioState, visuals, fps);
+         } finally {
++            stopMusic();
+             if (this.globalDispatcher != null) {
+                 KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this.globalDispatcher);
+                 this.globalDispatcher = null;
+@@ -568,6 +621,9 @@
+                 this.finishRequested = false;
+                 wasManualFinish = true;
+                 this.world.lose();
++                if (this.soundEffects != null) {
++                    this.soundEffects.playEvent(EventType.LOSE);
++                }
+                 break;
+             }
+             if (this.restartRequested) {
+@@ -598,6 +654,11 @@
+                 }
+                 // update world
+                 this.world.update(actions);
++                if (this.soundEffects != null) {
++                    for (MarioEvent event : this.world.lastFrameEvents) {
++                        this.soundEffects.playEvent(EventType.fromValue(event.getEventType()));
++                    }
++                }
+                 gameEvents.addAll(this.world.lastFrameEvents);
+                 agentEvents.add(new MarioAgentEvent(actions, this.world.mario.x,
+                         this.world.mario.y, (this.world.mario.isLarge ? 1 : 0) + (this.world.mario.isFire ? 1 : 0),
+diff --git a/src/engine/helper/EventType.java b/src/engine/helper/EventType.java
+--- a/src/engine/helper/EventType.java
++++ b/src/engine/helper/EventType.java
+@@ -23,4 +23,13 @@
+     public int getValue() {
+         return value;
+     }
++
++    public static EventType fromValue(int value) {
++        for (EventType eventType : values()) {
++            if (eventType.value == value) {
++                return eventType;
++            }
++        }
++        throw new IllegalArgumentException("Unknown event type: " + value);
++    }
+ }

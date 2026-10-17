@@ -17,6 +17,9 @@ cp -f "tools/ValidateLevels.java" "$SRC/ValidateLevels.java"
 cp -f "tools/PlayHuman.java"      "$SRC/PlayHuman.java"
 cp -f "tools/LevelSelector.java"  "$SRC/LevelSelector.java"
 cp -f "tools/ExperimentRunner.java" "$SRC/ExperimentRunner.java"
+mkdir -p "$SRC/engine/audio"
+cp -f "tools/engine/audio/ProceduralMusic.java" "$SRC/engine/audio/ProceduralMusic.java"
+cp -f "tools/engine/audio/ProceduralEffects.java" "$SRC/engine/audio/ProceduralEffects.java"
 
 echo -e "\033[1;36m[ 75%]\033[0m \033[1;32m[███████████████░░░░░]\033[0m Compilando archivos Java con javac..."
 mapfile -t java_files < <(find "$SRC" -name "*.java")

@@ -18,6 +18,9 @@ Copy-Item "tools\ValidateLevels.java" (Join-Path $src "ValidateLevels.java") -Fo
 Copy-Item "tools\PlayHuman.java" (Join-Path $src "PlayHuman.java") -Force
 Copy-Item "tools\LevelSelector.java" (Join-Path $src "LevelSelector.java") -Force
 Copy-Item "tools\ExperimentRunner.java" (Join-Path $src "ExperimentRunner.java") -Force
+New-Item -ItemType Directory -Force -Path (Join-Path $src "engine\audio") | Out-Null
+Copy-Item "tools\engine\audio\ProceduralMusic.java" (Join-Path $src "engine\audio\ProceduralMusic.java") -Force
+Copy-Item "tools\engine\audio\ProceduralEffects.java" (Join-Path $src "engine\audio\ProceduralEffects.java") -Force
 
 Write-Output "[ 75%] [███████████████░░░░░] Compilando archivos Java con javac..."
 $javaFiles = Get-ChildItem -Path $src -Filter *.java -Recurse |

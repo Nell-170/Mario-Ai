@@ -6,13 +6,25 @@ set -euo pipefail
 
 FRAMEWORK="${1:-../mario_ai_framework}"
 PATCH="$(cd "$(dirname "$0")" && pwd)/framework.patch"
+AUDIO_PATCH="$(cd "$(dirname "$0")" && pwd)/framework-audio.patch"
 
 cd "$FRAMEWORK"
-if git apply --unidiff-zero --ignore-whitespace --reverse --check "$PATCH" 2>/dev/null; then
-    echo "Framework patch already applied."
-elif git apply --unidiff-zero --ignore-whitespace "$PATCH"; then
-    echo "Framework patch applied."
+if git apply --recount --ignore-whitespace --reverse --check "$AUDIO_PATCH" 2>/dev/null; then
+    echo "Framework and audio patches already applied."
 else
-    echo "ERROR: could not apply tools/framework.patch to $FRAMEWORK" >&2
-    exit 1
+    if git apply --unidiff-zero --ignore-whitespace --reverse --check "$PATCH" 2>/dev/null; then
+        echo "Framework patch already applied."
+    elif git apply --unidiff-zero --ignore-whitespace "$PATCH"; then
+        echo "Framework patch applied."
+    else
+        echo "ERROR: could not apply tools/framework.patch to $FRAMEWORK" >&2
+        exit 1
+    fi
+
+    if git apply --recount --ignore-whitespace "$AUDIO_PATCH"; then
+        echo "Framework audio patch applied."
+    else
+        echo "ERROR: could not apply tools/framework-audio.patch to $FRAMEWORK" >&2
+        exit 1
+    fi
 fi
