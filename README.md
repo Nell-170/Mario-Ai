@@ -113,6 +113,10 @@ make clean-all                         # Limpia TODO (binarios, telemetría, niv
 make help                              # Muestra la ayuda de todos los targets disponibles
 ```
 
+## Música y efectos procedurales
+
+El juego genera en ejecución una melodía de fondo y efectos cortos para saltar, aterrizar, recoger objetos, recibir daño, golpear bloques, patear caparazones, derrotar enemigos y ganar o perder. Los tonos se sintetizan por código: no se usan música oficial de Mario, grabaciones ni muestras de terceros. Pulsa **M** durante el juego para activar o silenciar todo el audio. En el experimento, configura `music=true` o `music=false` en [config.properties](./src/experiment/config.properties); esa bandera controla tanto la música como los efectos. Para los lanzadores independientes del experimento también puedes definir `MARIO_AUDIO=false` en PowerShell antes de iniciar el juego.
+
 ---
 
 ## Guía Paso a Paso Detallada por Sistema Operativo
