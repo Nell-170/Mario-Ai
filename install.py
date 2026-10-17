@@ -681,27 +681,39 @@ def main():
                 progress.success("MarioGPT instalado correctamente en el entorno virtual.")
 
     # ── PASO 4: Aplicar parches al Framework ───────────────────────
-    progress.step(4, "Aplicando parches de mejoras al motor Mario AI...")
-    patch_file = src_dir / "tools" / "framework.patch"
-    if patch_file.exists():
-        # Check if already applied
-        code, _, _ = run_command(
-            ["git", "apply", "--unidiff-zero", "--ignore-whitespace", "--reverse", "--check", str(patch_file)],
-            cwd=framework_dir,
-        )
-        if code == 0:
-            progress.success("Parches de Mario AI Framework ya estaban aplicados.")
-        else:
-            code, out, err = run_command(
-                ["git", "apply", "--unidiff-zero", "--ignore-whitespace", str(patch_file)],
-                cwd=framework_dir,
-            )
-            if code == 0:
-                progress.success("Parches aplicados exitosamente.")
-            else:
-                progress.warning("El parche no se aplicó automáticamente (puede que el código ya esté actualizado o modificado).")
+    progress.step(4, "Aplicando parches de mejoras y audio al motor Mario AI...")
+    if os.name == "nt":
+        patch_cmd = [
+            "powershell",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(src_dir / "tools" / "apply-framework-patch.ps1"),
+            "-Framework",
+            str(framework_dir),
+        ]
     else:
-        progress.warning(f"No se encontró el archivo de parches {patch_file}; omitiendo.")
+        patch_cmd = [
+            "bash",
+            str(src_dir / "tools" / "apply-framework-patch.sh"),
+            str(framework_dir),
+        ]
+    code, out, err = run_command(patch_cmd, cwd=root)
+    if code != 0:
+        report_step_failure(
+            4,
+            "Parches del Framework",
+            "No se pudieron aplicar los parches de herramientas y audio al Mario AI Framework.",
+            err or out,
+            [
+                "Verifica que mario_ai_framework sea un clon Git válido.",
+                "Revisa si hay cambios locales incompatibles en mario_ai_framework/src.",
+                "Puedes volver a intentarlo ejecutando: cd src && make patch-framework",
+            ],
+            critical=True,
+        )
+    progress.success("Parches de Mario AI Framework y audio aplicados.")
 
     # ── PASO 5: Herramientas Java y Compilación ────────────────────
     progress.step(5, "Instalando herramientas personalizadas y compilando clases Java...")
@@ -731,6 +743,29 @@ def main():
                     ["Verifica los permisos de lectura y escritura."],
                     critical=True,
                 )
+
+    audio_tools = [
+        "ProceduralMusic.java",
+        "ProceduralEffects.java",
+    ]
+    audio_src = src_dir / "tools" / "engine" / "audio"
+    audio_dst = fw_src / "engine" / "audio"
+    audio_dst.mkdir(parents=True, exist_ok=True)
+    for tool in audio_tools:
+        src_tool = audio_src / tool
+        dst_tool = audio_dst / tool
+        try:
+            shutil.copy2(src_tool, dst_tool)
+            progress.info(f"Instalada herramienta Java de audio: engine/audio/{tool}")
+        except Exception as e:
+            report_step_failure(
+                5,
+                "Copia de herramientas Java de audio",
+                f"No se pudo copiar {src_tool} a {dst_tool}: {e}",
+                str(e),
+                ["Verifica que el código fuente de audio exista y que haya permisos de escritura."],
+                critical=True,
+            )
 
     # Gather Java files
     java_files = [str(p) for p in fw_src.rglob("*.java")]

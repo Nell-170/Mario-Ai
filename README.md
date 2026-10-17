@@ -94,6 +94,8 @@ make install-mariogpt
 make compile
 ```
 
+El instalador general (`install.bat`, `install.sh` o `python install.py`) también aplica los parches del framework, instala las clases de audio procedurales y compila Java automáticamente.
+
 ### 2. Flujo de Trabajo y Comandos Disponibles
 
 ```bash
