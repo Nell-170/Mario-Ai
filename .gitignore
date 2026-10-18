@@ -36,3 +36,4 @@ src/telemetry/
 doc/linux-x64
 # Resultados del experimento
 src/experiment/results/
+a.txt
