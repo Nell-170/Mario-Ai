@@ -69,7 +69,7 @@ endif
 .PHONY: help install gui dashboard setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-levels-generated start-experiment \
         start-experiment-nogen generate-level prompt-telemetry play-and-generate \
-        tunnel clean clean-telemetry clean-levels clean-all clean-fresh
+        tunnel clean clean-telemetry clean-levels clean-experiment-results clean-all clean-fresh
 
 # ── help ──────────────────────────────────────────────────────
 help:
@@ -97,6 +97,7 @@ help:
 	@echo "  clean                  Remove generated Java class files"
 	@echo "  clean-telemetry        Remove all recorded telemetry files"
 	@echo "  clean-levels           Remove converted, generated and validated levels"
+	@echo "  clean-experiment-results Delete participant results and response TSVs (asks for confirmation)"
 	@echo "  clean-all              Remove ALL generated files (bin, levels, telemetry, caches)"
 	@echo ""
 
@@ -254,6 +255,12 @@ clean-levels:
 		[os.remove(f) for f in glob.glob('levels/*.csv') if os.path.isfile(f)]; \
 		print('Levels (converted, generated, nivel0) removed.')"
 	$(call progress,100,Niveles limpios.)
+
+# ── clean-experiment-results ──────────────────────────────────
+clean-experiment-results:
+	$(call progress,0,Limpiando resultados del experimento...)
+	@$(PYTHON) tools/clean_experiment_results.py
+	$(call progress,100,Limpieza de resultados finalizada.)
 
 # ── clean-all ─────────────────────────────────────────────────
 clean-all:

@@ -111,6 +111,7 @@ make play-and-generate                 # Flujo continuo: Jugar -> Generar autom�
 make clean                             # Limpia los binarios compilados de Java (.class)
 make clean-telemetry                   # Limpia los archivos de telemetría registrados
 make clean-levels                      # Limpia niveles convertidos, generados y de nivel0
+make clean-experiment-results          # Elimina resultados y respuestas del experimento (pide confirmación)
 make clean-all                         # Limpia TODO (binarios, telemetría, niveles y cachés)
 make help                              # Muestra la ayuda de todos los targets disponibles
 ```
