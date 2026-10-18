@@ -69,7 +69,7 @@ endif
 .PHONY: help install gui dashboard setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-levels-generated start-experiment \
         start-experiment-nogen generate-level prompt-telemetry play-and-generate \
-        clean clean-telemetry clean-levels clean-all clean-fresh
+        tunnel clean clean-telemetry clean-levels clean-all clean-fresh
 
 # ── help ──────────────────────────────────────────────────────
 help:
@@ -235,6 +235,10 @@ else
 	@rm -rf "$(BIN)"
 endif
 	$(call progress,100,Binarios Java eliminados.)
+
+# ── tunnel ────────────────────────────────────────────────────
+tunnel:
+	@bash tools/start_tunnel.sh
 
 # ── clean-telemetry ───────────────────────────────────────────
 clean-telemetry:
