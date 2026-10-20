@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261020_2">
 </head>
 <body>
   <!-- Header -->
@@ -35,6 +35,41 @@
       </button>
     </div>
   </header>
+
+  <!-- Generator Selector Banner -->
+  <section class="generator-banner">
+    <div class="gen-left">
+      <div class="gen-badge">⚡ MODO DE GENERACIÓN DE NIVELES (MARIOGPT)</div>
+      <div class="gen-title-row">
+        <h2 id="gen-active-title">Generador: JeissonServer</h2>
+        <span id="gen-live-badge" class="badge-online">● Comprobando...</span>
+      </div>
+      <p class="gen-desc" id="gen-active-desc">
+        Los niveles personalizados de cada persona se crean conectando vía HTTP a <code>http://jeisson.ecci.ucr.ac.cr:8080</code> (sin túneles SSH ni credenciales).
+      </p>
+    </div>
+    <div class="gen-controls">
+      <div class="gen-btn-group">
+        <button type="button" class="gen-mode-btn active" id="btn-mode-jeisson" onclick="switchGenerationMode('JeissonServer')">
+          <span class="mode-icon">⚡</span>
+          <span class="mode-label">JeissonServer</span>
+          <span class="mode-port">:8080</span>
+        </button>
+        <button type="button" class="gen-mode-btn" id="btn-mode-tunel" onclick="switchGenerationMode('Tunel')">
+          <span class="mode-icon">🚇</span>
+          <span class="mode-label">Túnel SSH</span>
+          <span class="mode-port">:8888</span>
+        </button>
+        <button type="button" class="gen-mode-btn" id="btn-mode-nativo" onclick="switchGenerationMode('Nativo')">
+          <span class="mode-icon">💻</span>
+          <span class="mode-label">Nativo</span>
+          <span class="mode-port">Local</span>
+        </button>
+      </div>
+      <button type="button" class="btn-config-gen" onclick="openGeneratorModal()" title="Configurar variables del túnel y servidor">⚙ Configurar</button>
+      <button type="button" class="btn-refresh-gen" onclick="loadGenerationConfig()" title="Probar conexión ahora">🔄</button>
+    </div>
+  </section>
 
   <!-- Metrics Cards Row -->
   <section class="metrics-grid">
@@ -84,6 +119,14 @@
             <span class="icon">🚀</span> Instalación y Configuración Inicial
           </div>
           <div class="category-buttons">
+            <button class="action-btn highlight-lab" onclick="confirmAndRunSetupLab()">
+              <div class="btn-content">
+                <span class="btn-name">🚀 Puesta a Punto Total (Lab 100)</span>
+                <span class="btn-desc">Hugging Face, compila Java, valida niveles y conecta a JeissonServer</span>
+              </div>
+              <span class="btn-tag">setup-lab</span>
+            </button>
+
             <button class="action-btn highlight" onclick="runTarget('install', 'Instalador Unificado (8 pasos)')">
               <div class="btn-content">
                 <span class="btn-name">⚡ Instalador Completo</span>
@@ -450,9 +493,108 @@
     </div>
   </div>
 
+  <!-- Modal: Configuración de Servidor y Túnel MarioGPT -->
+  <div id="generator-modal" class="modal-backdrop hidden" onclick="handleGenModalBackdropClick(event)">
+    <div class="modal-card modal-card-lg" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">⚙</span>
+          <h3>Configuración del Generador y Túnel MarioGPT</h3>
+        </div>
+        <button class="btn-close" onclick="closeGeneratorModal()" title="Cerrar">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-desc">
+          Administra la fuente para generar los niveles personalizados (con IA). Puedes alternar entre el servidor dedicado, el túnel SSH hacia el clúster HPC o la generación nativa local.
+        </p>
+
+        <!-- Segmented Mode Tabs in Modal -->
+        <div class="modal-mode-tabs">
+          <button type="button" class="modal-tab-btn active" id="mtab-jeisson" onclick="selectModalMode('JeissonServer')">
+            ⚡ JeissonServer (8080)
+          </button>
+          <button type="button" class="modal-tab-btn" id="mtab-tunel" onclick="selectModalMode('Tunel')">
+            🚇 Túnel SSH (8888)
+          </button>
+          <button type="button" class="modal-tab-btn" id="mtab-nativo" onclick="selectModalMode('Nativo')">
+            💻 Nativo (Local)
+          </button>
+        </div>
+
+        <!-- Dynamic sections per mode -->
+        <div id="msec-jeisson" class="mode-detail-sec">
+          <div class="info-alert-box">
+            <strong>⚡ Servidor Dedicado del Prof. Jeisson:</strong> Conexión directa HTTP dentro de la red UCR. No requiere llaves SSH ni abrir túneles en cada máquina.
+          </div>
+          <div class="form-group">
+            <label for="cfg-jeisson-url">URL del Servidor MarioGPT:</label>
+            <input type="text" id="cfg-jeisson-url" class="modal-input" value="http://jeisson.ecci.ucr.ac.cr:8080">
+          </div>
+        </div>
+
+        <div id="msec-tunel" class="mode-detail-sec hidden">
+          <div class="info-alert-box">
+            <strong>🚇 Túnel SSH al Clúster:</strong> Redirige el puerto local hacia el nodo GPU asignado por Slurm en el clúster.
+          </div>
+          
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="cfg-hpc-user">Usuario HPC (HPC_USER):</label>
+              <input type="text" id="cfg-hpc-user" class="modal-input" placeholder="mariogabriel.cordero@172.16.24.2" oninput="updateLiveSshCommand()">
+              <span class="input-hint">Ej: mariogabriel.cordero@172.16.24.2</span>
+            </div>
+            <div class="form-group">
+              <label for="cfg-hpc-port">Puerto (MARIO_PORT):</label>
+              <input type="text" id="cfg-hpc-port" class="modal-input" value="8888" oninput="updateLiveSshCommand()">
+              <span class="input-hint">Puerto local y remoto (default: 8888)</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cfg-hpc-node">Nodo GPU Esclavo (HPC_NODE):</label>
+            <div class="input-with-button">
+              <input type="text" id="cfg-hpc-node" class="modal-input" placeholder="cngpu002 o auto" oninput="updateLiveSshCommand()">
+              <button type="button" class="btn-sm btn-subtle" onclick="detectSlurmNodeFromModal()" id="btn-detect-slurm">🔍 Auto-detectar Slurm</button>
+            </div>
+            <span class="input-hint">Slurm asigna el servicio dinámicamente a nodos como <code>cngpu001</code> o <code>cngpu002</code>.</span>
+          </div>
+
+          <!-- Live SSH Command Preview -->
+          <div class="ssh-command-box">
+            <div class="ssh-cmd-header">
+              <span>Comando SSH interactivo generado:</span>
+              <button type="button" class="btn-copy-cmd" onclick="copySshCommandToClipboard()" id="btn-copy-ssh">📋 Copiar Comando</button>
+            </div>
+            <code id="ssh-live-cmd" class="ssh-live-code">ssh -N -L 8888:cngpu002:8888 mariogabriel.cordero@172.16.24.2</code>
+          </div>
+        </div>
+
+        <div id="msec-nativo" class="mode-detail-sec hidden">
+          <div class="info-alert-box">
+            <strong>💻 Generación Local Nativa:</strong> Ejecuta MarioGPT directamente con PyTorch en esta máquina. Funciona 100% offline sin red.
+          </div>
+        </div>
+
+        <!-- Connection Test & Status -->
+        <div class="gen-test-row">
+          <button type="button" class="btn-sm btn-subtle" onclick="testConnectionFromModal()" id="btn-test-conn">
+            🔄 Probar Conexión (/health)
+          </button>
+          <span id="modal-conn-status" class="modal-status-text">Listo para probar</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-sm btn-outline" onclick="closeGeneratorModal()">Cancelar</button>
+        <button class="btn-sm btn-primary" onclick="saveGeneratorModalConfig()">💾 Guardar Configuración</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container"></div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20261020_2"></script>
 </body>
 </html>

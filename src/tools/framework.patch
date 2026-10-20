@@ -16,23 +16,50 @@ index b888366b..a525aa15 100644
                  this.actions[MarioActions.SPEED.getValue()] = isPressed;
                  break;
 diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
-index 1f58d96b..581b7b86 100644
+index 1f58d96b..9803e0a5 100644
 --- a/src/engine/core/MarioGame.java
 +++ b/src/engine/core/MarioGame.java
-@@ -11,6 +11,12 @@ import agents.human.Agent;
+@@ -10,6 +10,16 @@ import javax.swing.JFrame;
+ import agents.human.Agent;
  import engine.helper.GameStatus;
  import engine.helper.MarioActions;
- 
++import engine.audio.ProceduralMusic;
++import engine.audio.ProceduralEffects;
++import engine.helper.EventType;
++
 +import java.awt.event.KeyEvent;
 +import javax.swing.BorderFactory;
 +import javax.swing.JButton;
 +import javax.swing.JLabel;
 +import javax.swing.JPanel;
-+
++import javax.swing.SwingUtilities;
+ 
  public class MarioGame {
      /**
-      * the maximum time that agent takes for each step
-@@ -73,6 +79,127 @@ public class MarioGame {
+@@ -44,7 +54,7 @@ public class MarioGame {
+     /**
+      * pauses the whole game at any moment
+      */
+-    public boolean pause = false;
++    public volatile boolean pause = false;
+ 
+     /**
+      * events that kills the player when it happens only care about type and param
+@@ -56,6 +66,13 @@ public class MarioGame {
+     private MarioRender render = null;
+     private MarioAgent agent = null;
+     private MarioWorld world = null;
++    private ProceduralMusic music = null;
++    private ProceduralEffects soundEffects = null;
++    private boolean musicEnabled = true;
++    private boolean musicToggleDown = false;
++    private boolean pauseToggleDown = false;
++    private boolean restartToggleDown = false;
++    private boolean finishToggleDown = false;
+ 
+     /**
+      * Create a mario game to be played
+@@ -73,6 +90,155 @@ public class MarioGame {
          this.killEvents = killEvents;
      }
  
@@ -48,6 +75,7 @@ index 1f58d96b..581b7b86 100644
 +    }
 +
 +    public void closeWindow() {
++        stopMusic();
 +        if (this.window != null) {
 +            if (this.externalWindow == null) {
 +                try {
@@ -74,6 +102,7 @@ index 1f58d96b..581b7b86 100644
 +    private volatile boolean finishRequested = false;
 +    private boolean isFullScreen = false;
 +    private JButton fullscreenButton = null;
++    private JButton pauseButton = null;
 +
 +    public void restartLevel() {
 +        this.restartRequested = true;
@@ -81,6 +110,32 @@ index 1f58d96b..581b7b86 100644
 +
 +    public void finishLevel() {
 +        this.finishRequested = true;
++    }
++
++    public synchronized void togglePause() {
++        this.pause = !this.pause;
++        if (this.musicEnabled) {
++            if (this.pause) {
++                if (this.music != null) {
++                    this.music.stop();
++                    this.music = null;
++                }
++            } else {
++                if (this.music == null) {
++                    this.music = new ProceduralMusic();
++                    this.music.start();
++                }
++            }
++        }
++        if (this.pauseButton != null) {
++            SwingUtilities.invokeLater(() -> {
++                this.pauseButton.setText(this.pause ? "Reanudar [P]" : "Pausar [P]");
++                this.pauseButton.setBackground(this.pause ? new Color(133, 77, 14) : new Color(45, 45, 50));
++            });
++        }
++        if (this.render != null) {
++            this.render.requestFocusInWindow();
++        }
 +    }
 +
 +    private static Runnable emergencyExitHandler = null;
@@ -160,38 +215,16 @@ index 1f58d96b..581b7b86 100644
      private int getDelay(int fps) {
          if (fps <= 0) {
              return 0;
-@@ -82,8 +209,58 @@ public class MarioGame {
+@@ -82,9 +248,87 @@ public class MarioGame {
  
      private void setAgent(MarioAgent agent) {
          this.agent = agent;
 -        if (agent instanceof KeyAdapter) {
--            this.render.addKeyListener((KeyAdapter) this.agent);
-+        KeyAdapter globalShortcuts = new KeyAdapter() {
-+            @Override
-+            public void keyPressed(KeyEvent e) {
-+                if (e.getKeyCode() == KeyEvent.VK_R) {
-+                    restartLevel();
-+                } else if (e.getKeyCode() == KeyEvent.VK_Q || e.getKeyCode() == KeyEvent.VK_T) {
-+                    finishLevel();
-+                } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE && emergencyExitHandler != null) {
-+                    emergencyExitHandler.run();
-+                } else if ((e.getKeyCode() == KeyEvent.VK_F11 || e.getKeyCode() == KeyEvent.VK_ESCAPE) && externalWindow == null) {
-+                    toggleFullScreen();
-+                }
-+            }
-+        };
-+
-+        if (this.render != null) {
-+            if (agent instanceof KeyAdapter) {
-+                this.render.addKeyListener((KeyAdapter) this.agent);
-+            }
-+            this.render.addKeyListener(globalShortcuts);
-+        }
-+        if (this.window != null) {
-+            if (agent instanceof KeyAdapter) {
-+                this.window.addKeyListener((KeyAdapter) this.agent);
-+            }
-+            this.window.addKeyListener(globalShortcuts);
++        if (this.render != null && agent instanceof KeyAdapter) {
+             this.render.addKeyListener((KeyAdapter) this.agent);
+         }
++        if (this.window != null && agent instanceof KeyAdapter) {
++            this.window.addKeyListener((KeyAdapter) this.agent);
 +        }
 +
 +        if (this.globalDispatcher == null) {
@@ -204,11 +237,25 @@ index 1f58d96b..581b7b86 100644
 +                        ka.keyReleased(e);
 +                    }
 +                }
++                if (e.getID() == KeyEvent.KEY_RELEASED) {
++                    if (e.getKeyCode() == KeyEvent.VK_M) musicToggleDown = false;
++                    if (e.getKeyCode() == KeyEvent.VK_P) pauseToggleDown = false;
++                    if (e.getKeyCode() == KeyEvent.VK_R) restartToggleDown = false;
++                    if (e.getKeyCode() == KeyEvent.VK_Q || e.getKeyCode() == KeyEvent.VK_T) finishToggleDown = false;
++                }
 +                if (e.getID() == KeyEvent.KEY_PRESSED) {
-+                    if (e.getKeyCode() == KeyEvent.VK_R) {
++                    if (e.getKeyCode() == KeyEvent.VK_R && !restartToggleDown) {
++                        restartToggleDown = true;
 +                        restartLevel();
-+                    } else if (e.getKeyCode() == KeyEvent.VK_Q || e.getKeyCode() == KeyEvent.VK_T) {
++                    } else if ((e.getKeyCode() == KeyEvent.VK_Q || e.getKeyCode() == KeyEvent.VK_T) && !finishToggleDown) {
++                        finishToggleDown = true;
 +                        finishLevel();
++                    } else if (e.getKeyCode() == KeyEvent.VK_P && !pauseToggleDown) {
++                        pauseToggleDown = true;
++                        togglePause();
++                    } else if (e.getKeyCode() == KeyEvent.VK_M && !musicToggleDown) {
++                        musicToggleDown = true;
++                        toggleMusic();
 +                    } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE && emergencyExitHandler != null) {
 +                        emergencyExitHandler.run();
 +                    } else if ((e.getKeyCode() == KeyEvent.VK_F11 || e.getKeyCode() == KeyEvent.VK_ESCAPE) && externalWindow == null) {
@@ -218,10 +265,46 @@ index 1f58d96b..581b7b86 100644
 +                return false;
 +            };
 +            KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(this.globalDispatcher);
-         }
++        }
++    }
++
++    private void startMusic() {
++        String setting = System.getProperty("mario.audio", System.getenv("MARIO_AUDIO"));
++        this.musicEnabled = setting == null
++                || (!"false".equalsIgnoreCase(setting) && !"0".equals(setting));
++        if (this.musicEnabled) {
++            this.music = new ProceduralMusic();
++            this.music.start();
++            this.soundEffects = new ProceduralEffects();
++            this.soundEffects.start();
++        }
++    }
++
++    private void toggleMusic() {
++        this.musicEnabled = !this.musicEnabled;
++        if (this.musicEnabled) {
++            this.music = new ProceduralMusic();
++            this.music.start();
++            this.soundEffects = new ProceduralEffects();
++            this.soundEffects.start();
++        } else {
++            stopMusic();
++        }
++    }
++
++    private void stopMusic() {
++        if (this.music != null) {
++            this.music.stop();
++            this.music = null;
++        }
++        if (this.soundEffects != null) {
++            this.soundEffects.stop();
++            this.soundEffects = null;
++        }
      }
  
-@@ -204,18 +381,145 @@ public class MarioGame {
+     /**
+@@ -204,18 +448,158 @@ public class MarioGame {
       * @return statistics about the current game
       */
      public MarioResult runGame(MarioAgent agent, String level, int timer, int marioState, boolean visuals, int fps, float scale) {
@@ -251,6 +334,15 @@ index 1f58d96b..581b7b86 100644
 +            JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 6));
 +            controlPanel.setBackground(Color.BLACK);
 +            controlPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(40, 40, 45)));
++
++            this.pauseButton = new JButton("Pausar [P]");
++            this.pauseButton.setFocusable(false);
++            this.pauseButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
++            this.pauseButton.setForeground(new Color(230, 230, 230));
++            this.pauseButton.setBackground(new Color(45, 45, 50));
++            this.pauseButton.setToolTipText("Pausa o reanuda la partida [P].");
++            this.pauseButton.addActionListener(e -> togglePause());
++            controlPanel.add(this.pauseButton);
 +
 +            JButton restartButton = new JButton("Reiniciar nivel [R]");
 +            restartButton.setFocusable(false);
@@ -292,7 +384,7 @@ index 1f58d96b..581b7b86 100644
 +                controlPanel.add(this.fullscreenButton);
 +            }
 +
-+            JLabel hintsLabel = new JLabel("Controles: Flechas = Mover | Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar | Esc = Salir");
++            JLabel hintsLabel = new JLabel("Controles: Flechas = Mover | Arriba / S / Espacio = Saltar | A / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio | Esc = Salir");
 +            hintsLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 +            hintsLabel.setForeground(new Color(160, 160, 165));
 +            controlPanel.add(hintsLabel);
@@ -363,9 +455,13 @@ index 1f58d96b..581b7b86 100644
          }
          this.setAgent(agent);
 -        return this.gameLoop(level, timer, marioState, visuals, fps);
++        if (visuals) {
++            startMusic();
++        }
 +        try {
 +            return this.gameLoop(level, timer, marioState, visuals, fps);
 +        } finally {
++            stopMusic();
 +            if (this.globalDispatcher != null) {
 +                KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(this.globalDispatcher);
 +                this.globalDispatcher = null;
@@ -374,7 +470,7 @@ index 1f58d96b..581b7b86 100644
      }
  
      private MarioResult gameLoop(String level, int timer, int marioState, boolean visual, int fps) {
-@@ -231,13 +535,25 @@ public class MarioGame {
+@@ -231,13 +615,25 @@ public class MarioGame {
          long currentTime = System.currentTimeMillis();
  
          //initialize graphics
@@ -405,7 +501,7 @@ index 1f58d96b..581b7b86 100644
              this.render.addFocusListener(this.render);
          }
  
-@@ -246,7 +562,30 @@ public class MarioGame {
+@@ -246,7 +642,33 @@ public class MarioGame {
  
          ArrayList<MarioEvent> gameEvents = new ArrayList<>();
          ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
@@ -415,6 +511,9 @@ index 1f58d96b..581b7b86 100644
 +                this.finishRequested = false;
 +                wasManualFinish = true;
 +                this.world.lose();
++                if (this.soundEffects != null) {
++                    this.soundEffects.playEvent(EventType.LOSE);
++                }
 +                break;
 +            }
 +            if (this.restartRequested) {
@@ -436,7 +535,19 @@ index 1f58d96b..581b7b86 100644
              if (!this.pause) {
                  //get actions
                  agentTimer = new MarioTimer(MarioGame.maxTime);
-@@ -267,7 +606,41 @@ public class MarioGame {
+@@ -259,6 +681,11 @@ public class MarioGame {
+                 }
+                 // update world
+                 this.world.update(actions);
++                if (this.soundEffects != null) {
++                    for (MarioEvent event : this.world.lastFrameEvents) {
++                        this.soundEffects.playEvent(EventType.fromValue(event.getEventType()));
++                    }
++                }
+                 gameEvents.addAll(this.world.lastFrameEvents);
+                 agentEvents.add(new MarioAgentEvent(actions, this.world.mario.x,
+                         this.world.mario.y, (this.world.mario.isLarge ? 1 : 0) + (this.world.mario.isFire ? 1 : 0),
+@@ -267,9 +694,65 @@ public class MarioGame {
  
              //render world
              if (visual) {
@@ -474,12 +585,36 @@ index 1f58d96b..581b7b86 100644
 +                Graphics backBuffer = this.render.getGraphics();
 +                if (backBuffer != null && currentBuffer != null) {
 +                    this.render.renderWorld(this.world, renderTarget, backBuffer, currentBuffer);
++                    if (this.pause) {
++                        Graphics2D g2d = (Graphics2D) backBuffer;
++                        g2d.setColor(new Color(0, 0, 0, 150));
++                        g2d.fillRect(0, 0, this.render.getWidth(), this.render.getHeight());
++                        g2d.setColor(Color.WHITE);
++                        g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 26));
++                        FontMetrics fm = g2d.getFontMetrics();
++                        String pauseMsg = "JUEGO EN PAUSA [P]";
++                        int tx = (this.render.getWidth() - fm.stringWidth(pauseMsg)) / 2;
++                        int ty = (this.render.getHeight() + fm.getAscent()) / 2 - 10;
++                        g2d.drawString(pauseMsg, tx, ty);
++                        g2d.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 15));
++                        g2d.setColor(new Color(200, 200, 210));
++                        FontMetrics fmSub = g2d.getFontMetrics();
++                        String subMsg = "Presiona P o haz clic en 'Reanudar' para continuar";
++                        int sx = (this.render.getWidth() - fmSub.stringWidth(subMsg)) / 2;
++                        int sy = ty + 30;
++                        g2d.drawString(subMsg, sx, sy);
++                    }
 +                    backBuffer.dispose();
 +                }
              }
              //check if delay needed
++            if (this.pause) {
++                currentTime = System.currentTimeMillis();
++            }
              if (this.getDelay(fps) > 0) {
-@@ -278,6 +651,47 @@ public class MarioGame {
+                 try {
+                     currentTime += this.getDelay(fps);
+@@ -278,6 +761,47 @@ public class MarioGame {
                      break;
                  }
              }
@@ -740,3 +875,21 @@ index 7581d463..91b9ec25 100755
                  Graphics2D g = (Graphics2D) image.getGraphics();
                  g.setComposite(AlphaComposite.Src);
                  g.drawImage(source, -x * xSize, -y * ySize, null);
+diff --git a/src/engine/helper/EventType.java b/src/engine/helper/EventType.java
+index 38ffcc37..5818682e 100644
+--- a/src/engine/helper/EventType.java
++++ b/src/engine/helper/EventType.java
+@@ -23,4 +23,13 @@ public enum EventType {
+     public int getValue() {
+         return value;
+     }
++
++    public static EventType fromValue(int value) {
++        for (EventType eventType : values()) {
++            if (eventType.value == value) {
++                return eventType;
++            }
++        }
++        throw new IllegalArgumentException("Unknown event type: " + value);
++    }
+ }

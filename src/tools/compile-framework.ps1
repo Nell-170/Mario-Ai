@@ -30,9 +30,16 @@ if ($javaFiles.Count -eq 0) {
     throw "No Java source files found in $src"
 }
 
-& javac --release 25 -d $bin -encoding UTF-8 $javaFiles
+try {
+    & javac --release 17 -d $bin -encoding UTF-8 $javaFiles
+} catch {
+    & javac -d $bin -encoding UTF-8 $javaFiles
+}
 if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
+    & javac -d $bin -encoding UTF-8 $javaFiles
+    if ($LASTEXITCODE -ne 0) {
+        exit $LASTEXITCODE
+    }
 }
 
 Write-Output "[100%] [████████████████████] ¡Compilación completada exitosamente!"

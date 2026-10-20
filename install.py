@@ -270,6 +270,8 @@ def detect_java() -> Tuple[Optional[str], Optional[str]]:
         # Linux standard
         "/usr/lib/jvm/*/bin",
         "/usr/java/*/bin",
+        os.path.expanduser("~/.local/jdk-*/bin"),
+        os.path.expanduser("~/.local/bin"),
         os.path.expanduser("~/.jdks/*/bin"),
         os.path.expanduser("~/.sdkman/candidates/java/*/bin"),
         # VS Code / Antigravity Java extensions
@@ -923,6 +925,7 @@ def main():
     # ── PASO 8: Resumen y Finalización ─────────────────────────────
     progress.step(8, "Verificando estado final del sistema...")
     progress.success("Motor de juego y experiment runner listos para ejecutar.")
+    progress.info("Servidor MarioGPT configurado: http://jeisson.ecci.ucr.ac.cr:8080 (Modo: JeissonServer)")
     progress.finish()
 
     print(f"\n{C_BOLD}{C_GREEN}╔══════════════════════════════════════════════════════════════════╗{C_RESET}")

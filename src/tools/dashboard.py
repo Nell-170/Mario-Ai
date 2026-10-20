@@ -22,11 +22,18 @@ UI_DIR = Path(__file__).resolve().parent / "dashboard_ui"
 
 # Ensure JDK 25 is in PATH if not already present
 def ensure_jdk_path():
-    ide_java = Path("/home/marioc/.antigravity-ide/extensions/redhat.java-1.57.0-linux-x64/jre/25.0.4.1-linux-x86_64/bin")
-    if ide_java.exists() and (ide_java / "javac").exists():
-        current_path = os.environ.get("PATH", "")
-        if str(ide_java) not in current_path:
-            os.environ["PATH"] = f"{ide_java}:{current_path}"
+    candidates = [
+        Path("/home/marioc/.local/jdk-25/bin"),
+        Path("/home/marioc/.local/bin"),
+        Path("/home/marioc/.antigravity-ide/extensions/redhat.java-1.57.0-linux-x64/jre/25.0.4.1-linux-x86_64/bin"),
+    ]
+    current_path = os.environ.get("PATH", "")
+    for cand in candidates:
+        if cand.exists() and (cand / "javac").exists():
+            if str(cand) not in current_path:
+                os.environ["PATH"] = f"{cand}:{current_path}"
+                current_path = os.environ["PATH"]
+            break
 
 ensure_jdk_path()
 
@@ -60,6 +67,90 @@ def save_ollama_key(key_value: str):
     key_file.parent.mkdir(parents=True, exist_ok=True)
     key_file.write_text(key_value + "\n", encoding="utf-8")
     return True
+
+
+def get_generation_config():
+    cfg_file = ROOT / "experiment" / "config.properties"
+    props = {}
+    if cfg_file.exists():
+        for line in cfg_file.read_text(encoding="utf-8", errors="ignore").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                props[k.strip()] = v.strip()
+
+    mode = props.get("generation_mode", "JeissonServer")
+    jeisson_url = props.get("jeisson_server_url", "http://jeisson.ecci.ucr.ac.cr:8080")
+    hpc_port = props.get("hpc_port", "8888")
+    hpc_user = props.get("hpc_user", "mariogabriel.cordero@172.16.24.2")
+    hpc_node = props.get("hpc_node", "auto")
+
+    alive = False
+    ping_ms = 0
+    target_url = jeisson_url if "jeisson" in mode.lower() else f"http://localhost:{hpc_port}"
+    if "nativo" not in mode.lower() and "local" not in mode.lower():
+        try:
+            import urllib.request
+            t0 = time.time()
+            req = urllib.request.Request(f"{target_url.rstrip('/')}/health", headers={"User-Agent": "MarioAI-Dashboard/1.0"})
+            with urllib.request.urlopen(req, timeout=1.8) as resp:
+                if resp.status == 200:
+                    alive = True
+                    ping_ms = round((time.time() - t0) * 1000)
+        except Exception:
+            alive = False
+
+    return {
+        "mode": mode,
+        "jeisson_url": jeisson_url,
+        "hpc_port": hpc_port,
+        "hpc_user": hpc_user,
+        "hpc_node": hpc_node,
+        "target_url": target_url,
+        "alive": alive,
+        "ping_ms": ping_ms,
+    }
+
+
+def save_generation_config(new_mode: str, new_url: str = None, hpc_user: str = None, hpc_node: str = None, hpc_port: str = None):
+    cfg_file = ROOT / "experiment" / "config.properties"
+    if not cfg_file.exists():
+        return False
+    lines = cfg_file.read_text(encoding="utf-8").splitlines()
+    updates = {"generation_mode": new_mode}
+    if new_url:
+        updates["jeisson_server_url"] = new_url
+    if hpc_user:
+        updates["hpc_user"] = hpc_user.strip()
+    if hpc_node:
+        updates["hpc_node"] = hpc_node.strip()
+    if hpc_port:
+        updates["hpc_port"] = str(hpc_port).strip()
+    if "jeisson" in new_mode.lower():
+        updates["server_url"] = new_url or "http://jeisson.ecci.ucr.ac.cr:8080"
+    elif "tunel" in new_mode.lower() or "tunnel" in new_mode.lower():
+        updates["server_url"] = f"http://localhost:{hpc_port or '8888'}"
+
+    new_lines = []
+    found = set()
+    for line in lines:
+        trimmed = line.strip()
+        replaced = False
+        for k, v in updates.items():
+            if trimmed.startswith(f"{k}=") or trimmed.startswith(f"{k} "):
+                new_lines.append(f"{k}={v}")
+                found.add(k)
+                replaced = True
+                break
+        if not replaced:
+            new_lines.append(line)
+    for k, v in updates.items():
+        if k not in found:
+            new_lines.append(f"{k}={v}")
+
+    cfg_file.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+    return True
+
 
 # Reentrant lock to prevent self-deadlocks
 STATE_LOCK = threading.RLock()
@@ -312,6 +403,12 @@ class DashboardHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(UI_DIR), **kwargs)
 
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
+        super().end_headers()
+
     def do_GET(self):
         url = urlparse(self.path)
         path = url.path
@@ -348,12 +445,52 @@ class DashboardHandler(SimpleHTTPRequestHandler):
                 self.send_json({"content": content, "file": file_name, "folder": folder})
         elif path == "/api/experiment-summary":
             self.send_json(get_experiment_summary())
+        elif path == "/api/generation-config":
+            self.send_json(get_generation_config())
+        elif path == "/api/detect-slurm":
+            user_target = query.get("user", ["mariogabriel.cordero@172.16.24.2"])[0]
+            if "@" not in user_target:
+                user_target += "@172.16.24.2"
+            detected = None
+            try:
+                res = subprocess.run(
+                    ["ssh", "-o", "BatchMode=yes", user_target, "squeue -n mariogpt-srv -ho '%N'"],
+                    capture_output=True, text=True, timeout=5
+                )
+                if res.returncode == 0:
+                    for token in res.stdout.split():
+                        token = token.strip()
+                        if "cngpu" in token:
+                            detected = token
+                            break
+            except Exception:
+                pass
+            self.send_json({"detected": detected or "cngpu002"})
         else:
             return super().do_GET()
 
     def do_POST(self):
         url = urlparse(self.path)
-        if url.path == "/api/ollama-key":
+        if url.path == "/api/generation-config":
+            content_len = int(self.headers.get("Content-Length", 0))
+            post_body = self.rfile.read(content_len).decode("utf-8")
+            try:
+                data = json.loads(post_body)
+            except Exception:
+                self.send_error(400, "JSON inválido")
+                return
+
+            new_mode = data.get("mode", "JeissonServer")
+            new_url = data.get("url")
+            hpc_user = data.get("hpc_user")
+            hpc_node = data.get("hpc_node")
+            hpc_port = data.get("hpc_port")
+            saved = save_generation_config(new_mode, new_url, hpc_user, hpc_node, hpc_port)
+            append_log(f"⚡ Configuración de MarioGPT actualizada ({new_mode})", "system")
+            self.send_json({"status": "saved" if saved else "error", "config": get_generation_config()})
+            return
+
+        elif url.path == "/api/ollama-key":
             content_len = int(self.headers.get("Content-Length", 0))
             post_body = self.rfile.read(content_len).decode("utf-8")
             try:
@@ -413,6 +550,7 @@ class DashboardHandler(SimpleHTTPRequestHandler):
 def find_free_port(start_port=5050):
     for port in range(start_port, start_port + 50):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
                 s.bind(("127.0.0.1", port))
                 return port
@@ -422,6 +560,7 @@ def find_free_port(start_port=5050):
 
 
 def main():
+    ThreadingHTTPServer.allow_reuse_address = True
     port = find_free_port(5050)
     server_address = ("127.0.0.1", port)
 

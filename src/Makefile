@@ -8,21 +8,27 @@ BIN        := $(FRAMEWORK)/bin
 LEVELS     := levels
 MARIO_GPT  := ../mario_gpt
 
-IDE_JAVA := /home/marioc/.antigravity-ide/extensions/redhat.java-1.57.0-linux-x64/jre/25.0.4.1-linux-x86_64/bin
+# Robust JDK detection
+LOCAL_JDK := /home/marioc/.local/jdk-25/bin
+IDE_JAVA  := $(wildcard /home/marioc/.local/jdk-25/bin /home/marioc/.local/bin /home/marioc/.antigravity-ide/extensions/redhat.java*/jre/*/bin)
 
 ifeq ($(OS),Windows_NT)
     JAVAC := javac
     JAVA  := java
 else
-    ifeq ($(shell command -v javac 2>/dev/null),)
-        ifneq ($(wildcard $(IDE_JAVA)/javac),)
-            JAVAC := $(IDE_JAVA)/javac
-            JAVA  := $(IDE_JAVA)/java
-            export PATH := $(IDE_JAVA):$(PATH)
-        else
-            JAVAC := javac
-            JAVA  := java
-        endif
+    # 1. System Java in PATH (e.g. Java 21 in ECCI Lab 100)
+    ifneq ($(shell command -v javac 2>/dev/null),)
+        JAVAC := javac
+        JAVA  := java
+    # 2. Local user JDK fallback (e.g. ~/.local/jdk-25)
+    else ifneq ($(wildcard $(HOME)/.local/jdk-25/bin/javac),)
+        JAVAC := $(HOME)/.local/jdk-25/bin/javac
+        JAVA  := $(HOME)/.local/jdk-25/bin/java
+        export PATH := $(HOME)/.local/jdk-25/bin:$(HOME)/.local/bin:$(PATH)
+    else ifneq ($(wildcard /home/marioc/.local/jdk-25/bin/javac),)
+        JAVAC := /home/marioc/.local/jdk-25/bin/javac
+        JAVA  := /home/marioc/.local/jdk-25/bin/java
+        export PATH := /home/marioc/.local/jdk-25/bin:/home/marioc/.local/bin:$(PATH)
     else
         JAVAC := javac
         JAVA  := java
@@ -66,7 +72,7 @@ endef
 endif
 
 # ── Phony targets ─────────────────────────────────────────────
-.PHONY: help install gui dashboard setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
+.PHONY: help install setup-lab gui dashboard setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-levels-generated start-experiment \
         start-experiment-nogen generate-level prompt-telemetry play-and-generate \
         tunnel clean clean-telemetry clean-levels clean-experiment-results clean-all clean-fresh
@@ -107,6 +113,10 @@ install:
 
 install-key:
 	@$(PYTHON) ../install.py --key-only
+
+# ── setup-lab ──────────────────────────────────────────────────
+setup-lab:
+	@$(PYTHON) tools/setup_lab_machine.py
 
 # ── gui / dashboard ───────────────────────────────────────────
 gui: dashboard

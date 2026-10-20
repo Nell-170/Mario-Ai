@@ -1,40 +1,52 @@
 param(
-    [string]$Framework = "../mario_ai_framework"
+    [string]$Framework = ""
 )
 
 $ErrorActionPreference = "Stop"
-$patch = Join-Path $PSScriptRoot "framework.patch"
-$audioPatch = Join-Path $PSScriptRoot "framework-audio.patch"
+$scriptDir = $PSScriptRoot
+$rootDir = (Resolve-Path (Join-Path $scriptDir "..\..")).Path
+
+if (-not $Framework) {
+    $Framework = Join-Path $rootDir "mario_ai_framework"
+} elseif (-not [System.IO.Path]::IsPathRooted($Framework)) {
+    $Framework = (Resolve-Path $Framework -ErrorAction SilentlyContinue).Path
+    if (-not $Framework) {
+        $Framework = Join-Path $rootDir "mario_ai_framework"
+    }
+}
+
+$patch = Join-Path $scriptDir "framework.patch"
+$src = Join-Path $Framework "src"
 
 Push-Location $Framework
 try {
-    $ErrorActionPreference = "Continue"
-    & git apply --recount --ignore-whitespace --reverse --check $audioPatch 2>$null
-    $audioReverseExit = $LASTEXITCODE
-    $ErrorActionPreference = "Stop"
-    if ($audioReverseExit -eq 0) {
-        Write-Output "Framework and audio patches already applied."
-    } else {
-        $ErrorActionPreference = "Continue"
-        & git apply --unidiff-zero --ignore-whitespace --reverse --check $patch 2>$null
-        $reverseExit = $LASTEXITCODE
-        $ErrorActionPreference = "Stop"
-        if ($reverseExit -eq 0) {
-            Write-Output "Framework patch already applied."
-        } else {
-            & git apply --unidiff-zero --ignore-whitespace $patch
-            if ($LASTEXITCODE -ne 0) {
-                throw "Could not apply tools/framework.patch to $Framework"
-            }
-            Write-Output "Framework patch applied."
+    $alreadyPatched = $false
+    if (Test-Path "src\engine\core\MarioGame.java") {
+        $gameContent = Get-Content "src\engine\core\MarioGame.java" -Raw
+        if ($gameContent -match "ProceduralMusic") {
+            $alreadyPatched = $true
         }
-
-        & git apply --recount --ignore-whitespace $audioPatch
-        if ($LASTEXITCODE -ne 0) {
-            throw "Could not apply tools/framework-audio.patch to $Framework"
-        }
-        Write-Output "Framework audio patch applied."
     }
+
+    if ($alreadyPatched) {
+        Write-Output "  ✓ Parches del framework ya estaban aplicados."
+    } else {
+        & git apply --unidiff-zero --ignore-whitespace $patch
+        if ($LASTEXITCODE -ne 0) {
+            throw "Could not apply tools/framework.patch to $Framework"
+        }
+        Write-Output "  ✓ Parche del framework aplicado exitosamente."
+    }
+
+    Write-Output "[*] Sincronizando herramientas Java personalizadas..."
+    Copy-Item (Join-Path $scriptDir "ValidateLevels.java") (Join-Path $src "ValidateLevels.java") -Force
+    Copy-Item (Join-Path $scriptDir "PlayHuman.java") (Join-Path $src "PlayHuman.java") -Force
+    Copy-Item (Join-Path $scriptDir "LevelSelector.java") (Join-Path $src "LevelSelector.java") -Force
+    Copy-Item (Join-Path $scriptDir "ExperimentRunner.java") (Join-Path $src "ExperimentRunner.java") -Force
+    New-Item -ItemType Directory -Force -Path (Join-Path $src "engine\audio") | Out-Null
+    Copy-Item (Join-Path $scriptDir "engine\audio\ProceduralMusic.java") (Join-Path $src "engine\audio\ProceduralMusic.java") -Force
+    Copy-Item (Join-Path $scriptDir "engine\audio\ProceduralEffects.java") (Join-Path $src "engine\audio\ProceduralEffects.java") -Force
+    Write-Output "  ✓ Herramientas Java sincronizadas con éxito."
 } finally {
     Pop-Location
 }

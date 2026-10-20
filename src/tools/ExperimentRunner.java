@@ -1,5 +1,6 @@
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -14,18 +15,30 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.KeyboardFocusManager;
+import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,12 +58,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,10 +77,12 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -73,6 +91,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
@@ -149,6 +168,7 @@ public class ExperimentRunner {
     private static JPanel currentDevCardPanel = null;
     private static int personalizedPlayedCount = 0;
     private static boolean devSidePanelCollapsed = false;
+    private static HpcTunnelManager hpcTunnelManager = null;
 
     private static boolean shouldShowDevGenSidePanel() {
         return developMode
@@ -235,6 +255,11 @@ public class ExperimentRunner {
             }
         }
 
+        hpcTunnelManager = new HpcTunnelManager(config);
+        if (hpcTunnelManager.isAutoTunnel()) {
+            hpcTunnelManager.startTunnelAsync(msg -> System.out.println("[HPC] " + msg));
+        }
+
         Path famDir = resolveDirectory(config, "familiarization_dir", "familiarization", "levels/familiarization");
         List<Path> familiarization = randomLevelsFromDir(famDir, 2, null);
 
@@ -284,6 +309,14 @@ public class ExperimentRunner {
             masterFrame.setVisible(true);
         }
 
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+            if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_F2) {
+                SwingUtilities.invokeLater(() -> showHpcConfigDialog(masterFrame));
+                return true;
+            }
+            return false;
+        });
+
         GenerationJob generation = new GenerationJob(python, dir);
         activeGenerationJob = generation;
         personalizedPlayedCount = 0;
@@ -314,11 +347,14 @@ public class ExperimentRunner {
                         id,
                         timer
                 );
+                String famContent = sanitizeLevel(Files.readString(famLevel));
+                BufferedImage famThumb = renderLevelThumbnail(famContent, 680, 70);
                 showLevelIntroScreen("Familiarización (" + (f + 1) + " de " + familiarization.size() + ")",
-                        "Nivel de preparación " + (f + 1),
+                        "Nivel de práctica " + (f + 1),
                         "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n"
-                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar | M = Audio",
-                        "Comenzar nivel " + (f + 1));
+                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
+                        "Comenzar práctica " + (f + 1),
+                        famThumb);
                 Path telPath = playLevel(famLevel, timer,
                         dir.resolve("telemetry_fam" + (f + 1) + ".json"));
                 famTelemetries.add(telPath);
@@ -390,13 +426,6 @@ public class ExperimentRunner {
                         timer
                 );
 
-                showLevelIntroScreen("Nivel " + (i + 1) + " de " + steps.size(),
-                        "Nivel " + (i + 1),
-                        "Juega a tu ritmo y explora el nivel lo mejor que puedas.\n"
-                                + "Al terminarlo, responderás una breve pregunta sobre tus impresiones de este nivel.\n"
-                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | R = Reiniciar | Q = Terminar | M = Audio",
-                        "¡Jugar nivel " + (i + 1) + "!");
-
                 Path levelFile;
                 if (step.type() != 'P') {
                     levelFile = step.level();
@@ -427,8 +456,17 @@ public class ExperimentRunner {
                 );
 
                 String levelContent = sanitizeLevel(Files.readString(levelFile));
-                BufferedImage thumbnail = renderLevelThumbnail(levelContent, 480, 64);
+                BufferedImage thumbnail = renderLevelThumbnail(levelContent, 680, 70);
                 playedLevels.add(new PlayedLevelInfo(i + 1, step.type(), step.index(), stepCode, levelFile, levelContent, thumbnail));
+
+                showLevelIntroScreen("Nivel " + (i + 1) + " de " + steps.size(),
+                        "Nivel " + (i + 1),
+                        "Observa la silueta del nivel para reconocerlo más tarde en el ranking.\n"
+                                + "Juega a tu ritmo y explora el mapa lo mejor que puedas.\n"
+                                + "Al terminarlo, responderás unas breves preguntas sobre tus impresiones de este nivel.\n"
+                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
+                        "¡Jugar nivel " + (i + 1) + "!",
+                        thumbnail);
 
                 playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
                 if (step.type() == 'P') {
@@ -447,20 +485,20 @@ public class ExperimentRunner {
                         row);
             }
 
-            // 6. Fase 5: Juego Voluntario (Opcional según protocolo)
+            // 6. Fase de Cierre OBLIGATORIA (Ranking y Comentarios inmediatos mientras la memoria está fresca)
+            showClosureBlock(playedLevels, id, group, dir);
+
+            // 7. Fase Voluntaria de Juego Libre (Opcional según protocolo, límite 20 minutos)
             boolean wantFreePlay = showChoiceScreen("Fase Voluntaria de Juego",
-                    "¡Has completado exitosamente los 6 niveles principales de la sesión!\n\n"
-                            + "La parte obligatoria del estudio ha concluido. Si deseas, puedes jugar libremente\n"
-                            + "durante unos minutos adicionales (hasta 5 minutos) por pura diversión,\n"
-                            + "o si prefieres, puedes pasar directamente a la fase final de cierre.\n\n"
-                            + "¿Deseas jugar libremente antes del cierre final?",
-                    "Jugar libremente", "Pasar al bloque de cierre");
+                    "Has completado los 6 niveles de la sesión.\n\n"
+                            + "La parte obligatoria del estudio ha concluido y tus respuestas han sido registradas.\n"
+                            + "Si deseas, ahora puedes seguir jugando libremente durante unos minutos adicionales\n"
+                            + "(límite de 20 minutos) por pura diversión, o salir del juego cuando gustes.\n\n"
+                            + "¿Deseas jugar libremente?",
+                    "Jugar libremente", "Terminar y Salir");
             if (wantFreePlay) {
                 freePlay(config, normal, playedLevels, timer);
             }
-
-            // 7. Fase 6: Cierre (Ranking con miniaturas interactivas, Comentarios finales)
-            showClosureBlock(playedLevels, id, group, dir);
 
             // 8. Pantalla final de despedida
             showExitScreen("¡Muchas gracias por participar!",
@@ -574,6 +612,71 @@ public class ExperimentRunner {
         return telemetryFile;
     }
 
+    private enum FreePlayAction {
+        REPLAY, NEXT, EXIT
+    }
+
+    private static FreePlayAction showFreePlayActionModal(int levelsPlayedSoFar, long remainingSeconds) throws Exception {
+        CompletableFuture<FreePlayAction> future = new CompletableFuture<>();
+        SwingUtilities.invokeLater(() -> {
+            JPanel bg = createScreenContainer();
+            JPanel card = createModernCard(880, 420);
+
+            card.add(createBadge("MODO JUEGO LIBRE — SESIÓN VOLUNTARIA"));
+            card.add(Box.createRigidArea(new Dimension(0, 12)));
+
+            JLabel title = new JLabel("¿Qué te gustaría hacer ahora?");
+            title.setFont(FONT_BOLD.deriveFont(28f));
+            title.setForeground(TEXT_WHITE);
+            title.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(title);
+            card.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            long remMins = Math.max(0, remainingSeconds / 60);
+            long remSecs = Math.max(0, remainingSeconds % 60);
+            String timeStr = String.format("%02d:%02d", remMins, remSecs);
+
+            JLabel desc = new JLabel(
+                    "<html><body style='width: 800px; color: rgb(156, 163, 175);'>"
+                            + "Has jugado <b>" + levelsPlayedSoFar + " nivel(es)</b> en el modo libre.<br>"
+                            + "Tiempo restante disponible de juego: <b style='color: rgb(56, 189, 248);'>" + timeStr + " min</b> (límite máximo de 20 minutos).<br><br>"
+                            + "Puedes repetir el nivel que acabas de terminar, pasar a otro nivel aleatorio o terminar la sesión."
+                            + "</body></html>");
+            desc.setFont(FONT_REGULAR.deriveFont(16f));
+            desc.setAlignmentX(Component.LEFT_ALIGNMENT);
+            card.add(desc);
+            card.add(Box.createRigidArea(new Dimension(0, 24)));
+
+            JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 0));
+            actions.setBackground(CARD_BG);
+            actions.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            ModernButton replayBtn = new ModernButton("Volver a jugar este nivel", new Color(16, 185, 129),
+                    new Color(5, 150, 105), new Color(4, 120, 87), Color.WHITE, 12);
+            replayBtn.addActionListener(e -> future.complete(FreePlayAction.REPLAY));
+            actions.add(replayBtn);
+
+            ModernButton nextBtn = new ModernButton("Jugar otro nivel", ACCENT_PRIMARY, ACCENT_HOVER,
+                    ACCENT_PRESSED, Color.WHITE, 12);
+            nextBtn.addActionListener(e -> future.complete(FreePlayAction.NEXT));
+            actions.add(nextBtn);
+
+            ModernButton exitBtn = new ModernButton("Terminar y Salir", new Color(225, 29, 72),
+                    new Color(190, 18, 60), new Color(159, 18, 57), Color.WHITE, 12);
+            exitBtn.addActionListener(e -> future.complete(FreePlayAction.EXIT));
+            actions.add(exitBtn);
+
+            card.add(actions);
+
+            bg.add(card);
+            masterFrame.setContentPane(bg);
+            masterFrame.revalidate();
+            masterFrame.repaint();
+            replayBtn.requestFocusInWindow();
+        });
+        return future.get();
+    }
+
     private static void freePlay(Properties config, List<Path> normal, List<PlayedLevelInfo> playedLevels, int timer) throws Exception {
         Path humanDir = SRC.resolve(config.getProperty("human_dir").trim());
         List<Path> pool = new ArrayList<>();
@@ -591,16 +694,56 @@ public class ExperimentRunner {
             pool.addAll(normal);
         }
         Random random = new Random();
-        Path last = null;
-        do {
-            Path level;
-            do {
-                level = pool.get(random.nextInt(pool.size()));
-            } while (pool.size() > 1 && level.equals(last));
-            last = level;
-            playLevel(level, timer, null);
-        } while (showChoiceScreen("Modo Juego Libre", "¿Deseas jugar otro nivel?", "Jugar otro nivel",
-                "Pasar al bloque de cierre"));
+        Path currentLevel = pool.get(random.nextInt(pool.size()));
+        long startFreePlay = System.currentTimeMillis();
+        long maxFreePlayMillis = 20L * 60L * 1000L; // 20 minutos
+        int playedCount = 0;
+
+        while (true) {
+            long elapsed = System.currentTimeMillis() - startFreePlay;
+            long remaining = maxFreePlayMillis - elapsed;
+            if (remaining <= 0) {
+                showChoiceScreen("Tiempo límite alcanzado",
+                        "Has alcanzado el tiempo límite de 20 minutos de juego libre.\n\n"
+                                + "¡Muchas gracias por haber jugado!",
+                        "Entendido", "Salir");
+                break;
+            }
+
+            playedCount++;
+            setDevContext(
+                    "Juego Libre | Nivel #" + playedCount + " (" + currentLevel.getFileName() + ")",
+                    "Juego Libre",
+                    "N/A",
+                    "N/A",
+                    "N/A",
+                    0
+            );
+
+            playLevel(currentLevel, timer, null);
+
+            elapsed = System.currentTimeMillis() - startFreePlay;
+            remaining = maxFreePlayMillis - elapsed;
+            if (remaining <= 0) {
+                showChoiceScreen("Tiempo límite alcanzado",
+                        "Has alcanzado el tiempo límite de 20 minutos de juego libre.\n\n"
+                                + "¡Muchas gracias por haber jugado!",
+                        "Entendido", "Salir");
+                break;
+            }
+
+            FreePlayAction action = showFreePlayActionModal(playedCount, remaining / 1000L);
+            if (action == FreePlayAction.EXIT) {
+                break;
+            } else if (action == FreePlayAction.NEXT) {
+                Path nextLevel;
+                do {
+                    nextLevel = pool.get(random.nextInt(pool.size()));
+                } while (pool.size() > 1 && nextLevel.equals(currentLevel));
+                currentLevel = nextLevel;
+            }
+            // If action == REPLAY, currentLevel remains unchanged
+        }
     }
 
     // ==========================================
@@ -651,14 +794,82 @@ public class ExperimentRunner {
             cLabel.setForeground(TEXT_WHITE);
             controls.add(cLabel);
             card.add(controls);
-            card.add(Box.createRigidArea(new Dimension(0, 26)));
+            card.add(Box.createRigidArea(new Dimension(0, 16)));
 
-            // Action Button
+            // Generator info card in Welcome Screen
+            JPanel genCard = new JPanel(new BorderLayout(14, 0));
+            genCard.setBackground(ITEM_BG);
+            genCard.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(99, 102, 241, 140), 1, true),
+                    new EmptyBorder(10, 18, 10, 18)));
+            genCard.setAlignmentX(Component.LEFT_ALIGNMENT);
+            genCard.setMaximumSize(new Dimension(960, 62));
+
+            JLabel genIcon = new JLabel("[IA]");
+            genIcon.setFont(FONT_BOLD.deriveFont(15f));
+            genIcon.setForeground(new Color(165, 180, 252));
+            genCard.add(genIcon, BorderLayout.WEST);
+
+            JPanel genTexts = new JPanel();
+            genTexts.setLayout(new BoxLayout(genTexts, BoxLayout.Y_AXIS));
+            genTexts.setOpaque(false);
+
+            String modeTxt = (hpcTunnelManager != null) ? hpcTunnelManager.getMode().getLabel() : "JeissonServer";
+            String srvUrl = (hpcTunnelManager != null) ? hpcTunnelManager.getServerUrl() : "http://jeisson.ecci.ucr.ac.cr:8080";
+            if (srvUrl == null) srvUrl = "Local (PyTorch offline)";
+
+            JLabel genTitle = new JLabel("Generador de Niveles IA: " + modeTxt + "  (" + srvUrl + ")");
+            genTitle.setFont(FONT_BOLD.deriveFont(14f));
+            genTitle.setForeground(new Color(165, 180, 252));
+
+            JLabel genSub = new JLabel("Los niveles de cada participante se generarán con este método. Presiona [ F2 ] para cambiar (Nativo | Tunel | JeissonServer).");
+            genSub.setFont(FONT_REGULAR.deriveFont(12f));
+            genSub.setForeground(TEXT_MUTED);
+
+            genTexts.add(genTitle);
+            genTexts.add(Box.createRigidArea(new Dimension(0, 3)));
+            genTexts.add(genSub);
+            genCard.add(genTexts, BorderLayout.CENTER);
+
+            Runnable updateGenCard = () -> {
+                String mTxt = (hpcTunnelManager != null) ? hpcTunnelManager.getMode().getLabel() : "JeissonServer";
+                String sUrl = (hpcTunnelManager != null) ? hpcTunnelManager.getServerUrl() : "http://jeisson.ecci.ucr.ac.cr:8080";
+                if (sUrl == null) sUrl = "Local (PyTorch offline)";
+                genTitle.setText("Generador de Niveles IA: " + mTxt + "  (" + sUrl + ")");
+            };
+
+            ModernButton changeBtn = new ModernButton("Configurar (F2)",
+                    new Color(51, 65, 85), new Color(71, 85, 105), new Color(30, 41, 59), TEXT_WHITE, 8);
+            changeBtn.setFont(FONT_SEMIBOLD.deriveFont(12.5f));
+            changeBtn.addActionListener(e -> {
+                showHpcConfigDialog(masterFrame);
+                updateGenCard.run();
+            });
+            genCard.add(changeBtn, BorderLayout.EAST);
+
+            card.add(genCard);
+            card.add(Box.createRigidArea(new Dimension(0, 22)));
+
+            // Action Buttons
+            JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 0));
+            btnRow.setOpaque(false);
+            btnRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+
             ModernButton btn = new ModernButton("Comenzar a jugar", ACCENT_PRIMARY, ACCENT_HOVER,
                     ACCENT_PRESSED, Color.WHITE, 12);
-            btn.setAlignmentX(Component.LEFT_ALIGNMENT);
             btn.addActionListener(e -> future.complete(null));
-            card.add(btn);
+            btnRow.add(btn);
+
+            ModernButton hpcBtn = new ModernButton("Cambiar Modo Generador (F2)",
+                    new Color(51, 65, 85), new Color(71, 85, 105), new Color(30, 41, 59), TEXT_WHITE, 12);
+            hpcBtn.setFont(FONT_SEMIBOLD.deriveFont(14f));
+            hpcBtn.addActionListener(e -> {
+                showHpcConfigDialog(masterFrame);
+                updateGenCard.run();
+            });
+            btnRow.add(hpcBtn);
+
+            card.add(btnRow);
 
             bg.add(card);
             masterFrame.setContentPane(bg);
@@ -671,35 +882,61 @@ public class ExperimentRunner {
 
     private static void showLevelIntroScreen(String badge, String titleText, String descText, String btnText)
             throws Exception {
+        showLevelIntroScreen(badge, titleText, descText, btnText, null);
+    }
+
+    private static void showLevelIntroScreen(String badge, String titleText, String descText, String btnText, BufferedImage thumbnail)
+            throws Exception {
         CompletableFuture<Void> future = new CompletableFuture<>();
         SwingUtilities.invokeLater(() -> {
             JPanel bg = createScreenContainer();
-            JPanel card = createModernCard(880, developMode ? 600 : 460);
+            int cardHeight = developMode ? 650 : (thumbnail != null ? 590 : 460);
+            JPanel card = createModernCard(940, cardHeight);
 
             card.add(createBadge(badge));
-            card.add(Box.createRigidArea(new Dimension(0, 14)));
+            card.add(Box.createRigidArea(new Dimension(0, 12)));
 
             JLabel title = new JLabel(titleText);
             title.setFont(FONT_BOLD.deriveFont(32f));
             title.setForeground(TEXT_WHITE);
             title.setAlignmentX(Component.LEFT_ALIGNMENT);
             card.add(title);
-            card.add(Box.createRigidArea(new Dimension(0, 14)));
+            card.add(Box.createRigidArea(new Dimension(0, 10)));
 
             if (developMode && currentDevCardPanel != null) {
                 card.add(currentDevCardPanel);
-                card.add(Box.createRigidArea(new Dimension(0, 14)));
+                card.add(Box.createRigidArea(new Dimension(0, 10)));
             }
 
             for (String paragraph : descText.split("\n")) {
                 JLabel p = new JLabel(
-                        "<html><body style='width: 800px; color: rgb(156, 163, 175);'>" + paragraph + "</body></html>");
-                p.setFont(FONT_REGULAR.deriveFont(17f));
+                        "<html><body style='width: 860px; color: rgb(156, 163, 175);'>" + paragraph + "</body></html>");
+                p.setFont(FONT_REGULAR.deriveFont(16f));
                 p.setAlignmentX(Component.LEFT_ALIGNMENT);
                 card.add(p);
-                card.add(Box.createRigidArea(new Dimension(0, 6)));
+                card.add(Box.createRigidArea(new Dimension(0, 4)));
             }
-            card.add(Box.createRigidArea(new Dimension(0, 20)));
+
+            if (thumbnail != null) {
+                card.add(Box.createRigidArea(new Dimension(0, 10)));
+                JLabel thumbTitle = new JLabel("Silueta y mapa preliminar del nivel:");
+                thumbTitle.setFont(FONT_SEMIBOLD.deriveFont(13f));
+                thumbTitle.setForeground(new Color(165, 180, 252));
+                thumbTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+                card.add(thumbTitle);
+                card.add(Box.createRigidArea(new Dimension(0, 4)));
+
+                JLabel thumbLabel = new JLabel(new ImageIcon(thumbnail));
+                thumbLabel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(99, 102, 241, 160), 1, true),
+                        new EmptyBorder(4, 6, 4, 6)));
+                thumbLabel.setBackground(ITEM_BG);
+                thumbLabel.setOpaque(true);
+                thumbLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                card.add(thumbLabel);
+            }
+
+            card.add(Box.createRigidArea(new Dimension(0, 18)));
 
             ModernButton btn = new ModernButton(btnText + " (Espacio / Enter)", ACCENT_PRIMARY, ACCENT_HOVER,
                     ACCENT_PRESSED, Color.WHITE, 12);
@@ -1058,6 +1295,38 @@ public class ExperimentRunner {
                         qCard.add(scaleContainer);
                         getters.add(() -> selected[0]);
                     }
+                    case "multichoice" -> {
+                        JPanel choicesPanel = new JPanel();
+                        choicesPanel.setLayout(new BoxLayout(choicesPanel, BoxLayout.Y_AXIS));
+                        choicesPanel.setBackground(ITEM_BG);
+                        choicesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                        List<MultiChoiceCard> checkBoxes = new ArrayList<>();
+                        List<String> rawKeys = new ArrayList<>();
+
+                        String[] options = question.options().split("\\|");
+                        for (String option : options) {
+                            String[] parts = option.contains("=") ? option.split("=", 2)
+                                    : new String[] { option, option };
+                            String label = parts[0].equals(parts[1]) ? parts[1] : parts[0] + " - " + parts[1];
+
+                            MultiChoiceCard button = new MultiChoiceCard(label);
+                            checkBoxes.add(button);
+                            rawKeys.add(parts[0]);
+                            choicesPanel.add(button);
+                            choicesPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                        }
+                        qCard.add(choicesPanel);
+                        getters.add(() -> {
+                            List<String> chosen = new ArrayList<>();
+                            for (int idx = 0; idx < checkBoxes.size(); idx++) {
+                                if (checkBoxes.get(idx).isSelected()) {
+                                    chosen.add(rawKeys.get(idx));
+                                }
+                            }
+                            return chosen.isEmpty() ? null : String.join(";", chosen);
+                        });
+                    }
                     default -> throw new IllegalStateException("Tipo de pregunta desconocido: " + question.type());
                 }
 
@@ -1105,32 +1374,63 @@ public class ExperimentRunner {
 
     private static void showClosureBlock(List<PlayedLevelInfo> playedLevels, String id, String group, Path dir)
             throws Exception {
-        setDevContext(
-                "ID: " + id + " | Fase de Cierre (1/2): Clasificación de Niveles | Grupo " + group,
-                "Fase de Cierre (Ranking)",
-                "N/A",
-                "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
-                id,
-                0
-        );
+        List<PlayedLevelInfo> ranked = null;
+        String feedback = null;
 
-        // 1. Clasificación / Ranking (del que más me gustó al que menos) con miniaturas interactivas
-        List<PlayedLevelInfo> ranked = showRankingScreen(playedLevels, id, group);
+        while (feedback == null) {
+            setDevContext(
+                    "ID: " + id + " | Fase de Cierre (1/2): Clasificación de Niveles | Grupo " + group,
+                    "Fase de Cierre (Ranking)",
+                    "N/A",
+                    "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
+                    id,
+                    0
+            );
 
-        setDevContext(
-                "ID: " + id + " | Fase de Cierre (2/2): Comentarios Finales | Grupo " + group,
-                "Fase de Cierre (Comentarios)",
-                "N/A",
-                "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
-                id,
-                0
-        );
+            // 1. Clasificación / Ranking (del que más me gustó al que menos) con miniaturas interactivas
+            ranked = showRankingScreen(playedLevels, id, group);
 
-        // 2. Comentarios finales opcionales
-        String feedback = showCommentsScreen(id, group);
+            setDevContext(
+                    "ID: " + id + " | Fase de Cierre (2/2): Comentarios Finales | Grupo " + group,
+                    "Fase de Cierre (Comentarios)",
+                    "N/A",
+                    "Grupo " + group + " (" + SEQUENCES.get(group) + ")",
+                    id,
+                    0
+            );
+
+            // 2. Comentarios finales opcionales (devuelve null si el usuario solicita regresar a la clasificación)
+            feedback = showCommentsScreen(id, group);
+        }
 
         // 3. Guardar resultados en TSV y carpeta del participante
         saveClosureData(id, group, ranked, feedback, dir);
+    }
+
+    private static void updateDragHighlight(JPanel listPanel, int srcIdx, int targetIdx) {
+        for (Component comp : listPanel.getComponents()) {
+            if (comp instanceof JPanel jp && jp.getClientProperty("rowIndex") != null) {
+                int idx = (int) jp.getClientProperty("rowIndex");
+                if (idx == srcIdx) {
+                    jp.setBackground(new Color(40, 44, 68));
+                    jp.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(new Color(129, 140, 248), 2, true),
+                            new EmptyBorder(8, 10, 8, 14)));
+                } else if (idx == targetIdx) {
+                    jp.setBackground(new Color(18, 48, 38));
+                    jp.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(new Color(52, 211, 153), 2, true),
+                            new EmptyBorder(8, 10, 8, 14)));
+                } else {
+                    Color borderColor = (idx == 0) ? new Color(245, 158, 11) : (idx == 5 ? new Color(225, 29, 72) : ITEM_BORDER);
+                    jp.setBackground(ITEM_BG);
+                    jp.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(borderColor, (idx == 0 || idx == 5) ? 2 : 1, true),
+                            new EmptyBorder(8, 10, 8, 14)));
+                }
+            }
+        }
+        listPanel.repaint();
     }
 
     private static List<PlayedLevelInfo> showRankingScreen(List<PlayedLevelInfo> playedLevels, String id, String group)
@@ -1139,43 +1439,91 @@ public class ExperimentRunner {
         SwingUtilities.invokeLater(() -> {
             List<PlayedLevelInfo> currentList = new ArrayList<>(playedLevels);
 
-            JPanel bg = createScreenContainer();
-            JPanel card = createModernCard(1080, 800);
+            JPanel bg = new JPanel(new BorderLayout(0, 0));
+            bg.setBackground(BG_DARK);
 
-            card.add(createBadge("FASE DE CIERRE (1 DE 2) — CLASIFICACIÓN DE PREFERENCIA"));
-            card.add(Box.createRigidArea(new Dimension(0, 10)));
+            // 1. Top Bar
+            JPanel topBar = new JPanel(new BorderLayout());
+            topBar.setBackground(BG_DARK);
+            topBar.setBorder(new EmptyBorder(12, 28, 8, 28));
+
+            JPanel leftTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+            leftTop.setOpaque(false);
+            if (developMode && currentDevBanner != null && !currentDevBanner.isBlank()) {
+                JLabel devBadge = new JLabel("  DEV MODE  ");
+                devBadge.setFont(FONT_BOLD.deriveFont(11f));
+                devBadge.setForeground(Color.BLACK);
+                devBadge.setBackground(new Color(245, 158, 11));
+                devBadge.setOpaque(true);
+                devBadge.setBorder(new EmptyBorder(3, 6, 3, 6));
+                leftTop.add(devBadge);
+
+                JLabel devText = new JLabel(currentDevBanner);
+                devText.setFont(FONT_SEMIBOLD.deriveFont(13f));
+                devText.setForeground(new Color(253, 230, 138));
+                leftTop.add(devText);
+            }
+            leftTop.add(createBadge("FASE DE CIERRE (1 DE 2) — CLASIFICACIÓN DE PREFERENCIA"));
+            topBar.add(leftTop, BorderLayout.WEST);
+
+            JPanel rightTop = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+            rightTop.setOpaque(false);
+            ModernButton emergencyBtn = new ModernButton(
+                    "Salir del juego",
+                    new Color(136, 19, 55),
+                    new Color(159, 18, 57),
+                    new Color(190, 18, 60),
+                    Color.WHITE,
+                    12);
+            emergencyBtn.setFont(FONT_BOLD.deriveFont(14f));
+            emergencyBtn.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(220, 38, 38), 1, true),
+                    new EmptyBorder(8, 18, 8, 18)));
+            emergencyBtn.setToolTipText("Salir y cerrar el juego en cualquier momento.");
+            emergencyBtn.addActionListener(e -> confirmAndExitExperiment());
+            rightTop.add(emergencyBtn);
+            topBar.add(rightTop, BorderLayout.EAST);
+
+            bg.add(topBar, BorderLayout.NORTH);
+
+            // 2. Main Content View
+            JPanel mainView = new JPanel(new BorderLayout(0, 10));
+            mainView.setBackground(BG_DARK);
+            mainView.setBorder(new EmptyBorder(6, 28, 14, 28));
+
+            JPanel headerPanel = new JPanel();
+            headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+            headerPanel.setOpaque(false);
 
             JLabel title = new JLabel("Ordena los niveles del que MÁS te gustó al que MENOS");
-            title.setFont(FONT_BOLD.deriveFont(28f));
+            title.setFont(FONT_BOLD.deriveFont(26f));
             title.setForeground(TEXT_WHITE);
             title.setAlignmentX(Component.LEFT_ALIGNMENT);
-            card.add(title);
-            card.add(Box.createRigidArea(new Dimension(0, 6)));
-
-            if (developMode && currentDevBanner != null && !currentDevBanner.isBlank()) {
-                JLabel devSub = new JLabel("[DEV INFO] " + currentDevBanner);
-                devSub.setFont(FONT_SEMIBOLD.deriveFont(13f));
-                devSub.setForeground(new Color(250, 204, 21));
-                devSub.setAlignmentX(Component.LEFT_ALIGNMENT);
-                card.add(devSub);
-                card.add(Box.createRigidArea(new Dimension(0, 6)));
-            }
+            headerPanel.add(title);
+            headerPanel.add(Box.createRigidArea(new Dimension(0, 4)));
 
             JLabel desc = new JLabel(
-                    "<html><body style='width: 980px; color: rgb(156, 163, 175);'>"
-                            + "A continuación se presentan los 6 niveles jugados en tu sesión. Reordénalos de manera que la posición <b>#1 sea tu favorito</b> "
-                            + "(el que más te gustó) y la posición <b>#6 el que menos te gustó</b>.<br>"
-                            + "Usa los botones <b>Subir</b> y <b>Bajar</b> para cambiar de lugar, o haz clic en <b>Ampliar</b> sobre la miniatura para examinar el nivel completo."
+                    "<html><body style='color: rgb(156, 163, 175); font-size: 13.5px;'>"
+                            + "A continuación se presentan los 6 niveles jugados en tu sesión. "
+                            + "<b>Arrastra y suelta las filas con el ratón</b> para ordenarlas a tu gusto (o usa los botones <b>Subir</b> y <b>Bajar</b>). "
+                            + "La posición <b>#1 debe ser tu favorito</b> y la posición <b>#6 el que menos te gustó</b>. "
+                            + "Haz clic en <b>Ampliar</b> para examinar el nivel completo."
                             + "</body></html>");
-            desc.setFont(FONT_REGULAR.deriveFont(16f));
+            desc.setFont(FONT_REGULAR.deriveFont(15f));
             desc.setAlignmentX(Component.LEFT_ALIGNMENT);
-            card.add(desc);
-            card.add(Box.createRigidArea(new Dimension(0, 14)));
+            headerPanel.add(desc);
 
+            mainView.add(headerPanel, BorderLayout.NORTH);
+
+            // 3. List Panel for Levels
             JPanel listPanel = new JPanel();
             listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-            listPanel.setBackground(CARD_BG);
-            listPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            listPanel.setBackground(BG_DARK);
+
+            final int[] dragSource = new int[]{-1};
+            final int[] dragTarget = new int[]{-1};
+            final boolean[] isDragging = new boolean[]{false};
+            final Point[] dragStartPt = new Point[]{null};
 
             Runnable[] refreshRef = new Runnable[1];
             refreshRef[0] = () -> {
@@ -1184,24 +1532,43 @@ public class ExperimentRunner {
                     final int idx = i;
                     PlayedLevelInfo info = currentList.get(i);
 
-                    JPanel rowCard = new JPanel(new BorderLayout(12, 0));
+                    JPanel rowCard = new JPanel(new BorderLayout(14, 0));
                     rowCard.setBackground(ITEM_BG);
+                    rowCard.putClientProperty("rowIndex", idx);
+
                     Color borderColor = (idx == 0) ? new Color(245, 158, 11) : (idx == 5 ? new Color(225, 29, 72) : ITEM_BORDER);
                     rowCard.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(borderColor, (idx == 0 || idx == 5) ? 2 : 1, true),
-                            new EmptyBorder(8, 12, 8, 12)));
+                            new EmptyBorder(8, 10, 8, 14)));
                     rowCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-                    rowCard.setMaximumSize(new Dimension(980, 84));
-                    rowCard.setPreferredSize(new Dimension(980, 84));
+                    rowCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 96));
+                    rowCard.setPreferredSize(new Dimension(1000, 96));
 
-                    // Left Column: Badge + Subtitle
-                    JPanel leftCol = new JPanel();
-                    leftCol.setLayout(new BoxLayout(leftCol, BoxLayout.Y_AXIS));
+                    // Left Column: Grip Handle + Rank Badge + Step Information
+                    JPanel leftCol = new JPanel(new BorderLayout(10, 0));
                     leftCol.setBackground(ITEM_BG);
-                    leftCol.setPreferredSize(new Dimension(210, 68));
+                    leftCol.setPreferredSize(new Dimension(320, 80));
 
-                    leftCol.add(createRankBadge(idx));
-                    leftCol.add(Box.createRigidArea(new Dimension(0, 4)));
+                    JPanel gripPanel = new JPanel(new GridBagLayout());
+                    gripPanel.setBackground(new Color(36, 40, 56));
+                    gripPanel.setPreferredSize(new Dimension(38, 76));
+                    gripPanel.setBorder(BorderFactory.createLineBorder(new Color(55, 65, 85), 1, true));
+                    gripPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+                    gripPanel.setToolTipText("Haz clic y arrastra con el ratón para mover este nivel");
+
+                    JLabel gripIcon = new JLabel(":::");
+                    gripIcon.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
+                    gripIcon.setForeground(new Color(165, 180, 252));
+                    gripPanel.add(gripIcon);
+                    leftCol.add(gripPanel, BorderLayout.WEST);
+
+                    JPanel infoPanel = new JPanel();
+                    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+                    infoPanel.setBackground(ITEM_BG);
+                    infoPanel.setBorder(new EmptyBorder(4, 0, 4, 0));
+
+                    infoPanel.add(createRankBadge(idx));
+                    infoPanel.add(Box.createRigidArea(new Dimension(0, 4)));
 
                     String stepTitle = "Nivel del Paso " + info.orderPlayed();
                     if (developMode) {
@@ -1210,34 +1577,41 @@ public class ExperimentRunner {
                     JLabel stepLabel = new JLabel(stepTitle);
                     stepLabel.setFont(FONT_SEMIBOLD.deriveFont(13f));
                     stepLabel.setForeground(TEXT_MUTED);
-                    leftCol.add(stepLabel);
+                    infoPanel.add(stepLabel);
 
                     if (developMode) {
                         JLabel fileLabel = new JLabel(info.levelFile().getFileName().toString());
                         fileLabel.setFont(FONT_REGULAR.deriveFont(11f));
                         fileLabel.setForeground(new Color(250, 204, 21));
-                        leftCol.add(fileLabel);
+                        infoPanel.add(fileLabel);
                     }
+                    leftCol.add(infoPanel, BorderLayout.CENTER);
                     rowCard.add(leftCol, BorderLayout.WEST);
 
-                    // Center Column: Interactive Miniature Thumbnail
+                    // Center Column: Thumbnail Canvas (Mario Sky Blue)
+                    JPanel thumbPanel = new JPanel(new BorderLayout());
+                    thumbPanel.setBackground(new Color(92, 148, 252));
+                    thumbPanel.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true));
+                    thumbPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    thumbPanel.setToolTipText("Haz clic para ampliar este nivel en pantalla completa");
+
                     JLabel thumbLabel = new JLabel(new ImageIcon(info.thumbnail()));
-                    thumbLabel.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true));
-                    thumbLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    thumbLabel.setToolTipText("Haz clic para ampliar este nivel en pantalla completa");
-                    thumbLabel.addMouseListener(new MouseAdapter() {
+                    thumbLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    thumbPanel.add(thumbLabel, BorderLayout.CENTER);
+
+                    thumbPanel.addMouseListener(new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
                             String zoomTitle = "Nivel del Paso " + info.orderPlayed() + (developMode ? " (" + info.levelFile().getFileName() + ")" : "");
                             showLevelZoomModal(masterFrame, zoomTitle, info.levelContent());
                         }
                     });
-                    rowCard.add(thumbLabel, BorderLayout.CENTER);
+                    rowCard.add(thumbPanel, BorderLayout.CENTER);
 
-                    // Right Column: Controls
-                    JPanel rightCol = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 12));
+                    // Right Column: Controls (Ampliar / Subir / Bajar)
+                    JPanel rightCol = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 24));
                     rightCol.setBackground(ITEM_BG);
-                    rightCol.setPreferredSize(new Dimension(230, 68));
+                    rightCol.setPreferredSize(new Dimension(250, 80));
 
                     ModernButton zoomBtn = new ModernButton("Ampliar", new Color(30, 41, 59), new Color(51, 65, 85),
                             new Color(15, 23, 42), TEXT_WHITE, 8, 8, 12, 13f);
@@ -1267,6 +1641,73 @@ public class ExperimentRunner {
 
                     rowCard.add(rightCol, BorderLayout.EAST);
 
+                    // Drag & Drop Listener attached to rowCard, gripPanel, and leftCol
+                    MouseAdapter dragListener = new MouseAdapter() {
+                        @Override
+                        public void mousePressed(MouseEvent e) {
+                            dragStartPt[0] = e.getLocationOnScreen();
+                            isDragging[0] = false;
+                            dragSource[0] = idx;
+                            dragTarget[0] = idx;
+                        }
+
+                        @Override
+                        public void mouseDragged(MouseEvent e) {
+                            if (dragStartPt[0] == null || dragSource[0] < 0) return;
+                            if (!isDragging[0] && dragStartPt[0].distance(e.getLocationOnScreen()) > 5) {
+                                isDragging[0] = true;
+                                if (masterFrame != null) {
+                                    masterFrame.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+                                }
+                            }
+                            if (isDragging[0]) {
+                                Point pInList = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), listPanel);
+                                int hover = -1;
+                                for (Component comp : listPanel.getComponents()) {
+                                    if (comp instanceof JPanel jp && jp.getClientProperty("rowIndex") != null) {
+                                        if (pInList.y >= jp.getY() && pInList.y <= jp.getY() + jp.getHeight()) {
+                                            hover = (int) jp.getClientProperty("rowIndex");
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (hover >= 0 && hover < currentList.size() && hover != dragTarget[0]) {
+                                    dragTarget[0] = hover;
+                                    updateDragHighlight(listPanel, dragSource[0], dragTarget[0]);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void mouseReleased(MouseEvent e) {
+                            if (masterFrame != null) {
+                                masterFrame.setCursor(Cursor.getDefaultCursor());
+                            }
+                            if (isDragging[0]) {
+                                isDragging[0] = false;
+                                int src = dragSource[0];
+                                int dst = dragTarget[0];
+                                dragSource[0] = -1;
+                                dragTarget[0] = -1;
+                                if (src >= 0 && dst >= 0 && src != dst && src < currentList.size() && dst < currentList.size()) {
+                                    PlayedLevelInfo moved = currentList.remove(src);
+                                    currentList.add(dst, moved);
+                                }
+                                refreshRef[0].run();
+                            }
+                            dragStartPt[0] = null;
+                            dragSource[0] = -1;
+                            dragTarget[0] = -1;
+                        }
+                    };
+
+                    gripPanel.addMouseListener(dragListener);
+                    gripPanel.addMouseMotionListener(dragListener);
+                    leftCol.addMouseListener(dragListener);
+                    leftCol.addMouseMotionListener(dragListener);
+                    rowCard.addMouseListener(dragListener);
+                    rowCard.addMouseMotionListener(dragListener);
+
                     listPanel.add(rowCard);
                     listPanel.add(Box.createRigidArea(new Dimension(0, 8)));
                 }
@@ -1278,21 +1719,49 @@ public class ExperimentRunner {
 
             JScrollPane scroll = new JScrollPane(listPanel);
             scroll.setBorder(BorderFactory.createEmptyBorder());
+            scroll.setBackground(BG_DARK);
+            scroll.getViewport().setBackground(BG_DARK);
             scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            scroll.setPreferredSize(new Dimension(1020, 520));
-            scroll.setMaximumSize(new Dimension(1020, 520));
-            scroll.setAlignmentX(Component.LEFT_ALIGNMENT);
             applyDarkScrollbar(scroll);
-            card.add(scroll);
-            card.add(Box.createRigidArea(new Dimension(0, 16)));
+            mainView.add(scroll, BorderLayout.CENTER);
+
+            // 4. Action Buttons Footer
+            JPanel actionsPanel = new JPanel(new BorderLayout(16, 0));
+            actionsPanel.setOpaque(false);
+            actionsPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+
+            JPanel leftActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 14, 0));
+            leftActions.setOpaque(false);
 
             ModernButton confirmBtn = new ModernButton("Confirmar mi clasificación y continuar", ACCENT_PRIMARY,
                     ACCENT_HOVER, ACCENT_PRESSED, Color.WHITE, 12);
-            confirmBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
+            confirmBtn.setFont(FONT_BOLD.deriveFont(15f));
             confirmBtn.addActionListener(e -> future.complete(new ArrayList<>(currentList)));
-            card.add(confirmBtn);
+            leftActions.add(confirmBtn);
 
-            bg.add(card);
+            ModernButton resetBtn = new ModernButton("Restablecer orden original", new Color(45, 48, 62),
+                    new Color(60, 64, 82), new Color(35, 38, 50), TEXT_WHITE, 12);
+            resetBtn.setFont(FONT_SEMIBOLD.deriveFont(14f));
+            resetBtn.setToolTipText("Restaura los niveles al orden original en el que fueron jugados.");
+            resetBtn.addActionListener(e -> {
+                currentList.clear();
+                currentList.addAll(playedLevels);
+                refreshRef[0].run();
+            });
+            leftActions.add(resetBtn);
+            actionsPanel.add(leftActions, BorderLayout.WEST);
+
+            JPanel rightHint = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 6));
+            rightHint.setOpaque(false);
+            JLabel hintLbl = new JLabel("[Arrastra y suelta las filas con el ratón o usa Subir / Bajar]");
+            hintLbl.setFont(FONT_SEMIBOLD.deriveFont(13f));
+            hintLbl.setForeground(new Color(148, 163, 184));
+            rightHint.add(hintLbl);
+            actionsPanel.add(rightHint, BorderLayout.EAST);
+
+            mainView.add(actionsPanel, BorderLayout.SOUTH);
+
+            bg.add(mainView, BorderLayout.CENTER);
             masterFrame.setContentPane(bg);
             masterFrame.revalidate();
             masterFrame.repaint();
@@ -1349,12 +1818,18 @@ public class ExperimentRunner {
             actions.setBackground(CARD_BG);
             actions.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+            ModernButton backBtn = new ModernButton("Volver a clasificar", new Color(45, 48, 62),
+                    new Color(60, 64, 82), new Color(35, 38, 50), TEXT_WHITE, 12);
+            backBtn.setToolTipText("Regresar a la pantalla de clasificación de niveles si deseas cambiar el orden.");
+            backBtn.addActionListener(e -> future.complete(null));
+            actions.add(backBtn);
+
             ModernButton saveBtn = new ModernButton("Guardar comentarios y finalizar", ACCENT_PRIMARY, ACCENT_HOVER,
                     ACCENT_PRESSED, Color.WHITE, 12);
             saveBtn.addActionListener(e -> future.complete(area.getText().trim()));
             actions.add(saveBtn);
 
-            ModernButton skipBtn = new ModernButton("Omitir y finalizar", new Color(45, 48, 62), new Color(60, 64, 82),
+            ModernButton skipBtn = new ModernButton("Omitir comentarios", new Color(45, 48, 62), new Color(60, 64, 82),
                     new Color(35, 38, 50), TEXT_WHITE, 12);
             skipBtn.addActionListener(e -> future.complete(""));
             actions.add(skipBtn);
@@ -1868,6 +2343,7 @@ public class ExperimentRunner {
         private final JPanel contentPanel;
         private final JPanel miniPanel;
         private final JLabel miniClock;
+        private final JLabel hpcStatusBadge;
 
         public DevGenerationSidePanel(GenerationJob job) {
             super(new BorderLayout());
@@ -1901,9 +2377,21 @@ public class ExperimentRunner {
             clockLabel.setFont(FONT_BOLD.deriveFont(12f));
             clockLabel.setForeground(new Color(253, 230, 138));
             leftBadges.add(clockLabel);
+
+            hpcStatusBadge = createPillLabel("HPC ON", new Color(16, 185, 129, 40), new Color(110, 231, 183));
+            hpcStatusBadge.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            hpcStatusBadge.setToolTipText("Servidor HPC MarioGPT. Clic o F2 para configurar.");
+            hpcStatusBadge.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    showHpcConfigDialog(masterFrame);
+                }
+            });
+            leftBadges.add(hpcStatusBadge);
+
             topRow.add(leftBadges, BorderLayout.WEST);
 
-            JButton toggleBtn = new JButton("—");
+            JButton toggleBtn = new JButton("-");
             toggleBtn.setFont(FONT_BOLD.deriveFont(13f));
             toggleBtn.setForeground(TEXT_MUTED);
             toggleBtn.setBackground(CARD_BG);
@@ -2007,7 +2495,7 @@ public class ExperimentRunner {
             ));
             summaryBox.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            summaryTitle = new JLabel("• Generando en 2° plano");
+            summaryTitle = new JLabel("Generando en 2° plano");
             summaryTitle.setFont(FONT_BOLD.deriveFont(12f));
             summaryTitle.setForeground(new Color(224, 231, 255));
             summaryTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -2029,7 +2517,7 @@ public class ExperimentRunner {
             miniPanel.setBackground(CARD_BG);
             miniPanel.setBorder(new EmptyBorder(8, 4, 8, 4));
 
-            JButton expandBtn = new JButton("◀");
+            JButton expandBtn = new JButton("<<");
             expandBtn.setFont(FONT_BOLD.deriveFont(11f));
             expandBtn.setForeground(new Color(245, 158, 11));
             expandBtn.setBackground(CARD_BG);
@@ -2107,6 +2595,24 @@ public class ExperimentRunner {
             clockLabel.setText(String.format("T+ %02d:%02d", elapsed / 60, elapsed % 60));
             miniClock.setText(String.format("%02dm", elapsed / 60));
 
+            if (hpcTunnelManager != null) {
+                if (hpcTunnelManager.getMode() == GenerationMode.NATIVO) {
+                    hpcStatusBadge.setText("Nativo: Local");
+                    hpcStatusBadge.setBackground(new Color(245, 158, 11, 40));
+                    hpcStatusBadge.setForeground(new Color(252, 211, 77));
+                } else if (hpcTunnelManager.isOnline()) {
+                    String tag = (hpcTunnelManager.getMode() == GenerationMode.JEISSON_SERVER) ? "Jeisson: 8080" : hpcTunnelManager.getResolvedNode();
+                    hpcStatusBadge.setText(tag + " ON");
+                    hpcStatusBadge.setBackground(new Color(16, 185, 129, 60));
+                    hpcStatusBadge.setForeground(new Color(110, 231, 183));
+                } else {
+                    String tag = (hpcTunnelManager.getMode() == GenerationMode.JEISSON_SERVER) ? "Jeisson: Off" : "Túnel: Off";
+                    hpcStatusBadge.setText(tag + " OFF");
+                    hpcStatusBadge.setBackground(new Color(239, 68, 68, 40));
+                    hpcStatusBadge.setForeground(new Color(252, 165, 165));
+                }
+            }
+
             updateLevelUI(0, p1Badge, p1Detail, p1Bar);
             updateLevelUI(1, p2Badge, p2Detail, p2Bar);
 
@@ -2117,7 +2623,7 @@ public class ExperimentRunner {
                         BorderFactory.createLineBorder(new Color(16, 185, 129), 1, true),
                         new EmptyBorder(10, 10, 10, 10)
                 ));
-                summaryTitle.setText("✓ ¡Niveles listos!");
+                summaryTitle.setText("¡Niveles listos!");
                 summaryTitle.setForeground(new Color(167, 243, 208));
                 summarySubtitle.setText("<html><body style='width: 250px; color: rgb(209, 250, 229); font-size: 10px;'>"
                         + "2/2 niveles listos en disco. Cero tiempos de espera al jugarlos."
@@ -2128,7 +2634,7 @@ public class ExperimentRunner {
                         BorderFactory.createLineBorder(new Color(79, 70, 229, 120), 1, true),
                         new EmptyBorder(10, 10, 10, 10)
                 ));
-                summaryTitle.setText("• Generando en 2° plano");
+                summaryTitle.setText("Generando en 2° plano");
                 summaryTitle.setForeground(new Color(224, 231, 255));
                 summarySubtitle.setText("<html><body style='width: 250px; color: rgb(148, 163, 184); font-size: 10px;'>"
                         + "Continúa normalmente con la sesión; los niveles se preparan de forma transparente."
@@ -2176,19 +2682,19 @@ public class ExperimentRunner {
                     bar.setForeground(new Color(245, 158, 11));
                 }
                 case READY -> {
-                    badge.setText("LISTO ✓");
+                    badge.setText("LISTO");
                     badge.setBackground(new Color(6, 95, 70));
                     badge.setForeground(new Color(209, 250, 229));
                     bar.setForeground(new Color(16, 185, 129));
                 }
                 case FALLBACK_READY -> {
-                    badge.setText("RESPALDO ⚠");
+                    badge.setText("RESPALDO");
                     badge.setBackground(new Color(146, 64, 14));
                     badge.setForeground(new Color(254, 243, 199));
                     bar.setForeground(new Color(245, 158, 11));
                 }
                 case FAILED -> {
-                    badge.setText("FALLÓ ✕");
+                    badge.setText("FALLÓ");
                     badge.setBackground(new Color(153, 27, 27));
                     badge.setForeground(new Color(254, 202, 202));
                     bar.setForeground(new Color(239, 68, 68));
@@ -2662,6 +3168,62 @@ public class ExperimentRunner {
         }
     }
 
+    static class MultiChoiceCard extends JToggleButton {
+        public MultiChoiceCard(String text) {
+            this(text, 920, 50);
+        }
+
+        public MultiChoiceCard(String text, int width, int height) {
+            super(text);
+            setFont(FONT_REGULAR.deriveFont(16f));
+            setContentAreaFilled(false);
+            setBorderPainted(false);
+            setFocusPainted(false);
+            setAlignmentX(Component.LEFT_ALIGNMENT);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            setMaximumSize(new Dimension(width, height));
+            setPreferredSize(new Dimension(width, height));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            boolean selected = isSelected();
+            Color bg = selected ? new Color(49, 46, 129)
+                    : (getModel().isRollover() ? new Color(38, 43, 60) : new Color(28, 31, 44));
+            Color border = selected ? ACCENT_PRIMARY : new Color(50, 56, 76);
+            g2.setColor(bg);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+            g2.setColor(border);
+            g2.setStroke(new BasicStroke(selected ? 2f : 1f));
+            g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 12, 12);
+
+            // Checkbox indicator box
+            int boxS = 18;
+            int boxX = 16;
+            int boxY = (getHeight() - boxS) / 2;
+            g2.setColor(selected ? ACCENT_PRIMARY : new Color(28, 31, 44));
+            g2.fillRoundRect(boxX, boxY, boxS, boxS, 4, 4);
+            g2.setColor(selected ? ACCENT_PRIMARY : new Color(60, 66, 88));
+            g2.setStroke(new BasicStroke(1.5f));
+            g2.drawRoundRect(boxX, boxY, boxS, boxS, 4, 4);
+            if (selected) {
+                g2.setColor(Color.WHITE);
+                g2.setStroke(new BasicStroke(2.2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2.drawLine(boxX + 4, boxY + 9, boxX + 8, boxY + 13);
+                g2.drawLine(boxX + 8, boxY + 13, boxX + 14, boxY + 5);
+            }
+
+            g2.setColor(selected ? Color.WHITE : new Color(225, 230, 240));
+            FontMetrics fm = g2.getFontMetrics(getFont());
+            int textX = boxX + boxS + 14;
+            int textY = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+            g2.drawString(getText(), textX, textY);
+            g2.dispose();
+        }
+    }
+
     static class ModernTextField extends JTextField {
         public ModernTextField(int columns) {
             super(columns);
@@ -3049,9 +3611,23 @@ public class ExperimentRunner {
                 if (!cancelled) {
                     stages.set(k, GenStage.MARIOGPT);
                     stageDetails.set(k, "Generando mapa con MarioGPT...");
-                    ProcessBuilder builder = new ProcessBuilder(python, "tools/mario_gpt_generate.py",
+                    List<String> cmd = new ArrayList<>(List.of(
+                            python, "tools/mario_gpt_generate.py",
                             "--prompt", prompt,
-                            "--output-dir", outDir.toAbsolutePath().toString());
+                            "--output-dir", outDir.toAbsolutePath().toString()
+                    ));
+                    if (hpcTunnelManager != null) {
+                        if (hpcTunnelManager.getMode() == GenerationMode.NATIVO) {
+                            cmd.add("--no-remote");
+                        } else {
+                            String srv = hpcTunnelManager.getServerUrl();
+                            if (srv != null && !srv.isBlank()) {
+                                cmd.add("--server-url");
+                                cmd.add(srv);
+                            }
+                        }
+                    }
+                    ProcessBuilder builder = new ProcessBuilder(cmd);
                     builder.directory(SRC.toFile());
                     builder.inheritIO();
                     Process process = builder.start();
@@ -3067,8 +3643,22 @@ public class ExperimentRunner {
                                 String raw = Files.readString(genFile);
                                 String sanitized = sanitizeLevel(raw);
                                 Files.writeString(genFile, sanitized, StandardCharsets.UTF_8);
+
+                                // Asegurar almacenamiento directo en experiment/results/<id>/generated/
+                                try {
+                                    Path mainGenDir = dir.resolve("generated");
+                                    Files.createDirectories(mainGenDir);
+                                    Path copyTarget = mainGenDir.resolve("Nivel generado " + (k + 1) + ".txt");
+                                    Files.writeString(copyTarget, sanitized, StandardCharsets.UTF_8);
+                                    System.out.println("[RESULTADOS] Nivel guardado en carpeta del participante:");
+                                    System.out.println("  -> " + genFile.toAbsolutePath());
+                                    System.out.println("  -> " + copyTarget.toAbsolutePath());
+                                } catch (Exception ex) {
+                                    System.err.println("Aviso al guardar copia en dir/generated: " + ex.getMessage());
+                                }
+
                                 stages.set(k, GenStage.READY);
-                                stageDetails.set(k, "✔ Listo (" + genFile.getFileName() + ")");
+                                stageDetails.set(k, "Listo (" + genFile.getFileName() + ")");
                                 resultPaths.set(k, genFile);
                                 return genFile;
                             }
@@ -3114,6 +3704,14 @@ public class ExperimentRunner {
                     String raw = Files.readString(genericFile);
                     String sanitized = sanitizeLevel(raw);
                     Files.writeString(fallbackTarget, sanitized, StandardCharsets.UTF_8);
+
+                    try {
+                        Path mainGenDir = dir.resolve("generated");
+                        Files.createDirectories(mainGenDir);
+                        Path copyTarget = mainGenDir.resolve("Nivel generado " + (k + 1) + ".txt");
+                        Files.writeString(copyTarget, sanitized, StandardCharsets.UTF_8);
+                    } catch (Exception ignored) {}
+
                     System.out.println("Se utilizó el nivel de respaldo: " + fallbackTarget);
                     return fallbackTarget;
                 }
@@ -3190,5 +3788,763 @@ public class ExperimentRunner {
                 }
             }
         }
+    }
+
+    // ==============================================================
+    // GENERATION MODES & SERVER CONFIGURATION (GUI & PERSISTENCE)
+    // ==============================================================
+
+    public enum GenerationMode {
+        JEISSON_SERVER("JeissonServer", "http://jeisson.ecci.ucr.ac.cr:8080"),
+        TUNEL("Túnel SSH", "http://localhost:8888"),
+        NATIVO("Nativo", null);
+
+        private final String label;
+        private final String defaultUrl;
+
+        GenerationMode(String label, String defaultUrl) {
+            this.label = label;
+            this.defaultUrl = defaultUrl;
+        }
+
+        public String getLabel() { return label; }
+        public String getDefaultUrl() { return defaultUrl; }
+
+        public static GenerationMode fromString(String val) {
+            if (val != null) {
+                String clean = val.trim().toLowerCase(Locale.ROOT);
+                if (clean.contains("jeisson")) return JEISSON_SERVER;
+                if (clean.contains("tunel") || clean.contains("tunnel") || clean.contains("hpc")) return TUNEL;
+                if (clean.contains("nativo") || clean.contains("local")) return NATIVO;
+            }
+            return JEISSON_SERVER;
+        }
+    }
+
+    public static class HpcTunnelManager {
+        private GenerationMode mode = GenerationMode.JEISSON_SERVER;
+        private String jeissonServerUrl = "http://jeisson.ecci.ucr.ac.cr:8080";
+        private String hpcUser;
+        private String hpcNode;
+        private String resolvedNode = "cngpu002";
+        private int hpcPort = 8888;
+        private boolean autoTunnel = false;
+        private Process tunnelProcess = null;
+        private boolean isOnline = false;
+        private long lastPingMs = -1;
+        private String lastStatus = "Verificando...";
+
+        public HpcTunnelManager(Properties config) {
+            this.mode = GenerationMode.fromString(config.getProperty("generation_mode", "JeissonServer"));
+            this.jeissonServerUrl = config.getProperty("jeisson_server_url", "http://jeisson.ecci.ucr.ac.cr:8080").trim();
+            this.hpcUser = config.getProperty("hpc_user", "mariogabriel.cordero@172.16.24.2").trim();
+            this.hpcNode = config.getProperty("hpc_node", "auto").trim();
+            this.resolvedNode = "auto".equalsIgnoreCase(hpcNode) ? "cngpu002" : hpcNode;
+            this.hpcPort = Integer.parseInt(config.getProperty("hpc_port", "8888").trim());
+            this.autoTunnel = Boolean.parseBoolean(config.getProperty("hpc_auto_tunnel", "false").trim());
+            Runtime.getRuntime().addShutdownHook(new Thread(this::stopTunnel));
+        }
+
+        public GenerationMode getMode() { return mode; }
+        public void setMode(GenerationMode mode) { this.mode = mode; }
+
+        public String getJeissonServerUrl() { return jeissonServerUrl; }
+        public void setJeissonServerUrl(String url) { this.jeissonServerUrl = url; }
+
+        public String getHpcUser() { return hpcUser; }
+        public void setHpcUser(String user) { this.hpcUser = user; }
+
+        public String getHpcNode() { return hpcNode; }
+        public void setHpcNode(String node) { this.hpcNode = node; }
+
+        public String getResolvedNode() { return resolvedNode; }
+
+        public int getHpcPort() { return hpcPort; }
+        public void setHpcPort(int port) { this.hpcPort = port; }
+
+        public boolean isAutoTunnel() { return autoTunnel; }
+        public void setAutoTunnel(boolean auto) { this.autoTunnel = auto; }
+
+        public boolean isOnline() { return isOnline; }
+        public long getLastPingMs() { return lastPingMs; }
+        public String getLastStatus() { return lastStatus; }
+
+        public String getServerUrl() {
+            if (mode == GenerationMode.JEISSON_SERVER) {
+                return jeissonServerUrl;
+            } else if (mode == GenerationMode.TUNEL) {
+                return "http://localhost:" + hpcPort;
+            }
+            return null;
+        }
+
+        public synchronized String detectNodeFromSlurm(String userTarget) {
+            String target = userTarget;
+            if (!target.contains("@")) {
+                target = target + "@172.16.24.2";
+            }
+            try {
+                ProcessBuilder pb = new ProcessBuilder("ssh", "-o", "BatchMode=yes", target, "squeue -n mariogpt-srv -ho '%N'");
+                pb.redirectErrorStream(true);
+                Process p = pb.start();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        line = line.trim();
+                        if (line.matches(".*cngpu\\d+.*")) {
+                            for (String part : line.split("\\s+")) {
+                                if (part.matches("cngpu\\d+")) {
+                                    this.resolvedNode = part;
+                                    return part;
+                                }
+                            }
+                        }
+                    }
+                }
+                p.waitFor();
+            } catch (Exception e) {
+                System.err.println("Aviso al auto-detectar nodo Slurm: " + e.getMessage());
+            }
+            return resolvedNode;
+        }
+
+        public synchronized boolean checkHealth() {
+            if (mode == GenerationMode.NATIVO) {
+                this.isOnline = true;
+                this.lastPingMs = 0;
+                this.lastStatus = "Modo Local (PyTorch en PC local)";
+                return true;
+            }
+            String targetUrl = getServerUrl();
+            if (targetUrl == null) return false;
+            long t0 = System.currentTimeMillis();
+            try {
+                URL url = new URL(targetUrl.replaceAll("/+$", "") + "/health");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(2500);
+                conn.setReadTimeout(2500);
+                conn.setRequestMethod("GET");
+                int code = conn.getResponseCode();
+                long elapsed = System.currentTimeMillis() - t0;
+                if (code == 200) {
+                    this.isOnline = true;
+                    this.lastPingMs = elapsed;
+                    String targetName = (mode == GenerationMode.JEISSON_SERVER) ? "JeissonServer:8080" : (resolvedNode + ":" + hpcPort);
+                    this.lastStatus = "En línea (" + targetName + " - " + elapsed + "ms)";
+                    return true;
+                }
+            } catch (Exception ignored) {
+            }
+            this.isOnline = false;
+            this.lastPingMs = -1;
+            this.lastStatus = "Desconectado (" + (mode == GenerationMode.JEISSON_SERVER ? "jeisson.ecci.ucr.ac.cr:8080" : "localhost:" + hpcPort) + ")";
+            return false;
+        }
+
+        public synchronized boolean isTunnelProcessAlive() {
+            return tunnelProcess != null && tunnelProcess.isAlive();
+        }
+
+        public synchronized void startTunnelAsync(Consumer<String> onStatusUpdate) {
+            if (mode != GenerationMode.TUNEL) {
+                if (onStatusUpdate != null) onStatusUpdate.accept("Modo actual: " + mode.getLabel() + " (no requiere túnel SSH)");
+                checkHealth();
+                return;
+            }
+            new Thread(() -> {
+                if (onStatusUpdate != null) onStatusUpdate.accept("Detectando nodo activo en Slurm...");
+                String target = hpcUser;
+                if (!target.contains("@")) {
+                    target = target + "@172.16.24.2";
+                }
+                String nodeToUse = hpcNode;
+                if ("auto".equalsIgnoreCase(nodeToUse) || nodeToUse.isBlank()) {
+                    String detected = detectNodeFromSlurm(target);
+                    if (detected != null && !detected.isBlank()) {
+                        nodeToUse = detected;
+                    } else {
+                        nodeToUse = "cngpu002";
+                    }
+                }
+                this.resolvedNode = nodeToUse;
+
+                if (checkHealth()) {
+                    if (onStatusUpdate != null) onStatusUpdate.accept("Túnel ya activo y respondiendo (" + resolvedNode + ")");
+                    return;
+                }
+
+                stopTunnel();
+
+                if (onStatusUpdate != null) onStatusUpdate.accept("Abriendo túnel SSH hacia " + resolvedNode + "...");
+                try {
+                    ProcessBuilder pb = new ProcessBuilder(
+                            "ssh", "-N", "-L", hpcPort + ":" + resolvedNode + ":" + hpcPort, target
+                    );
+                    this.tunnelProcess = pb.start();
+
+                    for (int i = 0; i < 6; i++) {
+                        Thread.sleep(800);
+                        if (checkHealth()) {
+                            if (onStatusUpdate != null) onStatusUpdate.accept("¡Túnel conectado exitosamente! (" + resolvedNode + " - " + lastPingMs + "ms)");
+                            return;
+                        }
+                    }
+                    if (onStatusUpdate != null) onStatusUpdate.accept("Túnel iniciado (esperando respuesta del servicio)");
+                } catch (Exception e) {
+                    if (onStatusUpdate != null) onStatusUpdate.accept("Error al iniciar túnel: " + e.getMessage());
+                }
+            }, "HpcTunnelStarter").start();
+        }
+
+        public synchronized void stopTunnel() {
+            if (tunnelProcess != null) {
+                try {
+                    tunnelProcess.destroyForcibly();
+                } catch (Exception ignored) {}
+                tunnelProcess = null;
+            }
+            if (mode == GenerationMode.TUNEL) {
+                this.isOnline = false;
+                this.lastStatus = "Desconectado";
+            }
+        }
+
+        public synchronized void saveConfig() {
+            try {
+                Path cfgPath = resolveConfigFile();
+                List<String> lines = Files.readAllLines(cfgPath, StandardCharsets.UTF_8);
+                String modeStr = (mode == GenerationMode.JEISSON_SERVER) ? "JeissonServer"
+                        : (mode == GenerationMode.TUNEL ? "Tunel" : "Nativo");
+                Map<String, String> updates = new LinkedHashMap<>();
+                updates.put("generation_mode", modeStr);
+                updates.put("jeisson_server_url", jeissonServerUrl);
+                updates.put("hpc_user", hpcUser);
+                updates.put("hpc_node", hpcNode);
+                updates.put("hpc_port", String.valueOf(hpcPort));
+                updates.put("hpc_auto_tunnel", String.valueOf(autoTunnel));
+                updates.put("server_url", (mode == GenerationMode.JEISSON_SERVER) ? jeissonServerUrl : "http://localhost:" + hpcPort);
+
+                List<String> newLines = new ArrayList<>();
+                Set<String> found = new HashSet<>();
+                for (String line : lines) {
+                    String trimmed = line.trim();
+                    boolean replaced = false;
+                    for (Map.Entry<String, String> entry : updates.entrySet()) {
+                        if (trimmed.startsWith(entry.getKey() + "=") || trimmed.startsWith(entry.getKey() + " ")) {
+                            newLines.add(entry.getKey() + "=" + entry.getValue());
+                            found.add(entry.getKey());
+                            replaced = true;
+                            break;
+                        }
+                    }
+                    if (!replaced) {
+                        newLines.add(line);
+                    }
+                }
+                for (Map.Entry<String, String> entry : updates.entrySet()) {
+                    if (!found.contains(entry.getKey())) {
+                        newLines.add(entry.getKey() + "=" + entry.getValue());
+                    }
+                }
+                Files.write(cfgPath, newLines, StandardCharsets.UTF_8);
+                System.out.println("[CONFIG] Configuración guardada en: " + cfgPath + " (Modo: " + mode.getLabel() + ")");
+            } catch (Exception e) {
+                System.err.println("Error al guardar config.properties: " + e.getMessage());
+            }
+        }
+
+        private static Path resolveConfigFile() {
+            Path p = EXPERIMENT.resolve("config.properties");
+            if (Files.exists(p)) return p;
+            p = Paths.get("src/experiment/config.properties");
+            if (Files.exists(p)) return p;
+            p = Paths.get("experiment/config.properties");
+            if (Files.exists(p)) return p;
+            return EXPERIMENT.resolve("config.properties");
+        }
+    }
+
+    private static void styleTextField(JTextField tf) {
+        tf.setFont(FONT_SEMIBOLD.deriveFont(13f));
+        tf.setForeground(TEXT_WHITE);
+        tf.setBackground(ITEM_BG);
+        tf.setCaretColor(TEXT_WHITE);
+        tf.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
+                new EmptyBorder(6, 10, 6, 10)));
+    }
+
+    private static void applyDialogFields(JTextField userField, JTextField nodeField, JTextField portField, JTextField jUrlField, GenerationMode mode) {
+        if (hpcTunnelManager == null) return;
+        hpcTunnelManager.setMode(mode);
+        if (jUrlField != null) {
+            hpcTunnelManager.setJeissonServerUrl(jUrlField.getText().trim());
+        }
+        if (userField != null) {
+            hpcTunnelManager.setHpcUser(userField.getText().trim());
+        }
+        if (nodeField != null) {
+            hpcTunnelManager.setHpcNode(nodeField.getText().trim());
+        }
+        if (portField != null) {
+            try {
+                hpcTunnelManager.setHpcPort(Integer.parseInt(portField.getText().trim()));
+            } catch (NumberFormatException ignored) {}
+        }
+    }
+
+    private static void openSshSetupTerminal(String userTarget) {
+        String target = userTarget.contains("@") ? userTarget : userTarget + "@172.16.24.2";
+        String cmd = "echo '======================================================'; "
+                + "echo ' Configurando Llave SSH para: " + target + "'; "
+                + "echo '======================================================'; "
+                + "echo ''; "
+                + "if [ ! -f ~/.ssh/id_ed25519.pub ]; then "
+                + "  echo '[*] Generando llave SSH local...'; "
+                + "  ssh-keygen -t ed25519 -N '' -f ~/.ssh/id_ed25519; "
+                + "fi; "
+                + "echo '[*] Copiando llave al servidor HPC (ingresa tu contraseña de la UCR):'; "
+                + "ssh-copy-id " + target + "; "
+                + "echo ''; "
+                + "echo '======================================================'; "
+                + "echo ' ¡Listo! Si no hubo errores, tu llave fue registrada.'; "
+                + "echo ' Presiona ENTER para cerrar esta ventana.'; "
+                + "echo '======================================================'; "
+                + "read";
+
+        try {
+            if (new File("/usr/bin/konsole").exists()) {
+                new ProcessBuilder("konsole", "-e", "bash", "-c", cmd).start();
+            } else if (new File("/usr/bin/gnome-terminal").exists()) {
+                new ProcessBuilder("gnome-terminal", "--", "bash", "-c", cmd).start();
+            } else if (new File("/usr/bin/xterm").exists()) {
+                new ProcessBuilder("xterm", "-e", "bash", "-c", cmd).start();
+            } else {
+                new ProcessBuilder("bash", "-c", cmd).start();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                    "No se pudo abrir automáticamente la terminal: " + e.getMessage()
+                            + "\nPuedes correr en tu terminal: ssh-copy-id " + target,
+                    "Aviso SSH", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    public static void showHpcConfigDialog(JFrame parent) {
+        JDialog dialog = new JDialog(parent, "Configuración del Generador MarioGPT", true);
+        dialog.setUndecorated(true);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(CARD_BG);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ITEM_BORDER, 2, true),
+                new EmptyBorder(26, 32, 26, 32)));
+
+        JLabel title = new JLabel("Selección y Configuración del Generador MarioGPT");
+        title.setFont(FONT_BOLD.deriveFont(22f));
+        title.setForeground(TEXT_WHITE);
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(title);
+
+        JLabel sub = new JLabel("<html><body style='width: 580px; color: rgb(148, 163, 184); font-size: 11px;'>"
+                + "Selecciona la fuente para generar los niveles personalizados durante el experimento. "
+                + "Recomendado para el laboratorio: <b>JeissonServer</b> (acceso directo sin túneles ni llaves).</body></html>");
+        sub.setFont(FONT_REGULAR.deriveFont(12f));
+        sub.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(Box.createRigidArea(new Dimension(0, 4)));
+        panel.add(sub);
+        panel.add(Box.createRigidArea(new Dimension(0, 16)));
+
+        // Mode Selector Bar (Segmented 3 Buttons)
+        JLabel modeLbl = new JLabel("Modo de Generación:");
+        modeLbl.setFont(FONT_BOLD.deriveFont(13f));
+        modeLbl.setForeground(TEXT_WHITE);
+        modeLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(modeLbl);
+        panel.add(Box.createRigidArea(new Dimension(0, 6)));
+
+        JPanel modeBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        modeBar.setOpaque(false);
+        modeBar.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        GenerationMode[] currentSelectedMode = new GenerationMode[]{
+                (hpcTunnelManager != null) ? hpcTunnelManager.getMode() : GenerationMode.JEISSON_SERVER
+        };
+
+        ModernButton btnJeisson = new ModernButton("JeissonServer (8080)",
+                ACCENT_PRIMARY, ACCENT_HOVER, ACCENT_PRESSED, Color.WHITE, 8);
+        ModernButton btnTunel = new ModernButton("Túnel SSH (8888)",
+                new Color(45, 48, 62), new Color(60, 64, 82), new Color(35, 38, 50), TEXT_WHITE, 8);
+        ModernButton btnNativo = new ModernButton("Nativo (Local)",
+                new Color(45, 48, 62), new Color(60, 64, 82), new Color(35, 38, 50), TEXT_WHITE, 8);
+
+        btnJeisson.setFont(FONT_BOLD.deriveFont(13f));
+        btnTunel.setFont(FONT_BOLD.deriveFont(13f));
+        btnNativo.setFont(FONT_BOLD.deriveFont(13f));
+
+        modeBar.add(btnJeisson);
+        modeBar.add(btnTunel);
+        modeBar.add(btnNativo);
+        panel.add(modeBar);
+        panel.add(Box.createRigidArea(new Dimension(0, 16)));
+
+        // Status Card
+        JPanel statusCard = new JPanel(new BorderLayout(12, 0));
+        statusCard.setBackground(ITEM_BG);
+        statusCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
+                new EmptyBorder(12, 14, 12, 14)));
+        statusCard.setAlignmentX(Component.LEFT_ALIGNMENT);
+        statusCard.setMaximumSize(new Dimension(600, 60));
+
+        JLabel statusLabel = new JLabel("Verificando estado...");
+        statusLabel.setFont(FONT_BOLD.deriveFont(13f));
+        statusLabel.setForeground(TEXT_WHITE);
+
+        JLabel statusDetail = new JLabel("Consultando disponibilidad...");
+        statusDetail.setFont(FONT_REGULAR.deriveFont(11f));
+        statusDetail.setForeground(TEXT_MUTED);
+
+        JPanel statusText = new JPanel();
+        statusText.setLayout(new BoxLayout(statusText, BoxLayout.Y_AXIS));
+        statusText.setOpaque(false);
+        statusText.add(statusLabel);
+        statusText.add(Box.createRigidArea(new Dimension(0, 3)));
+        statusText.add(statusDetail);
+        statusCard.add(statusText, BorderLayout.CENTER);
+
+        panel.add(statusCard);
+        panel.add(Box.createRigidArea(new Dimension(0, 16)));
+
+        // Dynamic Settings Container (CardLayout)
+        CardLayout cardLayout = new CardLayout();
+        JPanel dynamicContainer = new JPanel(cardLayout);
+        dynamicContainer.setOpaque(false);
+        dynamicContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Panel 1: JeissonServer View
+        JPanel jeissonPanel = new JPanel();
+        jeissonPanel.setLayout(new BoxLayout(jeissonPanel, BoxLayout.Y_AXIS));
+        jeissonPanel.setOpaque(false);
+
+        JLabel jDesc = new JLabel("<html><body style='width: 580px; color: rgb(209, 213, 219); font-size: 11.5px;'>"
+                + "<b>Servidor Dedicado del Prof. Jeisson Hidalgo:</b><br>"
+                + "- URL: <code style='color: rgb(165, 180, 252);'>http://jeisson.ecci.ucr.ac.cr:8080</code><br>"
+                + "- <b>No requiere túnel SSH</b> ni contraseñas. Cada máquina se conecta directamente vía HTTP.<br>"
+                + "- Tiempo de generación: <b>~9.5 segundos</b> por nivel.<br>"
+                + "- Si estás en el Lab 100 de la ECCI, ¡funciona de forma inmediata!"
+                + "</body></html>");
+        jDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
+        jeissonPanel.add(jDesc);
+        jeissonPanel.add(Box.createRigidArea(new Dimension(0, 12)));
+
+        JLabel jUrlLbl = new JLabel("URL del Servidor:");
+        jUrlLbl.setFont(FONT_SEMIBOLD.deriveFont(12.5f));
+        jUrlLbl.setForeground(TEXT_WHITE);
+        jUrlLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+        jeissonPanel.add(jUrlLbl);
+        jeissonPanel.add(Box.createRigidArea(new Dimension(0, 4)));
+
+        JTextField jUrlField = new JTextField((hpcTunnelManager != null) ? hpcTunnelManager.getJeissonServerUrl() : "http://jeisson.ecci.ucr.ac.cr:8080");
+        styleTextField(jUrlField);
+        jUrlField.setMaximumSize(new Dimension(600, 36));
+        jUrlField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        jeissonPanel.add(jUrlField);
+
+        dynamicContainer.add(jeissonPanel, GenerationMode.JEISSON_SERVER.name());
+
+        // Panel 2: Tunel View
+        JPanel tunelPanel = new JPanel();
+        tunelPanel.setLayout(new BoxLayout(tunelPanel, BoxLayout.Y_AXIS));
+        tunelPanel.setOpaque(false);
+
+        JLabel tDesc = new JLabel("<html><body style='width: 580px; color: rgb(209, 213, 219); font-size: 11.5px;'>"
+                + "<b>Túnel SSH al Clúster HPC (Nodo Login: 172.16.24.2):</b><br>"
+                + "- Redirige el puerto local hacia el nodo esclavo con GPU asignado por Slurm.<br>"
+                + "- Usa auto-detección de nodo vía <code style='color: rgb(165, 180, 252);'>squeue -n mariogpt-srv</code>."
+                + "</body></html>");
+        tDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tunelPanel.add(tDesc);
+        tunelPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JLabel userLbl = new JLabel("Usuario HPC (ej. mariogabriel.cordero o mariogabriel.cordero@172.16.24.2):");
+        userLbl.setFont(FONT_SEMIBOLD.deriveFont(12f));
+        userLbl.setForeground(TEXT_WHITE);
+        userLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tunelPanel.add(userLbl);
+        tunelPanel.add(Box.createRigidArea(new Dimension(0, 3)));
+
+        JTextField userField = new JTextField((hpcTunnelManager != null) ? hpcTunnelManager.getHpcUser() : "mariogabriel.cordero@172.16.24.2");
+        styleTextField(userField);
+        userField.setMaximumSize(new Dimension(600, 34));
+        userField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tunelPanel.add(userField);
+        tunelPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JLabel nodeLbl = new JLabel("Nodo GPU en Clúster (deja 'auto' para auto-detectar vía Slurm squeue):");
+        nodeLbl.setFont(FONT_SEMIBOLD.deriveFont(12f));
+        nodeLbl.setForeground(TEXT_WHITE);
+        nodeLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tunelPanel.add(nodeLbl);
+        tunelPanel.add(Box.createRigidArea(new Dimension(0, 3)));
+
+        JPanel nodeRow = new JPanel(new BorderLayout(10, 0));
+        nodeRow.setOpaque(false);
+        nodeRow.setMaximumSize(new Dimension(600, 34));
+        nodeRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JTextField nodeField = new JTextField((hpcTunnelManager != null) ? hpcTunnelManager.getHpcNode() : "auto");
+        styleTextField(nodeField);
+        nodeRow.add(nodeField, BorderLayout.CENTER);
+
+        ModernButton detectBtn = new ModernButton("Auto-detectar Slurm",
+                new Color(30, 58, 138), new Color(37, 99, 235), new Color(29, 78, 216), Color.WHITE, 8);
+        detectBtn.setFont(FONT_SEMIBOLD.deriveFont(12f));
+        detectBtn.addActionListener(e -> {
+            detectBtn.setEnabled(false);
+            detectBtn.setText("Consultando...");
+            new Thread(() -> {
+                String detected = hpcTunnelManager.detectNodeFromSlurm(userField.getText().trim());
+                SwingUtilities.invokeLater(() -> {
+                    nodeField.setText(detected != null ? detected : "cngpu002");
+                    detectBtn.setEnabled(true);
+                    detectBtn.setText("Auto-detectar Slurm");
+                    JOptionPane.showMessageDialog(dialog,
+                            "Slurm reporta que 'mariogpt-srv' está corriendo en:\n" + (detected != null ? detected : "cngpu002"),
+                            "Nodo Detectado", JOptionPane.INFORMATION_MESSAGE);
+                });
+            }).start();
+        });
+        nodeRow.add(detectBtn, BorderLayout.EAST);
+        tunelPanel.add(nodeRow);
+        tunelPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JLabel portLbl = new JLabel("Puerto Local y Remoto (default 8888):");
+        portLbl.setFont(FONT_SEMIBOLD.deriveFont(12f));
+        portLbl.setForeground(TEXT_WHITE);
+        portLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tunelPanel.add(portLbl);
+        tunelPanel.add(Box.createRigidArea(new Dimension(0, 3)));
+
+        JTextField portField = new JTextField(String.valueOf((hpcTunnelManager != null) ? hpcTunnelManager.getHpcPort() : 8888));
+        styleTextField(portField);
+        portField.setMaximumSize(new Dimension(600, 34));
+        portField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tunelPanel.add(portField);
+        tunelPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        JLabel cmdPreviewLbl = new JLabel("Comando SSH generado en tiempo real:");
+        cmdPreviewLbl.setFont(FONT_SEMIBOLD.deriveFont(12f));
+        cmdPreviewLbl.setForeground(TEXT_WHITE);
+        cmdPreviewLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tunelPanel.add(cmdPreviewLbl);
+        tunelPanel.add(Box.createRigidArea(new Dimension(0, 4)));
+
+        JPanel cmdBox = new JPanel(new BorderLayout(10, 0));
+        cmdBox.setBackground(new Color(24, 24, 32));
+        cmdBox.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(63, 63, 70), 1, true),
+                new EmptyBorder(8, 12, 8, 12)));
+        cmdBox.setMaximumSize(new Dimension(600, 42));
+        cmdBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel cmdText = new JLabel();
+        cmdText.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
+        cmdText.setForeground(new Color(125, 211, 252));
+        cmdBox.add(cmdText, BorderLayout.CENTER);
+
+        ModernButton copyCmdBtn = new ModernButton("Copiar",
+                new Color(39, 39, 42), new Color(63, 63, 70), new Color(24, 24, 27), Color.WHITE, 6, 4, 10, 11f);
+        cmdBox.add(copyCmdBtn, BorderLayout.EAST);
+        tunelPanel.add(cmdBox);
+
+        Runnable updateCmdPreview = () -> {
+            String u = userField.getText().trim();
+            if (u.isBlank()) u = "<usuario>";
+            else if (!u.contains("@")) u += "@172.16.24.2";
+            String n = nodeField.getText().trim();
+            if (n.equalsIgnoreCase("auto") || n.isBlank()) n = (hpcTunnelManager != null) ? hpcTunnelManager.getResolvedNode() : "cngpu002";
+            String p = portField.getText().trim();
+            if (p.isBlank()) p = "8888";
+            String fullCmd = "ssh -N -L " + p + ":" + n + ":" + p + " " + u;
+            cmdText.setText(fullCmd);
+        };
+        updateCmdPreview.run();
+
+        copyCmdBtn.addActionListener(e -> {
+            StringSelection sel = new StringSelection(cmdText.getText());
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, null);
+            copyCmdBtn.setText("Copiado");
+            Timer t = new Timer(1500, evt -> copyCmdBtn.setText("Copiar"));
+            t.setRepeats(false);
+            t.start();
+        });
+
+        DocumentListener docL = new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { updateCmdPreview.run(); }
+            public void removeUpdate(DocumentEvent e) { updateCmdPreview.run(); }
+            public void changedUpdate(DocumentEvent e) { updateCmdPreview.run(); }
+        };
+        userField.getDocument().addDocumentListener(docL);
+        nodeField.getDocument().addDocumentListener(docL);
+        portField.getDocument().addDocumentListener(docL);
+
+        dynamicContainer.add(tunelPanel, GenerationMode.TUNEL.name());
+
+        // Panel 3: Nativo View
+        JPanel nativoPanel = new JPanel();
+        nativoPanel.setLayout(new BoxLayout(nativoPanel, BoxLayout.Y_AXIS));
+        nativoPanel.setOpaque(false);
+
+        JLabel nDesc = new JLabel("<html><body style='width: 580px; color: rgb(209, 213, 219); font-size: 11.5px;'>"
+                + "<b>Generación Local en esta Computadora:</b><br>"
+                + "- Ejecuta MarioGPT directamente con PyTorch / CPU / GPU local.<br>"
+                + "- <b>No requiere internet ni conexión de red.</b><br>"
+                + "- Ideal como respaldo absoluto si la red universitaria se cayera por completo."
+                + "</body></html>");
+        nDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
+        nativoPanel.add(nDesc);
+        dynamicContainer.add(nativoPanel, GenerationMode.NATIVO.name());
+
+        panel.add(dynamicContainer);
+        panel.add(Box.createRigidArea(new Dimension(0, 16)));
+
+        // Helper to refresh UI & health
+        Runnable refreshStatusUI = () -> {
+            boolean alive = hpcTunnelManager != null && hpcTunnelManager.checkHealth();
+            SwingUtilities.invokeLater(() -> {
+                GenerationMode m = currentSelectedMode[0];
+                if (m == GenerationMode.NATIVO) {
+                    statusLabel.setText("MODO LOCAL NATIVO ACTIVO");
+                    statusLabel.setForeground(new Color(251, 191, 36));
+                    statusDetail.setText("Se generará directamente con PyTorch local en la PC.");
+                } else if (alive) {
+                    String target = (m == GenerationMode.JEISSON_SERVER) ? "jeisson.ecci.ucr.ac.cr:8080" : (hpcTunnelManager.getResolvedNode() + ":" + hpcTunnelManager.getHpcPort());
+                    statusLabel.setText("EN LÍNEA (" + target + ")");
+                    statusLabel.setForeground(new Color(52, 211, 153));
+                    statusDetail.setText("Servidor MarioGPT respondiendo (Ping: " + hpcTunnelManager.getLastPingMs() + "ms)");
+                } else {
+                    boolean procAlive = (m == GenerationMode.TUNEL) && hpcTunnelManager != null && hpcTunnelManager.isTunnelProcessAlive();
+                    if (procAlive) {
+                        statusLabel.setText("PROCESO SSH ACTIVO (Esperando respuesta...)");
+                        statusLabel.setForeground(new Color(251, 191, 36));
+                        statusDetail.setText("El túnel está abierto pero /health aún no responde.");
+                    } else {
+                        statusLabel.setText("DESCONECTADO");
+                        statusLabel.setForeground(new Color(248, 113, 113));
+                        statusDetail.setText(m == GenerationMode.JEISSON_SERVER ? "No se pudo conectar a jeisson.ecci.ucr.ac.cr:8080." : "Túnel SSH no iniciado.");
+                    }
+                }
+            });
+        };
+
+        // Switch Mode Helper
+        Consumer<GenerationMode> updateModeUI = (newMode) -> {
+            currentSelectedMode[0] = newMode;
+            if (hpcTunnelManager != null) {
+                hpcTunnelManager.setMode(newMode);
+            }
+            Color activeBg = ACCENT_PRIMARY;
+            Color inactBg = new Color(45, 48, 62);
+            btnJeisson.setBackground(newMode == GenerationMode.JEISSON_SERVER ? activeBg : inactBg);
+            btnTunel.setBackground(newMode == GenerationMode.TUNEL ? activeBg : inactBg);
+            btnNativo.setBackground(newMode == GenerationMode.NATIVO ? activeBg : inactBg);
+
+            cardLayout.show(dynamicContainer, newMode.name());
+            new Thread(refreshStatusUI).start();
+        };
+
+        btnJeisson.addActionListener(e -> updateModeUI.accept(GenerationMode.JEISSON_SERVER));
+        btnTunel.addActionListener(e -> updateModeUI.accept(GenerationMode.TUNEL));
+        btnNativo.addActionListener(e -> updateModeUI.accept(GenerationMode.NATIVO));
+
+        updateModeUI.accept(currentSelectedMode[0]);
+
+        // Action Buttons Row: Tunnel controls / Health check / Setup key
+        JPanel opRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        opRow.setOpaque(false);
+        opRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        ModernButton healthBtn = new ModernButton("Probar Conexión",
+                new Color(51, 65, 85), new Color(71, 85, 105), new Color(30, 41, 59), TEXT_WHITE, 8);
+        healthBtn.setFont(FONT_SEMIBOLD.deriveFont(13f));
+        healthBtn.addActionListener(e -> new Thread(refreshStatusUI).start());
+        opRow.add(healthBtn);
+
+        ModernButton startTunnelBtn = new ModernButton("Iniciar Túnel SSH",
+                new Color(16, 185, 129), new Color(5, 150, 105), new Color(4, 120, 87), Color.WHITE, 8);
+        startTunnelBtn.setFont(FONT_SEMIBOLD.deriveFont(13f));
+        startTunnelBtn.addActionListener(e -> {
+            applyDialogFields(userField, nodeField, portField, jUrlField, currentSelectedMode[0]);
+            hpcTunnelManager.setMode(GenerationMode.TUNEL);
+            updateModeUI.accept(GenerationMode.TUNEL);
+            statusLabel.setText("Iniciando túnel SSH...");
+            statusLabel.setForeground(new Color(251, 191, 36));
+            hpcTunnelManager.startTunnelAsync(msg -> {
+                SwingUtilities.invokeLater(() -> {
+                    statusDetail.setText(msg);
+                    refreshStatusUI.run();
+                });
+            });
+        });
+        opRow.add(startTunnelBtn);
+
+        ModernButton stopTunnelBtn = new ModernButton("Detener Túnel",
+                new Color(75, 85, 99), new Color(107, 114, 128), new Color(55, 65, 81), TEXT_WHITE, 8);
+        stopTunnelBtn.setFont(FONT_SEMIBOLD.deriveFont(13f));
+        stopTunnelBtn.addActionListener(e -> {
+            if (hpcTunnelManager != null) {
+                hpcTunnelManager.stopTunnel();
+            }
+            refreshStatusUI.run();
+        });
+        opRow.add(stopTunnelBtn);
+
+        ModernButton keyBtn = new ModernButton("Configurar Llave SSH",
+                new Color(99, 102, 241), new Color(79, 70, 229), new Color(67, 56, 202), Color.WHITE, 8);
+        keyBtn.setFont(FONT_SEMIBOLD.deriveFont(12.5f));
+        keyBtn.setToolTipText("Ejecuta ssh-copy-id en una terminal para ingresar la contraseña de la UCR una sola vez");
+        keyBtn.addActionListener(e -> {
+            applyDialogFields(userField, nodeField, portField, jUrlField, currentSelectedMode[0]);
+            openSshSetupTerminal(userField.getText().trim());
+        });
+        opRow.add(keyBtn);
+
+        panel.add(opRow);
+        panel.add(Box.createRigidArea(new Dimension(0, 16)));
+
+        // Bottom Row: Save & Close
+        JPanel bottomRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        bottomRow.setOpaque(false);
+        bottomRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        ModernButton saveBtn = new ModernButton("Guardar Predeterminado",
+                ACCENT_PRIMARY, ACCENT_HOVER, ACCENT_PRESSED, Color.WHITE, 8);
+        saveBtn.setFont(FONT_BOLD.deriveFont(13f));
+        saveBtn.addActionListener(e -> {
+            applyDialogFields(userField, nodeField, portField, jUrlField, currentSelectedMode[0]);
+            hpcTunnelManager.saveConfig();
+            dialog.dispose();
+        });
+        bottomRow.add(saveBtn);
+
+        ModernButton closeBtn = new ModernButton("Cerrar",
+                new Color(45, 48, 62), new Color(60, 64, 82), new Color(35, 38, 50), TEXT_WHITE, 8);
+        closeBtn.setFont(FONT_SEMIBOLD.deriveFont(13f));
+        closeBtn.addActionListener(e -> dialog.dispose());
+        bottomRow.add(closeBtn);
+
+        panel.add(bottomRow);
+
+        dialog.setContentPane(panel);
+        dialog.getRootPane().registerKeyboardAction(
+                e -> dialog.dispose(),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
     }
 }

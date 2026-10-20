@@ -153,10 +153,12 @@ def parse_args():
 
 def main():
     args = parse_args()
-    telemetry_path = ROOT / args.telemetry
+    raw_telemetry = Path(args.telemetry)
+    telemetry_path = raw_telemetry if raw_telemetry.is_absolute() else ROOT / raw_telemetry
     prompt_text = resolve_prompt(telemetry_path, args.prompt)
 
-    output_dir = ROOT / args.output_dir
+    raw_output = Path(args.output_dir)
+    output_dir = raw_output if raw_output.is_absolute() else ROOT / raw_output
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print("Prompt base:")
@@ -194,7 +196,10 @@ def main():
             temperature=args.temperature,
             use_tqdm=True,
         )
-        level_content = generated.level
+        if isinstance(generated.level, list):
+            level_content = "\n".join(generated.level)
+        else:
+            level_content = str(generated.level)
 
     level_number = next_level_number(output_dir)
     level_path = output_dir / f"Nivel generado {level_number}.txt"

@@ -4,27 +4,45 @@
 
 set -euo pipefail
 
-FRAMEWORK="${1:-../mario_ai_framework}"
-PATCH="$(cd "$(dirname "$0")" && pwd)/framework.patch"
-AUDIO_PATCH="$(cd "$(dirname "$0")" && pwd)/framework-audio.patch"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-cd "$FRAMEWORK"
-if git apply --recount --ignore-whitespace --reverse --check "$AUDIO_PATCH" 2>/dev/null; then
-    echo "Framework and audio patches already applied."
+# Si se pasa un argumento, resolver su ruta absoluta o relativa respecto al CWD
+if [ -n "${1:-}" ]; then
+    FRAMEWORK="$(cd "$1" 2>/dev/null && pwd || echo "$1")"
 else
-    if git apply --unidiff-zero --ignore-whitespace --reverse --check "$PATCH" 2>/dev/null; then
-        echo "Framework patch already applied."
-    elif git apply --unidiff-zero --ignore-whitespace "$PATCH"; then
-        echo "Framework patch applied."
-    else
-        echo "ERROR: could not apply tools/framework.patch to $FRAMEWORK" >&2
-        exit 1
-    fi
+    FRAMEWORK="$ROOT_DIR/mario_ai_framework"
+fi
 
-    if git apply --recount --ignore-whitespace "$AUDIO_PATCH"; then
-        echo "Framework audio patch applied."
+PATCH="$SCRIPT_DIR/framework.patch"
+AUDIO_PATCH="$SCRIPT_DIR/framework-audio.patch"
+SRC="$FRAMEWORK/src"
+
+if [ ! -d "$FRAMEWORK" ]; then
+    echo "ERROR: Directorio del framework no existe: $FRAMEWORK" >&2
+    exit 1
+fi
+
+echo "[*] Aplicando parches git al motor Mario AI en: $FRAMEWORK"
+cd "$FRAMEWORK"
+if grep -q "ProceduralMusic" src/engine/core/MarioGame.java 2>/dev/null; then
+    echo "  ✓ Parches del framework ya estaban aplicados."
+else
+    if git apply --unidiff-zero --ignore-whitespace "$PATCH"; then
+        echo "  ✓ Parche del framework aplicado exitosamente."
     else
-        echo "ERROR: could not apply tools/framework-audio.patch to $FRAMEWORK" >&2
+        echo "ERROR: No se pudo aplicar tools/framework.patch a $FRAMEWORK" >&2
         exit 1
     fi
 fi
+
+echo "[*] Sincronizando herramientas Java desde $SCRIPT_DIR hacia $SRC..."
+mkdir -p "$SRC/engine/audio"
+cp -f "$SCRIPT_DIR/ValidateLevels.java" "$SRC/ValidateLevels.java"
+cp -f "$SCRIPT_DIR/PlayHuman.java"      "$SRC/PlayHuman.java"
+cp -f "$SCRIPT_DIR/LevelSelector.java"  "$SRC/LevelSelector.java"
+cp -f "$SCRIPT_DIR/ExperimentRunner.java" "$SRC/ExperimentRunner.java"
+cp -f "$SCRIPT_DIR/engine/audio/ProceduralMusic.java" "$SRC/engine/audio/ProceduralMusic.java"
+cp -f "$SCRIPT_DIR/engine/audio/ProceduralEffects.java" "$SRC/engine/audio/ProceduralEffects.java"
+
+echo "  ✓ Herramientas Java sincronizadas con éxito."

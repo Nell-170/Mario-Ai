@@ -41,14 +41,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   refreshStats();
   refreshOllamaStatus();
+  loadGenerationConfig();
   startStatusPolling();
   loadLevelList();
   loadExperimentSummary();
 
-  // Periodic metrics & Ollama status refresh
+  // Periodic metrics & status refresh
   setInterval(() => {
     refreshStats();
     refreshOllamaStatus();
+    loadGenerationConfig();
   }, 5000);
 });
 
@@ -91,6 +93,19 @@ async function stopCurrentTask() {
 function confirmCleanAll() {
   if (confirm('⚠️ ¿Estás seguro de que deseas realizar una LIMPIEZA TOTAL?\nSe borrarán binarios, telemetría, niveles convertidos y cachés.')) {
     runTarget('clean-all', 'Limpieza Total del Proyecto');
+  }
+}
+
+function confirmAndRunSetupLab() {
+  const msg = '🚀 ¿Deseas iniciar la PUESTA A PUNTO TOTAL para el Lab 100?\n\n' +
+              'Este proceso automático:\n' +
+              '  1. Compilará el framework Java con soporte para Java 21/17.\n' +
+              '  2. Descargará y filtrará niveles humanos desde Hugging Face.\n' +
+              '  3. Convertirá y validará los niveles con el agente Robin Baumgarten (A*).\n' +
+              '  4. Configurará JeissonServer y verificará la conexión HTTP en la red UCR.\n\n' +
+              '¿Deseas comenzar ahora?';
+  if (confirm(msg)) {
+    runTarget('setup-lab', 'Puesta a Punto Total (Lab 100 & Hugging Face)');
   }
 }
 
@@ -526,6 +541,262 @@ async function loadExperimentSummary() {
     tbody.innerHTML = '<tr><td colspan="4" class="text-center" style="color:var(--accent-red);">Error al cargar resumen de experimentos</td></tr>';
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// Generation Mode (JeissonServer | Tunel | Nativo)
+// ─────────────────────────────────────────────────────────────
+let currentGenerationConfig = null;
+
+async function loadGenerationConfig() {
+  const title = document.getElementById('gen-active-title');
+  const badge = document.getElementById('gen-live-badge');
+  const desc = document.getElementById('gen-active-desc');
+  const btnJeisson = document.getElementById('btn-mode-jeisson');
+  const btnTunel = document.getElementById('btn-mode-tunel');
+  const btnNativo = document.getElementById('btn-mode-nativo');
+
+  if (!title) return;
+
+  try {
+    const res = await fetch('/api/generation-config');
+    const data = await res.json();
+    currentGenerationConfig = data;
+
+    const mode = data.mode || 'JeissonServer';
+    const isJeisson = mode.toLowerCase().includes('jeisson');
+    const isTunel = mode.toLowerCase().includes('tunel') || mode.toLowerCase().includes('tunnel');
+    const isNativo = mode.toLowerCase().includes('nativo') || mode.toLowerCase().includes('local');
+
+    if (btnJeisson) btnJeisson.classList.toggle('active', isJeisson);
+    if (btnTunel) btnTunel.classList.toggle('active', isTunel);
+    if (btnNativo) btnNativo.classList.toggle('active', isNativo);
+
+    if (isJeisson) {
+      title.textContent = 'Generador: JeissonServer';
+      desc.innerHTML = `Conexión HTTP directa a <code>${data.jeisson_url}</code> (sin túneles SSH ni credenciales). Ideal para Lab 100.`;
+    } else if (isTunel) {
+      title.textContent = 'Generador: Túnel SSH (Clúster)';
+      desc.innerHTML = `Redirección SSH <code>localhost:${data.hpc_port}</code> hacia nodo GPU Slurm (<code>${data.hpc_node || 'auto'}</code>) en el clúster.`;
+    } else {
+      title.textContent = 'Generador: Nativo (Local)';
+      desc.innerHTML = `Generación 100% offline con PyTorch / CPU / GPU local en esta máquina. No requiere red ni internet.`;
+    }
+
+    if (badge) {
+      badge.className = '';
+      if (isNativo) {
+        badge.className = 'badge-local';
+        badge.textContent = '● Modo Local Offline';
+      } else if (data.alive) {
+        badge.className = 'badge-online';
+        badge.textContent = `● En línea (${data.ping_ms}ms)`;
+      } else {
+        badge.className = 'badge-offline';
+        badge.textContent = isJeisson ? '● Servidor No Responde' : '● Túnel Desconectado';
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching generation config:', err);
+  }
+}
+
+async function switchGenerationMode(newMode) {
+  try {
+    const res = await fetch('/api/generation-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: newMode })
+    });
+    const data = await res.json();
+    if (data.status === 'saved') {
+      showToast(`Modo de generación cambiado a: ${newMode}`);
+      await loadGenerationConfig();
+    }
+  } catch (err) {
+    showToast('Error al cambiar modo de generación', 'error');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Generator Configuration Modal & Live SSH Command
+// ─────────────────────────────────────────────────────────────
+let selectedModalMode = 'JeissonServer';
+
+function openGeneratorModal() {
+  const modal = document.getElementById('generator-modal');
+  if (!modal) return;
+
+  const mode = currentGenerationConfig?.mode || 'JeissonServer';
+  selectModalMode(mode);
+
+  const urlInput = document.getElementById('cfg-jeisson-url');
+  const userInput = document.getElementById('cfg-hpc-user');
+  const portInput = document.getElementById('cfg-hpc-port');
+  const nodeInput = document.getElementById('cfg-hpc-node');
+
+  if (urlInput && currentGenerationConfig?.jeisson_url) {
+    urlInput.value = currentGenerationConfig.jeisson_url;
+  }
+  if (userInput && currentGenerationConfig?.hpc_user) {
+    userInput.value = currentGenerationConfig.hpc_user;
+  }
+  if (portInput && currentGenerationConfig?.hpc_port) {
+    portInput.value = currentGenerationConfig.hpc_port;
+  }
+  if (nodeInput && currentGenerationConfig?.hpc_node) {
+    nodeInput.value = currentGenerationConfig.hpc_node;
+  }
+
+  updateLiveSshCommand();
+  const statusSpan = document.getElementById('modal-conn-status');
+  if (statusSpan) {
+    statusSpan.className = 'modal-status-text';
+    statusSpan.textContent = 'Listo para probar';
+  }
+
+  modal.classList.remove('hidden');
+}
+
+function closeGeneratorModal() {
+  const modal = document.getElementById('generator-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function selectModalMode(mode) {
+  selectedModalMode = mode;
+  const isJeisson = mode.toLowerCase().includes('jeisson');
+  const isTunel = mode.toLowerCase().includes('tunel') || mode.toLowerCase().includes('tunnel');
+  const isNativo = mode.toLowerCase().includes('nativo') || mode.toLowerCase().includes('local');
+
+  const tabJeisson = document.getElementById('mtab-jeisson');
+  const tabTunel = document.getElementById('mtab-tunel');
+  const tabNativo = document.getElementById('mtab-nativo');
+
+  if (tabJeisson) tabJeisson.classList.toggle('active', isJeisson);
+  if (tabTunel) tabTunel.classList.toggle('active', isTunel);
+  if (tabNativo) tabNativo.classList.toggle('active', isNativo);
+
+  const secJeisson = document.getElementById('msec-jeisson');
+  const secTunel = document.getElementById('msec-tunel');
+  const secNativo = document.getElementById('msec-nativo');
+
+  if (secJeisson) secJeisson.classList.toggle('hidden', !isJeisson);
+  if (secTunel) secTunel.classList.toggle('hidden', !isTunel);
+  if (secNativo) secNativo.classList.toggle('hidden', !isNativo);
+}
+
+function updateLiveSshCommand() {
+  const userInput = document.getElementById('cfg-hpc-user');
+  const portInput = document.getElementById('cfg-hpc-port');
+  const nodeInput = document.getElementById('cfg-hpc-node');
+  const cmdCode = document.getElementById('ssh-live-cmd');
+
+  let user = userInput ? userInput.value.trim() : '';
+  if (!user) user = 'mariogabriel.cordero@172.16.24.2';
+  else if (!user.includes('@')) user = `${user}@172.16.24.2`;
+
+  const port = (portInput && portInput.value.trim()) ? portInput.value.trim() : '8888';
+  const node = (nodeInput && nodeInput.value.trim()) ? nodeInput.value.trim() : 'cngpu002';
+
+  if (cmdCode) {
+    cmdCode.textContent = `ssh -N -L ${port}:${node}:${port} ${user}`;
+  }
+}
+
+async function detectSlurmNodeFromModal() {
+  const btn = document.getElementById('btn-detect-slurm');
+  const userInput = document.getElementById('cfg-hpc-user');
+  const nodeInput = document.getElementById('cfg-hpc-node');
+
+  const user = userInput ? userInput.value.trim() : '';
+  if (btn) btn.textContent = '⏳ Buscando nodo...';
+
+  try {
+    const res = await fetch(`/api/detect-slurm?user=${encodeURIComponent(user || 'mariogabriel.cordero@172.16.24.2')}`);
+    const data = await res.json();
+    if (data.detected && nodeInput) {
+      nodeInput.value = data.detected;
+      updateLiveSshCommand();
+      showToast(`Nodo Slurm detectado: ${data.detected}`);
+    }
+  } catch (err) {
+    showToast('No se pudo auto-detectar nodo de Slurm', 'error');
+  } finally {
+    if (btn) btn.textContent = '🔍 Auto-detectar Slurm';
+  }
+}
+
+function copySshCommandToClipboard() {
+  const cmdCode = document.getElementById('ssh-live-cmd');
+  const btn = document.getElementById('btn-copy-ssh');
+  if (!cmdCode) return;
+
+  navigator.clipboard.writeText(cmdCode.textContent).then(() => {
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = '✅ ¡Copiado!';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    }
+    showToast('Comando SSH copiado al portapapeles');
+  }).catch(() => {
+    showToast('Error al copiar comando', 'error');
+  });
+}
+
+async function testConnectionFromModal() {
+  const statusSpan = document.getElementById('modal-conn-status');
+  if (statusSpan) {
+    statusSpan.className = 'modal-status-text pending';
+    statusSpan.textContent = 'Probando conexión...';
+  }
+
+  await loadGenerationConfig();
+
+  if (statusSpan && currentGenerationConfig) {
+    if (selectedModalMode.toLowerCase().includes('nativo')) {
+      statusSpan.className = 'modal-status-text success';
+      statusSpan.textContent = 'Modo Nativo activo (100% offline)';
+    } else if (currentGenerationConfig.alive) {
+      statusSpan.className = 'modal-status-text success';
+      statusSpan.textContent = `En línea (${currentGenerationConfig.ping_ms}ms) ✓ Conexión exitosa`;
+    } else {
+      statusSpan.className = 'modal-status-text error';
+      statusSpan.textContent = `No responde ✗ Verifica que el servidor o túnel esté levantado`;
+    }
+  }
+}
+
+async function saveGeneratorModalConfig() {
+  const urlInput = document.getElementById('cfg-jeisson-url');
+  const userInput = document.getElementById('cfg-hpc-user');
+  const portInput = document.getElementById('cfg-hpc-port');
+  const nodeInput = document.getElementById('cfg-hpc-node');
+
+  const payload = {
+    mode: selectedModalMode,
+    jeisson_url: urlInput ? urlInput.value.trim() : undefined,
+    hpc_user: userInput ? userInput.value.trim() : undefined,
+    hpc_port: portInput ? portInput.value.trim() : undefined,
+    hpc_node: nodeInput ? nodeInput.value.trim() : undefined,
+  };
+
+  try {
+    const res = await fetch('/api/generation-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.status === 'saved') {
+      showToast(`Configuración de generación guardada con éxito`);
+      closeGeneratorModal();
+      await loadGenerationConfig();
+    }
+  } catch (err) {
+    showToast('Error al guardar la configuración', 'error');
+  }
+}
+
 
 // ─────────────────────────────────────────────────────────────
 // Ollama API Key Management & Modal Dialog
