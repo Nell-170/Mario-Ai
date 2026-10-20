@@ -25,11 +25,21 @@ fi
 
 echo "[*] Aplicando parches git al motor Mario AI en: $FRAMEWORK"
 cd "$FRAMEWORK"
-if grep -q "ProceduralMusic" src/engine/core/MarioGame.java 2>/dev/null; then
-    echo "  ✓ Parches del framework ya estaban aplicados."
+# 1. Verificar si el parche actual ya está aplicado exactamente
+if git apply --reverse --check --unidiff-zero --ignore-whitespace "$PATCH" &>/dev/null; then
+    echo "  ✓ Parches del framework ya estaban aplicados y actualizados."
+# 2. Si no está aplicado pero aplica limpiamente hacia adelante
+elif git apply --check --unidiff-zero --ignore-whitespace "$PATCH" &>/dev/null; then
+    git apply --unidiff-zero --ignore-whitespace "$PATCH"
+    echo "  ✓ Parche del framework aplicado exitosamente."
+# 3. Si hay conflicto o modificaciones previas desactualizadas, restaurar archivos del framework al upstream y re-aplicar
 else
+    echo "  [*] El framework tiene cambios previos o en conflicto. Restaurando estado limpio..."
+    if [ -d .git ]; then
+        git checkout -f HEAD -- src/ 2>/dev/null || true
+    fi
     if git apply --unidiff-zero --ignore-whitespace "$PATCH"; then
-        echo "  ✓ Parche del framework aplicado exitosamente."
+        echo "  ✓ Parche del framework aplicado exitosamente tras restablecer estado limpio."
     else
         echo "ERROR: No se pudo aplicar tools/framework.patch a $FRAMEWORK" >&2
         exit 1

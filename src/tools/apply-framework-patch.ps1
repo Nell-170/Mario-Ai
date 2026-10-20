@@ -20,22 +20,34 @@ $src = Join-Path $Framework "src"
 
 Push-Location $Framework
 try {
-    $alreadyPatched = $false
-    if (Test-Path "src\engine\core\MarioGame.java") {
-        $gameContent = Get-Content "src\engine\core\MarioGame.java" -Raw
-        if ($gameContent -match "ProceduralMusic") {
-            $alreadyPatched = $true
+    $applied = $false
+    # 1. Reverse check
+    & git apply --reverse --check --unidiff-zero --ignore-whitespace $patch 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Output "  ✓ Parches del framework ya estaban aplicados y actualizados."
+        $applied = $true
+    } else {
+        # 2. Forward check
+        & git apply --check --unidiff-zero --ignore-whitespace $patch 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            & git apply --unidiff-zero --ignore-whitespace $patch
+            if ($LASTEXITCODE -eq 0) {
+                Write-Output "  ✓ Parche del framework aplicado exitosamente."
+                $applied = $true
+            }
         }
     }
 
-    if ($alreadyPatched) {
-        Write-Output "  ✓ Parches del framework ya estaban aplicados."
-    } else {
+    if (-not $applied) {
+        Write-Output "  [*] El framework tiene cambios previos o en conflicto. Restaurando estado limpio..."
+        if (Test-Path ".git") {
+            & git checkout -f HEAD -- src/ 2>$null
+        }
         & git apply --unidiff-zero --ignore-whitespace $patch
         if ($LASTEXITCODE -ne 0) {
             throw "Could not apply tools/framework.patch to $Framework"
         }
-        Write-Output "  ✓ Parche del framework aplicado exitosamente."
+        Write-Output "  ✓ Parche del framework aplicado exitosamente tras restablecer estado limpio."
     }
 
     Write-Output "[*] Sincronizando herramientas Java personalizadas..."
