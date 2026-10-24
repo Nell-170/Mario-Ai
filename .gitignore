@@ -21,8 +21,8 @@ src/levels/converted/
 src/levels/generated/
 src/levels/test_output/
 
-# graphify knowledge graph (cache is machine-local; graph.json/html/report are kept)
-graphify-out/cache/
+# graphify knowledge graph (generated locally; see AGENTS.md)
+graphify-out/
 .graphify_detect.json
 .graphify_ast.json
 .graphify_cached.json
