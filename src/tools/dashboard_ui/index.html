@@ -21,6 +21,11 @@
     </div>
 
     <div class="header-status">
+      <a href="recibidor.html" target="_blank" class="status-pill status-recibidor" style="text-decoration:none; color:inherit; border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.12);" title="Abrir pantalla de recibidor para participantes en el laboratorio">
+        <span class="status-dot" style="background:#f59e0b; box-shadow: 0 0 8px #f59e0b;"></span>
+        <span style="font-weight:600; color:#fde68a;">🖥️ Pantalla Recibidor</span>
+      </a>
+
       <div id="ollama-pill" class="status-pill status-ollama" onclick="openOllamaModal()" title="Haga clic para ver o configurar la clave de Ollama Cloud">
         <span class="status-dot"></span>
         <span id="ollama-text">Ollama: Comprobando...</span>
@@ -151,6 +156,14 @@
             <span class="icon">🎮</span> Juego y Experimento Humano
           </div>
           <div class="category-buttons">
+            <a href="recibidor.html" target="_blank" class="action-btn highlight-lab" style="text-decoration:none;">
+              <div class="btn-content">
+                <span class="btn-name">🖥️ Pantalla de Recibidor (Modo Kiosco)</span>
+                <span class="btn-desc">Interfaz para participantes con ciclo continuo y retorno automático</span>
+              </div>
+              <span class="btn-tag">recibidor</span>
+            </a>
+
             <button class="action-btn primary" onclick="runTarget('play-human', 'Jugar nivel y capturar telemetría')">
               <div class="btn-content">
                 <span class="btn-name">👤 Jugar (PlayHuman)</span>

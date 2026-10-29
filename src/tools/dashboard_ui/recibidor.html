@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mario AI — Experimento</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="recibidor.css?v=20261028_minimal">
+</head>
+<body class="kiosk-minimal">
+
+  <!-- Ambient Glow -->
+  <div class="ambient-glow"></div>
+
+  <!-- Main Viewport -->
+  <main class="kiosk-main" role="main">
+    
+    <!-- Estado 1: Recibidor (Solo 1 botón) -->
+    <div id="state-standby" class="state-container state-active" aria-label="Pantalla de inicio">
+      <button id="btn-start" class="btn-empezar" type="button" autofocus aria-label="Empezar experimento">
+        Empezar
+      </button>
+    </div>
+
+    <!-- Estado 2: Partida en curso -->
+    <div id="state-in-session" class="state-container" aria-label="Partida en curso">
+      <div class="pulse-ring-wrapper">
+        <div class="pulse-ring ring-1"></div>
+        <div class="pulse-ring ring-2"></div>
+        <div class="pulse-core">🎮</div>
+      </div>
+      <p class="session-text">Partida en curso</p>
+    </div>
+
+    <!-- Estado 3: Agradecimiento y retorno automático -->
+    <div id="state-completed" class="state-container" aria-label="Experimento finalizado">
+      <div class="completion-icon">✓</div>
+      <p class="completion-title">¡Muchas gracias por participar!</p>
+      <p class="completion-sub">Preparando pantalla para el siguiente participante...</p>
+    </div>
+
+  </main>
+
+  <!-- Script -->
+  <script src="recibidor.js?v=20261028_minimal"></script>
+</body>
+</html>
