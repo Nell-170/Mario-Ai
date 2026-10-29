@@ -72,7 +72,7 @@ endef
 endif
 
 # ── Phony targets ─────────────────────────────────────────────
-.PHONY: help install setup-lab gui dashboard setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
+.PHONY: help install setup-lab gui dashboard recibidor kiosk setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-levels-generated start-experiment \
         start-experiment-nogen generate-level prompt-telemetry play-and-generate \
         tunnel clean clean-telemetry clean-levels clean-experiment-results clean-all clean-fresh
@@ -84,6 +84,7 @@ help:
 	@echo "  ──────────────────────────────────────────────────────"
 	@echo "  install                Run complete unified installer (clones, deps, compile, Ollama setup)"
 	@echo "  gui / dashboard        Launch modern Web Control Center GUI in browser"
+	@echo "  recibidor / kiosk      Launch participant Receiver Kiosk UI in browser"
 	@echo "  setup                  Clone the Mario AI Framework (if absent)"
 	@echo "  install-deps           Install Python dependencies from requirements.txt"
 	@echo "  setup-mariogpt         Clone the local MarioGPT dependency (if absent)"
@@ -124,6 +125,13 @@ gui: dashboard
 dashboard:
 	$(call progress,0,Iniciando Mario AI Web Control Center...)
 	@$(PYTHON) tools/dashboard.py
+
+# ── recibidor / kiosk ─────────────────────────────────────────
+recibidor: kiosk
+
+kiosk:
+	$(call progress,0,Iniciando Pantalla de Recibidor Kiosco para participantes...)
+	@$(PYTHON) tools/dashboard.py --recibidor
 
 # ── setup ─────────────────────────────────────────────────────
 setup:

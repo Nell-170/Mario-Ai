@@ -414,6 +414,12 @@ class DashboardHandler(SimpleHTTPRequestHandler):
         path = url.path
         query = parse_qs(url.query)
 
+        if path in ("/recibidor", "/kiosk", "/recibidor/", "/kiosk/"):
+            self.send_response(302)
+            self.send_header("Location", "/recibidor.html")
+            self.end_headers()
+            return
+
         if path == "/api/stats":
             stats = get_stats()
             stats["ollama"] = get_ollama_status()
@@ -567,11 +573,16 @@ def main():
     UI_DIR.mkdir(parents=True, exist_ok=True)
 
     httpd = ThreadingHTTPServer(server_address, DashboardHandler)
-    url = f"http://localhost:{port}"
+    open_recibidor = ("--recibidor" in sys.argv or "--kiosk" in sys.argv)
+    target_path = "/recibidor.html" if open_recibidor else ""
+    url = f"http://localhost:{port}{target_path}"
+    dash_url = f"http://localhost:{port}"
+    recibidor_url = f"http://localhost:{port}/recibidor.html"
 
     print(f"\n=======================================================")
     print(f"  🍄 Mario AI — Modern Web Control Center")
-    print(f"  Dashboard disponible en: {url}")
+    print(f"  Dashboard: {dash_url}")
+    print(f"  Recibidor Kiosco: {recibidor_url}")
     print(f"  Presiona Ctrl+C para detener el servidor")
     print(f"=======================================================\n")
 
