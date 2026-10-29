@@ -18,36 +18,65 @@ if (-not $Framework) {
 $patch = Join-Path $scriptDir "framework.patch"
 $src = Join-Path $Framework "src"
 
+function Invoke-GitQuiet {
+    param([string[]]$Arguments)
+
+    $previousPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = "Continue"
+        & git @Arguments 2>$null
+        return $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousPreference
+    }
+}
+
 Push-Location $Framework
 try {
     $applied = $false
     # 1. Reverse check
-    & git apply --reverse --check --unidiff-zero --ignore-whitespace $patch 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        Write-Output "  ✓ Parches del framework ya estaban aplicados y actualizados."
+    $reverseCheck = Invoke-GitQuiet -Arguments @("apply", "--reverse", "--check", "--unidiff-zero", "--ignore-whitespace", $patch)
+    if ($reverseCheck -eq 0) {
+        Write-Output "  [OK] Parches del framework ya estaban aplicados y actualizados."
         $applied = $true
     } else {
         # 2. Forward check
-        & git apply --check --unidiff-zero --ignore-whitespace $patch 2>$null
-        if ($LASTEXITCODE -eq 0) {
-            & git apply --unidiff-zero --ignore-whitespace $patch
-            if ($LASTEXITCODE -eq 0) {
-                Write-Output "  ✓ Parche del framework aplicado exitosamente."
+        $forwardCheck = Invoke-GitQuiet -Arguments @("apply", "--check", "--unidiff-zero", "--ignore-whitespace", $patch)
+        if ($forwardCheck -eq 0) {
+            $applyExitCode = Invoke-GitQuiet -Arguments @("apply", "--unidiff-zero", "--ignore-whitespace", $patch)
+            if ($applyExitCode -eq 0) {
+                Write-Output "  [OK] Parche del framework aplicado exitosamente."
                 $applied = $true
+            } else {
+                throw "Could not apply tools/framework.patch to $Framework (git exit code $applyExitCode)"
             }
         }
     }
 
     if (-not $applied) {
-        Write-Output "  [*] El framework tiene cambios previos o en conflicto. Restaurando estado limpio..."
-        if (Test-Path ".git") {
-            & git checkout -f HEAD -- src/ 2>$null
+        $previousPreference = $ErrorActionPreference
+        try {
+            $ErrorActionPreference = "Continue"
+            $changedFiles = @(& git diff --name-only -- src/ 2>$null)
+            $statusExitCode = $LASTEXITCODE
+        } finally {
+            $ErrorActionPreference = $previousPreference
         }
-        & git apply --unidiff-zero --ignore-whitespace $patch
-        if ($LASTEXITCODE -ne 0) {
-            throw "Could not apply tools/framework.patch to $Framework"
+        if ($statusExitCode -ne 0) {
+            throw "Could not inspect framework changes in $Framework (git exit code $statusExitCode)"
         }
-        Write-Output "  ✓ Parche del framework aplicado exitosamente tras restablecer estado limpio."
+        $patchFiles = @(Get-Content $patch | ForEach-Object {
+            if ($_ -match '^diff --git a/(.+) b/') {
+                $matches[1]
+            }
+        })
+        $unmodifiedPatchFiles = @($patchFiles | Where-Object { $_ -notin $changedFiles })
+        if ($changedFiles.Count -gt 0 -and $unmodifiedPatchFiles.Count -eq 0) {
+            Write-Output "  [*] Los archivos del parche ya tienen cambios locales; se conservan sin restablecerlos."
+            $applied = $true
+        } else {
+            throw "Framework patch conflicts with its current source files. No files were reset or overwritten."
+        }
     }
 
     Write-Output "[*] Sincronizando herramientas Java personalizadas..."
@@ -58,7 +87,7 @@ try {
     New-Item -ItemType Directory -Force -Path (Join-Path $src "engine\audio") | Out-Null
     Copy-Item (Join-Path $scriptDir "engine\audio\ProceduralMusic.java") (Join-Path $src "engine\audio\ProceduralMusic.java") -Force
     Copy-Item (Join-Path $scriptDir "engine\audio\ProceduralEffects.java") (Join-Path $src "engine\audio\ProceduralEffects.java") -Force
-    Write-Output "  ✓ Herramientas Java sincronizadas con éxito."
+    Write-Output "  [OK] Herramientas Java sincronizadas con exito."
 } finally {
     Pop-Location
 }
