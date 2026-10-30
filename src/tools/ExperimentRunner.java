@@ -109,6 +109,9 @@ public class ExperimentRunner {
     // C = Humano (H); index 1 or 2.
     private static final Map<String, String> SEQUENCES = new LinkedHashMap<>();
     private static final String[] GROUPS;
+    private static final String[] FREE_CONDITIONS = {"P", "N", "H"};
+    private static final int MAX_EXTRA = 8;
+    private static final int MANDATORY_GENERATED = 2;
 
     static {
         SEQUENCES.put("S1", "A1 C2 A2 C1 B1 B2");
@@ -272,20 +275,21 @@ public class ExperimentRunner {
         List<Path> human = drawn.subList(0, 2);
         List<Path> substitutes = drawn.subList(2, drawn.size());
 
-        String group = assignGroup();
+        String group = assignBalanced("group", GROUPS);
+        String freeCondition = assignBalanced("free", FREE_CONDITIONS);
         String id = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + "_" + group;
         Path dir = RESULTS.resolve(id);
         Files.createDirectories(dir);
 
         List<Step> steps = buildSteps(group, normal, human);
         Files.writeString(dir.resolve("participant.txt"),
-                "id=" + id + "\ngroup=" + group + "\nsteps="
+                "id=" + id + "\ngroup=" + group + "\nfree=" + freeCondition + "\nsteps="
                         + steps.stream().map(s -> String.valueOf(s.type())).collect(Collectors.joining(","))
                         + "\nfamiliarization=" + familiarization.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(","))
                         + "\ngenerics=" + normal.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(","))
                         + "\nhuman=" + human.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(","))
                         + "\n");
-        System.out.println("Participante: " + id + " (secuencia " + group + ")");
+        System.out.println("Participante: " + id + " (secuencia " + group + ", juego libre " + freeCondition + ")");
         System.out.println("Niveles de familiarización (aleatorios): "
                 + familiarization.stream().map(p -> p.getFileName().toString()).collect(Collectors.joining(", ")));
         System.out.println("Niveles no personalizados / genéricos (aleatorios): "
@@ -406,6 +410,7 @@ public class ExperimentRunner {
 
             // 5. Experiment Levels Loop
             List<PlayedLevelInfo> playedLevels = new ArrayList<>();
+            Path lastTelemetry = famTelemetries.isEmpty() ? null : famTelemetries.get(famTelemetries.size() - 1);
             for (int i = 0; i < steps.size(); i++) {
                 Step step = steps.get(i);
                 String stepCode = SEQUENCES.get(group).split(" ")[i];
@@ -444,6 +449,9 @@ public class ExperimentRunner {
                         showGeneratingScreen(i + 1, steps.size());
                     }
                     levelFile = generation.await(step.index());
+                    if (step.index() == MANDATORY_GENERATED - 1 && freeCondition.equals("P") && lastTelemetry != null) {
+                        generation.enqueue(MANDATORY_GENERATED, lastTelemetry);
+                    }
                 }
 
                 setDevContext(
@@ -468,7 +476,7 @@ public class ExperimentRunner {
                         "¡Jugar nivel " + (i + 1) + "!",
                         thumbnail);
 
-                playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
+                lastTelemetry = playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
                 if (step.type() == 'P') {
                     personalizedPlayedCount++;
                 }
@@ -496,9 +504,18 @@ public class ExperimentRunner {
                             + "(límite de 20 minutos) por pura diversión, o salir del juego cuando gustes.\n\n"
                             + "¿Deseas jugar libremente?",
                     "Jugar libremente", "Terminar y Salir");
+            List<String> freeFiles = new ArrayList<>();
             if (wantFreePlay) {
-                freePlay(config, normal, playedLevels, timer);
+                List<Path> seen = new ArrayList<>(familiarization);
+                seen.addAll(normal);
+                seen.addAll(human);
+                freeFiles = assignedFreePlay(freeCondition, skipGeneration, config, normal, seen, timer, dir,
+                        generation, lastTelemetry);
             }
+            saveRow(RESULTS.resolve("free_play.tsv"),
+                    List.of("id", "group", "free_condition", "stayed", "levels_played", "level_files"),
+                    List.of(id, group, freeCondition, String.valueOf(wantFreePlay), String.valueOf(freeFiles.size()),
+                            String.join(";", freeFiles)));
 
             // 8. Pantalla final de despedida
             showExitScreen("¡Muchas gracias por participar!",
@@ -675,6 +692,115 @@ public class ExperimentRunner {
             replayBtn.requestFocusInWindow();
         });
         return future.get();
+    }
+
+    private static List<String> assignedFreePlay(String condition, boolean skipGeneration, Properties config,
+            List<Path> normal, List<Path> seen, int timer, Path dir, GenerationJob generation, Path lastTelemetry)
+            throws Exception {
+        List<String> files = new ArrayList<>();
+        boolean personalized = condition.equals("P") && !skipGeneration;
+        List<Path> pool = new ArrayList<>();
+        if (!personalized) {
+            Path source = condition.equals("N")
+                    ? resolveDirectory(config, "generics_dir", "normal", "levels/generics")
+                    : SRC.resolve(config.getProperty("human_dir").trim());
+            try (Stream<Path> list = Files.list(source)) {
+                pool = list.filter(f -> f.getFileName().toString().endsWith(".txt")).collect(Collectors.toList());
+            }
+            if (!condition.equals("N")) {
+                List<Path> fresh = pool.stream()
+                        .filter(f -> seen.stream().noneMatch(x -> x.getFileName().equals(f.getFileName())))
+                        .collect(Collectors.toList());
+                if (!fresh.isEmpty()) {
+                    pool = fresh;
+                }
+            }
+        }
+        List<Path> queue = new ArrayList<>();
+        Path previous = null;
+        Path current = null;
+        Path prevTelemetry = lastTelemetry;
+        boolean replay = false;
+        int extra = 0;
+        int playedCount = 0;
+        long startFreePlay = System.currentTimeMillis();
+        long maxFreePlayMillis = 20L * 60L * 1000L;
+
+        while (true) {
+            long remaining = maxFreePlayMillis - (System.currentTimeMillis() - startFreePlay);
+            if (remaining <= 0) {
+                showChoiceScreen("Tiempo límite alcanzado",
+                        "Has alcanzado el tiempo límite de 20 minutos de juego libre.\n\n"
+                                + "¡Muchas gracias por haber jugado!",
+                        "Entendido", "Salir");
+                break;
+            }
+            if (!replay) {
+                if (personalized) {
+                    if (extra >= MAX_EXTRA) {
+                        showChoiceScreen("Máximo de niveles alcanzado",
+                                "Has jugado el máximo de " + MAX_EXTRA + " niveles extra.\n\n¡Muchas gracias por haber jugado!",
+                                "Entendido", "Salir");
+                        break;
+                    }
+                    int slot = MANDATORY_GENERATED + extra;
+                    if (prevTelemetry != null) {
+                        generation.enqueue(slot, prevTelemetry);
+                    }
+                    long waitStart = System.currentTimeMillis();
+                    try {
+                        if (!generation.isReady(slot)) {
+                            showGeneratingScreen(extra + 1, MAX_EXTRA);
+                        }
+                        current = generation.await(slot);
+                    } catch (Exception ex) {
+                        System.err.println("No se pudo obtener el nivel extra " + (extra + 1) + ": " + ex.getMessage());
+                        break;
+                    }
+                    startFreePlay += System.currentTimeMillis() - waitStart;
+                    extra++;
+                    if (extra < MAX_EXTRA && prevTelemetry != null) {
+                        generation.enqueue(MANDATORY_GENERATED + extra, prevTelemetry);
+                    }
+                } else {
+                    if (queue.isEmpty()) {
+                        queue.addAll(pool);
+                        Collections.shuffle(queue);
+                        if (queue.size() > 1 && queue.get(0).equals(previous)) {
+                            Collections.swap(queue, 0, 1);
+                        }
+                    }
+                    current = queue.remove(0);
+                }
+                previous = current;
+            }
+
+            playedCount++;
+            setDevContext(
+                    "Juego Libre (" + condition + ") | Nivel #" + playedCount + " (" + current.getFileName() + ")",
+                    "Juego Libre",
+                    current.getFileName().toString(),
+                    "Condición de juego libre: " + condition,
+                    "N/A",
+                    timer
+            );
+            Path telemetry = playLevel(current, timer, dir.resolve("telemetry_free" + playedCount + ".json"));
+            files.add(current.toString());
+            if (telemetry != null) {
+                prevTelemetry = telemetry;
+            }
+
+            remaining = maxFreePlayMillis - (System.currentTimeMillis() - startFreePlay);
+            if (remaining <= 0) {
+                continue;
+            }
+            FreePlayAction action = showFreePlayActionModal(playedCount, remaining / 1000L);
+            if (action == FreePlayAction.EXIT) {
+                break;
+            }
+            replay = action == FreePlayAction.REPLAY;
+        }
+        return files;
     }
 
     private static void freePlay(Properties config, List<Path> normal, List<PlayedLevelInfo> playedLevels, int timer) throws Exception {
@@ -3368,8 +3494,8 @@ public class ExperimentRunner {
         return chosen;
     }
 
-    private static String assignGroup() throws IOException {
-        int[] counts = new int[GROUPS.length];
+    private static String assignBalanced(String key, String[] options) throws IOException {
+        int[] counts = new int[options.length];
         if (Files.isDirectory(RESULTS)) {
             try (Stream<Path> dirs = Files.list(RESULTS)) {
                 for (Path d : (Iterable<Path>) dirs::iterator) {
@@ -3378,8 +3504,8 @@ public class ExperimentRunner {
                         continue;
                     }
                     String text = Files.readString(meta);
-                    for (int g = 0; g < GROUPS.length; g++) {
-                        if (text.contains("group=" + GROUPS[g])) {
+                    for (int g = 0; g < options.length; g++) {
+                        if (text.startsWith(key + "=" + options[g] + "\n") || text.contains("\n" + key + "=" + options[g] + "\n")) {
                             counts[g]++;
                         }
                     }
@@ -3388,9 +3514,9 @@ public class ExperimentRunner {
         }
         int min = Arrays.stream(counts).min().getAsInt();
         List<String> candidates = new ArrayList<>();
-        for (int g = 0; g < GROUPS.length; g++) {
+        for (int g = 0; g < options.length; g++) {
             if (counts[g] == min) {
-                candidates.add(GROUPS[g]);
+                candidates.add(options[g]);
             }
         }
         return candidates.get(new Random().nextInt(candidates.size()));
@@ -3451,13 +3577,14 @@ public class ExperimentRunner {
         private final String python;
         private final Path dir;
         private final int totalLevels = 2;
+        private final int slots = 2 + MAX_EXTRA;
         private final List<CompletableFuture<Path>> futures = new ArrayList<>();
         private final BlockingQueue<Integer> queue = new LinkedBlockingQueue<>();
         private final ConcurrentHashMap<Integer, Path> telemetries = new ConcurrentHashMap<>();
-        private final AtomicReferenceArray<GenStage> stages = new AtomicReferenceArray<>(2);
-        private final AtomicReferenceArray<String> stageDetails = new AtomicReferenceArray<>(2);
-        private final AtomicReferenceArray<String> prompts = new AtomicReferenceArray<>(2);
-        private final AtomicReferenceArray<Path> resultPaths = new AtomicReferenceArray<>(2);
+        private final AtomicReferenceArray<GenStage> stages = new AtomicReferenceArray<>(slots);
+        private final AtomicReferenceArray<String> stageDetails = new AtomicReferenceArray<>(slots);
+        private final AtomicReferenceArray<String> prompts = new AtomicReferenceArray<>(slots);
+        private final AtomicReferenceArray<Path> resultPaths = new AtomicReferenceArray<>(slots);
         private volatile Process current;
         private volatile boolean cancelled;
         private volatile boolean started;
@@ -3467,15 +3594,16 @@ public class ExperimentRunner {
         GenerationJob(String python, Path dir) {
             this.python = python;
             this.dir = dir;
-            for (int i = 0; i < totalLevels; i++) {
+            for (int i = 0; i < slots; i++) {
                 futures.add(new CompletableFuture<>());
                 stages.set(i, GenStage.PENDING);
-                stageDetails.set(i, "Pendiente de telemetría (Familiarización " + (i + 1) + ")");
+                stageDetails.set(i, i < totalLevels ? "Pendiente de telemetría (Familiarización " + (i + 1) + ")"
+                        : "Nivel extra de juego libre " + (i - totalLevels + 1));
             }
         }
 
         synchronized void enqueue(int k, Path telemetry) {
-            if (k < 0 || k >= totalLevels) return;
+            if (k < 0 || k >= slots) return;
             if (telemetries.containsKey(k)) return;
             telemetries.put(k, telemetry);
             if (stages.get(k) == GenStage.PENDING) {
@@ -3488,7 +3616,7 @@ public class ExperimentRunner {
             }
             ensureWorkerStarted();
             queue.offer(k);
-            System.out.println("[DEV] Nivel personalizado " + (k + 1) + " encolado inmediatamente (" + telemetry.getFileName() + ")");
+            System.out.println("[DEV] Nivel personalizado " + (k + 1) + " (extra=" + (k >= totalLevels) + ") encolado inmediatamente (" + telemetry.getFileName() + ")");
         }
 
         synchronized void start(List<Path> telemetriesList) {
@@ -3507,9 +3635,6 @@ public class ExperimentRunner {
                     try {
                         Integer k = queue.poll(1, TimeUnit.SECONDS);
                         if (k == null) {
-                            if (isAllDone()) {
-                                break;
-                            }
                             continue;
                         }
                         Path tel = telemetries.get(k);
@@ -3770,7 +3895,7 @@ public class ExperimentRunner {
 
         void cancel() {
             cancelled = true;
-            for (int i = 0; i < totalLevels; i++) {
+            for (int i = 0; i < slots; i++) {
                 if (!futures.get(i).isDone()) {
                     stages.set(i, GenStage.FAILED);
                     stageDetails.set(i, "Cancelado");
