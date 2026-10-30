@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,6 +45,8 @@ public class ExperimentRunner {
     private static final Path EXPERIMENT = SRC.resolve("experiment");
     private static final Path RESULTS = EXPERIMENT.resolve("results");
     private static final String[] GROUPS = {"A", "B", "C"};
+    private static final String[] FREE_CONDITIONS = {"P", "N", "H"};
+    private static final int MAX_EXTRA = 8;
     private record Step(char type, Path level, int genIndex) {}
 
     private record Question(String id, String block, String type, String text, String options) {}
@@ -59,16 +64,17 @@ public class ExperimentRunner {
         List<Path> human = drawn.subList(0, 2);
         List<Path> substitutes = drawn.subList(2, drawn.size());
 
-        String group = assignGroup();
+        String group = assignBalanced("group", GROUPS);
+        String freeCondition = assignBalanced("free", FREE_CONDITIONS);
         String id = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + "_" + group;
         Path dir = RESULTS.resolve(id);
         Files.createDirectories(dir);
 
         List<Step> steps = buildSteps(group, normal, human);
         Files.writeString(dir.resolve("participant.txt"),
-                "id=" + id + "\ngroup=" + group + "\nsteps="
+                "id=" + id + "\ngroup=" + group + "\nfree=" + freeCondition + "\nsteps="
                         + steps.stream().map(s -> String.valueOf(s.type())).collect(Collectors.joining(",")) + "\n");
-        System.out.println("Participante: " + id + " (grupo " + group + ")");
+        System.out.println("Participante: " + id + " (grupo " + group + ", juego libre " + freeCondition + ")");
 
         GenerationJob generation = new GenerationJob(python, dir);
         try {
@@ -84,7 +90,7 @@ public class ExperimentRunner {
             if (skipGeneration) {
                 System.out.println("Modo prueba: se omite la generación; los niveles personalizados se sustituyen por niveles distintos de nivel0.");
             } else {
-                generation.start(famTelemetries);
+                generation.start(famTelemetries, freeCondition.equals("P") ? MAX_EXTRA : 0);
             }
 
             if (!showConsent()) {
@@ -111,7 +117,7 @@ public class ExperimentRunner {
                 info("Nivel " + (i + 1) + " de " + steps.size() + ". Pulsa Aceptar para comenzar.");
                 Path levelFile = step.type() != 'P' ? step.level()
                         : skipGeneration ? substitutes.get(step.genIndex()) : generation.await(step.genIndex());
-                playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
+                generation.addTelemetry(playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json")));
                 played.add(levelFile.getFileName().toString());
 
                 if (i % 2 == 1) {
@@ -125,10 +131,19 @@ public class ExperimentRunner {
                 }
             }
             info("¡Muchas gracias por participar! El experimento ha finalizado.");
-            if (choose("¿Quieres seguir jugando solo por diversión?\nLos niveles que juegues ahora no se registrarán.",
-                    "Jugar por jugar", "Terminar")) {
-                freePlay(config, normal, timer);
+            List<String> extraFiles = new ArrayList<>();
+            boolean stay = choose("¿Quieres seguir jugando solo por diversión?\nNo habrá más cuestionarios.",
+                    "Jugar por jugar", "Terminar");
+            if (stay) {
+                List<Path> exclude = new ArrayList<>(used);
+                exclude.addAll(human);
+                extraFiles = freePlayAssigned(freeCondition, skipGeneration, config, normal, exclude, timer, dir,
+                        generation, famTelemetries.size());
             }
+            saveRow(RESULTS.resolve("free_play.tsv"),
+                    List.of("id", "group", "free_condition", "stayed", "levels_played", "level_files"),
+                    List.of(id, group, freeCondition, String.valueOf(stay), String.valueOf(extraFiles.size()),
+                            String.join(";", extraFiles)));
             info("Gracias por tu tiempo. La sesión ha finalizado.");
         } catch (Exception e) {
             generation.cancel();
@@ -195,8 +210,8 @@ public class ExperimentRunner {
         return new ArrayList<>(pool.subList(0, count));
     }
 
-    private static String assignGroup() throws IOException {
-        int[] counts = new int[GROUPS.length];
+    private static String assignBalanced(String key, String[] options) throws IOException {
+        int[] counts = new int[options.length];
         if (Files.isDirectory(RESULTS)) {
             try (Stream<Path> dirs = Files.list(RESULTS)) {
                 for (Path d : (Iterable<Path>) dirs::iterator) {
@@ -205,8 +220,8 @@ public class ExperimentRunner {
                         continue;
                     }
                     String text = Files.readString(meta);
-                    for (int g = 0; g < GROUPS.length; g++) {
-                        if (text.contains("group=" + GROUPS[g])) {
+                    for (int g = 0; g < options.length; g++) {
+                        if (text.contains("\n" + key + "=" + options[g] + "\n") || text.startsWith(key + "=" + options[g] + "\n")) {
                             counts[g]++;
                         }
                     }
@@ -215,9 +230,9 @@ public class ExperimentRunner {
         }
         int min = Arrays.stream(counts).min().getAsInt();
         List<String> candidates = new ArrayList<>();
-        for (int g = 0; g < GROUPS.length; g++) {
+        for (int g = 0; g < options.length; g++) {
             if (counts[g] == min) {
-                candidates.add(GROUPS[g]);
+                candidates.add(options[g]);
             }
         }
         return candidates.get(new Random().nextInt(candidates.size()));
@@ -258,6 +273,69 @@ public class ExperimentRunner {
             last = level;
             playLevel(level, timer, null);
         } while (choose("¿Quieres jugar otro nivel?", "Otro nivel", "Terminar"));
+    }
+
+    private static List<String> freePlayAssigned(String condition, boolean skipGeneration, Properties config,
+            List<Path> normal, List<Path> exclude, int timer, Path dir, GenerationJob generation, int firstExtra)
+            throws Exception {
+        List<String> files = new ArrayList<>();
+        if (condition.equals("P") && !skipGeneration) {
+            for (int e = 0; e < MAX_EXTRA; e++) {
+                Path level;
+                try {
+                    level = generation.awaitWithNotice(firstExtra + e);
+                } catch (Exception ex) {
+                    System.out.println("No se pudo generar el nivel extra " + (e + 1) + ": " + ex);
+                    info("No se pudo generar el siguiente nivel personalizado.");
+                    break;
+                }
+                generation.allowNext();
+                generation.addTelemetry(playLevel(level, timer, dir.resolve("telemetry_free" + (e + 1) + ".json")));
+                files.add(level.toString());
+                if (e == MAX_EXTRA - 1) {
+                    info("Has llegado al máximo de niveles extra. ¡Gracias!");
+                    break;
+                }
+                if (!choose("¿Quieres jugar otro nivel?", "Otro nivel", "Terminar")) {
+                    break;
+                }
+            }
+            return files;
+        }
+        Path humanDir = SRC.resolve(config.getProperty("human_dir").trim());
+        Path source = condition.equals("N") ? normal.get(0).getParent() : humanDir;
+        List<Path> pool = listLevels(source);
+        if (condition.equals("H")) {
+            List<Path> fresh = pool.stream()
+                    .filter(f -> exclude.stream().noneMatch(x -> x.getFileName().equals(f.getFileName())))
+                    .collect(Collectors.toList());
+            if (!fresh.isEmpty()) {
+                pool = fresh;
+            }
+        }
+        List<Path> queue = new ArrayList<>();
+        Path last = null;
+        int n = 0;
+        do {
+            if (queue.isEmpty()) {
+                queue.addAll(pool);
+                java.util.Collections.shuffle(queue);
+                if (queue.size() > 1 && queue.get(0).equals(last)) {
+                    java.util.Collections.swap(queue, 0, 1);
+                }
+            }
+            Path level = queue.remove(0);
+            last = level;
+            playLevel(level, timer, dir.resolve("telemetry_free" + (++n) + ".json"));
+            files.add(level.toString());
+        } while (choose("¿Quieres jugar otro nivel?", "Otro nivel", "Terminar"));
+        return files;
+    }
+
+    private static List<Path> listLevels(Path dir) throws IOException {
+        try (Stream<Path> files = Files.list(dir)) {
+            return files.filter(f -> f.getFileName().toString().endsWith(".txt")).collect(Collectors.toList());
+        }
     }
 
     private static void info(String message) {
@@ -435,15 +513,28 @@ public class ExperimentRunner {
         private volatile List<CompletableFuture<Path>> futures = new ArrayList<>();
         private volatile Process current;
         private volatile boolean cancelled;
+        private final List<Path> telemetryPool = new CopyOnWriteArrayList<>();
+        private final Semaphore extraPermits = new Semaphore(1);
 
         GenerationJob(String python, Path dir) {
             this.python = python;
             this.dir = dir;
         }
 
-        void start(List<Path> telemetries) {
+        void addTelemetry(Path telemetry) {
+            if (telemetry != null) {
+                telemetryPool.add(telemetry);
+            }
+        }
+
+        void allowNext() {
+            extraPermits.release();
+        }
+
+        void start(List<Path> telemetries, int extras) {
+            telemetryPool.addAll(telemetries);
             List<CompletableFuture<Path>> jobs = new ArrayList<>();
-            for (int k = 0; k < telemetries.size(); k++) {
+            for (int k = 0; k < telemetries.size() + extras; k++) {
                 jobs.add(new CompletableFuture<>());
             }
             futures = jobs;
@@ -455,6 +546,17 @@ public class ExperimentRunner {
                     }
                     try {
                         jobs.get(k).complete(generate(k, telemetries.get(k)));
+                    } catch (Exception e) {
+                        jobs.get(k).completeExceptionally(e);
+                    }
+                }
+                for (int k = telemetries.size(); k < jobs.size(); k++) {
+                    try {
+                        extraPermits.acquire();
+                        if (cancelled) {
+                            throw new IllegalStateException("Generación cancelada");
+                        }
+                        jobs.get(k).complete(generate(k, telemetryPool.get(telemetryPool.size() - 1)));
                     } catch (Exception e) {
                         jobs.get(k).completeExceptionally(e);
                     }
@@ -542,15 +644,29 @@ public class ExperimentRunner {
         }
 
         Path await(int index) throws Exception {
+            return futures.get(index).get();
+        }
+
+        Path awaitWithNotice(int index) throws Exception {
             CompletableFuture<Path> future = futures.get(index);
             if (future.isDone()) {
                 return future.get();
             }
-            return future.get();
+            JDialog notice = new JDialog((java.awt.Frame) null, "Experimento", false);
+            notice.add(new JLabel("  Generando tu siguiente nivel, espera un momento...  "));
+            notice.pack();
+            notice.setLocationRelativeTo(null);
+            notice.setVisible(true);
+            try {
+                return future.get(15, TimeUnit.MINUTES);
+            } finally {
+                notice.dispose();
+            }
         }
 
         void cancel() {
             cancelled = true;
+            extraPermits.release();
             Process process = current;
             if (process != null) {
                 process.descendants().forEach(ProcessHandle::destroyForcibly);
