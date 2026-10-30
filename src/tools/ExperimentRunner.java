@@ -168,6 +168,7 @@ public class ExperimentRunner {
     private static GenerationJob activeGenerationJob = null;
     private static MarioGame activeGame = null;
     private static boolean developMode = false;
+    private static String devFreeCondition = null;
     private static String currentDevBanner = "";
     private static JPanel currentDevCardPanel = null;
     private static int personalizedPlayedCount = 0;
@@ -278,6 +279,7 @@ public class ExperimentRunner {
 
         String group = assignBalanced("group", GROUPS);
         String freeCondition = assignBalanced("free", FREE_CONDITIONS);
+        devFreeCondition = freeCondition;
         String id = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + "_" + group;
         Path dir = RESULTS.resolve(id);
         Files.createDirectories(dir);
@@ -498,6 +500,14 @@ public class ExperimentRunner {
             showClosureBlock(playedLevels, id, group, dir);
 
             // 7. Fase Voluntaria de Juego Libre (Opcional según protocolo, límite 20 minutos)
+            setDevContext(
+                    "ID: " + id + " | Oferta de Juego Libre | Condición asignada: " + freeConditionLabel(freeCondition),
+                    "Oferta de Juego Libre",
+                    "N/A",
+                    "Juego libre asignado: " + freeConditionLabel(freeCondition),
+                    id,
+                    0
+            );
             boolean wantFreePlay = showChoiceScreen("Fase Voluntaria de Juego",
                     "Has completado los 6 niveles de la sesión.\n\n"
                             + "La parte obligatoria del estudio ha concluido y tus respuestas han sido registradas.\n"
@@ -511,7 +521,7 @@ public class ExperimentRunner {
                 seen.addAll(normal);
                 seen.addAll(human);
                 freeResult = assignedFreePlay(freeCondition, skipGeneration, config, normal, seen, timer, dir,
-                        generation, lastTelemetry);
+                        generation, lastTelemetry, id, group);
             }
             saveRow(RESULTS.resolve("free_play.tsv"),
                     List.of("id", "group", "free_condition", "stayed", "seconds_played", "levels_played", "distinct_levels"),
@@ -695,11 +705,21 @@ public class ExperimentRunner {
         return future.get();
     }
 
+    private static String freeConditionLabel(String condition) {
+        return switch (condition) {
+            case "P" -> "P = solo personalizados";
+            case "N" -> "N = solo no personalizados";
+            case "H" -> "H = solo humanos";
+            default -> condition;
+        };
+    }
+
     private record FreePlayResult(int levels, int distinct, long seconds) {
     }
 
     private static FreePlayResult assignedFreePlay(String condition, boolean skipGeneration, Properties config,
-            List<Path> normal, List<Path> seen, int timer, Path dir, GenerationJob generation, Path lastTelemetry)
+            List<Path> normal, List<Path> seen, int timer, Path dir, GenerationJob generation, Path lastTelemetry,
+            String id, String group)
             throws Exception {
         Set<String> distinctLevels = new HashSet<>();
         long playedMillis = 0;
@@ -779,11 +799,11 @@ public class ExperimentRunner {
 
             playedCount++;
             setDevContext(
-                    "Juego Libre (" + condition + ") | Nivel #" + playedCount + " (" + current.getFileName() + ")",
-                    "Juego Libre",
+                    "ID: " + id + " | Juego Libre [" + freeConditionLabel(condition) + "] | Nivel #" + playedCount + " (" + current.getFileName() + ")",
+                    "Juego Libre (" + freeConditionLabel(condition) + ")",
                     current.getFileName().toString(),
-                    "Condición de juego libre: " + condition,
-                    "N/A",
+                    "Grupo " + group + " | Juego libre asignado: " + freeConditionLabel(condition),
+                    id,
                     timer
             );
             long levelStart = System.currentTimeMillis();
@@ -2392,6 +2412,15 @@ public class ExperimentRunner {
     }
 
     private static void setDevContext(String bannerText, String levelType, String fileName, String latinSquareDist, String participantId, int timerSec) {
+        if (devFreeCondition != null) {
+            String suffix = " | Juego libre: " + devFreeCondition;
+            if (bannerText != null && !bannerText.toLowerCase().contains("juego libre")) {
+                bannerText += suffix;
+            }
+            if (latinSquareDist != null && !latinSquareDist.toLowerCase().contains("juego libre")) {
+                latinSquareDist += suffix;
+            }
+        }
         currentDevBanner = bannerText;
         try {
             MarioGame.setDevBannerText(developMode ? bannerText : null);
