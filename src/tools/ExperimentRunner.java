@@ -110,7 +110,8 @@ public class ExperimentRunner {
     private static final Map<String, String> SEQUENCES = new LinkedHashMap<>();
     private static final String[] GROUPS;
     private static final String[] FREE_CONDITIONS = {"P", "N", "H"};
-    private static final int MAX_EXTRA = 8;
+    // Limite tecnico de espacios de generacion; el limite real del juego libre son los 20 minutos.
+    private static final int MAX_EXTRA = 100;
     private static final int MANDATORY_GENERATED = 2;
 
     static {
@@ -241,7 +242,7 @@ public class ExperimentRunner {
             }
         }
         Properties config = loadConfig();
-        int timer = Integer.parseInt(config.getProperty("timer", "60").trim());
+        int timer = Integer.parseInt(config.getProperty("timer", "120").trim());
         String musicSetting = config.getProperty("music", "true").trim();
         if (!"true".equalsIgnoreCase(musicSetting) && !"false".equalsIgnoreCase(musicSetting)) {
             throw new IllegalArgumentException("config.properties: 'music' debe ser true o false");
@@ -504,18 +505,18 @@ public class ExperimentRunner {
                             + "(límite de 20 minutos) por pura diversión, o salir del juego cuando gustes.\n\n"
                             + "¿Deseas jugar libremente?",
                     "Jugar libremente", "Terminar y Salir");
-            List<String> freeFiles = new ArrayList<>();
+            FreePlayResult freeResult = new FreePlayResult(0, 0, 0);
             if (wantFreePlay) {
                 List<Path> seen = new ArrayList<>(familiarization);
                 seen.addAll(normal);
                 seen.addAll(human);
-                freeFiles = assignedFreePlay(freeCondition, skipGeneration, config, normal, seen, timer, dir,
+                freeResult = assignedFreePlay(freeCondition, skipGeneration, config, normal, seen, timer, dir,
                         generation, lastTelemetry);
             }
             saveRow(RESULTS.resolve("free_play.tsv"),
-                    List.of("id", "group", "free_condition", "stayed", "levels_played", "level_files"),
-                    List.of(id, group, freeCondition, String.valueOf(wantFreePlay), String.valueOf(freeFiles.size()),
-                            String.join(";", freeFiles)));
+                    List.of("id", "group", "free_condition", "stayed", "seconds_played", "levels_played", "distinct_levels"),
+                    List.of(id, group, freeCondition, String.valueOf(wantFreePlay), String.valueOf(freeResult.seconds()),
+                            String.valueOf(freeResult.levels()), String.valueOf(freeResult.distinct())));
 
             // 8. Pantalla final de despedida
             showExitScreen("¡Muchas gracias por participar!",
@@ -694,10 +695,14 @@ public class ExperimentRunner {
         return future.get();
     }
 
-    private static List<String> assignedFreePlay(String condition, boolean skipGeneration, Properties config,
+    private record FreePlayResult(int levels, int distinct, long seconds) {
+    }
+
+    private static FreePlayResult assignedFreePlay(String condition, boolean skipGeneration, Properties config,
             List<Path> normal, List<Path> seen, int timer, Path dir, GenerationJob generation, Path lastTelemetry)
             throws Exception {
-        List<String> files = new ArrayList<>();
+        Set<String> distinctLevels = new HashSet<>();
+        long playedMillis = 0;
         boolean personalized = condition.equals("P") && !skipGeneration;
         List<Path> pool = new ArrayList<>();
         if (!personalized) {
@@ -738,9 +743,6 @@ public class ExperimentRunner {
             if (!replay) {
                 if (personalized) {
                     if (extra >= MAX_EXTRA) {
-                        showChoiceScreen("Máximo de niveles alcanzado",
-                                "Has jugado el máximo de " + MAX_EXTRA + " niveles extra.\n\n¡Muchas gracias por haber jugado!",
-                                "Entendido", "Salir");
                         break;
                     }
                     int slot = MANDATORY_GENERATED + extra;
@@ -750,7 +752,7 @@ public class ExperimentRunner {
                     long waitStart = System.currentTimeMillis();
                     try {
                         if (!generation.isReady(slot)) {
-                            showGeneratingScreen(extra + 1, MAX_EXTRA);
+                            showGeneratingScreen(extra + 1, 0);
                         }
                         current = generation.await(slot);
                     } catch (Exception ex) {
@@ -784,8 +786,10 @@ public class ExperimentRunner {
                     "N/A",
                     timer
             );
+            long levelStart = System.currentTimeMillis();
             Path telemetry = playLevel(current, timer, dir.resolve("telemetry_free" + playedCount + ".json"));
-            files.add(current.toString());
+            playedMillis += System.currentTimeMillis() - levelStart;
+            distinctLevels.add(current.getFileName().toString());
             if (telemetry != null) {
                 prevTelemetry = telemetry;
             }
@@ -800,7 +804,7 @@ public class ExperimentRunner {
             }
             replay = action == FreePlayAction.REPLAY;
         }
-        return files;
+        return new FreePlayResult(playedCount, distinctLevels.size(), playedMillis / 1000L);
     }
 
     private static void freePlay(Properties config, List<Path> normal, List<PlayedLevelInfo> playedLevels, int timer) throws Exception {
@@ -1092,7 +1096,8 @@ public class ExperimentRunner {
             JPanel bg = createScreenContainer();
             JPanel card = createModernCard(800, 280);
 
-            card.add(createBadge("NIVEL PERSONALIZADO (" + current + " DE " + total + ")"));
+            card.add(createBadge(total > 0 ? "NIVEL PERSONALIZADO (" + current + " DE " + total + ")"
+                    : "NIVEL PERSONALIZADO (EXTRA " + current + ")"));
             card.add(Box.createRigidArea(new Dimension(0, 16)));
 
             JLabel title = new JLabel("Generando tu nivel personalizado...");
