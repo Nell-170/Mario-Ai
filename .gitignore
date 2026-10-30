@@ -41,3 +41,6 @@ a.txt
 # Local cluster connection notes (contains personal access details)
 /Conexion-cluster.txt
 /Conexión-Cluster-Linux.txt
+
+# Queryable knowledge graph
+graphify-out
