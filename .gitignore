@@ -30,3 +30,11 @@ src/telemetry/
 doc/linux-x64
 # Resultados del experimento
 src/experiment/results/
+
+# Local cluster connection notes (contains personal access details)
+/Conexion-cluster.txt
+/Conexión-Cluster-Linux.txt
+/a.txt
+
+# Queryable knowledge graph
+graphify-out/
