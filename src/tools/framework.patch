@@ -2,16 +2,36 @@ diff --git a/src/agents/human/Agent.java b/src/agents/human/Agent.java
 index b888366b..a525aa15 100644
 --- a/src/agents/human/Agent.java
 +++ b/src/agents/human/Agent.java
-@@ -50,9 +50,12 @@ public class Agent extends KeyAdapter implements MarioAgent {
+@@ -14,10 +14,12 @@ public class Agent extends KeyAdapter implements MarioAgent {
+     @Override
+     public void initialize(MarioForwardModel model, MarioTimer timer) {
+         actions = new boolean[MarioActions.numberOfActions()];
++        engine.input.GamepadManager.getInstance().start();
+     }
+ 
+     @Override
+     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
+-        return actions;
++        return engine.input.GamepadManager.getInstance().applyActions(actions);
+     }
+ 
+     @Override
+@@ -50,9 +50,18 @@ public class Agent extends KeyAdapter implements MarioAgent {
              case KeyEvent.VK_DOWN:
                  this.actions[MarioActions.DOWN.getValue()] = isPressed;
                  break;
 +            case KeyEvent.VK_UP:
 +            case KeyEvent.VK_SPACE:
++            case KeyEvent.VK_F:
++            case KeyEvent.VK_K:
++            case KeyEvent.VK_Z:
              case KeyEvent.VK_S:
                  this.actions[MarioActions.JUMP.getValue()] = isPressed;
                  break;
 +            case KeyEvent.VK_SHIFT:
++            case KeyEvent.VK_D:
++            case KeyEvent.VK_J:
++            case KeyEvent.VK_X:
              case KeyEvent.VK_A:
                  this.actions[MarioActions.SPEED.getValue()] = isPressed;
                  break;
@@ -215,11 +235,16 @@ index 1f58d96b..9803e0a5 100644
      private int getDelay(int fps) {
          if (fps <= 0) {
              return 0;
-@@ -82,9 +248,87 @@ public class MarioGame {
+@@ -82,9 +248,92 @@ public class MarioGame {
  
      private void setAgent(MarioAgent agent) {
          this.agent = agent;
 -        if (agent instanceof KeyAdapter) {
++        try {
++            engine.input.GamepadManager.getInstance().setPauseCallback(this::togglePause);
++            engine.input.GamepadManager.getInstance().setRestartCallback(this::restartLevel);
++            engine.input.GamepadManager.getInstance().start();
++        } catch (Throwable ignored) {}
 +        if (this.render != null && agent instanceof KeyAdapter) {
              this.render.addKeyListener((KeyAdapter) this.agent);
          }

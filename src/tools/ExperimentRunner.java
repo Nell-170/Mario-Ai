@@ -86,6 +86,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -359,7 +360,7 @@ public class ExperimentRunner {
                 showLevelIntroScreen("Familiarización (" + (f + 1) + " de " + familiarization.size() + ")",
                         "Nivel de práctica " + (f + 1),
                         "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n"
-                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
+                                + "Controles: Flechas = Moverse | S / F / Espacio / Flecha Arriba = Saltar | A / D / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
                         "Comenzar práctica " + (f + 1),
                         famThumb);
                 Path telPath = playLevel(famLevel, timer,
@@ -475,7 +476,7 @@ public class ExperimentRunner {
                         "Observa la silueta del nivel para reconocerlo más tarde en el ranking.\n"
                                 + "Juega a tu ritmo y explora el mapa lo mejor que puedas.\n"
                                 + "Al terminarlo, responderás unas breves preguntas sobre tus impresiones de este nivel.\n"
-                                + "Controles: Flechas = Moverse | Flecha Arriba / S / Espacio = Saltar | A / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
+                                + "Controles: Flechas = Moverse | S / F / Espacio / Flecha Arriba = Saltar | A / D / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
                         "¡Jugar nivel " + (i + 1) + "!",
                         thumbnail);
 
@@ -939,7 +940,7 @@ public class ExperimentRunner {
             controls.setAlignmentX(Component.LEFT_ALIGNMENT);
             controls.setMaximumSize(new Dimension(960, 60));
             JLabel cLabel = new JLabel(
-                    "Controles:  Flechas = Moverse  |  Flecha Arriba / S / Espacio = Saltar  |  A / Shift = Correr  |  R = Reiniciar  |  Q = Terminar  |  M = Audio");
+                    "Controles:  Flechas = Moverse  |  S / F / Espacio / Flecha Arriba = Saltar  |  A / D / Shift = Correr  |  P = Pausa  |  R = Reiniciar  |  Q = Terminar  |  M = Audio");
             cLabel.setFont(FONT_SEMIBOLD.deriveFont(15f));
             cLabel.setForeground(TEXT_WHITE);
             controls.add(cLabel);
@@ -1198,6 +1199,7 @@ public class ExperimentRunner {
             scroll.setBorder(BorderFactory.createLineBorder(ITEM_BORDER, 1, true));
             scroll.setPreferredSize(new Dimension(920, 410));
             scroll.setMaximumSize(new Dimension(920, 410));
+            scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             scroll.setAlignmentX(Component.LEFT_ALIGNMENT);
             applyDarkScrollbar(scroll);
             card.add(scroll);
@@ -1366,11 +1368,11 @@ public class ExperimentRunner {
                         BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
                         new EmptyBorder(16, 20, 16, 20)));
                 qCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-                qCard.setMaximumSize(new Dimension(960, 360));
+                qCard.setMaximumSize(new Dimension(940, 360));
 
                 String cleanText = question.text();
                 JLabel qTitle = new JLabel(
-                        "<html><body style='width:880px'>" + (q + 1) + ". " + cleanText + "</body></html>");
+                        "<html><body style='width:850px'>" + (q + 1) + ". " + cleanText + "</body></html>");
                 qTitle.setFont(FONT_BOLD.deriveFont(18f));
                 qTitle.setForeground(TEXT_WHITE);
                 qTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -1489,6 +1491,7 @@ public class ExperimentRunner {
             scroll.setBorder(BorderFactory.createEmptyBorder());
             scroll.setPreferredSize(new Dimension(970, 470));
             scroll.setMaximumSize(new Dimension(970, 470));
+            scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             scroll.setAlignmentX(Component.LEFT_ALIGNMENT);
             applyDarkScrollbar(scroll);
             card.add(scroll);
