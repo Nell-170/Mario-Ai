@@ -344,6 +344,8 @@ def list_levels(folder_key):
     items = []
     for f in sorted(target_dir.glob("*.txt"), key=lambda x: x.stat().st_mtime, reverse=True):
         st = f.stat()
+        if st.st_size == 0:
+            continue
         items.append({
             "name": f.name,
             "folder": folder_key,

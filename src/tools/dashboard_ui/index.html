@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mario AI — Control Center & Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261105_reorg">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20261105_scroll">
 </head>
-
 <body>
   <!-- Header -->
   <header class="navbar">
@@ -25,15 +21,12 @@
     </div>
 
     <div class="header-status">
-      <a href="recibidor.html" target="_blank" class="status-pill status-recibidor"
-        style="text-decoration:none; color:inherit; border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.12);"
-        title="Abrir pantalla de recibidor para participantes en el laboratorio">
+      <a href="recibidor.html" target="_blank" class="status-pill status-recibidor" style="text-decoration:none; color:inherit; border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.12);" title="Abrir pantalla de recibidor para participantes en el laboratorio">
         <span class="status-dot" style="background:#f59e0b; box-shadow: 0 0 8px #f59e0b;"></span>
         <span style="font-weight:600; color:#fde68a;">🖥️ Pantalla Recibidor</span>
       </a>
 
-      <div id="ollama-pill" class="status-pill status-ollama" onclick="openOllamaModal()"
-        title="Haga clic para ver o configurar la clave de Ollama Cloud">
+      <div id="ollama-pill" class="status-pill status-ollama" onclick="openOllamaModal()" title="Haga clic para ver o configurar la clave de Ollama Cloud">
         <span class="status-dot"></span>
         <span id="ollama-text">Ollama: Comprobando...</span>
       </div>
@@ -57,14 +50,12 @@
         <span id="gen-live-badge" class="badge-online">● Comprobando...</span>
       </div>
       <p class="gen-desc" id="gen-active-desc">
-        Los niveles personalizados de cada persona se crean conectando vía HTTP a
-        <code>http://jeisson.ecci.ucr.ac.cr:8080</code> (sin túneles SSH ni credenciales).
+        Los niveles personalizados de cada persona se crean conectando vía HTTP a <code>http://jeisson.ecci.ucr.ac.cr:8080</code> (sin túneles SSH ni credenciales).
       </p>
     </div>
     <div class="gen-controls">
       <div class="gen-btn-group">
-        <button type="button" class="gen-mode-btn active" id="btn-mode-jeisson"
-          onclick="switchGenerationMode('JeissonServer')">
+        <button type="button" class="gen-mode-btn active" id="btn-mode-jeisson" onclick="switchGenerationMode('JeissonServer')">
           <span class="mode-icon">⚡</span>
           <span class="mode-label">JeissonServer</span>
           <span class="mode-port">:8080</span>
@@ -80,10 +71,8 @@
           <span class="mode-port">Local</span>
         </button>
       </div>
-      <button type="button" class="btn-config-gen" onclick="openGeneratorModal()"
-        title="Configurar variables del túnel y servidor">⚙ Configurar</button>
-      <button type="button" class="btn-refresh-gen" onclick="loadGenerationConfig()"
-        title="Probar conexión ahora">🔄</button>
+      <button type="button" class="btn-config-gen" onclick="openGeneratorModal()" title="Configurar variables del túnel y servidor">⚙ Configurar</button>
+      <button type="button" class="btn-refresh-gen" onclick="loadGenerationConfig()" title="Probar conexión ahora">🔄</button>
     </div>
   </section>
 
@@ -165,8 +154,7 @@
             </a>
 
             <!-- 4. Iniciar Experimento formal -->
-            <button class="action-btn primary"
-              onclick="runTarget('start-experiment', 'Experimento Formal 6x6 (MarioGPT)')">
+            <button class="action-btn primary" onclick="runTarget('start-experiment', 'Experimento Formal 6x6 (MarioGPT)')">
               <div class="btn-content">
                 <span class="btn-name">🧪 Iniciar Experimento 6x6</span>
                 <span class="btn-desc">Protocolo formal completo con IA y cuestionarios</span>
@@ -192,8 +180,7 @@
               <span class="label-icon">📁</span>
               <span>Herramientas y Misceláneo</span>
             </div>
-            <button type="button" class="btn-toggle-all" onclick="toggleAllAccordions()" id="btn-toggle-all"
-              title="Expandir o colapsar todas las carpetas">
+            <button type="button" class="btn-toggle-all" onclick="toggleAllAccordions()" id="btn-toggle-all" title="Expandir o colapsar todas las carpetas">
               Expandir todo
             </button>
           </div>
@@ -337,8 +324,7 @@
                 </div>
               </summary>
               <div class="dropdown-content">
-                <button class="action-btn"
-                  onclick="runTarget('start-experiment-nogen', 'Experimento rápido (sin generación IA)')">
+                <button class="action-btn" onclick="runTarget('start-experiment-nogen', 'Experimento rápido (sin generación IA)')">
                   <div class="btn-content">
                     <span class="btn-name">⚡ Experimento Rápido</span>
                     <span class="btn-desc">Modo prueba sin llamar a MarioGPT</span>
@@ -461,10 +447,10 @@
               <label for="level-folder-select">Carpeta:</label>
               <select id="level-folder-select" onchange="loadLevelList()">
                 <option value="nivel0">Niveles Base (Nivel 0)</option>
-                <option value="generated">Generados por MarioGPT</option>
-                <option value="converted">Convertidos MM2 (Todos)</option>
                 <option value="generics">Genéricos</option>
                 <option value="familiarization">Familiarización</option>
+                <option value="converted">Convertidos MM2 (Todos)</option>
+                <option value="generated">Generados por MarioGPT</option>
               </select>
             </div>
             <div class="control-group fill">
@@ -479,8 +465,7 @@
           <div class="level-meta-bar" id="level-meta-bar">
             <span id="level-info-text">Selecciona un nivel para visualizar su mapa 2D.</span>
             <div class="level-render-toggles">
-              <button class="btn-xs active" id="btn-view-canvas" onclick="setViewMode('canvas')">Mapa Gráfico
-                2D</button>
+              <button class="btn-xs active" id="btn-view-canvas" onclick="setViewMode('canvas')">Mapa Gráfico 2D</button>
               <button class="btn-xs" id="btn-view-text" onclick="setViewMode('text')">Grid de Texto</button>
             </div>
           </div>
@@ -488,6 +473,30 @@
           <!-- 2D Graphical Canvas Render -->
           <div class="level-canvas-wrap" id="canvas-wrapper">
             <canvas id="level-canvas" height="320"></canvas>
+          </div>
+
+          <!-- Horizontal Level Navigation Bar -->
+          <div class="level-nav-bar" id="level-nav-bar">
+            <div class="level-nav-buttons">
+              <button type="button" class="btn-xs" onclick="scrollLevelCanvas('start')" title="Ir al inicio del nivel">⏮ Inicio</button>
+              <button type="button" class="btn-xs" onclick="scrollLevelCanvas(-400)" title="Desplazar hacia la izquierda">◀ 400px</button>
+              <button type="button" class="btn-xs" onclick="scrollLevelCanvas(400)" title="Desplazar hacia la derecha">400px ▶</button>
+              <button type="button" class="btn-xs" onclick="scrollLevelCanvas('end')" title="Ir al final del nivel">Fin ⏭</button>
+            </div>
+
+            <!-- Scroll Slider -->
+            <div class="level-slider-wrap">
+              <span class="slider-hint">Desplazamiento:</span>
+              <input type="range" id="level-scroll-slider" min="0" max="100" value="0" oninput="onLevelSliderInput(this.value)">
+              <span id="level-scroll-pos" class="slider-pos">0%</span>
+            </div>
+
+            <div class="level-zoom-wrap">
+              <span class="slider-hint">Bloques:</span>
+              <button type="button" class="btn-xs" onclick="setLevelTileSize(16)" id="btn-zoom-16">16px</button>
+              <button type="button" class="btn-xs active" onclick="setLevelTileSize(20)" id="btn-zoom-20">20px</button>
+              <button type="button" class="btn-xs" onclick="setLevelTileSize(26)" id="btn-zoom-26">26px</button>
+            </div>
           </div>
 
           <!-- Raw Text Viewer -->
@@ -513,181 +522,164 @@
                 </tr>
               </thead>
               <tbody id="experiment-tbody">
-                <tr>
-                  <td colspan="4" class="text-center">Cargando datos...</td>
-                </tr>
+                <tr><td colspan="4" class="text-center">Cargando datos...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
     </section>
-    <!-- Modal: Configuración de Ollama API Key -->
-    <div id="ollama-modal" class="modal-backdrop hidden" onclick="handleModalBackdropClick(event)">
-      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div class="modal-header">
-          <div class="modal-title-group">
-            <span class="modal-icon">🍄</span>
-            <h3 id="modal-title">Configuración de Ollama Cloud API Key</h3>
+  <!-- Modal: Configuración de Ollama API Key -->
+  <div id="ollama-modal" class="modal-backdrop hidden" onclick="handleModalBackdropClick(event)">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">🍄</span>
+          <h3 id="modal-title">Configuración de Ollama Cloud API Key</h3>
+        </div>
+        <button class="btn-close" onclick="closeOllamaModal()" title="Cerrar">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-desc">
+          Pega aquí tu API Key de <strong>Ollama Cloud</strong> para habilitar la generación de niveles con IA.
+          La clave se insertará y guardará automáticamente en el archivo requerido por el motor: <code>mario_ai_framework/Ollama-Key.txt</code>.
+        </p>
+
+        <div class="key-status-box" id="key-status-box">
+          <span class="status-icon" id="key-status-icon">⚪</span>
+          <div class="key-status-info">
+            <span class="key-status-title" id="key-status-title">Comprobando archivo de clave...</span>
+            <span class="key-status-sub" id="key-status-sub">mario_ai_framework/Ollama-Key.txt</span>
           </div>
-          <button class="btn-close" onclick="closeOllamaModal()" title="Cerrar">&times;</button>
         </div>
 
-        <div class="modal-body">
-          <p class="modal-desc">
-            Pega aquí tu API Key de <strong>Ollama Cloud</strong> para habilitar la generación de niveles con IA.
-            La clave se insertará y guardará automáticamente en el archivo requerido por el motor:
-            <code>mario_ai_framework/Ollama-Key.txt</code>.
-          </p>
+        <div class="form-group">
+          <label for="ollama-key-input">Clave de API (Ollama Cloud):</label>
+          <div class="input-with-button">
+            <input type="password" id="ollama-key-input" placeholder="Pega tu API Key aquí..." autocomplete="off">
+            <button type="button" class="btn-sm btn-subtle" id="btn-toggle-key" onclick="toggleKeyVisibility()" title="Mostrar u ocultar clave">👁️</button>
+            <button type="button" class="btn-sm btn-subtle" onclick="pasteKeyFromClipboard()" title="Pegar desde el portapapeles">📋 Pegar</button>
+          </div>
+          <span class="input-hint">El archivo no se sube a repositorios remotos (.gitignore activado).</span>
+        </div>
 
-          <div class="key-status-box" id="key-status-box">
-            <span class="status-icon" id="key-status-icon">⚪</span>
-            <div class="key-status-info">
-              <span class="key-status-title" id="key-status-title">Comprobando archivo de clave...</span>
-              <span class="key-status-sub" id="key-status-sub">mario_ai_framework/Ollama-Key.txt</span>
+        <div class="modal-extra-actions">
+          <button type="button" class="btn-link" onclick="openSystemKeyPrompt()">
+            🖥️ ¿Prefieres abrir la ventana nativa del sistema?
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-sm btn-outline" onclick="closeOllamaModal()">Cancelar</button>
+        <button class="btn-sm btn-primary" onclick="saveOllamaKeyFromModal()">💾 Guardar API Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Configuración de Servidor y Túnel MarioGPT -->
+  <div id="generator-modal" class="modal-backdrop hidden" onclick="handleGenModalBackdropClick(event)">
+    <div class="modal-card modal-card-lg" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">⚙</span>
+          <h3>Configuración del Generador y Túnel MarioGPT</h3>
+        </div>
+        <button class="btn-close" onclick="closeGeneratorModal()" title="Cerrar">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-desc">
+          Administra la fuente para generar los niveles personalizados (con IA). Puedes alternar entre el servidor dedicado, el túnel SSH hacia el clúster HPC o la generación nativa local.
+        </p>
+
+        <!-- Segmented Mode Tabs in Modal -->
+        <div class="modal-mode-tabs">
+          <button type="button" class="modal-tab-btn active" id="mtab-jeisson" onclick="selectModalMode('JeissonServer')">
+            ⚡ JeissonServer (8080)
+          </button>
+          <button type="button" class="modal-tab-btn" id="mtab-tunel" onclick="selectModalMode('Tunel')">
+            🚇 Túnel SSH (8888)
+          </button>
+          <button type="button" class="modal-tab-btn" id="mtab-nativo" onclick="selectModalMode('Nativo')">
+            💻 Nativo (Local)
+          </button>
+        </div>
+
+        <!-- Dynamic sections per mode -->
+        <div id="msec-jeisson" class="mode-detail-sec">
+          <div class="info-alert-box">
+            <strong>⚡ Servidor Dedicado del Prof. Jeisson:</strong> Conexión directa HTTP dentro de la red UCR. No requiere llaves SSH ni abrir túneles en cada máquina.
+          </div>
+          <div class="form-group">
+            <label for="cfg-jeisson-url">URL del Servidor MarioGPT:</label>
+            <input type="text" id="cfg-jeisson-url" class="modal-input" value="http://jeisson.ecci.ucr.ac.cr:8080">
+          </div>
+        </div>
+
+        <div id="msec-tunel" class="mode-detail-sec hidden">
+          <div class="info-alert-box">
+            <strong>🚇 Túnel SSH al Clúster:</strong> Redirige el puerto local hacia el nodo GPU asignado por Slurm en el clúster.
+          </div>
+          
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="cfg-hpc-user">Usuario HPC (HPC_USER):</label>
+              <input type="text" id="cfg-hpc-user" class="modal-input" placeholder="mariogabriel.cordero@172.16.24.2" oninput="updateLiveSshCommand()">
+              <span class="input-hint">Ej: mariogabriel.cordero@172.16.24.2</span>
+            </div>
+            <div class="form-group">
+              <label for="cfg-hpc-port">Puerto (MARIO_PORT):</label>
+              <input type="text" id="cfg-hpc-port" class="modal-input" value="8888" oninput="updateLiveSshCommand()">
+              <span class="input-hint">Puerto local y remoto (default: 8888)</span>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="ollama-key-input">Clave de API (Ollama Cloud):</label>
+            <label for="cfg-hpc-node">Nodo GPU Esclavo (HPC_NODE):</label>
             <div class="input-with-button">
-              <input type="password" id="ollama-key-input" placeholder="Pega tu API Key aquí..." autocomplete="off">
-              <button type="button" class="btn-sm btn-subtle" id="btn-toggle-key" onclick="toggleKeyVisibility()"
-                title="Mostrar u ocultar clave">👁️</button>
-              <button type="button" class="btn-sm btn-subtle" onclick="pasteKeyFromClipboard()"
-                title="Pegar desde el portapapeles">📋 Pegar</button>
+              <input type="text" id="cfg-hpc-node" class="modal-input" placeholder="cngpu002 o auto" oninput="updateLiveSshCommand()">
+              <button type="button" class="btn-sm btn-subtle" onclick="detectSlurmNodeFromModal()" id="btn-detect-slurm">🔍 Auto-detectar Slurm</button>
             </div>
-            <span class="input-hint">El archivo no se sube a repositorios remotos (.gitignore activado).</span>
+            <span class="input-hint">Slurm asigna el servicio dinámicamente a nodos como <code>cngpu001</code> o <code>cngpu002</code>.</span>
           </div>
 
-          <div class="modal-extra-actions">
-            <button type="button" class="btn-link" onclick="openSystemKeyPrompt()">
-              🖥️ ¿Prefieres abrir la ventana nativa del sistema?
-            </button>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button class="btn-sm btn-outline" onclick="closeOllamaModal()">Cancelar</button>
-          <button class="btn-sm btn-primary" onclick="saveOllamaKeyFromModal()">💾 Guardar API Key</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: Configuración de Servidor y Túnel MarioGPT -->
-    <div id="generator-modal" class="modal-backdrop hidden" onclick="handleGenModalBackdropClick(event)">
-      <div class="modal-card modal-card-lg" role="dialog" aria-modal="true">
-        <div class="modal-header">
-          <div class="modal-title-group">
-            <span class="modal-icon">⚙</span>
-            <h3>Configuración del Generador y Túnel MarioGPT</h3>
-          </div>
-          <button class="btn-close" onclick="closeGeneratorModal()" title="Cerrar">&times;</button>
-        </div>
-
-        <div class="modal-body">
-          <p class="modal-desc">
-            Administra la fuente para generar los niveles personalizados (con IA). Puedes alternar entre el servidor
-            dedicado, el túnel SSH hacia el clúster HPC o la generación nativa local.
-          </p>
-
-          <!-- Segmented Mode Tabs in Modal -->
-          <div class="modal-mode-tabs">
-            <button type="button" class="modal-tab-btn active" id="mtab-jeisson"
-              onclick="selectModalMode('JeissonServer')">
-              ⚡ JeissonServer (8080)
-            </button>
-            <button type="button" class="modal-tab-btn" id="mtab-tunel" onclick="selectModalMode('Tunel')">
-              🚇 Túnel SSH (8888)
-            </button>
-            <button type="button" class="modal-tab-btn" id="mtab-nativo" onclick="selectModalMode('Nativo')">
-              💻 Nativo (Local)
-            </button>
-          </div>
-
-          <!-- Dynamic sections per mode -->
-          <div id="msec-jeisson" class="mode-detail-sec">
-            <div class="info-alert-box">
-              <strong>⚡ Servidor Dedicado del Prof. Jeisson:</strong> Conexión directa HTTP dentro de la red UCR. No
-              requiere llaves SSH ni abrir túneles en cada máquina.
+          <!-- Live SSH Command Preview -->
+          <div class="ssh-command-box">
+            <div class="ssh-cmd-header">
+              <span>Comando SSH interactivo generado:</span>
+              <button type="button" class="btn-copy-cmd" onclick="copySshCommandToClipboard()" id="btn-copy-ssh">📋 Copiar Comando</button>
             </div>
-            <div class="form-group">
-              <label for="cfg-jeisson-url">URL del Servidor MarioGPT:</label>
-              <input type="text" id="cfg-jeisson-url" class="modal-input" value="http://jeisson.ecci.ucr.ac.cr:8080">
-            </div>
-          </div>
-
-          <div id="msec-tunel" class="mode-detail-sec hidden">
-            <div class="info-alert-box">
-              <strong>🚇 Túnel SSH al Clúster:</strong> Redirige el puerto local hacia el nodo GPU asignado por Slurm en
-              el clúster.
-            </div>
-
-            <div class="form-row-2">
-              <div class="form-group">
-                <label for="cfg-hpc-user">Usuario HPC (HPC_USER):</label>
-                <input type="text" id="cfg-hpc-user" class="modal-input" placeholder="mariogabriel.cordero@172.16.24.2"
-                  oninput="updateLiveSshCommand()">
-                <span class="input-hint">Ej: mariogabriel.cordero@172.16.24.2</span>
-              </div>
-              <div class="form-group">
-                <label for="cfg-hpc-port">Puerto (MARIO_PORT):</label>
-                <input type="text" id="cfg-hpc-port" class="modal-input" value="8888" oninput="updateLiveSshCommand()">
-                <span class="input-hint">Puerto local y remoto (default: 8888)</span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="cfg-hpc-node">Nodo GPU Esclavo (HPC_NODE):</label>
-              <div class="input-with-button">
-                <input type="text" id="cfg-hpc-node" class="modal-input" placeholder="cngpu002 o auto"
-                  oninput="updateLiveSshCommand()">
-                <button type="button" class="btn-sm btn-subtle" onclick="detectSlurmNodeFromModal()"
-                  id="btn-detect-slurm">🔍 Auto-detectar Slurm</button>
-              </div>
-              <span class="input-hint">Slurm asigna el servicio dinámicamente a nodos como <code>cngpu001</code> o
-                <code>cngpu002</code>.</span>
-            </div>
-
-            <!-- Live SSH Command Preview -->
-            <div class="ssh-command-box">
-              <div class="ssh-cmd-header">
-                <span>Comando SSH interactivo generado:</span>
-                <button type="button" class="btn-copy-cmd" onclick="copySshCommandToClipboard()" id="btn-copy-ssh">📋
-                  Copiar Comando</button>
-              </div>
-              <code id="ssh-live-cmd"
-                class="ssh-live-code">ssh -N -L 8888:cngpu002:8888 mariogabriel.cordero@172.16.24.2</code>
-            </div>
-          </div>
-
-          <div id="msec-nativo" class="mode-detail-sec hidden">
-            <div class="info-alert-box">
-              <strong>💻 Generación Local Nativa:</strong> Ejecuta MarioGPT directamente con PyTorch en esta máquina.
-              Funciona 100% offline sin red.
-            </div>
-          </div>
-
-          <!-- Connection Test & Status -->
-          <div class="gen-test-row">
-            <button type="button" class="btn-sm btn-subtle" onclick="testConnectionFromModal()" id="btn-test-conn">
-              🔄 Probar Conexión (/health)
-            </button>
-            <span id="modal-conn-status" class="modal-status-text">Listo para probar</span>
+            <code id="ssh-live-cmd" class="ssh-live-code">ssh -N -L 8888:cngpu002:8888 mariogabriel.cordero@172.16.24.2</code>
           </div>
         </div>
 
-        <div class="modal-footer">
-          <button class="btn-sm btn-outline" onclick="closeGeneratorModal()">Cancelar</button>
-          <button class="btn-sm btn-primary" onclick="saveGeneratorModalConfig()">💾 Guardar Configuración</button>
+        <div id="msec-nativo" class="mode-detail-sec hidden">
+          <div class="info-alert-box">
+            <strong>💻 Generación Local Nativa:</strong> Ejecuta MarioGPT directamente con PyTorch en esta máquina. Funciona 100% offline sin red.
+          </div>
+        </div>
+
+        <!-- Connection Test & Status -->
+        <div class="gen-test-row">
+          <button type="button" class="btn-sm btn-subtle" onclick="testConnectionFromModal()" id="btn-test-conn">
+            🔄 Probar Conexión (/health)
+          </button>
+          <span id="modal-conn-status" class="modal-status-text">Listo para probar</span>
         </div>
       </div>
+
+      <div class="modal-footer">
+        <button class="btn-sm btn-outline" onclick="closeGeneratorModal()">Cancelar</button>
+        <button class="btn-sm btn-primary" onclick="saveGeneratorModalConfig()">💾 Guardar Configuración</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="toast-container"></div>
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
 
-    <script src="app.js?v=20261105_reorg"></script>
+  <script src="app.js?v=20261105_scroll"></script>
 </body>
-
 </html>
