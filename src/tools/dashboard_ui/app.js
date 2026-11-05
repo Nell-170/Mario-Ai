@@ -46,6 +46,16 @@ document.addEventListener('DOMContentLoaded', () => {
   loadLevelList();
   loadExperimentSummary();
 
+  // Accordion toggle button status sync
+  document.querySelectorAll('.action-dropdown').forEach(d => {
+    d.addEventListener('toggle', () => {
+      const btn = document.getElementById('btn-toggle-all');
+      if (!btn) return;
+      const allOpen = Array.from(document.querySelectorAll('.action-dropdown')).every(el => el.open);
+      btn.textContent = allOpen ? 'Colapsar todo' : 'Expandir todo';
+    });
+  });
+
   // Periodic metrics & status refresh
   setInterval(() => {
     refreshStats();
@@ -106,6 +116,18 @@ function confirmAndRunSetupLab() {
               '¿Deseas comenzar ahora?';
   if (confirm(msg)) {
     runTarget('setup-lab', 'Puesta a Punto Total (Lab 100 & Hugging Face)');
+  }
+}
+
+function toggleAllAccordions() {
+  const dropdowns = document.querySelectorAll('.action-dropdown');
+  const btn = document.getElementById('btn-toggle-all');
+  const anyClosed = Array.from(dropdowns).some(d => !d.open);
+  dropdowns.forEach(d => {
+    d.open = anyClosed;
+  });
+  if (btn) {
+    btn.textContent = anyClosed ? 'Colapsar todo' : 'Expandir todo';
   }
 }
 
