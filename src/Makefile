@@ -214,7 +214,7 @@ LEVEL ?=
 TIMER ?= 60
 play-level: compile
 	$(call progress,0,Iniciando probador de nivel de Mario AI...)
-	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman $(if $(LEVEL),"$(LEVEL)",) $(TIMER)
+	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman $(if $(LEVEL),"$(LEVEL)" $(TIMER),$(TIMER))
 	$(call progress,100,Sesión de prueba del nivel finalizada.)
 
 # ── play-levels-generated ───────────────────────────────────────

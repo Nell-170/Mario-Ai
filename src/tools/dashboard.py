@@ -203,7 +203,8 @@ def extract_progress(line):
 
 def run_target_thread(target, label, level=None):
     global ACTIVE_PROCESS
-    append_log(f"--- Iniciando tarea: {label} (make {target}) ---", "system")
+    level_hint = f' LEVEL="{level}"' if level else ''
+    append_log(f"--- Iniciando tarea: {label} (make {target}{level_hint}) ---", "system")
 
     # If it's a graphical task, warn the user that a Java window opens on their desktop
     if target in ("play-human", "play-level", "play-levels-generated", "start-experiment", "start-experiment-nogen", "play-and-generate"):

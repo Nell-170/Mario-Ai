@@ -50,11 +50,24 @@ public class PlayHuman {
         String customTelemetry = null;
 
         for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
+            String arg = args[i].trim();
             if ("--no-intro".equalsIgnoreCase(arg) || "--skip-intro".equalsIgnoreCase(arg)) {
                 skipIntro = true;
+            } else if ("--level".equalsIgnoreCase(arg) && i + 1 < args.length) {
+                rawLevel = args[++i].trim();
+            } else if ("--timer".equalsIgnoreCase(arg) && i + 1 < args.length) {
+                try {
+                    timer = Integer.parseInt(args[++i].trim());
+                } catch (NumberFormatException ignored) {}
             } else if (rawLevel == null) {
-                rawLevel = arg;
+                // If it's a pure number (like "60") and not a path, treat as timer!
+                if (arg.matches("^\\d+$")) {
+                    try {
+                        timer = Integer.parseInt(arg);
+                    } catch (NumberFormatException ignored) {}
+                } else {
+                    rawLevel = arg;
+                }
             } else if (i == 1) {
                 try {
                     timer = Integer.parseInt(arg);
@@ -139,6 +152,21 @@ public class PlayHuman {
         for (Path c : candidates) {
             if (Files.exists(c)) {
                 return c;
+            }
+        }
+        // Also search in level subfolders if just a filename or relative name was given
+        String[] subfolders = new String[] { "converted", "nivel0", "generated", "generics", "familiarization" };
+        for (String sub : subfolders) {
+            Path[] subCandidates = new Path[] {
+                Paths.get("../src/levels").resolve(sub).resolve(rawPath),
+                Paths.get("../levels").resolve(sub).resolve(rawPath),
+                Paths.get("src/levels").resolve(sub).resolve(rawPath),
+                Paths.get("levels").resolve(sub).resolve(rawPath)
+            };
+            for (Path sc : subCandidates) {
+                if (Files.exists(sc)) {
+                    return sc;
+                }
             }
         }
         return p;
