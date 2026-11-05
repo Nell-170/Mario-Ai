@@ -73,7 +73,7 @@ endif
 
 # ── Phony targets ─────────────────────────────────────────────
 .PHONY: help install setup-lab gui dashboard recibidor kiosk setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
-        filter convert validate play-human play-levels-generated start-experiment \
+        filter convert validate play-human play-level play-levels-generated start-experiment \
         start-experiment-nogen generate-level prompt-telemetry play-and-generate \
         tunnel clean clean-telemetry clean-levels clean-experiment-results clean-all clean-fresh
 
@@ -95,6 +95,7 @@ help:
 	@echo "  convert                Convert selected MM2 levels to MAF format"
 	@echo "  validate               Validate converted levels with the A* agent"
 	@echo "  play-human             Play a Nivel 0 level and save telemetry"
+	@echo "  play-level             Play / test a specific level with preview and thumbnail (LEVEL=path)"
 	@echo "  play-levels-generated  Select and play levels via GUI selector"
 	@echo "  start-experiment       Run 6x6 Latin square experiment with MarioGPT"
 	@echo "  start-experiment-nogen Run experiment skipping level generation"
@@ -207,6 +208,14 @@ play-human: compile
 	$(call progress,80,Procesando telemetría y generando prompt...)
 	@$(PYTHON) tools/telemetry_to_mariogpt_prompt.py --telemetry telemetry/latest.json --allow-cloud
 	$(call progress,100,Partida y telemetría registradas.)
+
+# ── play-level ────────────────────────────────────────────────
+LEVEL ?=
+TIMER ?= 60
+play-level: compile
+	$(call progress,0,Iniciando probador de nivel de Mario AI...)
+	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman $(if $(LEVEL),"$(LEVEL)",) $(TIMER)
+	$(call progress,100,Sesión de prueba del nivel finalizada.)
 
 # ── play-levels-generated ───────────────────────────────────────
 play-levels-generated: compile

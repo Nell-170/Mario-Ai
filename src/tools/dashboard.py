@@ -201,12 +201,12 @@ def extract_progress(line):
     return None
 
 
-def run_target_thread(target, label):
+def run_target_thread(target, label, level=None):
     global ACTIVE_PROCESS
     append_log(f"--- Iniciando tarea: {label} (make {target}) ---", "system")
 
     # If it's a graphical task, warn the user that a Java window opens on their desktop
-    if target in ("play-human", "play-levels-generated", "start-experiment", "start-experiment-nogen", "play-and-generate"):
+    if target in ("play-human", "play-level", "play-levels-generated", "start-experiment", "start-experiment-nogen", "play-and-generate"):
         append_log("🎮 Se abrirá una ventana gráfica de Java en tu pantalla. La tarea se mantendrá activa mientras juegues.", "system")
     elif target == "install":
         append_log("🚀 Iniciando instalador unificado Mario AI (entorno virtual, repos, dependencias, compilación y niveles)...", "system")
@@ -223,6 +223,8 @@ def run_target_thread(target, label):
 
     is_windows = sys.platform.startswith("win")
     cmd = ["make", target]
+    if level:
+        cmd.append(f"LEVEL={level}")
 
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
@@ -527,13 +529,14 @@ class DashboardHandler(SimpleHTTPRequestHandler):
 
             target = data.get("target")
             label = data.get("label", target)
+            level = data.get("level")
 
             with STATE_LOCK:
                 if CURRENT_TASK["running"]:
                     self.send_json({"error": "Ya hay una tarea en ejecución"}, status=409)
                     return
 
-            threading.Thread(target=run_target_thread, args=(target, label), daemon=True).start()
+            threading.Thread(target=run_target_thread, args=(target, label, level), daemon=True).start()
             self.send_json({"status": "started", "target": target, "label": label})
 
         elif url.path == "/api/stop":

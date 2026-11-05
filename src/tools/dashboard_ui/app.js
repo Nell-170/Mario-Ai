@@ -706,6 +706,61 @@ function setLevelTileSize(size) {
 }
 
 // ─────────────────────────────────────────────────────────────
+// Level Tester Execution
+// ─────────────────────────────────────────────────────────────
+
+function playSelectedLevel() {
+  const folder = folderSelect ? folderSelect.value : 'nivel0';
+  const fileName = fileSelect ? fileSelect.value : '';
+
+  if (!fileName) {
+    showToast('Selecciona un nivel antes de probarlo.', 'warning');
+    return;
+  }
+
+  // Level relative path from framework directory
+  const levelPath = `../src/levels/${folder}/${fileName}`;
+
+  // Switch to console so the user sees real-time progress and logs
+  switchTab('console');
+
+  fetch('/api/run', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      target: 'play-level',
+      label: `Probar Nivel: ${fileName}`,
+      level: levelPath
+    })
+  })
+    .then(async res => {
+      if (res.status === 409) {
+        showToast('Ya hay una tarea en ejecución. Espera a que termine o deténla.', 'warning');
+        return null;
+      }
+      return res.json();
+    })
+    .then(data => {
+      if (data && data.status === 'started') {
+        showToast(`Lanzando nivel: ${fileName}`, 'success');
+        appendLog(`\n🎮 Probador de nivel iniciado para "${fileName}"...\nAbriendo ventana en pantalla con silueta 2D, miniatura preliminar y controles.`, 'system');
+      }
+    })
+    .catch(err => {
+      console.error('Error al probar nivel:', err);
+      showToast('Error de conexión al lanzar nivel.', 'error');
+    });
+}
+
+function openLevelViewerAndPlay() {
+  switchTab('levels');
+  const playBtn = document.getElementById('btn-play-level');
+  if (playBtn) {
+    playBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 // Experiment Summary
 // ─────────────────────────────────────────────────────────────
 

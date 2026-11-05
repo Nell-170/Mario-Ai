@@ -1,3 +1,17 @@
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.RenderingHints;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -7,9 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import engine.core.MarioGame;
 import engine.core.MarioAgentEvent;
@@ -19,15 +44,53 @@ import engine.helper.EventType;
 
 public class PlayHuman {
     public static void main(String[] args) throws Exception {
-        String levelPath = args.length > 0 ? args[0] : chooseRandomLevel();
-        int timer = args.length > 1 ? Integer.parseInt(args[1]) : 60;
+        boolean skipIntro = false;
+        String rawLevel = null;
+        int timer = 60;
+        String customTelemetry = null;
+
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if ("--no-intro".equalsIgnoreCase(arg) || "--skip-intro".equalsIgnoreCase(arg)) {
+                skipIntro = true;
+            } else if (rawLevel == null) {
+                rawLevel = arg;
+            } else if (i == 1) {
+                try {
+                    timer = Integer.parseInt(arg);
+                } catch (NumberFormatException ignored) {}
+            } else if (i == 2) {
+                customTelemetry = arg;
+            }
+        }
+
+        Path resolvedPath = (rawLevel != null && !rawLevel.trim().isEmpty())
+                ? resolveLevelPath(rawLevel)
+                : chooseRandomLevelPath();
+
+        if (!Files.exists(resolvedPath)) {
+            System.err.println("ERROR: No se encontró el archivo de nivel: " + resolvedPath);
+            return;
+        }
+
+        String levelPath = resolvedPath.toString();
+        String level = Files.readString(resolvedPath);
+
+        if (!skipIntro) {
+            boolean start = showIntroScreen(resolvedPath.getFileName().toString(), levelPath, level);
+            if (!start) {
+                System.out.println("Partida cancelada desde la pantalla de presentación del nivel.");
+                return;
+            }
+        }
+
         int sessionSeed = new Random().nextInt(1_000_000);
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
         String sessionFileName = "session_" + timestamp + "_seed" + sessionSeed + ".json";
-        String telemetryPath = args.length > 2 ? args[2] : "../src/telemetry/" + sessionFileName;
+        String telemetryPath = customTelemetry != null ? customTelemetry : "../src/telemetry/" + sessionFileName;
+
         System.out.println("Nivel:      " + levelPath);
         System.out.println("Seed:       " + sessionSeed);
-        String level = new String(Files.readAllBytes(Paths.get(levelPath)));
 
         GameSession session = runSession(level, timer, sessionSeed);
         MarioResult result = session.result;
@@ -50,6 +113,65 @@ public class PlayHuman {
         writeTelemetry(result, levelPath, timer, "../src/telemetry/latest.json", sessionSeed);
         writePointer(telemetryPath);
         System.out.println("Telemetria: " + telemetryPath);
+    }
+
+    private static Path resolveLevelPath(String rawPath) {
+        if (rawPath == null || rawPath.trim().isEmpty()) {
+            return null;
+        }
+        rawPath = rawPath.trim();
+        if ((rawPath.startsWith("\"") && rawPath.endsWith("\"")) ||
+            (rawPath.startsWith("'") && rawPath.endsWith("'"))) {
+            rawPath = rawPath.substring(1, rawPath.length() - 1);
+        }
+        Path p = Paths.get(rawPath);
+        if (Files.exists(p)) {
+            return p;
+        }
+        Path[] candidates = new Path[] {
+            Paths.get("../src").resolve(rawPath),
+            Paths.get("..").resolve(rawPath),
+            Paths.get("../src/levels").resolve(rawPath),
+            Paths.get("levels").resolve(rawPath),
+            Paths.get("../levels").resolve(rawPath),
+            Paths.get("src").resolve(rawPath)
+        };
+        for (Path c : candidates) {
+            if (Files.exists(c)) {
+                return c;
+            }
+        }
+        return p;
+    }
+
+    private static Path chooseRandomLevelPath() throws Exception {
+        Path[] searchDirs = new Path[] {
+            Paths.get("../src/levels/nivel0"),
+            Paths.get("../levels/nivel0"),
+            Paths.get("src/levels/nivel0"),
+            Paths.get("levels/nivel0")
+        };
+        Path levelDirectory = null;
+        for (Path dir : searchDirs) {
+            if (Files.exists(dir)) {
+                levelDirectory = dir;
+                break;
+            }
+        }
+        if (levelDirectory == null) {
+            throw new IllegalStateException("No se encontró el directorio de niveles nivel0");
+        }
+        List<Path> levels;
+        try (java.util.stream.Stream<Path> files = Files.list(levelDirectory)) {
+            levels = files
+                    .filter(path -> path.toString().endsWith(".txt"))
+                    .sorted()
+                    .collect(Collectors.toList());
+        }
+        if (levels.isEmpty()) {
+            throw new IllegalStateException("No se encontraron niveles en " + levelDirectory);
+        }
+        return levels.get(new Random().nextInt(levels.size()));
     }
 
     private static GameSession runSession(String level, int timer, int sessionSeed) {
@@ -92,32 +214,12 @@ public class PlayHuman {
 
     private static void writePointer(String telemetryPath) throws Exception {
         Path pointer = Paths.get("../src/telemetry/.last_session");
-
         if (pointer.getParent() != null) {
             Files.createDirectories(pointer.getParent());
         }
         String fileName = Paths.get(telemetryPath).getFileName().toString();
         Files.write(pointer, fileName.getBytes());
     }
-
-    private static String chooseRandomLevel() throws Exception {
-        Path levelDirectory = Paths.get("../src/levels/nivel0");
-        if (!Files.exists(levelDirectory)) {
-            levelDirectory = Paths.get("../levels/nivel0");
-        }
-        List<Path> levels;
-        try (java.util.stream.Stream<Path> files = Files.list(levelDirectory)) {
-            levels = files
-                    .filter(path -> path.toString().endsWith(".txt"))
-                    .sorted()
-                    .collect(Collectors.toList());
-        }
-        if (levels.isEmpty()) {
-            throw new IllegalStateException("No levels found in " + levelDirectory);
-        }
-        return levels.get(new Random().nextInt(levels.size())).toString();
-    }
-
 
     private static void writeTelemetry(
             MarioResult result, String levelPath, int timer, String telemetryPath, int sessionSeed)
@@ -129,7 +231,7 @@ public class PlayHuman {
         Files.write(output, buildTelemetryJson(result, levelPath, timer, sessionSeed).getBytes());
     }
 
-    static String buildTelemetryJson(
+    public static String buildTelemetryJson(
             MarioResult result, String levelPath, int timer, int sessionSeed) {
         List<String> deathPositions = new ArrayList<>();
         for (MarioEvent event : result.getGameEvents()) {
@@ -184,5 +286,387 @@ public class PlayHuman {
 
     private static String escapeJson(String value) {
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    // ==========================================
+    // LEVEL INTRO SCREEN & 2D THUMBNAIL RENDERER
+    // ==========================================
+
+    private static boolean showIntroScreen(String levelName, String displayPath, String levelContent) {
+        if (GraphicsEnvironment.isHeadless()) {
+            return true;
+        }
+
+        CompletableFuture<Boolean> proceedFuture = new CompletableFuture<>();
+
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Mario AI - Probador de Niveles");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setResizable(false);
+
+            String[] rawLines = levelContent.split("\\r?\\n");
+            int rows = 0;
+            int cols = 0;
+            for (String l : rawLines) {
+                if (!l.trim().isEmpty() && !l.startsWith("//") && !l.startsWith(";")) {
+                    rows++;
+                    cols = Math.max(cols, l.length());
+                }
+            }
+
+            BufferedImage thumb = renderLevelThumbnail(levelContent, 740, 80);
+
+            JPanel mainPanel = new JPanel();
+            mainPanel.setBackground(new Color(15, 23, 42)); // Slate 900
+            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+            mainPanel.setBorder(new EmptyBorder(24, 28, 24, 28));
+
+            // Badge Row
+            JPanel badgeRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            badgeRow.setOpaque(false);
+            badgeRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            JLabel badge = new JLabel("PROBADOR DE NIVELES");
+            badge.setFont(new Font("SansSerif", Font.BOLD, 11));
+            badge.setForeground(new Color(224, 231, 255));
+            badge.setOpaque(true);
+            badge.setBackground(new Color(79, 70, 229)); // Indigo 600
+            badge.setBorder(new EmptyBorder(4, 10, 4, 10));
+            badgeRow.add(badge);
+            mainPanel.add(badgeRow);
+            mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+            // Title
+            JLabel titleLabel = new JLabel(levelName);
+            titleLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
+            titleLabel.setForeground(Color.WHITE);
+            titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            mainPanel.add(titleLabel);
+            mainPanel.add(Box.createRigidArea(new Dimension(0, 4)));
+
+            // Stats Subtitle
+            JLabel statsLabel = new JLabel("Dimensiones: " + rows + " filas × " + cols + " columnas  |  " + displayPath);
+            statsLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            statsLabel.setForeground(new Color(148, 163, 184)); // Slate 400
+            statsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            mainPanel.add(statsLabel);
+            mainPanel.add(Box.createRigidArea(new Dimension(0, 14)));
+
+            // Thumbnail Title
+            JLabel thumbTitle = new JLabel("Silueta y vista previa del nivel:");
+            thumbTitle.setFont(new Font("SansSerif", Font.BOLD, 13));
+            thumbTitle.setForeground(new Color(165, 180, 252)); // Indigo 300
+            thumbTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+            mainPanel.add(thumbTitle);
+            mainPanel.add(Box.createRigidArea(new Dimension(0, 6)));
+
+            // Thumbnail Image Card
+            JLabel thumbLabel = new JLabel(new ImageIcon(thumb));
+            thumbLabel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(99, 102, 241, 140), 1, true),
+                    new EmptyBorder(4, 4, 4, 4)));
+            thumbLabel.setBackground(new Color(30, 41, 59));
+            thumbLabel.setOpaque(true);
+            thumbLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            mainPanel.add(thumbLabel);
+            mainPanel.add(Box.createRigidArea(new Dimension(0, 14)));
+
+            // Controls Box
+            JPanel controlsCard = new JPanel();
+            controlsCard.setLayout(new BoxLayout(controlsCard, BoxLayout.Y_AXIS));
+            controlsCard.setBackground(new Color(30, 41, 59)); // Slate 800
+            controlsCard.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true),
+                    new EmptyBorder(10, 14, 10, 14)));
+            controlsCard.setAlignmentX(Component.LEFT_ALIGNMENT);
+            controlsCard.setMaximumSize(new Dimension(748, 70));
+
+            JLabel c1 = new JLabel("Controles:  Flechas = Moverse  |  S / F / Espacio = Saltar  |  A / D / Shift = Correr  |  P = Pausa  |  R = Reiniciar");
+            c1.setFont(new Font("SansSerif", Font.BOLD, 12));
+            c1.setForeground(Color.WHITE);
+            c1.setAlignmentX(Component.LEFT_ALIGNMENT);
+            controlsCard.add(c1);
+            controlsCard.add(Box.createRigidArea(new Dimension(0, 4)));
+
+            JLabel c2 = new JLabel("🎮 Compatible con Controles USB/Bluetooth  |  M = Silenciar Audio  |  Q = Terminar sesión");
+            c2.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            c2.setForeground(new Color(148, 163, 184));
+            c2.setAlignmentX(Component.LEFT_ALIGNMENT);
+            controlsCard.add(c2);
+
+            mainPanel.add(controlsCard);
+            mainPanel.add(Box.createRigidArea(new Dimension(0, 18)));
+
+            // Buttons Bar
+            JPanel buttonsBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+            buttonsBar.setOpaque(false);
+            buttonsBar.setAlignmentX(Component.LEFT_ALIGNMENT);
+            buttonsBar.setMaximumSize(new Dimension(748, 45));
+
+            IntroButton cancelBtn = new IntroButton("Cancelar (Esc)", new Color(51, 65, 85), new Color(71, 85, 105), new Color(226, 232, 240), 13);
+            IntroButton startBtn = new IntroButton("¡Comenzar partida! (Espacio / Enter)", new Color(99, 102, 241), new Color(79, 70, 229), Color.WHITE, 14);
+
+            cancelBtn.addActionListener(e -> {
+                frame.dispose();
+                proceedFuture.complete(false);
+            });
+
+            startBtn.addActionListener(e -> {
+                frame.dispose();
+                proceedFuture.complete(true);
+            });
+
+            KeyAdapter keyAdapter = new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE) {
+                        frame.dispose();
+                        proceedFuture.complete(true);
+                    } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                        frame.dispose();
+                        proceedFuture.complete(false);
+                    }
+                }
+            };
+
+            frame.addKeyListener(keyAdapter);
+            startBtn.addKeyListener(keyAdapter);
+            cancelBtn.addKeyListener(keyAdapter);
+
+            frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    proceedFuture.complete(false);
+                }
+            });
+
+            buttonsBar.add(cancelBtn);
+            buttonsBar.add(startBtn);
+            mainPanel.add(buttonsBar);
+
+            frame.setContentPane(mainPanel);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+            startBtn.requestFocusInWindow();
+        });
+
+        try {
+            return proceedFuture.get();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static class IntroButton extends JButton {
+        private final Color normalColor;
+        private final Color hoverColor;
+
+        IntroButton(String text, Color bg, Color hover, Color fg, int fontSize) {
+            super(text);
+            this.normalColor = bg;
+            this.hoverColor = hover;
+            setBackground(bg);
+            setForeground(fg);
+            setFont(new Font("SansSerif", Font.BOLD, fontSize));
+            setFocusPainted(false);
+            setBorderPainted(false);
+            setContentAreaFilled(false);
+            setOpaque(false);
+            setCursor(new Cursor(Cursor.HAND_CURSOR));
+            setBorder(new EmptyBorder(10, 22, 10, 22));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            if (getModel().isPressed()) {
+                g2.setColor(hoverColor.darker());
+            } else if (getModel().isRollover() || isFocusOwner()) {
+                g2.setColor(hoverColor);
+            } else {
+                g2.setColor(normalColor);
+            }
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+            g2.dispose();
+            super.paintComponent(g);
+        }
+    }
+
+    private static BufferedImage renderLevelThumbnail(String content, int targetWidth, int targetHeight) {
+        String[] rawLines = content.split("\\r?\\n");
+        List<String> lines = new ArrayList<>();
+        for (String l : rawLines) {
+            if (!l.trim().isEmpty() && !l.startsWith("//") && !l.startsWith(";")) {
+                lines.add(l);
+            }
+        }
+        if (lines.isEmpty()) {
+            BufferedImage blank = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = blank.createGraphics();
+            g.setColor(new Color(92, 148, 252));
+            g.fillRect(0, 0, targetWidth, targetHeight);
+            g.dispose();
+            return blank;
+        }
+
+        int rows = lines.size();
+        int cols = 0;
+        for (String l : lines) {
+            cols = Math.max(cols, l.length());
+        }
+        if (cols == 0) cols = 1;
+
+        BufferedImage img = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        // Sky background
+        g2.setColor(new Color(92, 148, 252));
+        g2.fillRect(0, 0, targetWidth, targetHeight);
+
+        for (int r = 0; r < rows; r++) {
+            String line = lines.get(r);
+            for (int c = 0; c < line.length(); c++) {
+                char ch = line.charAt(c);
+                if (ch == '-' || Character.isWhitespace(ch)) {
+                    continue;
+                }
+                int x0 = (int) Math.round((double) c * targetWidth / cols);
+                int x1 = (int) Math.round((double) (c + 1) * targetWidth / cols);
+                int w = Math.max(1, x1 - x0);
+                int y0 = (int) Math.round((double) r * targetHeight / rows);
+                int y1 = (int) Math.round((double) (r + 1) * targetHeight / rows);
+                int h = Math.max(1, y1 - y0);
+
+                drawTileOnGraphics(g2, ch, x0, y0, w, h);
+            }
+        }
+        g2.dispose();
+        return img;
+    }
+
+    private static void drawTileOnGraphics(Graphics2D g, char ch, int x, int y, int w, int h) {
+        switch (ch) {
+            case 'X', 'x' -> { // Solid Ground
+                g.setColor(new Color(216, 104, 0));
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(0, 168, 0));
+                int grassH = Math.max(1, Math.min(3, h / 3));
+                g.fillRect(x, y, w, grassH);
+                if (w > 2 && h > 2) {
+                    g.setColor(new Color(108, 52, 0));
+                    g.drawRect(x, y, w - 1, h - 1);
+                }
+            }
+            case '#' -> { // Solid Platform / Block
+                g.setColor(new Color(252, 152, 56));
+                g.fillRect(x, y, w, h);
+                if (w > 4 && h > 4) {
+                    g.setColor(new Color(108, 52, 0));
+                    g.fillRect(x + 1, y + 1, w - 2, h - 2);
+                }
+            }
+            case 'S' -> { // Breakable Brick
+                g.setColor(new Color(184, 68, 24));
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(20, 20, 20));
+                if (w > 2 && h > 2) {
+                    g.drawRect(x, y, w - 1, h - 1);
+                    if (h > 4) {
+                        g.drawLine(x, y + h / 2, x + w - 1, y + h / 2);
+                    }
+                }
+            }
+            case '?' -> { // Question Block
+                g.setColor(new Color(252, 176, 64));
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(108, 52, 0));
+                if (w > 2 && h > 2) {
+                    g.drawRect(x, y, w - 1, h - 1);
+                }
+                if (w >= 10 && h >= 10) {
+                    g.setFont(new Font("SansSerif", Font.BOLD, Math.max(8, h - 4)));
+                    FontMetrics fm = g.getFontMetrics();
+                    int tx = x + (w - fm.stringWidth("?")) / 2;
+                    int ty = y + (h + fm.getAscent() - fm.getDescent()) / 2;
+                    g.drawString("?", tx, ty);
+                }
+            }
+            case 'o' -> { // Coin
+                g.setColor(new Color(252, 228, 64));
+                int cw = Math.max(2, (int) (w * 0.6));
+                int chH = Math.max(2, (int) (h * 0.75));
+                int cx = x + (w - cw) / 2;
+                int cy = y + (h - chH) / 2;
+                g.fillOval(cx, cy, cw, chH);
+                g.setColor(new Color(216, 144, 0));
+                g.drawOval(cx, cy, cw, chH);
+            }
+            case '<', '>' -> { // Pipe Top
+                g.setColor(new Color(0, 168, 0));
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(128, 208, 16));
+                g.fillRect(x + 1, y + 1, Math.max(1, w / 4), Math.max(1, h - 2));
+                g.setColor(new Color(0, 80, 0));
+                g.drawRect(x, y, w - 1, h - 1);
+            }
+            case '[', ']' -> { // Pipe Body
+                g.setColor(new Color(0, 168, 0));
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(128, 208, 16));
+                g.fillRect(x + 1, y, Math.max(1, w / 4), h);
+                g.setColor(new Color(0, 80, 0));
+                g.drawRect(x, y, w - 1, h - 1);
+            }
+            case 'g' -> { // Goomba
+                g.setColor(new Color(168, 64, 0));
+                g.fillOval(x, y, w, h);
+                if (w > 4 && h > 4) {
+                    g.setColor(new Color(252, 228, 160));
+                    g.fillRect(x + w / 4, y + h / 2, w / 2, h / 3);
+                }
+            }
+            case 'k' -> { // Koopa
+                g.setColor(new Color(0, 168, 0));
+                g.fillOval(x, y, w, h);
+                g.setColor(new Color(0, 60, 0));
+                g.drawOval(x, y, w - 1, h - 1);
+            }
+            case 'y' -> { // Spiny
+                g.setColor(new Color(252, 32, 0));
+                g.fillOval(x, y, w, h);
+            }
+            case 'E' -> { // Generic Enemy
+                g.setColor(new Color(225, 29, 72));
+                g.fillOval(x, y, w, h);
+                g.setColor(Color.WHITE);
+                if (w > 4 && h > 4) {
+                    g.fillRect(x + w / 4, y + h / 4, Math.max(1, w / 4), Math.max(1, h / 4));
+                }
+            }
+            case 'B', 'b' -> { // Bullet Blaster
+                g.setColor(new Color(40, 40, 40));
+                g.fillRect(x, y, w, h);
+                g.setColor(new Color(70, 70, 70));
+                g.fillRect(x + 1, y + 1, w - 2, Math.max(1, h / 4));
+            }
+            case 'M' -> { // Mario
+                g.setColor(new Color(239, 68, 68));
+                g.fillRect(x, y, w, h);
+            }
+            case 'F' -> { // Flag
+                g.setColor(new Color(34, 197, 94));
+                g.fillRect(x, y, w, h);
+            }
+            default -> {
+                if (!Character.isWhitespace(ch) && ch != '-') {
+                    g.setColor(new Color(200, 200, 200));
+                    g.fillRect(x, y, w, h);
+                }
+            }
+        }
     }
 }
