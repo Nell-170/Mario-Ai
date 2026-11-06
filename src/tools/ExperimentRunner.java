@@ -1327,26 +1327,94 @@ public class ExperimentRunner {
                         });
                     }
                     case "choice" -> {
-                        JPanel choicesPanel = new JPanel();
-                        choicesPanel.setLayout(new BoxLayout(choicesPanel, BoxLayout.Y_AXIS));
-                        choicesPanel.setBackground(ITEM_BG);
-                        choicesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-                        ButtonGroup group = new ButtonGroup();
                         String[] options = question.options().split("\\|");
+                        boolean isNumericScale = options.length >= 3 && options.length <= 11;
+                        List<String> keys = new ArrayList<>();
+                        List<String> labels = new ArrayList<>();
                         for (String option : options) {
                             String[] parts = option.contains("=") ? option.split("=", 2)
                                     : new String[] { option, option };
-                            String label = parts[0].equals(parts[1]) ? parts[1] : parts[0] + " - " + parts[1];
-
-                            ChoiceCard button = new ChoiceCard(label);
-                            button.addActionListener(e -> selected[0] = parts[0]);
-                            group.add(button);
-                            choicesPanel.add(button);
-                            choicesPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                            keys.add(parts[0].trim());
+                            labels.add(parts[1].trim());
+                            try {
+                                Integer.parseInt(parts[0].trim());
+                            } catch (NumberFormatException nfe) {
+                                isNumericScale = false;
+                            }
                         }
-                        qCard.add(choicesPanel);
-                        getters.add(() -> selected[0]);
+
+                        if (isNumericScale) {
+                            JPanel scaleContainer = new JPanel();
+                            scaleContainer.setLayout(new BoxLayout(scaleContainer, BoxLayout.Y_AXIS));
+                            scaleContainer.setBackground(ITEM_BG);
+                            scaleContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                            JPanel pillsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+                            pillsPanel.setBackground(ITEM_BG);
+                            pillsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                            JLabel legend = new JLabel();
+                            legend.setFont(FONT_REGULAR.deriveFont(15f));
+                            legend.setForeground(TEXT_ACCENT);
+                            legend.setBorder(new EmptyBorder(0, 8, 0, 0));
+
+                            String firstKey = keys.get(0);
+                            String firstLabel = labels.get(0);
+                            String lastKey = keys.get(keys.size() - 1);
+                            String lastLabel = labels.get(labels.size() - 1);
+                            String defaultLegend;
+                            if (keys.size() % 2 == 1) {
+                                int midIdx = keys.size() / 2;
+                                defaultLegend = firstKey + " = " + firstLabel + "   |   "
+                                        + keys.get(midIdx) + " = " + labels.get(midIdx) + "   |   "
+                                        + lastKey + " = " + lastLabel;
+                            } else {
+                                defaultLegend = firstKey + " = " + firstLabel + "   |   "
+                                        + lastKey + " = " + lastLabel;
+                            }
+                            legend.setText(defaultLegend);
+
+                            ButtonGroup group = new ButtonGroup();
+                            for (int i = 0; i < keys.size(); i++) {
+                                String valStr = keys.get(i);
+                                String labelStr = labels.get(i);
+                                LikertPill pill = new LikertPill(valStr);
+                                pill.setToolTipText(valStr + " - " + labelStr);
+                                pill.addActionListener(e -> {
+                                    selected[0] = valStr;
+                                    legend.setText(valStr + " = " + labelStr);
+                                    legend.setForeground(new Color(165, 180, 252));
+                                });
+                                group.add(pill);
+                                pillsPanel.add(pill);
+                            }
+                            scaleContainer.add(pillsPanel);
+                            scaleContainer.add(Box.createRigidArea(new Dimension(0, 10)));
+                            scaleContainer.add(legend);
+
+                            qCard.add(scaleContainer);
+                            getters.add(() -> selected[0]);
+                        } else {
+                            JPanel choicesPanel = new JPanel();
+                            choicesPanel.setLayout(new BoxLayout(choicesPanel, BoxLayout.Y_AXIS));
+                            choicesPanel.setBackground(ITEM_BG);
+                            choicesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                            ButtonGroup group = new ButtonGroup();
+                            for (int i = 0; i < keys.size(); i++) {
+                                String k = keys.get(i);
+                                String l = labels.get(i);
+                                String label = k.equals(l) ? l : k + " - " + l;
+
+                                ChoiceCard button = new ChoiceCard(label);
+                                button.addActionListener(e -> selected[0] = k);
+                                group.add(button);
+                                choicesPanel.add(button);
+                                choicesPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                            }
+                            qCard.add(choicesPanel);
+                            getters.add(() -> selected[0]);
+                        }
                     }
                     case "scale" -> {
                         String[] o = question.options().split("\\|");

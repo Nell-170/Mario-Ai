@@ -362,7 +362,8 @@ async function loadLevelList() {
     }
 
     fileSelect.innerHTML = files.map(f => {
-      return `<option value="${f.name}">${f.name} (${f.modified})</option>`;
+      const val = f.file || f.name;
+      return `<option value="${val}">${f.name} (${f.modified})</option>`;
     }).join('');
 
     loadLevelContent();
@@ -719,7 +720,10 @@ function playSelectedLevel() {
   }
 
   // Level relative path from framework directory
-  const levelPath = `../src/levels/${folder}/${fileName}`;
+  let levelPath = `../src/levels/${folder}/${fileName}`;
+  if (folder === 'participants') {
+    levelPath = `../src/experiment/results/${fileName}`;
+  }
 
   // Switch to console so the user sees real-time progress and logs
   switchTab('console');

@@ -323,9 +323,27 @@ def get_stats():
             return 0
         return sum(1 for d in p.iterdir() if d.is_dir())
 
+    def count_participant_levels():
+        p_dir = ROOT / "experiment" / "results"
+        if not p_dir.exists():
+            return 0
+        total = 0
+        for p in p_dir.iterdir():
+            if not p.is_dir():
+                continue
+            g = p / "generated"
+            if not g.exists():
+                continue
+            direct = [f for f in g.glob("*.txt") if f.stat().st_size > 0]
+            if direct:
+                total += len(direct)
+            else:
+                total += len([f for f in g.glob("gen*/*.txt") if f.stat().st_size > 0])
+        return total
+
     return {
         "levels_nivel0": count_files("levels/nivel0"),
-        "levels_generated": count_files("levels/generated"),
+        "levels_generated": count_files("levels/generated") + count_participant_levels(),
         "levels_converted": count_files("levels/converted"),
         "telemetry_sessions": count_files("telemetry", ".json"),
         "experiment_participants": count_dirs("experiment/results"),
@@ -333,6 +351,31 @@ def get_stats():
 
 
 def list_levels(folder_key):
+    if folder_key == "participants":
+        results_dir = ROOT / "experiment" / "results"
+        if not results_dir.exists():
+            return []
+        items = []
+        for p in sorted(results_dir.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True):
+            if not p.is_dir():
+                continue
+            gen_dir = p / "generated"
+            if not gen_dir.exists():
+                continue
+            direct = sorted([f for f in gen_dir.glob("*.txt") if f.stat().st_size > 0], key=lambda x: x.name)
+            files_to_add = direct if direct else sorted([f for f in gen_dir.glob("gen*/*.txt") if f.stat().st_size > 0], key=lambda x: x.name)
+            for f in files_to_add:
+                st = f.stat()
+                rel_path = str(f.relative_to(results_dir))
+                items.append({
+                    "name": f"[{p.name}] {f.name}",
+                    "file": rel_path,
+                    "folder": "participants",
+                    "size": st.st_size,
+                    "modified": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st.st_mtime))
+                })
+        return items
+
     folder_map = {
         "nivel0": ROOT / "levels" / "nivel0",
         "generated": ROOT / "levels" / "generated",
@@ -359,6 +402,15 @@ def list_levels(folder_key):
 
 
 def get_level_content(folder_key, file_name):
+    if folder_key == "participants":
+        results_dir = (ROOT / "experiment" / "results").resolve()
+        target_path = (results_dir / file_name).resolve()
+        if not str(target_path).startswith(str(results_dir)):
+            return None
+        if not target_path.exists() or not target_path.is_file():
+            return None
+        return target_path.read_text(encoding="utf-8", errors="replace")
+
     file_name = Path(file_name).name
     folder_map = {
         "nivel0": ROOT / "levels" / "nivel0",
