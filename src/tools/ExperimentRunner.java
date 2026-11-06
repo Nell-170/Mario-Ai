@@ -175,6 +175,8 @@ public class ExperimentRunner {
     private static int personalizedPlayedCount = 0;
     private static boolean devSidePanelCollapsed = false;
     private static HpcTunnelManager hpcTunnelManager = null;
+    // Base de datos del experimento (Supabase con respaldo local en experiment/db_pending/).
+    private static ExperimentDB db = null;
 
     private static boolean shouldShowDevGenSidePanel() {
         return developMode
@@ -262,6 +264,8 @@ public class ExperimentRunner {
         }
 
         hpcTunnelManager = new HpcTunnelManager(config);
+        db = ExperimentDB.open(EXPERIMENT);
+        final String sessionStartedAt = java.time.OffsetDateTime.now().toString();
         if (hpcTunnelManager.isAutoTunnel()) {
             hpcTunnelManager.startTunnelAsync(msg -> System.out.println("[HPC] " + msg));
         }
@@ -407,10 +411,35 @@ public class ExperimentRunner {
             List<Question> perLevel = questionsOf(questions, "level");
 
             List<String> initialAnswers = new ArrayList<>(List.of(id, group));
-            initialAnswers.addAll(Arrays.asList(askScreen("Preguntas iniciales",
+            String[] initialValues = askScreen("Preguntas iniciales",
                     "Por favor responde las siguientes preguntas sobre tu experiencia con videojuegos antes de comenzar.",
-                    initial)));
+                    initial);
+            initialAnswers.addAll(Arrays.asList(initialValues));
             saveRow(RESULTS.resolve("initial.tsv"), concat(List.of("id", "group"), ids(initial)), initialAnswers);
+
+            // Base de datos: el participante se registra solo después de aceptar el consentimiento.
+            Map<String, Object> participantRow = ExperimentDB.row();
+            participantRow.put("id", id);
+            participantRow.put("session_started_at", sessionStartedAt);
+            participantRow.put("sequence_group", group);
+            participantRow.put("sequence", SEQUENCES.get(group));
+            participantRow.put("free_condition", freeCondition);
+            participantRow.put("familiarization_levels", fileNames(familiarization));
+            participantRow.put("generic_levels", fileNames(normal));
+            participantRow.put("human_levels", fileNames(human));
+            participantRow.put("machine", ExperimentDB.machineName());
+            participantRow.put("code_version", ExperimentDB.codeVersion(SRC));
+            participantRow.put("generation_mode", hpcTunnelManager.getMode().getLabel());
+            participantRow.put("skip_generation", skipGeneration);
+            participantRow.put("develop_mode", developMode);
+            participantRow.put("timer_seconds", timer);
+            participantRow.put("consent", true);
+            participantRow.put("initial_survey", answersMap(initial, initialValues));
+            db.insert("participants", participantRow);
+            for (int f = 0; f < familiarization.size(); f++) {
+                recordLevelPlay(id, "familiarization", f + 1, 'F', f, null, familiarization.get(f),
+                        sanitizeLevel(Files.readString(familiarization.get(f))), famTelemetries.get(f), null, null);
+            }
 
             // 5. Experiment Levels Loop
             List<PlayedLevelInfo> playedLevels = new ArrayList<>();
@@ -488,13 +517,22 @@ public class ExperimentRunner {
                 List<String> row = new ArrayList<>(List.of(id, group, String.valueOf(i + 1),
                         String.valueOf(step.type()), String.valueOf(step.index() + 1),
                         levelFile.getFileName().toString()));
-                row.addAll(Arrays.asList(askScreen("Opinión - Nivel " + (i + 1) + " de " + steps.size(),
+                String[] levelValues = askScreen("Opinión - Nivel " + (i + 1) + " de " + steps.size(),
                         "Responde las siguientes afirmaciones pensando exclusivamente en el nivel que acabas de jugar.",
-                        perLevel)));
+                        perLevel);
+                row.addAll(Arrays.asList(levelValues));
                 saveRow(RESULTS.resolve("responses.tsv"),
                         concat(List.of("id", "group", "level_number", "level_type", "level_index", "level_file"),
                                 ids(perLevel)),
                         row);
+                Map<String, Object> genInfo = null;
+                if (step.type() == 'P') {
+                    genInfo = skipGeneration
+                            ? substituteGenerationInfo()
+                            : generation.generationInfo(step.index());
+                }
+                recordLevelPlay(id, "main", i + 1, step.type(), step.index(), stepCode, levelFile, levelContent,
+                        lastTelemetry, answersMap(perLevel, levelValues), genInfo);
             }
 
             // 6. Fase de Cierre OBLIGATORIA (Ranking y Comentarios inmediatos mientras la memoria está fresca)
@@ -528,12 +566,21 @@ public class ExperimentRunner {
                     List.of("id", "group", "free_condition", "stayed", "seconds_played", "levels_played", "distinct_levels"),
                     List.of(id, group, freeCondition, String.valueOf(wantFreePlay), String.valueOf(freeResult.seconds()),
                             String.valueOf(freeResult.levels()), String.valueOf(freeResult.distinct())));
+            Map<String, Object> freeRow = ExperimentDB.row();
+            freeRow.put("participant_id", id);
+            freeRow.put("free_condition", freeCondition);
+            freeRow.put("stayed", wantFreePlay);
+            freeRow.put("seconds_played", (int) freeResult.seconds());
+            freeRow.put("levels_played", freeResult.levels());
+            freeRow.put("distinct_levels", freeResult.distinct());
+            db.insert("free_play", freeRow);
 
             // 8. Pantalla final de despedida
             showExitScreen("¡Muchas gracias por participar!",
                     "Tus respuestas y datos de juego han sido guardados con éxito.\n"
                             + "Tu participación es invaluable para nuestra investigación.\n\n"
                             + "¡Esperamos que te hayas divertido!");
+            db.awaitFlush(20);
         } catch (Exception e) {
             generation.cancel();
             showExitScreen("Ha ocurrido un problema", "Detalle: " + e.getMessage());
@@ -745,6 +792,7 @@ public class ExperimentRunner {
         List<Path> queue = new ArrayList<>();
         Path previous = null;
         Path current = null;
+        int currentSlot = -1;
         Path prevTelemetry = lastTelemetry;
         boolean replay = false;
         int extra = 0;
@@ -776,6 +824,7 @@ public class ExperimentRunner {
                             showGeneratingScreen(extra + 1, 0);
                         }
                         current = generation.await(slot);
+                        currentSlot = slot;
                     } catch (Exception ex) {
                         System.err.println("No se pudo obtener el nivel extra " + (extra + 1) + ": " + ex.getMessage());
                         break;
@@ -810,6 +859,10 @@ public class ExperimentRunner {
             long levelStart = System.currentTimeMillis();
             Path telemetry = playLevel(current, timer, dir.resolve("telemetry_free" + playedCount + ".json"));
             playedMillis += System.currentTimeMillis() - levelStart;
+            recordLevelPlay(id, "free_play", playedCount, personalized ? 'P' : (condition.equals("N") ? 'N' : 'H'),
+                    personalized ? currentSlot : -1, replay ? "replay" : null, current,
+                    sanitizeLevel(Files.readString(current)), telemetry, null,
+                    personalized ? generation.generationInfo(currentSlot) : null);
             distinctLevels.add(current.getFileName().toString());
             if (telemetry != null) {
                 prevTelemetry = telemetry;
@@ -2031,6 +2084,26 @@ public class ExperimentRunner {
         );
         saveRow(RESULTS.resolve("feedback.tsv"), feedbackHeaders, fbRow);
         saveRow(dir.resolve("feedback.tsv"), feedbackHeaders, fbRow);
+
+        if (db != null) {
+            List<Map<String, Object>> rankingJson = new ArrayList<>();
+            for (int r = 0; r < ranked.size(); r++) {
+                PlayedLevelInfo info = ranked.get(r);
+                Map<String, Object> item = ExperimentDB.row();
+                item.put("rank", r + 1);
+                item.put("order_played", info.orderPlayed());
+                item.put("level_type", String.valueOf(info.type()));
+                item.put("level_index", info.levelIndex() + 1);
+                item.put("step_code", info.stepCode());
+                item.put("level_file", info.levelFile().getFileName().toString());
+                rankingJson.add(item);
+            }
+            Map<String, Object> closureRow = ExperimentDB.row();
+            closureRow.put("participant_id", id);
+            closureRow.put("ranking", rankingJson);
+            closureRow.put("feedback", (feedback == null || feedback.isBlank()) ? null : feedback);
+            db.insert("closure", closureRow);
+        }
 
         // 3. Resumen legible del cierre
         StringBuilder sb = new StringBuilder();
@@ -3406,6 +3479,53 @@ public class ExperimentRunner {
     // DATA AND UTILITY HELPERS
     // ==========================================
 
+    // ==========================================
+    // BASE DE DATOS: helpers de registro
+    // ==========================================
+
+    private static List<String> fileNames(List<Path> paths) {
+        return paths.stream().map(p -> p.getFileName().toString()).collect(Collectors.toList());
+    }
+
+    private static Map<String, Object> answersMap(List<Question> questions, String[] values) {
+        Map<String, Object> map = ExperimentDB.row();
+        for (int q = 0; q < questions.size(); q++) {
+            String value = (values != null && q < values.length) ? values[q] : null;
+            map.put(questions.get(q).id(),
+                    "number".equals(questions.get(q).type()) || "scale".equals(questions.get(q).type())
+                            ? ExperimentDB.numberOrText(value) : value);
+        }
+        return map;
+    }
+
+    private static Map<String, Object> substituteGenerationInfo() {
+        Map<String, Object> info = ExperimentDB.row();
+        info.put("source", "substitute_skip_generation");
+        return info;
+    }
+
+    /** Registra un nivel jugado (familiarización, protocolo o juego libre) en la base de datos. */
+    private static void recordLevelPlay(String participantId, String phase, int playOrder, char levelType,
+            int levelIndex, String stepCode, Path levelFile, String levelContent, Path telemetryFile,
+            Map<String, Object> responses, Map<String, Object> generationInfo) {
+        if (db == null) {
+            return;
+        }
+        Map<String, Object> row = ExperimentDB.row();
+        row.put("participant_id", participantId);
+        row.put("phase", phase);
+        row.put("play_order", playOrder);
+        row.put("level_type", String.valueOf(levelType));
+        row.put("level_index", levelIndex >= 0 ? levelIndex + 1 : null);
+        row.put("step_code", stepCode);
+        row.put("level_file", levelFile == null ? null : levelFile.getFileName().toString());
+        row.put("level_content", levelContent);
+        row.put("telemetry", ExperimentDB.readJsonFile(telemetryFile));
+        row.put("responses", responses);
+        row.put("generation", generationInfo);
+        db.insert("level_plays", row);
+    }
+
     private static List<Step> buildSteps(String group, List<Path> normal, List<Path> human) {
         List<Step> steps = new ArrayList<>();
         for (String code : SEQUENCES.get(group).split(" ")) {
@@ -3622,6 +3742,13 @@ public class ExperimentRunner {
         private final AtomicReferenceArray<String> stageDetails = new AtomicReferenceArray<>(slots);
         private final AtomicReferenceArray<String> prompts = new AtomicReferenceArray<>(slots);
         private final AtomicReferenceArray<Path> resultPaths = new AtomicReferenceArray<>(slots);
+        // Metadatos para la base de datos (uno por slot de generación).
+        private final AtomicReferenceArray<String> promptSources = new AtomicReferenceArray<>(slots);
+        private final AtomicReferenceArray<String> llmModels = new AtomicReferenceArray<>(slots);
+        private final AtomicReferenceArray<String> genSources = new AtomicReferenceArray<>(slots);
+        private final AtomicReferenceArray<String> genErrors = new AtomicReferenceArray<>(slots);
+        private final AtomicReferenceArray<ExperimentDB.RawJson> genMeta = new AtomicReferenceArray<>(slots);
+        private final long[] genSeconds = new long[slots];
         private volatile Process current;
         private volatile boolean cancelled;
         private volatile boolean started;
@@ -3737,8 +3864,37 @@ public class ExperimentRunner {
             return (System.currentTimeMillis() - jobStartTime) / 1000;
         }
 
+        /** Información de generación del slot k para guardar junto al nivel jugado. */
+        Map<String, Object> generationInfo(int k) {
+            Map<String, Object> info = ExperimentDB.row();
+            if (k < 0 || k >= slots) {
+                info.put("source", "unknown");
+                return info;
+            }
+            info.put("source", genSources.get(k) == null ? "unknown" : genSources.get(k));
+            info.put("prompt_source", promptSources.get(k));
+            info.put("llm_model", llmModels.get(k));
+            info.put("llm_prompt", prompts.get(k));
+            info.put("generation_mode", hpcTunnelManager == null ? null : hpcTunnelManager.getMode().getLabel());
+            Path tel = telemetries.get(k);
+            info.put("telemetry_file", tel == null ? null : tel.getFileName().toString());
+            info.put("seconds", genSeconds[k]);
+            info.put("error", genErrors.get(k));
+            info.put("mariogpt", genMeta.get(k));
+            return info;
+        }
+
         private Path generate(int k, Path telemetry) {
             Path outDir = dir.resolve("generated").resolve("gen" + (k + 1));
+            long genStart = System.currentTimeMillis();
+            try {
+                return generateInner(k, telemetry, outDir);
+            } finally {
+                genSeconds[k] = (System.currentTimeMillis() - genStart) / 1000L;
+            }
+        }
+
+        private Path generateInner(int k, Path telemetry, Path outDir) {
             try {
                 Files.createDirectories(outDir);
                 System.out.println("\n=== Generando nivel personalizado " + (k + 1) + " ===");
@@ -3758,6 +3914,8 @@ public class ExperimentRunner {
                     if (!cancelled && promptExit == 0) {
                         prompt = extractPrompt(promptOutput);
                         prompts.set(k, prompt);
+                        promptSources.set(k, extractJsonField(promptOutput, "source"));
+                        llmModels.set(k, extractJsonField(promptOutput, "model"));
                         System.out.println("Prompt para MarioGPT: " + prompt);
                     }
                 } catch (Exception pe) {
@@ -3767,6 +3925,7 @@ public class ExperimentRunner {
                 if (prompt == null || prompt.isBlank()) {
                     prompt = "difficulty=medium; route=high; jump=medium; enemies=low; hazards=medium; rewards=coins";
                     prompts.set(k, prompt);
+                    promptSources.set(k, "default");
                     System.out.println("Usando prompt base para MarioGPT: " + prompt);
                 }
 
@@ -3819,6 +3978,8 @@ public class ExperimentRunner {
                                     System.err.println("Aviso al guardar copia en dir/generated: " + ex.getMessage());
                                 }
 
+                                genMeta.set(k, ExperimentDB.readJsonFile(outDir.resolve("generation_meta.json")));
+                                genSources.set(k, "generated");
                                 stages.set(k, GenStage.READY);
                                 stageDetails.set(k, "Listo (" + genFile.getFileName() + ")");
                                 resultPaths.set(k, genFile);
@@ -3827,11 +3988,14 @@ public class ExperimentRunner {
                         }
                     } else {
                         System.err.println("mario_gpt_generate.py terminó con código " + exit);
+                        genErrors.set(k, "mario_gpt_generate.py terminó con código " + exit);
                     }
                 }
             } catch (Exception e) {
                 System.err.println("Error durante la generación de nivel: " + e.getMessage());
+                genErrors.set(k, String.valueOf(e.getMessage()));
             }
+            genSources.set(k, "fallback");
 
             stages.set(k, GenStage.FALLBACK_READY);
             stageDetails.set(k, "Nivel de respaldo listo");
@@ -3881,6 +4045,24 @@ public class ExperimentRunner {
                 System.err.println("Error al copiar nivel de respaldo: " + e.getMessage());
             }
             return SRC.resolve("levels/generics/generic 1.txt");
+        }
+
+        /** Lee un campo de texto simple ("source", "model") de la salida JSON del script de prompt. */
+        private static String extractJsonField(String output, String field) {
+            int at = output.indexOf("\"" + field + "\"");
+            if (at < 0) {
+                return null;
+            }
+            int colon = output.indexOf(':', at);
+            int i = colon + 1;
+            while (i < output.length() && Character.isWhitespace(output.charAt(i))) {
+                i++;
+            }
+            if (i >= output.length() || output.charAt(i) != '"') {
+                return null; // null u otro tipo
+            }
+            int end = output.indexOf('"', i + 1);
+            return end < 0 ? null : output.substring(i + 1, end);
         }
 
         private static String extractPrompt(String output) {

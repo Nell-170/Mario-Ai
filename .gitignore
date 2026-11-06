@@ -44,3 +44,6 @@ a.txt
 
 # Queryable knowledge graph
 graphify-out
+# Base de datos del experimento: credenciales y registros pendientes de envío
+src/experiment/database.properties
+src/experiment/db_pending/

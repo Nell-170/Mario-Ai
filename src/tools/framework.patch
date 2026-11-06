@@ -1,8 +1,8 @@
 diff --git a/src/agents/human/Agent.java b/src/agents/human/Agent.java
-index b888366b..a525aa15 100644
+index b888366b..50f8c3c9 100644
 --- a/src/agents/human/Agent.java
 +++ b/src/agents/human/Agent.java
-@@ -14,10 +14,12 @@ public class Agent extends KeyAdapter implements MarioAgent {
+@@ -14,11 +14,12 @@ public class Agent extends KeyAdapter implements MarioAgent {
      @Override
      public void initialize(MarioForwardModel model, MarioTimer timer) {
          actions = new boolean[MarioActions.numberOfActions()];
@@ -16,7 +16,7 @@ index b888366b..a525aa15 100644
      }
  
      @Override
-@@ -50,9 +50,18 @@ public class Agent extends KeyAdapter implements MarioAgent {
+@@ -50,9 +51,18 @@ public class Agent extends KeyAdapter implements MarioAgent {
              case KeyEvent.VK_DOWN:
                  this.actions[MarioActions.DOWN.getValue()] = isPressed;
                  break;
@@ -36,7 +36,7 @@ index b888366b..a525aa15 100644
                  this.actions[MarioActions.SPEED.getValue()] = isPressed;
                  break;
 diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
-index 1f58d96b..9803e0a5 100644
+index 1f58d96b..c01f6ff1 100644
 --- a/src/engine/core/MarioGame.java
 +++ b/src/engine/core/MarioGame.java
 @@ -10,6 +10,16 @@ import javax.swing.JFrame;
@@ -329,7 +329,7 @@ index 1f58d96b..9803e0a5 100644
      }
  
      /**
-@@ -204,18 +448,158 @@ public class MarioGame {
+@@ -204,18 +453,158 @@ public class MarioGame {
       * @return statistics about the current game
       */
      public MarioResult runGame(MarioAgent agent, String level, int timer, int marioState, boolean visuals, int fps, float scale) {
@@ -495,7 +495,7 @@ index 1f58d96b..9803e0a5 100644
      }
  
      private MarioResult gameLoop(String level, int timer, int marioState, boolean visual, int fps) {
-@@ -231,13 +615,25 @@ public class MarioGame {
+@@ -231,13 +620,25 @@ public class MarioGame {
          long currentTime = System.currentTimeMillis();
  
          //initialize graphics
@@ -526,7 +526,7 @@ index 1f58d96b..9803e0a5 100644
              this.render.addFocusListener(this.render);
          }
  
-@@ -246,7 +642,33 @@ public class MarioGame {
+@@ -246,7 +647,33 @@ public class MarioGame {
  
          ArrayList<MarioEvent> gameEvents = new ArrayList<>();
          ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
@@ -560,7 +560,7 @@ index 1f58d96b..9803e0a5 100644
              if (!this.pause) {
                  //get actions
                  agentTimer = new MarioTimer(MarioGame.maxTime);
-@@ -259,6 +681,11 @@ public class MarioGame {
+@@ -259,6 +686,11 @@ public class MarioGame {
                  }
                  // update world
                  this.world.update(actions);
@@ -572,7 +572,7 @@ index 1f58d96b..9803e0a5 100644
                  gameEvents.addAll(this.world.lastFrameEvents);
                  agentEvents.add(new MarioAgentEvent(actions, this.world.mario.x,
                          this.world.mario.y, (this.world.mario.isLarge ? 1 : 0) + (this.world.mario.isFire ? 1 : 0),
-@@ -267,9 +694,65 @@ public class MarioGame {
+@@ -267,9 +699,65 @@ public class MarioGame {
  
              //render world
              if (visual) {
@@ -639,7 +639,7 @@ index 1f58d96b..9803e0a5 100644
              if (this.getDelay(fps) > 0) {
                  try {
                      currentTime += this.getDelay(fps);
-@@ -278,6 +761,47 @@ public class MarioGame {
+@@ -278,6 +766,47 @@ public class MarioGame {
                      break;
                  }
              }

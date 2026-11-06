@@ -238,7 +238,8 @@ def main():
             result = call_ollama(args.ollama_model, telemetry, args.ollama_url)
             print("\nString para MarioGPT (Ollama):", file=sys.stderr)
             if args.json_output:
-                print(json.dumps({"prompt": result}, ensure_ascii=False))
+                print(json.dumps({"prompt": result, "source": "ollama", "model": args.ollama_model},
+                                 ensure_ascii=False))
             else:
                 print(result)
             return 0
@@ -247,7 +248,7 @@ def main():
 
     print("Aviso: no se encontró OLLAMA_API_KEY ni mario_ai_framework/Ollama-Key.txt; usando prompt local.", file=sys.stderr)
     if args.json_output:
-        print(json.dumps({"prompt": fallback_prompt}, ensure_ascii=False))
+        print(json.dumps({"prompt": fallback_prompt, "source": "heuristic", "model": None}, ensure_ascii=False))
     else:
         print("\nString para MarioGPT (fallback local):")
         print(fallback_prompt)
