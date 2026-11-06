@@ -3,9 +3,15 @@ package engine.input;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import engine.helper.MarioActions;
@@ -17,8 +23,19 @@ import engine.helper.MarioActions;
  * 1. Linux Nativo: Lee directamente /dev/input/js* (joydev) sin librerías externas ni dependencias JNI.
  * 2. Bridge UDP (Multiplataforma Windows/Linux/macOS): Escucha paquetes en 127.0.0.1:29555
  *    enviados por puentes como gamepad_bridge.py o herramientas externas.
+ * 
+ * Mapeo configurable mediante src/gamepad.properties:
+ * Por defecto configurado para PS4 y Xbox:
+ * - Equis (X) / A  -> Saltar (JUMP)
+ * - Cuadrado (□) / X / Círculo (O) / B -> Correr (SPEED)
+ * - Options / Start -> Pausar (PAUSE)
+ * - Share / Back   -> Reiniciar (RESTART)
  */
 public class GamepadManager {
+    public enum PadAction {
+        NONE, JUMP, SPEED, PAUSE, RESTART
+    }
+
     private static final GamepadManager INSTANCE = new GamepadManager();
 
     public static GamepadManager getInstance() {
@@ -39,9 +56,14 @@ public class GamepadManager {
     private volatile Runnable pauseCallback = null;
     private volatile Runnable restartCallback = null;
 
+    // Mapeo dinámico de botones (hasta 32 botones)
+    private final PadAction[] buttonMapping = new PadAction[32];
+    private final boolean[] buttonStates = new boolean[32];
+
     private boolean started = false;
 
     private GamepadManager() {
+        loadConfig();
     }
 
     public synchronized void start() {
@@ -78,6 +100,65 @@ public class GamepadManager {
     }
 
     /**
+     * Carga o recarga la configuración desde gamepad.properties.
+     */
+    public synchronized void loadConfig() {
+        // 1. Valores por defecto (Cuadrado / X = Correr, Equis / A = Saltar)
+        Arrays.fill(buttonMapping, PadAction.NONE);
+        buttonMapping[0] = PadAction.JUMP;    // PS4 ✖ Equis / Xbox A
+        buttonMapping[1] = PadAction.SPEED;   // PS4 ⭕ Círculo / Xbox B
+        buttonMapping[2] = PadAction.SPEED;   // Xbox ⬛ X / PS4 Triángulo alternativo
+        buttonMapping[3] = PadAction.SPEED;   // PS4 ⬛ Cuadrado (BTN_WEST) -> Correr
+        buttonMapping[4] = PadAction.SPEED;   // L1 / LB
+        buttonMapping[5] = PadAction.SPEED;   // R1 / RB
+        buttonMapping[6] = PadAction.RESTART; // Xbox Back
+        buttonMapping[7] = PadAction.PAUSE;   // Xbox Start
+        buttonMapping[8] = PadAction.RESTART; // PS4 Share
+        buttonMapping[9] = PadAction.PAUSE;   // PS4 Options
+        buttonMapping[10] = PadAction.PAUSE;  // Botón PS Guía
+
+        Path cfg = findConfigFile();
+        if (cfg == null || !Files.exists(cfg)) {
+            return;
+        }
+
+        try (InputStream in = Files.newInputStream(cfg)) {
+            Properties props = new Properties();
+            props.load(in);
+            for (String key : props.stringPropertyNames()) {
+                String k = key.trim().toLowerCase();
+                if (k.startsWith("button.")) {
+                    try {
+                        int idx = Integer.parseInt(k.substring("button.".length()).trim());
+                        if (idx >= 0 && idx < buttonMapping.length) {
+                            String act = props.getProperty(key).trim().toUpperCase();
+                            buttonMapping[idx] = PadAction.valueOf(act);
+                        }
+                    } catch (Exception ignored) {}
+                }
+            }
+            System.out.println("[GamepadManager] Mapeo de control cargado desde: " + cfg);
+        } catch (Exception e) {
+            System.err.println("[GamepadManager] Advertencia al leer configuración: " + e.getMessage());
+        }
+    }
+
+    private Path findConfigFile() {
+        Path[] searchPaths = new Path[] {
+            Paths.get("../src/gamepad.properties"),
+            Paths.get("src/gamepad.properties"),
+            Paths.get("gamepad.properties"),
+            Paths.get("../gamepad.properties")
+        };
+        for (Path p : searchPaths) {
+            if (Files.exists(p)) {
+                return p;
+            }
+        }
+        return searchPaths[0];
+    }
+
+    /**
      * Combina las acciones del teclado con las del control usando lógica OR.
      */
     public boolean[] applyActions(boolean[] keyboardActions) {
@@ -104,7 +185,6 @@ public class GamepadManager {
     private void runLinuxJoydevLoop() {
         File devInput = new File("/dev/input");
         if (!devInput.exists() || !devInput.isDirectory()) {
-            // No es Linux o no hay subsistema de input
             return;
         }
 
@@ -123,20 +203,13 @@ public class GamepadManager {
 
             try (FileInputStream fis = new FileInputStream(jsDevice)) {
                 connected.set(true);
-                controllerName = "Mando USB/BT (" + jsDevice.getName() + ")";
+                controllerName = "Mando (" + jsDevice.getName() + ")";
                 System.out.println("[GamepadManager] Mando conectado: " + jsDevice.getAbsolutePath());
 
-                // Estado de ejes analógicos y D-Pad
                 int axisStickX = 0;
                 int axisStickY = 0;
                 int axisDpadX = 0;
                 int axisDpadY = 0;
-                boolean buttonA = false;
-                boolean buttonB = false;
-                boolean buttonX = false;
-                boolean buttonY = false;
-                boolean buttonLb = false;
-                boolean buttonRb = false;
                 boolean triggerRt = false;
 
                 while (true) {
@@ -150,35 +223,27 @@ public class GamepadManager {
                     }
 
                     // Parsear js_event (8 bytes little endian)
-                    // Bytes 0-3: time (ignorado)
-                    // Bytes 4-5: value (short con signo)
                     short val = (short) ((eventBuffer[4] & 0xFF) | ((eventBuffer[5] & 0xFF) << 8));
-                    // Byte 6: type (1 = button, 2 = axis, bit 0x80 = init)
                     int type = eventBuffer[6] & 0xFF;
                     int cleanType = type & ~0x80;
-                    // Byte 7: number
                     int number = eventBuffer[7] & 0xFF;
 
                     if (cleanType == 1) {
                         // Botón presionado (1) o soltado (0)
                         boolean pressed = (val != 0);
+                        if (number >= 0 && number < buttonStates.length) {
+                            buttonStates[number] = pressed;
+                        }
 
-                        switch (number) {
-                            case 0 -> buttonA = pressed; // A / Cruz -> Salto
-                            case 1 -> buttonB = pressed; // B / Círculo -> Correr
-                            case 2 -> buttonX = pressed; // X / Cuadrado -> Correr
-                            case 3 -> buttonY = pressed; // Y / Triángulo -> Salto
-                            case 4 -> buttonLb = pressed; // LB / L1 -> Correr
-                            case 5 -> buttonRb = pressed; // RB / R1 -> Correr
-                            case 6 -> { // Back / Select / Share -> Reiniciar
-                                if (pressed && restartCallback != null) {
-                                    restartCallback.run();
-                                }
-                            }
-                            case 7 -> { // Start / Options -> Pausar
-                                if (pressed && pauseCallback != null) {
-                                    pauseCallback.run();
-                                }
+                        PadAction act = (number >= 0 && number < buttonMapping.length)
+                                ? buttonMapping[number]
+                                : PadAction.NONE;
+
+                        if (pressed) {
+                            if (act == PadAction.PAUSE && pauseCallback != null) {
+                                pauseCallback.run();
+                            } else if (act == PadAction.RESTART && restartCallback != null) {
+                                restartCallback.run();
                             }
                         }
                     } else if (cleanType == 2) {
@@ -186,9 +251,9 @@ public class GamepadManager {
                         switch (number) {
                             case 0 -> axisStickX = val; // Stick Izquierdo Horizontal
                             case 1 -> axisStickY = val; // Stick Izquierdo Vertical
-                            case 2, 5 -> triggerRt = (val > 8000); // Gatillo RT/R2
-                            case 6 -> axisDpadX = val; // D-Pad Horizontal (en muchos pads)
-                            case 7 -> axisDpadY = val; // D-Pad Vertical (en muchos pads)
+                            case 2, 5 -> triggerRt = (val > 8000); // Gatillo RT / R2
+                            case 6 -> axisDpadX = val; // D-Pad Horizontal
+                            case 7 -> axisDpadY = val; // D-Pad Vertical
                         }
                     }
 
@@ -196,11 +261,22 @@ public class GamepadManager {
                     padLeft = (axisStickX < -12000) || (axisDpadX < -1000);
                     padRight = (axisStickX > 12000) || (axisDpadX > 1000);
                     padDown = (axisStickY > 12000) || (axisDpadY > 1000);
-                    padJump = buttonA || buttonY || (axisDpadY < -1000);
-                    padSpeed = buttonB || buttonX || buttonLb || buttonRb || triggerRt;
+
+                    boolean jump = (axisDpadY < -1000);
+                    boolean speed = triggerRt;
+
+                    for (int i = 0; i < buttonStates.length; i++) {
+                        if (buttonStates[i]) {
+                            PadAction a = (i < buttonMapping.length) ? buttonMapping[i] : PadAction.NONE;
+                            if (a == PadAction.JUMP) jump = true;
+                            if (a == PadAction.SPEED) speed = true;
+                        }
+                    }
+
+                    padJump = jump;
+                    padSpeed = speed;
                 }
             } catch (Exception e) {
-                // Desconexión o error al leer dispositivo
                 resetInputs();
                 connected.set(false);
                 controllerName = "Ninguno";
@@ -241,15 +317,13 @@ public class GamepadManager {
                 String msg = new String(packet.getData(), 0, packet.getLength()).trim();
                 if (msg.isEmpty()) continue;
 
-                // Formato: "L:1,R:0,D:0,J:1,S:0" o comandos especiales "P:1" (Pausa), "RST:1"
                 parseUdpMessage(msg);
                 connected.set(true);
-                if (!controllerName.startsWith("Mando USB")) {
+                if (!controllerName.startsWith("Mando")) {
                     controllerName = "Puente de Control (UDP)";
                 }
             }
         } catch (Exception ignored) {
-            // Socket cerrado o puerto en uso
         }
     }
 
@@ -283,6 +357,6 @@ public class GamepadManager {
         padDown = false;
         padJump = false;
         padSpeed = false;
+        Arrays.fill(buttonStates, false);
     }
 }
-
