@@ -931,22 +931,6 @@ public class ExperimentRunner {
                     "Para comenzar, jugarás dos niveles breves para acostumbrarte a los saltos y al control de Mario."));
             card.add(Box.createRigidArea(new Dimension(0, 24)));
 
-            // Controls Box
-            JPanel controls = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-            controls.setBackground(ITEM_BG);
-            controls.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
-                    new EmptyBorder(10, 18, 10, 18)));
-            controls.setAlignmentX(Component.LEFT_ALIGNMENT);
-            controls.setMaximumSize(new Dimension(960, 60));
-            JLabel cLabel = new JLabel(
-                    "Controles:  Flechas = Moverse  |  S / F / Espacio / Flecha Arriba = Saltar  |  A / D / Shift = Correr  |  P = Pausa  |  R = Reiniciar  |  Q = Terminar  |  M = Audio");
-            cLabel.setFont(FONT_SEMIBOLD.deriveFont(15f));
-            cLabel.setForeground(TEXT_WHITE);
-            controls.add(cLabel);
-            card.add(controls);
-            card.add(Box.createRigidArea(new Dimension(0, 16)));
-
             // Generator info card in Welcome Screen
             JPanel genCard = new JPanel(new BorderLayout(14, 0));
             genCard.setBackground(ITEM_BG);

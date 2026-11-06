@@ -691,10 +691,6 @@ public class PlayHuman {
         return img;
     }
 
-        g2.dispose();
-        return img;
-    }
-
     private static void drawKeycap(Graphics2D g2, String text, int x, int y, int kw, int kh, Color accent, Color textColor) {
         g2.setColor(new Color(15, 23, 42, 160));
         g2.fillRoundRect(x, y + 2, kw, kh, 6, 6);
