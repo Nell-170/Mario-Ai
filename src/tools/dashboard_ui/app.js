@@ -498,7 +498,6 @@ function renderLevelOnCanvas(lines, tileSize = 20) {
 function drawTile(ctx, ch, x, y, size) {
   switch (ch) {
     case 'X': // Solid Ground
-    case 'x': // Ground / Platform in MM2
       ctx.fillStyle = '#d86800'; // SMB ground brown
       ctx.fillRect(x, y, size, size);
       ctx.strokeStyle = '#6c3400';
