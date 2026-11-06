@@ -54,7 +54,7 @@ create table if not exists public.level_plays (
 --   telemetry_file   telemetría que alimentó la generación
 --   seconds          tiempo total de generación, error = motivo si hubo respaldo
 --   mariogpt         {backend: "remote"|"local_cuda"|"local_cpu", server_url,
---                     input_prompt, mariogpt_prompt (4 atributos finales), seconds}
+--                     input_prompt, mariogpt_prompt (prompt enviado a MarioGPT), seconds}
 -- En juego libre, step_code = 'replay' marca que el participante repitió el nivel anterior.
 
 -- ---------------------------------------------------------------------

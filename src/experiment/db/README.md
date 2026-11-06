@@ -55,8 +55,8 @@ delete from public.participants where develop_mode or sequence_group = 'TEST';
 
 Para los niveles personalizados (P), `level_plays.generation` registra si el nivel se
 **generó de verdad o fue un respaldo** (`source`), de dónde salió el prompt
-(`prompt_source`: `ollama` / `heuristic` / `default`), la salida del LLM, el prompt final
-de 4 atributos que recibió MarioGPT, el backend (servidor remoto o local) y el tiempo.
+(`prompt_source`: `ollama` / `heuristic` / `default`), la salida del LLM, el prompt exacto
+que recibió MarioGPT, el backend (servidor remoto o local) y el tiempo.
 
 Si el participante no acepta el consentimiento, **no se envía nada**.
 

@@ -125,7 +125,7 @@ def main():
         if level_content is not None:
             meta["backend"] = "remote"
             meta["server_url"] = args.server_url
-            meta["mariogpt_prompt"] = to_mariogpt_keywords(prompt_text)
+            meta["mariogpt_prompt"] = prompt_text
 
     # 2. Si falló o no está activo, recurrir a generación local
     if level_content is None:
@@ -149,13 +149,10 @@ def main():
             meta["backend"] = "local_cpu"
             print("GPU local no disponible, usando CPU en su lugar")
 
-        # MarioGPT solo entiende sus 4 atributos (pipes, enemies, blocks, elevation):
-        # se usa la misma traducción que en la ruta remota.
-        kw_prompt = to_mariogpt_keywords(prompt_text)
-        meta["mariogpt_prompt"] = kw_prompt
-        print(f"Prompt acondicionado: '{kw_prompt}'")
+        # Mismo prompt completo que se envía al servidor remoto.
+        meta["mariogpt_prompt"] = prompt_text
         generated = mario_lm.sample(
-            prompts=[kw_prompt],
+            prompts=[prompt_text],
             num_steps=args.steps,
             temperature=args.temperature,
             use_tqdm=True,
