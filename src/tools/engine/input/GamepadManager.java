@@ -52,6 +52,12 @@ public class GamepadManager {
     private volatile boolean padJump = false;
     private volatile boolean padSpeed = false;
 
+    // Valores analógicos de los ejes para depuración
+    private volatile int axisStickX = 0;
+    private volatile int axisStickY = 0;
+    private volatile int axisDpadX = 0;
+    private volatile int axisDpadY = 0;
+
     // Callbacks para funciones especiales del juego
     private volatile Runnable pauseCallback = null;
     private volatile Runnable restartCallback = null;
@@ -59,6 +65,7 @@ public class GamepadManager {
     // Mapeo dinámico de botones (hasta 32 botones)
     private final PadAction[] buttonMapping = new PadAction[32];
     private final boolean[] buttonStates = new boolean[32];
+    private final java.util.Set<Integer> ignoredDevicesLogged = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     private boolean started = false;
 
@@ -203,13 +210,14 @@ public class GamepadManager {
 
             try (FileInputStream fis = new FileInputStream(jsDevice)) {
                 connected.set(true);
-                controllerName = "Mando (" + jsDevice.getName() + ")";
-                System.out.println("[GamepadManager] Mando conectado: " + jsDevice.getAbsolutePath());
+                String sysName = readSysfsDeviceName(parseDeviceIndex(jsDevice.getName()));
+                controllerName = (sysName != null && !sysName.isEmpty()) ? sysName : ("Mando (" + jsDevice.getName() + ")");
+                System.out.println("[GamepadManager] Mando conectado: " + jsDevice.getAbsolutePath() + " (" + controllerName + ")");
 
-                int axisStickX = 0;
-                int axisStickY = 0;
-                int axisDpadX = 0;
-                int axisDpadY = 0;
+                axisStickX = 0;
+                axisStickY = 0;
+                axisDpadX = 0;
+                axisDpadY = 0;
                 boolean triggerRt = false;
 
                 while (true) {
@@ -291,13 +299,75 @@ public class GamepadManager {
     }
 
     private File findFirstJoystick() {
-        for (int i = 0; i < 4; i++) {
+        if (!isGamepadEnabled()) {
+            return null;
+        }
+        for (int i = 0; i < 8; i++) {
             File f = new File("/dev/input/js" + i);
             if (f.exists() && f.canRead()) {
+                String devName = readSysfsDeviceName(i);
+                if (isIgnoredDevice(devName)) {
+                    if (!ignoredDevicesLogged.contains(i)) {
+                        ignoredDevicesLogged.add(i);
+                        System.out.println("[GamepadManager] Dispositivo /dev/input/js" + i
+                                + " ignorado (detectado ratón/virtual: \"" + devName + "\").");
+                    }
+                    continue;
+                }
                 return f;
             }
         }
         return null;
+    }
+
+    private int parseDeviceIndex(String name) {
+        try {
+            if (name.startsWith("js")) {
+                return Integer.parseInt(name.substring(2));
+            }
+        } catch (Exception ignored) {}
+        return 0;
+    }
+
+    private String readSysfsDeviceName(int index) {
+        Path p = Paths.get("/sys/class/input/js" + index + "/device/name");
+        if (Files.exists(p)) {
+            try {
+                return Files.readString(p).trim();
+            } catch (Exception ignored) {}
+        }
+        return "";
+    }
+
+    private boolean isIgnoredDevice(String name) {
+        if (name == null || name.isEmpty()) return false;
+        String lower = name.toLowerCase(java.util.Locale.ROOT);
+        return lower.contains("mouse") || lower.contains("mouce") ||
+               lower.contains("touchpad") || lower.contains("trackball") ||
+               lower.contains("keyboard");
+    }
+
+    private boolean isGamepadEnabled() {
+        Path[] cfgPaths = new Path[] {
+            Paths.get("../src/experiment/config.properties"),
+            Paths.get("src/experiment/config.properties"),
+            Paths.get("experiment/config.properties"),
+            Paths.get("../src/gamepad.properties"),
+            Paths.get("src/gamepad.properties")
+        };
+        for (Path p : cfgPaths) {
+            if (Files.exists(p)) {
+                try (InputStream in = Files.newInputStream(p)) {
+                    Properties props = new Properties();
+                    props.load(in);
+                    String val = props.getProperty("enable_gamepad", props.getProperty("gamepad", null));
+                    if (val != null) {
+                        return Boolean.parseBoolean(val.trim());
+                    }
+                } catch (Exception ignored) {}
+            }
+        }
+        return true;
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -357,6 +427,57 @@ public class GamepadManager {
         padDown = false;
         padJump = false;
         padSpeed = false;
+        axisStickX = 0;
+        axisStickY = 0;
+        axisDpadX = 0;
+        axisDpadY = 0;
         Arrays.fill(buttonStates, false);
+    }
+
+    public int getAxisStickX() {
+        return axisStickX;
+    }
+
+    public int getAxisStickY() {
+        return axisStickY;
+    }
+
+    public int getAxisDpadX() {
+        return axisDpadX;
+    }
+
+    public int getAxisDpadY() {
+        return axisDpadY;
+    }
+
+    public boolean isPadLeft() {
+        return padLeft;
+    }
+
+    public boolean isPadRight() {
+        return padRight;
+    }
+
+    public boolean isPadDown() {
+        return padDown;
+    }
+
+    public boolean isPadJump() {
+        return padJump;
+    }
+
+    public boolean isPadSpeed() {
+        return padSpeed;
+    }
+
+    public String getActiveButtonsString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < buttonStates.length; i++) {
+            if (buttonStates[i]) {
+                if (sb.length() > 0) sb.append(", ");
+                sb.append("B").append(i);
+            }
+        }
+        return sb.toString();
     }
 }

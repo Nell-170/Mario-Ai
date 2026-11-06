@@ -1,8 +1,27 @@
 diff --git a/src/agents/human/Agent.java b/src/agents/human/Agent.java
-index b888366b..a525aa15 100644
+index b888366b..202f797c 100644
 --- a/src/agents/human/Agent.java
 +++ b/src/agents/human/Agent.java
-@@ -14,11 +14,12 @@ public class Agent extends KeyAdapter implements MarioAgent {
+@@ -10,15 +10,31 @@ import engine.helper.MarioActions;
+ 
+ public class Agent extends KeyAdapter implements MarioAgent {
+     private boolean[] actions = null;
++    private static final java.util.Set<Integer> activeKeyCodes = java.util.concurrent.ConcurrentHashMap.newKeySet();
++
++    public static java.util.List<String> getActiveKeyNames() {
++        java.util.List<String> list = new java.util.ArrayList<>();
++        for (Integer code : activeKeyCodes) {
++            list.add(KeyEvent.getKeyText(code));
++        }
++        java.util.Collections.sort(list);
++        return list;
++    }
++
++    public static boolean isKeyActionActive(int actionValue) {
++        // Retorna si alguna tecla del teclado está activando esta acción
++        return false;
++    }
+ 
      @Override
      public void initialize(MarioForwardModel model, MarioTimer timer) {
          actions = new boolean[MarioActions.numberOfActions()];
@@ -16,7 +35,24 @@ index b888366b..a525aa15 100644
      }
  
      @Override
-@@ -50,9 +51,18 @@ public class Agent extends KeyAdapter implements MarioAgent {
+@@ -28,11 +44,16 @@ public class Agent extends KeyAdapter implements MarioAgent {
+ 
+     @Override
+     public void keyPressed(KeyEvent e) {
++        if (e.getKeyCode() == KeyEvent.VK_F3) {
++            engine.core.MarioGame.toggleDebugInput();
++        }
++        activeKeyCodes.add(e.getKeyCode());
+         toggleKey(e.getKeyCode(), true);
+     }
+ 
+     @Override
+     public void keyReleased(KeyEvent e) {
++        activeKeyCodes.remove(e.getKeyCode());
+         toggleKey(e.getKeyCode(), false);
+     }
+ 
+@@ -50,9 +71,18 @@ public class Agent extends KeyAdapter implements MarioAgent {
              case KeyEvent.VK_DOWN:
                  this.actions[MarioActions.DOWN.getValue()] = isPressed;
                  break;
@@ -36,7 +72,7 @@ index b888366b..a525aa15 100644
                  this.actions[MarioActions.SPEED.getValue()] = isPressed;
                  break;
 diff --git a/src/engine/core/MarioGame.java b/src/engine/core/MarioGame.java
-index 1f58d96b..9803e0a5 100644
+index 1f58d96b..92a1c958 100644
 --- a/src/engine/core/MarioGame.java
 +++ b/src/engine/core/MarioGame.java
 @@ -10,6 +10,16 @@ import javax.swing.JFrame;
@@ -56,7 +92,54 @@ index 1f58d96b..9803e0a5 100644
  
  public class MarioGame {
      /**
-@@ -44,7 +54,7 @@ public class MarioGame {
+@@ -41,10 +51,54 @@ public class MarioGame {
+      */
+     public static final boolean verbose = false;
+ 
++    // Diagnóstico y depuración de controles (config.properties: debug_input=true o tecla F3)
++    private static volatile boolean debugInputEnabled = false;
++    private long lastDebugLogMs = 0;
++    private String lastLoggedState = "";
++
++    public static boolean isDebugInputEnabled() {
++        return debugInputEnabled;
++    }
++
++    public static void setDebugInputEnabled(boolean enabled) {
++        debugInputEnabled = enabled;
++    }
++
++    public static void toggleDebugInput() {
++        debugInputEnabled = !debugInputEnabled;
++        System.out.println("[MarioGame] Diagnóstico de controles en pantalla (HUD): " + (debugInputEnabled ? "ACTIVADO" : "DESACTIVADO"));
++    }
++
++    public static void loadConfigFromProperties() {
++        java.nio.file.Path[] candidates = new java.nio.file.Path[] {
++            java.nio.file.Paths.get("../src/experiment/config.properties"),
++            java.nio.file.Paths.get("src/experiment/config.properties"),
++            java.nio.file.Paths.get("experiment/config.properties"),
++            java.nio.file.Paths.get("../experiment/config.properties"),
++            java.nio.file.Paths.get("config.properties")
++        };
++        for (java.nio.file.Path p : candidates) {
++            if (java.nio.file.Files.exists(p)) {
++                try (java.io.InputStream in = java.nio.file.Files.newInputStream(p)) {
++                    java.util.Properties props = new java.util.Properties();
++                    props.load(in);
++                    String val = props.getProperty("debug_input", props.getProperty("debug_keys", null));
++                    if (val != null) {
++                        debugInputEnabled = Boolean.parseBoolean(val.trim());
++                    }
++                    if (debugInputEnabled) {
++                        System.out.println("[MarioGame] Diagnóstico de entrada activado desde: " + p);
++                    }
++                    return;
++                } catch (Exception ignored) {}
++            }
++        }
++    }
++
      /**
       * pauses the whole game at any moment
       */
@@ -65,7 +148,7 @@ index 1f58d96b..9803e0a5 100644
  
      /**
       * events that kills the player when it happens only care about type and param
-@@ -56,6 +66,13 @@ public class MarioGame {
+@@ -56,12 +110,19 @@ public class MarioGame {
      private MarioRender render = null;
      private MarioAgent agent = null;
      private MarioWorld world = null;
@@ -79,10 +162,20 @@ index 1f58d96b..9803e0a5 100644
  
      /**
       * Create a mario game to be played
-@@ -73,6 +90,155 @@ public class MarioGame {
-         this.killEvents = killEvents;
+      */
+     public MarioGame() {
+-
++        loadConfigFromProperties();
      }
  
+     /**
+@@ -71,6 +132,156 @@ public class MarioGame {
+      */
+     public MarioGame(MarioEvent[] killEvents) {
+         this.killEvents = killEvents;
++        loadConfigFromProperties();
++    }
++
 +    private JFrame externalWindow = null;
 +
 +    public void setExternalWindow(JFrame window) {
@@ -230,12 +323,10 @@ index 1f58d96b..9803e0a5 100644
 +
 +    public void toggleFullScreen() {
 +        setFullScreen(!this.isFullScreen);
-+    }
-+
+     }
+ 
      private int getDelay(int fps) {
-         if (fps <= 0) {
-             return 0;
-@@ -82,9 +248,92 @@ public class MarioGame {
+@@ -82,9 +293,92 @@ public class MarioGame {
  
      private void setAgent(MarioAgent agent) {
          this.agent = agent;
@@ -329,7 +420,7 @@ index 1f58d96b..9803e0a5 100644
      }
  
      /**
-@@ -204,18 +448,158 @@ public class MarioGame {
+@@ -204,18 +498,158 @@ public class MarioGame {
       * @return statistics about the current game
       */
      public MarioResult runGame(MarioAgent agent, String level, int timer, int marioState, boolean visuals, int fps, float scale) {
@@ -495,7 +586,7 @@ index 1f58d96b..9803e0a5 100644
      }
  
      private MarioResult gameLoop(String level, int timer, int marioState, boolean visual, int fps) {
-@@ -231,13 +615,25 @@ public class MarioGame {
+@@ -231,13 +665,25 @@ public class MarioGame {
          long currentTime = System.currentTimeMillis();
  
          //initialize graphics
@@ -526,7 +617,7 @@ index 1f58d96b..9803e0a5 100644
              this.render.addFocusListener(this.render);
          }
  
-@@ -246,7 +642,33 @@ public class MarioGame {
+@@ -246,7 +692,33 @@ public class MarioGame {
  
          ArrayList<MarioEvent> gameEvents = new ArrayList<>();
          ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
@@ -560,7 +651,7 @@ index 1f58d96b..9803e0a5 100644
              if (!this.pause) {
                  //get actions
                  agentTimer = new MarioTimer(MarioGame.maxTime);
-@@ -259,6 +681,11 @@ public class MarioGame {
+@@ -259,6 +731,11 @@ public class MarioGame {
                  }
                  // update world
                  this.world.update(actions);
@@ -572,7 +663,7 @@ index 1f58d96b..9803e0a5 100644
                  gameEvents.addAll(this.world.lastFrameEvents);
                  agentEvents.add(new MarioAgentEvent(actions, this.world.mario.x,
                          this.world.mario.y, (this.world.mario.isLarge ? 1 : 0) + (this.world.mario.isFire ? 1 : 0),
-@@ -267,9 +694,65 @@ public class MarioGame {
+@@ -267,9 +744,69 @@ public class MarioGame {
  
              //render world
              if (visual) {
@@ -629,6 +720,10 @@ index 1f58d96b..9803e0a5 100644
 +                        int sy = ty + 30;
 +                        g2d.drawString(subMsg, sx, sy);
 +                    }
++                    if (debugInputEnabled && this.world != null && this.world.mario != null) {
++                        renderDebugInputOverlay((Graphics2D) backBuffer);
++                        logDebugInputState();
++                    }
 +                    backBuffer.dispose();
 +                }
              }
@@ -639,7 +734,7 @@ index 1f58d96b..9803e0a5 100644
              if (this.getDelay(fps) > 0) {
                  try {
                      currentTime += this.getDelay(fps);
-@@ -278,6 +761,47 @@ public class MarioGame {
+@@ -278,7 +815,161 @@ public class MarioGame {
                      break;
                  }
              }
@@ -687,6 +782,120 @@ index 1f58d96b..9803e0a5 100644
          }
          return new MarioResult(this.world, gameEvents, agentEvents);
      }
++
++    private void renderDebugInputOverlay(Graphics2D g2d) {
++        if (g2d == null || this.world == null || this.world.mario == null) return;
++        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
++
++        int boxX = 14;
++        int boxY = 14;
++        int boxW = Math.min(620, Math.max(480, (this.render != null ? this.render.getWidth() : 600) - 28));
++        int boxH = 142;
++
++        // Fondo semitransparente oscuro con borde índigo
++        g2d.setColor(new Color(15, 23, 42, 230));
++        g2d.fillRoundRect(boxX, boxY, boxW, boxH, 10, 10);
++        g2d.setColor(new Color(99, 102, 241, 180));
++        g2d.drawRoundRect(boxX, boxY, boxW, boxH, 10, 10);
++
++        // Encabezado
++        g2d.setColor(new Color(165, 180, 252));
++        g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
++        g2d.drawString("🛠 DIAGNÓSTICO DE ENTRADA (config.properties: debug_input=true | F3 alternar)", boxX + 12, boxY + 20);
++
++        // Fila de píldoras de acciones recibidas por Mario
++        boolean[] acts = this.world.mario.actions;
++        int px = boxX + 12;
++        int py = boxY + 30;
++
++        px = renderActionPill(g2d, "◀ IZQ", acts[MarioActions.LEFT.getValue()], px, py, new Color(239, 68, 68));
++        px = renderActionPill(g2d, "▶ DER", acts[MarioActions.RIGHT.getValue()], px, py, new Color(34, 197, 94));
++        px = renderActionPill(g2d, "▼ ABAJO", acts[MarioActions.DOWN.getValue()], px, py, new Color(234, 179, 8));
++        px = renderActionPill(g2d, "▲ SALTO", acts[MarioActions.JUMP.getValue()], px, py, new Color(6, 182, 212));
++        px = renderActionPill(g2d, "⚡ CORRER/DISPARO", acts[MarioActions.SPEED.getValue()], px, py, new Color(249, 115, 22));
++
++        // Origen Teclado
++        g2d.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
++        g2d.setColor(new Color(226, 232, 240));
++        java.util.List<String> keys = agents.human.Agent.getActiveKeyNames();
++        String keysStr = keys.isEmpty() ? "(ninguna tecla presionada)" : String.join(", ", keys);
++        g2d.drawString("⌨ Teclado:  " + keysStr, boxX + 12, boxY + 80);
++
++        // Origen Mando
++        engine.input.GamepadManager gm = engine.input.GamepadManager.getInstance();
++        String padStr;
++        if (!gm.isConnected()) {
++            padStr = "Desconectado o no detectado";
++            g2d.setColor(new Color(148, 163, 184));
++        } else {
++            padStr = gm.getControllerName() + " | Ejes: [StickX=" + gm.getAxisStickX() + " StickY=" + gm.getAxisStickY() 
++                    + " DpadX=" + gm.getAxisDpadX() + " DpadY=" + gm.getAxisDpadY() + "]"
++                    + " | Pad: [Izq=" + gm.isPadLeft() + " Der=" + gm.isPadRight() + " Abajo=" + gm.isPadDown()
++                    + " Salto=" + gm.isPadJump() + " Correr=" + gm.isPadSpeed() + "]"
++                    + (gm.getActiveButtonsString().isEmpty() ? "" : " | Botones: " + gm.getActiveButtonsString());
++            if (gm.isPadLeft() || gm.isPadRight() || gm.isPadDown() || gm.isPadJump() || gm.isPadSpeed()) {
++                g2d.setColor(new Color(251, 191, 36));
++            } else {
++                g2d.setColor(new Color(148, 163, 184));
++            }
++        }
++        g2d.drawString("🎮 Mando:  " + padStr, boxX + 12, boxY + 104);
++
++        // Alerta si Mario recibe IZQUIERDA sin que haya tecla presionada
++        if (acts[MarioActions.LEFT.getValue()] && keys.stream().noneMatch(k -> k.equalsIgnoreCase("Left") || k.equalsIgnoreCase("Izquierda") || k.equalsIgnoreCase("A"))) {
++            g2d.setColor(new Color(248, 113, 113));
++            g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 11));
++            g2d.drawString("⚠ ALERTA: Mario recibe IZQUIERDA desde el mando/dispositivo, no del teclado.", boxX + 12, boxY + 128);
++        } else {
++            g2d.setColor(new Color(100, 116, 139));
++            g2d.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
++            g2d.drawString("Estado normal. Los controles activos se reflejan en tiempo real.", boxX + 12, boxY + 128);
++        }
++    }
++
++    private int renderActionPill(Graphics2D g2d, String text, boolean active, int x, int y, Color activeColor) {
++        Font font = new Font(Font.SANS_SERIF, Font.BOLD, 11);
++        int w = g2d.getFontMetrics(font).stringWidth(text) + 14;
++        int h = 22;
++        if (active) {
++            g2d.setColor(activeColor);
++            g2d.fillRoundRect(x, y, w, h, 6, 6);
++            g2d.setColor(Color.WHITE);
++        } else {
++            g2d.setColor(new Color(30, 41, 59));
++            g2d.fillRoundRect(x, y, w, h, 6, 6);
++            g2d.setColor(new Color(100, 116, 139));
++        }
++        g2d.setFont(font);
++        g2d.drawString(text, x + 7, y + 15);
++        return x + w + 8;
++    }
++
++    private void logDebugInputState() {
++        long now = System.currentTimeMillis();
++        boolean[] acts = this.world.mario.actions;
++        java.util.List<String> activeActs = new java.util.ArrayList<>();
++        if (acts[MarioActions.LEFT.getValue()]) activeActs.add("IZQ");
++        if (acts[MarioActions.RIGHT.getValue()]) activeActs.add("DER");
++        if (acts[MarioActions.DOWN.getValue()]) activeActs.add("ABAJO");
++        if (acts[MarioActions.JUMP.getValue()]) activeActs.add("SALTO");
++        if (acts[MarioActions.SPEED.getValue()]) activeActs.add("CORRER");
++
++        java.util.List<String> keys = agents.human.Agent.getActiveKeyNames();
++        engine.input.GamepadManager gm = engine.input.GamepadManager.getInstance();
++
++        String currentState = "Acciones=" + activeActs + " | Teclado=" + keys + " | Mando=" + (gm.isConnected() ? ("PadLeft=" + gm.isPadLeft() + " SX=" + gm.getAxisStickX()) : "OFF");
++
++        if (!currentState.equals(lastLoggedState) || (now - lastDebugLogMs > 2000 && !activeActs.isEmpty())) {
++            lastLoggedState = currentState;
++            lastDebugLogMs = now;
++            System.out.println("[INPUT-DEBUG] Mario: " + (activeActs.isEmpty() ? "(ninguna)" : String.join("+", activeActs))
++                    + " | Teclado: " + (keys.isEmpty() ? "(ninguna)" : String.join(", ", keys))
++                    + " | Mando (" + (gm.isConnected() ? gm.getControllerName() : "Desconectado") + "): "
++                    + (gm.isConnected() ? ("PadLeft=" + gm.isPadLeft() + " PadRight=" + gm.isPadRight() + " StickX=" + gm.getAxisStickX()) : "OFF"));
++        }
++    }
+ }
 diff --git a/src/engine/core/MarioRender.java b/src/engine/core/MarioRender.java
 index aa278681..d3df5b74 100755
 --- a/src/engine/core/MarioRender.java
