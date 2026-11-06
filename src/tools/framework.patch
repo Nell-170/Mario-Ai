@@ -1127,3 +1127,34 @@ index 38ffcc37..5818682e 100644
 +        throw new IllegalArgumentException("Unknown event type: " + value);
 +    }
  }
+diff --git a/src/engine/sprites/Mario.java b/src/engine/sprites/Mario.java
+index 5a05c14..67fb91d 100644
+--- a/src/engine/sprites/Mario.java
++++ b/src/engine/sprites/Mario.java
+@@ -263,6 +263,10 @@ public class Mario extends MarioSprite {
+             isDucking = actions[MarioActions.DOWN.getValue()] && isLarge;
+         }
+ 
++        if (isDucking) {
++            sideWaysSpeed = 0.6f; // crouch-walk: walking speed, no run boost (must exceed the 0.5 dead-zone from standstill)
++        }
++
+         if (isLarge) {
+             height = isDucking ? 12 : 24;
+         } else {
+@@ -301,13 +305,13 @@ public class Mario extends MarioSprite {
+             jumpTime = 0;
+         }
+ 
+-        if (actions[MarioActions.LEFT.getValue()] && !isDucking) {
++        if (actions[MarioActions.LEFT.getValue()]) {
+             xa -= sideWaysSpeed;
+             if (jumpTime >= 0)
+                 facing = -1;
+         }
+ 
+-        if (actions[MarioActions.RIGHT.getValue()] && !isDucking) {
++        if (actions[MarioActions.RIGHT.getValue()]) {
+             xa += sideWaysSpeed;
+             if (jumpTime >= 0)
+                 facing = 1;
