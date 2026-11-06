@@ -24,56 +24,6 @@ def load_json(path: Path):
         return json.load(f)
 
 
-def to_mariogpt_keywords(prompt: str) -> str:
-    """Adapts telemetry or structured prompts into MarioGPT's native keyword conditioning."""
-    if not prompt or not prompt.strip():
-        return "many pipes, some enemies, some blocks, high elevation"
-
-    lower = prompt.lower()
-    if any(k in lower for k in ["pipes", "enemies", "elevation"]) and ";" not in prompt:
-        return prompt.strip()
-
-    kv = {}
-    for part in prompt.split(";"):
-        if "=" in part:
-            k, v = part.split("=", 1)
-            kv[k.strip().lower()] = v.strip().lower()
-        elif ":" in part:
-            k, v = part.split(":", 1)
-            kv[k.strip().lower()] = v.strip().lower()
-
-    # Route / Elevation
-    route = kv.get("route", "")
-    elevation = "high elevation" if "high" in route else "low elevation" if "low" in route else "high elevation"
-
-    # Enemies
-    enemies_val = kv.get("enemies", "")
-    if any(x in enemies_val for x in ["high", "many", "dense"]):
-        enemies = "many enemies"
-    elif any(x in enemies_val for x in ["low", "none", "sparse"]):
-        enemies = "little enemies"
-    else:
-        enemies = "some enemies"
-
-    # Pipes / Hazards
-    hazards_val = kv.get("hazards", "")
-    if any(x in hazards_val for x in ["high", "many"]):
-        pipes = "many pipes"
-    elif any(x in hazards_val for x in ["low", "none"]):
-        pipes = "little pipes"
-    else:
-        pipes = "some pipes"
-
-    # Blocks / Rewards
-    rewards_val = kv.get("rewards", "")
-    if any(x in rewards_val for x in ["rich", "high", "many"]):
-        blocks = "many blocks"
-    else:
-        blocks = "some blocks"
-
-    return f"{pipes}, {enemies}, {blocks}, {elevation}"
-
-
 def try_generate_remote(server_url: str, prompt: str, timeout: float = 35.0) -> str | None:
     """Attempts to generate a level from the remote HPC MarioGPT REST server."""
     base = server_url.rstrip("/")
@@ -91,11 +41,10 @@ def try_generate_remote(server_url: str, prompt: str, timeout: float = 35.0) -> 
 
     # 2. Level generation request
     try:
-        kw_prompt = to_mariogpt_keywords(prompt)
         print(f"\n[HPC] Generando en nodo GPU del clúster: {base}/level")
-        print(f"[HPC] Prompt acondicionado: '{kw_prompt}'")
+        print(f"[HPC] Prompt enviado: '{prompt}'")
 
-        query = urllib.parse.urlencode({"prompt": kw_prompt})
+        query = urllib.parse.urlencode({"prompt": prompt})
         req_level = urllib.request.Request(f"{base}/level?{query}", headers={"User-Agent": "MarioAI-Experiment/1.0"})
         with urllib.request.urlopen(req_level, timeout=timeout) as resp:
             if resp.status == 200:
