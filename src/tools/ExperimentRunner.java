@@ -356,7 +356,7 @@ public class ExperimentRunner {
                         timer
                 );
                 String famContent = sanitizeLevel(Files.readString(famLevel));
-                BufferedImage famThumb = renderLevelThumbnail(famContent, 888, 130);
+                BufferedImage famThumb = renderLevelThumbnail(famContent, 1160, 190);
                 showLevelIntroScreen("Familiarización (" + (f + 1) + " de " + familiarization.size() + ")",
                         "Nivel de práctica " + (f + 1),
                         "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n"
@@ -468,7 +468,7 @@ public class ExperimentRunner {
                 );
 
                 String levelContent = sanitizeLevel(Files.readString(levelFile));
-                BufferedImage thumbnail = renderLevelThumbnail(levelContent, 888, 130);
+                BufferedImage thumbnail = renderLevelThumbnail(levelContent, 1160, 190);
                 playedLevels.add(new PlayedLevelInfo(i + 1, step.type(), step.index(), stepCode, levelFile, levelContent, thumbnail));
 
                 showLevelIntroScreen("Nivel " + (i + 1) + " de " + steps.size(),
@@ -1041,8 +1041,11 @@ public class ExperimentRunner {
         CompletableFuture<Void> future = new CompletableFuture<>();
         SwingUtilities.invokeLater(() -> {
             JPanel bg = createScreenContainer();
+            Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+            int frameW = Math.min(1240, Math.max(1040, screen.width - 60));
+            int cardW = frameW - 20;
             int cardHeight = developMode ? 820 : (thumbnail != null ? 760 : 520);
-            JPanel card = createModernCard(960, cardHeight);
+            JPanel card = createModernCard(cardW, cardHeight);
 
             card.add(createBadge(badge));
             card.add(Box.createRigidArea(new Dimension(0, 12)));
@@ -1087,13 +1090,15 @@ public class ExperimentRunner {
                 card.add(thumbLabel);
 
                 card.add(Box.createRigidArea(new Dimension(0, 10)));
-                JPanel diagramsPanel = new JPanel(new GridLayout(1, 2, 12, 0));
+                int diagramW = (cardW - 48 - 14) / 2;
+                int diagramH = 225;
+                JPanel diagramsPanel = new JPanel(new GridLayout(1, 2, 14, 0));
                 diagramsPanel.setOpaque(false);
                 diagramsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                diagramsPanel.setMaximumSize(new Dimension(890, 165));
+                diagramsPanel.setMaximumSize(new Dimension(cardW - 48, diagramH));
 
-                JLabel padDiagram = new JLabel(new ImageIcon(PlayHuman.renderControllerDiagram(436, 165)));
-                JLabel kbDiagram = new JLabel(new ImageIcon(PlayHuman.renderKeyboardDiagram(436, 165)));
+                JLabel padDiagram = new JLabel(new ImageIcon(PlayHuman.renderControllerDiagram(diagramW, diagramH)));
+                JLabel kbDiagram = new JLabel(new ImageIcon(PlayHuman.renderKeyboardDiagram(diagramW, diagramH)));
                 diagramsPanel.add(padDiagram);
                 diagramsPanel.add(kbDiagram);
                 card.add(diagramsPanel);

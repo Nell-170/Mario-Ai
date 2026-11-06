@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -343,12 +344,18 @@ public class PlayHuman {
                 }
             }
 
-            BufferedImage thumb = renderLevelThumbnail(levelContent, 888, 140);
+            Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+            int frameW = Math.min(1240, Math.max(1040, screen.width - 60));
+            int contentW = frameW - 48; // Padding 24px each side
+            int diagramW = (contentW - 14) / 2;
+            int diagramH = 225;
+
+            BufferedImage thumb = renderLevelThumbnail(levelContent, contentW, 190);
 
             JPanel mainPanel = new JPanel();
             mainPanel.setBackground(new Color(15, 23, 42)); // Slate 900
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-            mainPanel.setBorder(new EmptyBorder(20, 24, 20, 24));
+            mainPanel.setBorder(new EmptyBorder(18, 24, 18, 24));
 
             // Badge Row
             JPanel badgeRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -360,22 +367,22 @@ public class PlayHuman {
             badge.setForeground(new Color(224, 231, 255));
             badge.setOpaque(true);
             badge.setBackground(new Color(79, 70, 229)); // Indigo 600
-            badge.setBorder(new EmptyBorder(4, 10, 4, 10));
+            badge.setBorder(new EmptyBorder(4, 12, 4, 12));
             badgeRow.add(badge);
             mainPanel.add(badgeRow);
             mainPanel.add(Box.createRigidArea(new Dimension(0, 8)));
 
             // Title
             JLabel titleLabel = new JLabel(levelName);
-            titleLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
+            titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
             titleLabel.setForeground(Color.WHITE);
             titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             mainPanel.add(titleLabel);
-            mainPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+            mainPanel.add(Box.createRigidArea(new Dimension(0, 3)));
 
             // Stats Subtitle
             JLabel statsLabel = new JLabel("Dimensiones: " + rows + " filas × " + cols + " columnas  |  " + displayPath);
-            statsLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            statsLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
             statsLabel.setForeground(new Color(148, 163, 184)); // Slate 400
             statsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             mainPanel.add(statsLabel);
@@ -389,7 +396,7 @@ public class PlayHuman {
             mainPanel.add(thumbTitle);
             mainPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-            // Thumbnail Image Card
+            // Thumbnail Image Card (190px tall)
             JLabel thumbLabel = new JLabel(new ImageIcon(thumb));
             thumbLabel.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(new Color(99, 102, 241, 140), 1, true),
@@ -401,23 +408,23 @@ public class PlayHuman {
             mainPanel.add(Box.createRigidArea(new Dimension(0, 12)));
 
             // Dual Control Diagrams (Gamepad on left, Keyboard on right)
-            JPanel diagramsPanel = new JPanel(new GridLayout(1, 2, 12, 0));
+            JPanel diagramsPanel = new JPanel(new GridLayout(1, 2, 14, 0));
             diagramsPanel.setOpaque(false);
             diagramsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            diagramsPanel.setMaximumSize(new Dimension(896, 175));
+            diagramsPanel.setMaximumSize(new Dimension(contentW, diagramH));
 
-            JLabel padDiagram = new JLabel(new ImageIcon(renderControllerDiagram(442, 175)));
-            JLabel kbDiagram = new JLabel(new ImageIcon(renderKeyboardDiagram(442, 175)));
+            JLabel padDiagram = new JLabel(new ImageIcon(renderControllerDiagram(diagramW, diagramH)));
+            JLabel kbDiagram = new JLabel(new ImageIcon(renderKeyboardDiagram(diagramW, diagramH)));
             diagramsPanel.add(padDiagram);
             diagramsPanel.add(kbDiagram);
             mainPanel.add(diagramsPanel);
             mainPanel.add(Box.createRigidArea(new Dimension(0, 14)));
 
             // Buttons Bar
-            JPanel buttonsBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 0));
+            JPanel buttonsBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 14, 0));
             buttonsBar.setOpaque(false);
             buttonsBar.setAlignmentX(Component.LEFT_ALIGNMENT);
-            buttonsBar.setMaximumSize(new Dimension(896, 45));
+            buttonsBar.setMaximumSize(new Dimension(contentW, 46));
 
             IntroButton cancelBtn = new IntroButton("Cancelar (Esc)", new Color(51, 65, 85), new Color(71, 85, 105), new Color(226, 232, 240), 13);
             IntroButton startBtn = new IntroButton("¡Comenzar partida! (Espacio / Enter)", new Color(99, 102, 241), new Color(79, 70, 229), Color.WHITE, 14);
@@ -527,99 +534,99 @@ public class PlayHuman {
         g2.drawRoundRect(0, 0, w - 1, h - 1, 14, 14);
 
         // Header Title
-        g2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        g2.setFont(new Font("SansSerif", Font.BOLD, 13));
         g2.setColor(new Color(165, 180, 252)); // Indigo 300
-        g2.drawString("🎮 CONTROL / MANDO (PS4 / XBOX)", 14, 20);
+        g2.drawString("🎮 CONTROL / MANDO (PS4 / XBOX)", 16, 22);
 
         int cx = w / 2;
-        int cy = h / 2 + 10;
+        int cy = h / 2 + 14;
 
-        // Gamepad Silhouette
+        // Gamepad Silhouette (Expanded & Proportional)
         g2.setColor(new Color(51, 65, 85));
-        g2.fillRoundRect(cx - 110, cy - 35, 220, 70, 35, 35);
-        g2.fillRoundRect(cx - 120, cy - 20, 50, 75, 30, 30); // Left grip
-        g2.fillRoundRect(cx + 70, cy - 20, 50, 75, 30, 30);  // Right grip
+        g2.fillRoundRect(cx - 135, cy - 42, 270, 84, 40, 40);
+        g2.fillRoundRect(cx - 150, cy - 25, 60, 95, 35, 35); // Left grip
+        g2.fillRoundRect(cx + 90, cy - 25, 60, 95, 35, 35);  // Right grip
         g2.setColor(new Color(71, 85, 105));
-        g2.drawRoundRect(cx - 110, cy - 35, 220, 70, 35, 35);
+        g2.drawRoundRect(cx - 135, cy - 42, 270, 84, 40, 40);
 
         // Bumpers (L1 / R1)
         g2.setColor(new Color(100, 116, 139));
-        g2.fillRoundRect(cx - 95, cy - 42, 45, 10, 6, 6);
-        g2.fillRoundRect(cx + 50, cy - 42, 45, 10, 6, 6);
+        g2.fillRoundRect(cx - 118, cy - 54, 55, 12, 6, 6);
+        g2.fillRoundRect(cx + 63, cy - 54, 55, 12, 6, 6);
         g2.setColor(new Color(148, 163, 184));
-        g2.setFont(new Font("SansSerif", Font.BOLD, 9));
-        g2.drawString("L1 (Correr)", cx - 100, cy - 46);
-        g2.drawString("R1 (Correr)", cx + 50, cy - 46);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 10));
+        g2.drawString("L1 (Correr)", cx - 120, cy - 58);
+        g2.drawString("R1 (Correr)", cx + 65, cy - 58);
 
         // Center Touchpad / Logo area
         g2.setColor(new Color(15, 23, 42));
-        g2.fillRoundRect(cx - 28, cy - 28, 56, 32, 8, 8);
+        g2.fillRoundRect(cx - 36, cy - 36, 72, 40, 10, 10);
         g2.setColor(new Color(71, 85, 105));
-        g2.drawRoundRect(cx - 28, cy - 28, 56, 32, 8, 8);
+        g2.drawRoundRect(cx - 36, cy - 36, 72, 40, 10, 10);
 
         // Share / Options buttons
         g2.setColor(new Color(203, 213, 225));
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 9));
-        g2.fillOval(cx - 38, cy - 14, 6, 6);
-        g2.drawString("Share: R", cx - 74, cy - 18);
-        g2.fillOval(cx + 32, cy - 14, 6, 6);
-        g2.drawString("Options: P", cx + 30, cy - 18);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 10));
+        g2.fillOval(cx - 48, cy - 18, 8, 8);
+        g2.drawString("Share: R", cx - 94, cy - 24);
+        g2.fillOval(cx + 40, cy - 18, 8, 8);
+        g2.drawString("Options: P", cx + 38, cy - 24);
 
         // D-Pad (Left side)
-        int dpx = cx - 75;
-        int dpy = cy + 2;
+        int dpx = cx - 95;
+        int dpy = cy + 4;
         g2.setColor(new Color(15, 23, 42));
-        g2.fillRect(dpx - 5, dpy - 16, 10, 32);
-        g2.fillRect(dpx - 16, dpy - 5, 32, 10);
+        g2.fillRect(dpx - 7, dpy - 20, 14, 40);
+        g2.fillRect(dpx - 20, dpy - 7, 40, 14);
         g2.setColor(new Color(56, 189, 248)); // Cyan highlight
-        g2.drawRect(dpx - 5, dpy - 16, 10, 32);
-        g2.drawRect(dpx - 16, dpy - 5, 32, 10);
+        g2.drawRect(dpx - 7, dpy - 20, 14, 40);
+        g2.drawRect(dpx - 20, dpy - 7, 40, 14);
 
         // D-Pad Callout: Moverse
-        drawCalloutBadge(g2, "D-Pad: Moverse", cx - 110, cy + 42, new Color(56, 189, 248), Color.BLACK);
+        drawCalloutBadge(g2, "D-Pad: Moverse", cx - 145, cy + 54, new Color(56, 189, 248), Color.BLACK);
 
         // Action Buttons (Right side - Diamond layout)
-        int abx = cx + 75;
-        int aby = cy + 2;
+        int abx = cx + 95;
+        int aby = cy + 4;
 
         // Bottom button: ✖ Equis (Cross) -> SALTAR
         int crossX = abx;
-        int crossY = aby + 13;
+        int crossY = aby + 18;
         g2.setColor(new Color(34, 197, 94)); // Green
-        g2.fillOval(crossX - 8, crossY - 8, 16, 16);
+        g2.fillOval(crossX - 11, crossY - 11, 22, 22);
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("SansSerif", Font.BOLD, 10));
-        g2.drawString("✖", crossX - 4, crossY + 4);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        g2.drawString("✖", crossX - 5, crossY + 5);
 
         // Left button: ⬛ Cuadrado (Square) -> CORRER
-        int sqX = abx - 14;
+        int sqX = abx - 18;
         int sqY = aby - 1;
         g2.setColor(new Color(249, 115, 22)); // Orange
-        g2.fillOval(sqX - 8, sqY - 8, 16, 16);
+        g2.fillOval(sqX - 11, sqY - 11, 22, 22);
         g2.setColor(Color.WHITE);
-        g2.drawString("■", sqX - 4, sqY + 4);
+        g2.drawString("■", sqX - 5, sqY + 5);
 
         // Right button: ⭕ Círculo (Circle) -> Correr
-        int circX = abx + 14;
+        int circX = abx + 18;
         int circY = aby - 1;
-        g2.setColor(new Color(249, 115, 22, 180));
-        g2.fillOval(circX - 8, circY - 8, 16, 16);
+        g2.setColor(new Color(249, 115, 22, 190));
+        g2.fillOval(circX - 11, circY - 11, 22, 22);
         g2.setColor(Color.WHITE);
-        g2.drawString("●", circX - 4, circY + 4);
+        g2.drawString("●", circX - 5, circY + 5);
 
         // Top button: 🔺 Triángulo (Triangle)
         int triX = abx;
-        int triY = aby - 15;
+        int triY = aby - 20;
         g2.setColor(new Color(100, 116, 139));
-        g2.fillOval(triX - 8, triY - 8, 16, 16);
+        g2.fillOval(triX - 11, triY - 11, 22, 22);
         g2.setColor(Color.WHITE);
-        g2.drawString("▲", triX - 4, triY + 4);
+        g2.drawString("▲", triX - 5, triY + 5);
 
         // Callout Square: Correr
-        drawCalloutBadge(g2, "■ Cuadrado: Correr", abx - 30, cy - 25, new Color(249, 115, 22), Color.WHITE);
+        drawCalloutBadge(g2, "■ Cuadrado: Correr", abx - 45, cy - 36, new Color(249, 115, 22), Color.WHITE);
 
         // Callout Cross: Saltar
-        drawCalloutBadge(g2, "✖ Equis: Saltar", abx + 5, cy + 42, new Color(34, 197, 94), Color.WHITE);
+        drawCalloutBadge(g2, "✖ Equis: Saltar", abx + 15, cy + 54, new Color(34, 197, 94), Color.WHITE);
 
         g2.dispose();
         return img;
@@ -638,47 +645,51 @@ public class PlayHuman {
         g2.drawRoundRect(0, 0, w - 1, h - 1, 14, 14);
 
         // Header Title
-        g2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        g2.setFont(new Font("SansSerif", Font.BOLD, 13));
         g2.setColor(new Color(165, 180, 252)); // Indigo 300
-        g2.drawString("⌨️ TECLADO (ERCILLER & FLECHAS)", 14, 20);
+        g2.drawString("⌨️ TECLADO (ERCILLER & FLECHAS)", 16, 22);
 
         // Top right: P (Pausa) & R (Reiniciar)
-        drawKeycap(g2, "P", w - 45, 12, 22, 18, new Color(56, 189, 248), Color.WHITE);
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 10));
+        drawKeycap(g2, "P", w - 48, 14, 26, 22, new Color(56, 189, 248), Color.WHITE);
+        g2.setFont(new Font("SansSerif", Font.PLAIN, 11));
         g2.setColor(new Color(203, 213, 225));
-        g2.drawString("Pausa", w - 82, 25);
+        g2.drawString("Pausa", w - 88, 29);
 
-        drawKeycap(g2, "R", w - 105, 12, 22, 18, new Color(244, 63, 94), Color.WHITE);
-        g2.drawString("Reiniciar", w - 152, 25);
+        drawKeycap(g2, "R", w - 120, 14, 26, 22, new Color(244, 63, 94), Color.WHITE);
+        g2.drawString("Reiniciar", w - 175, 29);
 
-        // Left Action Keys
-        int startX = 16;
-        int startY = 42;
+        // Left Side: Action Keys
+        int startX = 20;
+        int startY = 46;
 
         // Callouts top
-        drawCalloutBadge(g2, "D / Shift: Correr", startX, startY, new Color(249, 115, 22), Color.WHITE);
-        drawCalloutBadge(g2, "F / Espacio: Saltar", startX + 115, startY, new Color(34, 197, 94), Color.WHITE);
+        drawCalloutBadge(g2, "D / Shift / A: Correr", startX, startY, new Color(249, 115, 22), Color.WHITE);
+        drawCalloutBadge(g2, "F / Espacio / S: Saltar", startX + 145, startY, new Color(34, 197, 94), Color.WHITE);
 
         // Keycaps row
-        drawKeycap(g2, "Shift", startX, startY + 24, 46, 26, new Color(249, 115, 22), Color.WHITE);
-        drawKeycap(g2, "A", startX + 50, startY + 24, 26, 26, new Color(100, 116, 139), Color.WHITE);
-        drawKeycap(g2, "S", startX + 80, startY + 24, 26, 26, new Color(100, 116, 139), Color.WHITE);
-        drawKeycap(g2, "D", startX + 110, startY + 24, 28, 26, new Color(249, 115, 22), Color.WHITE);
-        drawKeycap(g2, "F", startX + 142, startY + 24, 28, 26, new Color(34, 197, 94), Color.WHITE);
+        drawKeycap(g2, "Shift", startX, startY + 26, 56, 32, new Color(249, 115, 22), Color.WHITE);
+        drawKeycap(g2, "A", startX + 62, startY + 26, 32, 32, new Color(100, 116, 139), Color.WHITE);
+        drawKeycap(g2, "S", startX + 98, startY + 26, 32, 32, new Color(100, 116, 139), Color.WHITE);
+        drawKeycap(g2, "D", startX + 134, startY + 26, 34, 32, new Color(249, 115, 22), Color.WHITE);
+        drawKeycap(g2, "F", startX + 172, startY + 26, 34, 32, new Color(34, 197, 94), Color.WHITE);
 
         // Spacebar keycap
-        drawKeycap(g2, "Barra Espaciadora", startX + 18, startY + 56, 152, 26, new Color(34, 197, 94), Color.WHITE);
+        drawKeycap(g2, "Barra Espaciadora", startX + 22, startY + 66, 184, 32, new Color(34, 197, 94), Color.WHITE);
 
         // Right Side: Arrow Keys [▲] [◀] [▼] [▶]
-        int arrowX = w - 155;
-        int arrowY = 45;
+        int arrowX = w - 170;
+        int arrowY = 52;
 
-        drawKeycap(g2, "▲", arrowX + 32, arrowY, 28, 25, new Color(56, 189, 248), Color.BLACK);
-        drawKeycap(g2, "◀", arrowX, arrowY + 28, 28, 25, new Color(56, 189, 248), Color.BLACK);
-        drawKeycap(g2, "▼", arrowX + 32, arrowY + 28, 28, 25, new Color(56, 189, 248), Color.BLACK);
-        drawKeycap(g2, "▶", arrowX + 64, arrowY + 28, 28, 25, new Color(56, 189, 248), Color.BLACK);
+        drawKeycap(g2, "▲", arrowX + 42, arrowY, 36, 32, new Color(56, 189, 248), Color.BLACK);
+        drawKeycap(g2, "◀", arrowX, arrowY + 36, 36, 32, new Color(56, 189, 248), Color.BLACK);
+        drawKeycap(g2, "▼", arrowX + 42, arrowY + 36, 36, 32, new Color(56, 189, 248), Color.BLACK);
+        drawKeycap(g2, "▶", arrowX + 84, arrowY + 36, 36, 32, new Color(56, 189, 248), Color.BLACK);
 
-        drawCalloutBadge(g2, "Flechas: Moverse", arrowX - 10, arrowY + 60, new Color(56, 189, 248), Color.BLACK);
+        drawCalloutBadge(g2, "Flechas: Moverse / Agacharse", arrowX - 16, arrowY + 76, new Color(56, 189, 248), Color.BLACK);
+
+        g2.dispose();
+        return img;
+    }
 
         g2.dispose();
         return img;
