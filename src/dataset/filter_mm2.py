@@ -7,7 +7,7 @@ of high-quality human-made SMB1 levels to use as "Nivel 0" base levels.
 
 Selection criteria:
   * gamestyle == 0              -> Super Mario Bros 1 style (what MAF/MarioGPT use)
-  * 15.0 <= clear_rate <= 70.0  -> not trivial, not (near) impossible
+  * 30.0 <= clear_rate <= 50.0  -> not trivial, not (near) impossible
   * attempts >= min_attempts    -> clear_rate estadísticamente confiable
   * likes >= min_likes          -> calidad subjetiva validada por jugadores
   * timer >= min_timer          -> proxy de nivel largo (sin decodificar el blob)
@@ -50,8 +50,8 @@ def main():
     ap.add_argument("--want", type=int, default=50, help="levels to keep")
     ap.add_argument("--max-scan", type=int, default=80000,
                     help="max streamed records to inspect")
-    ap.add_argument("--min-clear", type=float, default=15.0)
-    ap.add_argument("--max-clear", type=float, default=70.0)
+    ap.add_argument("--min-clear", type=float, default=30.0)
+    ap.add_argument("--max-clear", type=float, default=50.0)
     ap.add_argument("--gamestyle", type=int, default=0)  # 0 = SMB1
     ap.add_argument("--min-attempts", type=int, default=150,
                     help="ignore levels with very few attempts (noisy clear_rate)")
