@@ -905,7 +905,7 @@ public class ExperimentRunner {
         CompletableFuture<Void> future = new CompletableFuture<>();
         SwingUtilities.invokeLater(() -> {
             JPanel bg = createScreenContainer();
-            JPanel card = createModernCard(960, 580);
+            JPanel card = createModernCard(960, 460);
 
             // Badge
             card.add(Box.createRigidArea(new Dimension(0, 14)));
@@ -929,61 +929,7 @@ public class ExperimentRunner {
 
             card.add(createInfoBullet("Niveles iniciales de prueba:",
                     "Para comenzar, jugarás dos niveles breves para acostumbrarte a los saltos y al control de Mario."));
-            card.add(Box.createRigidArea(new Dimension(0, 24)));
-
-            // Generator info card in Welcome Screen
-            JPanel genCard = new JPanel(new BorderLayout(14, 0));
-            genCard.setBackground(ITEM_BG);
-            genCard.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(99, 102, 241, 140), 1, true),
-                    new EmptyBorder(10, 18, 10, 18)));
-            genCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-            genCard.setMaximumSize(new Dimension(960, 62));
-
-            JLabel genIcon = new JLabel("[IA]");
-            genIcon.setFont(FONT_BOLD.deriveFont(15f));
-            genIcon.setForeground(new Color(165, 180, 252));
-            genCard.add(genIcon, BorderLayout.WEST);
-
-            JPanel genTexts = new JPanel();
-            genTexts.setLayout(new BoxLayout(genTexts, BoxLayout.Y_AXIS));
-            genTexts.setOpaque(false);
-
-            String modeTxt = (hpcTunnelManager != null) ? hpcTunnelManager.getMode().getLabel() : "JeissonServer";
-            String srvUrl = (hpcTunnelManager != null) ? hpcTunnelManager.getServerUrl() : "http://jeisson.ecci.ucr.ac.cr:8080";
-            if (srvUrl == null) srvUrl = "Local (PyTorch offline)";
-
-            JLabel genTitle = new JLabel("Generador de Niveles IA: " + modeTxt + "  (" + srvUrl + ")");
-            genTitle.setFont(FONT_BOLD.deriveFont(14f));
-            genTitle.setForeground(new Color(165, 180, 252));
-
-            JLabel genSub = new JLabel("Los niveles de cada participante se generarán con este método. Presiona [ F2 ] para cambiar (Nativo | Tunel | JeissonServer).");
-            genSub.setFont(FONT_REGULAR.deriveFont(12f));
-            genSub.setForeground(TEXT_MUTED);
-
-            genTexts.add(genTitle);
-            genTexts.add(Box.createRigidArea(new Dimension(0, 3)));
-            genTexts.add(genSub);
-            genCard.add(genTexts, BorderLayout.CENTER);
-
-            Runnable updateGenCard = () -> {
-                String mTxt = (hpcTunnelManager != null) ? hpcTunnelManager.getMode().getLabel() : "JeissonServer";
-                String sUrl = (hpcTunnelManager != null) ? hpcTunnelManager.getServerUrl() : "http://jeisson.ecci.ucr.ac.cr:8080";
-                if (sUrl == null) sUrl = "Local (PyTorch offline)";
-                genTitle.setText("Generador de Niveles IA: " + mTxt + "  (" + sUrl + ")");
-            };
-
-            ModernButton changeBtn = new ModernButton("Configurar (F2)",
-                    new Color(51, 65, 85), new Color(71, 85, 105), new Color(30, 41, 59), TEXT_WHITE, 8);
-            changeBtn.setFont(FONT_SEMIBOLD.deriveFont(12.5f));
-            changeBtn.addActionListener(e -> {
-                showHpcConfigDialog(masterFrame);
-                updateGenCard.run();
-            });
-            genCard.add(changeBtn, BorderLayout.EAST);
-
-            card.add(genCard);
-            card.add(Box.createRigidArea(new Dimension(0, 22)));
+            card.add(Box.createRigidArea(new Dimension(0, 26)));
 
             // Action Buttons
             JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 0));
@@ -994,15 +940,6 @@ public class ExperimentRunner {
                     ACCENT_PRESSED, Color.WHITE, 12);
             btn.addActionListener(e -> future.complete(null));
             btnRow.add(btn);
-
-            ModernButton hpcBtn = new ModernButton("Cambiar Modo Generador (F2)",
-                    new Color(51, 65, 85), new Color(71, 85, 105), new Color(30, 41, 59), TEXT_WHITE, 12);
-            hpcBtn.setFont(FONT_SEMIBOLD.deriveFont(14f));
-            hpcBtn.addActionListener(e -> {
-                showHpcConfigDialog(masterFrame);
-                updateGenCard.run();
-            });
-            btnRow.add(hpcBtn);
 
             card.add(btnRow);
 
