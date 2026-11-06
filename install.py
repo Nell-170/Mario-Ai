@@ -724,6 +724,7 @@ def main():
         "PlayHuman.java",
         "LevelSelector.java",
         "ExperimentRunner.java",
+        "ExperimentDB.java",
     ]
     fw_src = framework_dir / "src"
     fw_bin = framework_dir / "bin"

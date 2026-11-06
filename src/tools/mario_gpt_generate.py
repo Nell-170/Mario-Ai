@@ -4,6 +4,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -113,11 +114,18 @@ def main():
     print("Prompt base:")
     print(prompt_text)
 
+    started = time.time()
+    meta = {"input_prompt": prompt_text, "backend": None, "server_url": None, "mariogpt_prompt": None}
+
     level_content = None
 
     # 1. Intentar generación remota en el clúster HPC primero
     if not args.no_remote and args.server_url:
         level_content = try_generate_remote(args.server_url, prompt_text)
+        if level_content is not None:
+            meta["backend"] = "remote"
+            meta["server_url"] = args.server_url
+            meta["mariogpt_prompt"] = prompt_text
 
     # 2. Si falló o no está activo, recurrir a generación local
     if level_content is None:
@@ -135,10 +143,14 @@ def main():
         mario_lm = MarioLM()
         if torch.cuda.is_available():
             mario_lm = mario_lm.to(torch.device("cuda"))
+            meta["backend"] = "local_cuda"
             print("Usando GPU local (CUDA)")
         else:
+            meta["backend"] = "local_cpu"
             print("GPU local no disponible, usando CPU en su lugar")
 
+        # Mismo prompt completo que se envía al servidor remoto.
+        meta["mariogpt_prompt"] = prompt_text
         generated = mario_lm.sample(
             prompts=[prompt_text],
             num_steps=args.steps,
@@ -156,6 +168,12 @@ def main():
         f.write(level_content.strip() + "\n")
 
     print(f"\nNivel guardado en: {level_path}")
+
+    # Metadatos para la base de datos del experimento (los lee ExperimentRunner).
+    meta["seconds"] = round(time.time() - started, 2)
+    meta["level_file"] = level_path.name
+    with (output_dir / "generation_meta.json").open("w", encoding="utf-8") as f:
+        json.dump(meta, f, ensure_ascii=False)
     print("\nPreview:")
     print(level_content[:600])
     return 0

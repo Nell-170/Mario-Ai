@@ -1,0 +1,11 @@
+# Copiar este archivo como database.properties (mismo directorio) y completar.
+# database.properties está en .gitignore: NO se sube al repositorio.
+#
+# Supabase -> Project Settings -> API (o "Connect"):
+#   supabase_url = Project URL
+#   supabase_key = publishable key (sb_publishable_...) o la llave "anon" (legacy)
+# Nunca usar la llave secret / service_role en las máquinas del laboratorio.
+#
+# También se pueden usar las variables de entorno SUPABASE_URL y SUPABASE_KEY.
+supabase_url=https://TU-PROYECTO.supabase.co
+supabase_key=sb_publishable_xxxxxxxxxxxxxxxxxxxxxxxx

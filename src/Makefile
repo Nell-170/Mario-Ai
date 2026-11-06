@@ -74,7 +74,7 @@ endif
 # ── Phony targets ─────────────────────────────────────────────
 .PHONY: help install setup-lab gui dashboard recibidor kiosk setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-level play-levels-generated start-experiment \
-        start-experiment-nogen generate-level prompt-telemetry play-and-generate \
+        start-experiment-nogen test-db sync-db generate-level prompt-telemetry play-and-generate \
         tunnel clean clean-telemetry clean-levels clean-experiment-results clean-all clean-fresh
 
 # ── help ──────────────────────────────────────────────────────
@@ -99,6 +99,8 @@ help:
 	@echo "  play-levels-generated  Select and play levels via GUI selector"
 	@echo "  start-experiment       Run 6x6 Latin square experiment with MarioGPT"
 	@echo "  start-experiment-nogen Run experiment skipping level generation"
+	@echo "  test-db                Send a TEST_ participant to Supabase and confirm it arrived"
+	@echo "  sync-db                Resend records waiting in experiment/db_pending/"
 	@echo "  generate-level         Generate a level from the latest telemetry"
 	@echo "  play-and-generate      play-human + generate-level"
 	@echo "  prompt-telemetry       Build a compact MarioGPT prompt from telemetry/latest.json"
@@ -227,6 +229,13 @@ start-experiment: compile
 	$(call progress,0,Iniciando protocolo de experimentación formal...)
 	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin ExperimentRunner "$(PYTHON)"
 	$(call progress,100,Sesión de experimento finalizada.)
+
+# ── test-db / sync-db ─────────────────────────────────────────
+test-db: compile
+	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin ExperimentDB --test
+
+sync-db: compile
+	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin ExperimentDB
 
 # ── start-experiment-nogen ────────────────────────────────────
 start-experiment-nogen: compile

@@ -1,5 +1,5 @@
 diff --git a/src/agents/human/Agent.java b/src/agents/human/Agent.java
-index b888366b..202f797c 100644
+index b888366b..50f8c3c9 100644
 --- a/src/agents/human/Agent.java
 +++ b/src/agents/human/Agent.java
 @@ -10,15 +10,31 @@ import engine.helper.MarioActions;

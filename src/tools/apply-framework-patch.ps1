@@ -84,6 +84,7 @@ try {
     Copy-Item (Join-Path $scriptDir "PlayHuman.java") (Join-Path $src "PlayHuman.java") -Force
     Copy-Item (Join-Path $scriptDir "LevelSelector.java") (Join-Path $src "LevelSelector.java") -Force
     Copy-Item (Join-Path $scriptDir "ExperimentRunner.java") (Join-Path $src "ExperimentRunner.java") -Force
+    Copy-Item (Join-Path $scriptDir "ExperimentDB.java") (Join-Path $src "ExperimentDB.java") -Force
     New-Item -ItemType Directory -Force -Path (Join-Path $src "engine\audio") | Out-Null
     New-Item -ItemType Directory -Force -Path (Join-Path $src "engine\input") | Out-Null
     Copy-Item (Join-Path $scriptDir "engine\audio\ProceduralMusic.java") (Join-Path $src "engine\audio\ProceduralMusic.java") -Force
