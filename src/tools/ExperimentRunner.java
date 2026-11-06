@@ -360,11 +360,10 @@ public class ExperimentRunner {
                         timer
                 );
                 String famContent = sanitizeLevel(Files.readString(famLevel));
-                BufferedImage famThumb = renderLevelThumbnail(famContent, 680, 70);
+                BufferedImage famThumb = renderLevelThumbnail(famContent, 1160, 190);
                 showLevelIntroScreen("Familiarización (" + (f + 1) + " de " + familiarization.size() + ")",
                         "Nivel de práctica " + (f + 1),
-                        "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n"
-                                + "Controles: Flechas = Moverse | S / F / Espacio / Flecha Arriba = Saltar | A / D / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
+                        "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n",
                         "Comenzar práctica " + (f + 1),
                         famThumb);
                 Path telPath = playLevel(famLevel, timer,
@@ -497,15 +496,14 @@ public class ExperimentRunner {
                 );
 
                 String levelContent = sanitizeLevel(Files.readString(levelFile));
-                BufferedImage thumbnail = renderLevelThumbnail(levelContent, 680, 70);
+                BufferedImage thumbnail = renderLevelThumbnail(levelContent, 1160, 190);
                 playedLevels.add(new PlayedLevelInfo(i + 1, step.type(), step.index(), stepCode, levelFile, levelContent, thumbnail));
 
                 showLevelIntroScreen("Nivel " + (i + 1) + " de " + steps.size(),
                         "Nivel " + (i + 1),
                         "Observa la silueta del nivel para reconocerlo más tarde en el ranking.\n"
                                 + "Juega a tu ritmo y explora el mapa lo mejor que puedas.\n"
-                                + "Al terminarlo, responderás unas breves preguntas sobre tus impresiones de este nivel.\n"
-                                + "Controles: Flechas = Moverse | S / F / Espacio / Flecha Arriba = Saltar | A / D / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
+                                + "Al terminarlo, responderás unas breves preguntas sobre tus impresiones de este nivel.\n",
                         "¡Jugar nivel " + (i + 1) + "!",
                         thumbnail);
 
@@ -958,7 +956,7 @@ public class ExperimentRunner {
         CompletableFuture<Void> future = new CompletableFuture<>();
         SwingUtilities.invokeLater(() -> {
             JPanel bg = createScreenContainer();
-            JPanel card = createModernCard(960, 580);
+            JPanel card = createModernCard(960, 460);
 
             // Badge
             card.add(Box.createRigidArea(new Dimension(0, 14)));
@@ -982,77 +980,7 @@ public class ExperimentRunner {
 
             card.add(createInfoBullet("Niveles iniciales de prueba:",
                     "Para comenzar, jugarás dos niveles breves para acostumbrarte a los saltos y al control de Mario."));
-            card.add(Box.createRigidArea(new Dimension(0, 24)));
-
-            // Controls Box
-            JPanel controls = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-            controls.setBackground(ITEM_BG);
-            controls.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
-                    new EmptyBorder(10, 18, 10, 18)));
-            controls.setAlignmentX(Component.LEFT_ALIGNMENT);
-            controls.setMaximumSize(new Dimension(960, 60));
-            JLabel cLabel = new JLabel(
-                    "Controles:  Flechas = Moverse  |  S / F / Espacio / Flecha Arriba = Saltar  |  A / D / Shift = Correr  |  P = Pausa  |  R = Reiniciar  |  Q = Terminar  |  M = Audio");
-            cLabel.setFont(FONT_SEMIBOLD.deriveFont(15f));
-            cLabel.setForeground(TEXT_WHITE);
-            controls.add(cLabel);
-            card.add(controls);
-            card.add(Box.createRigidArea(new Dimension(0, 16)));
-
-            // Generator info card in Welcome Screen
-            JPanel genCard = new JPanel(new BorderLayout(14, 0));
-            genCard.setBackground(ITEM_BG);
-            genCard.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(99, 102, 241, 140), 1, true),
-                    new EmptyBorder(10, 18, 10, 18)));
-            genCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-            genCard.setMaximumSize(new Dimension(960, 62));
-
-            JLabel genIcon = new JLabel("[IA]");
-            genIcon.setFont(FONT_BOLD.deriveFont(15f));
-            genIcon.setForeground(new Color(165, 180, 252));
-            genCard.add(genIcon, BorderLayout.WEST);
-
-            JPanel genTexts = new JPanel();
-            genTexts.setLayout(new BoxLayout(genTexts, BoxLayout.Y_AXIS));
-            genTexts.setOpaque(false);
-
-            String modeTxt = (hpcTunnelManager != null) ? hpcTunnelManager.getMode().getLabel() : "JeissonServer";
-            String srvUrl = (hpcTunnelManager != null) ? hpcTunnelManager.getServerUrl() : "http://jeisson.ecci.ucr.ac.cr:8080";
-            if (srvUrl == null) srvUrl = "Local (PyTorch offline)";
-
-            JLabel genTitle = new JLabel("Generador de Niveles IA: " + modeTxt + "  (" + srvUrl + ")");
-            genTitle.setFont(FONT_BOLD.deriveFont(14f));
-            genTitle.setForeground(new Color(165, 180, 252));
-
-            JLabel genSub = new JLabel("Los niveles de cada participante se generarán con este método. Presiona [ F2 ] para cambiar (Nativo | Tunel | JeissonServer).");
-            genSub.setFont(FONT_REGULAR.deriveFont(12f));
-            genSub.setForeground(TEXT_MUTED);
-
-            genTexts.add(genTitle);
-            genTexts.add(Box.createRigidArea(new Dimension(0, 3)));
-            genTexts.add(genSub);
-            genCard.add(genTexts, BorderLayout.CENTER);
-
-            Runnable updateGenCard = () -> {
-                String mTxt = (hpcTunnelManager != null) ? hpcTunnelManager.getMode().getLabel() : "JeissonServer";
-                String sUrl = (hpcTunnelManager != null) ? hpcTunnelManager.getServerUrl() : "http://jeisson.ecci.ucr.ac.cr:8080";
-                if (sUrl == null) sUrl = "Local (PyTorch offline)";
-                genTitle.setText("Generador de Niveles IA: " + mTxt + "  (" + sUrl + ")");
-            };
-
-            ModernButton changeBtn = new ModernButton("Configurar (F2)",
-                    new Color(51, 65, 85), new Color(71, 85, 105), new Color(30, 41, 59), TEXT_WHITE, 8);
-            changeBtn.setFont(FONT_SEMIBOLD.deriveFont(12.5f));
-            changeBtn.addActionListener(e -> {
-                showHpcConfigDialog(masterFrame);
-                updateGenCard.run();
-            });
-            genCard.add(changeBtn, BorderLayout.EAST);
-
-            card.add(genCard);
-            card.add(Box.createRigidArea(new Dimension(0, 22)));
+            card.add(Box.createRigidArea(new Dimension(0, 26)));
 
             // Action Buttons
             JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 0));
@@ -1063,15 +991,6 @@ public class ExperimentRunner {
                     ACCENT_PRESSED, Color.WHITE, 12);
             btn.addActionListener(e -> future.complete(null));
             btnRow.add(btn);
-
-            ModernButton hpcBtn = new ModernButton("Cambiar Modo Generador (F2)",
-                    new Color(51, 65, 85), new Color(71, 85, 105), new Color(30, 41, 59), TEXT_WHITE, 12);
-            hpcBtn.setFont(FONT_SEMIBOLD.deriveFont(14f));
-            hpcBtn.addActionListener(e -> {
-                showHpcConfigDialog(masterFrame);
-                updateGenCard.run();
-            });
-            btnRow.add(hpcBtn);
 
             card.add(btnRow);
 
@@ -1094,8 +1013,11 @@ public class ExperimentRunner {
         CompletableFuture<Void> future = new CompletableFuture<>();
         SwingUtilities.invokeLater(() -> {
             JPanel bg = createScreenContainer();
-            int cardHeight = developMode ? 650 : (thumbnail != null ? 590 : 460);
-            JPanel card = createModernCard(940, cardHeight);
+            Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+            int frameW = Math.min(1240, Math.max(1040, screen.width - 60));
+            int cardW = frameW - 20;
+            int cardHeight = developMode ? 820 : (thumbnail != null ? 760 : 520);
+            JPanel card = createModernCard(cardW, cardHeight);
 
             card.add(createBadge(badge));
             card.add(Box.createRigidArea(new Dimension(0, 12)));
@@ -1138,6 +1060,20 @@ public class ExperimentRunner {
                 thumbLabel.setOpaque(true);
                 thumbLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
                 card.add(thumbLabel);
+
+                card.add(Box.createRigidArea(new Dimension(0, 10)));
+                int diagramW = (cardW - 48 - 14) / 2;
+                int diagramH = 225;
+                JPanel diagramsPanel = new JPanel(new GridLayout(1, 2, 14, 0));
+                diagramsPanel.setOpaque(false);
+                diagramsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                diagramsPanel.setMaximumSize(new Dimension(cardW - 48, diagramH));
+
+                JLabel padDiagram = new JLabel(new ImageIcon(PlayHuman.renderControllerDiagram(diagramW, diagramH)));
+                JLabel kbDiagram = new JLabel(new ImageIcon(PlayHuman.renderKeyboardDiagram(diagramW, diagramH)));
+                diagramsPanel.add(padDiagram);
+                diagramsPanel.add(kbDiagram);
+                card.add(diagramsPanel);
             }
 
             card.add(Box.createRigidArea(new Dimension(0, 18)));
@@ -1444,26 +1380,94 @@ public class ExperimentRunner {
                         });
                     }
                     case "choice" -> {
-                        JPanel choicesPanel = new JPanel();
-                        choicesPanel.setLayout(new BoxLayout(choicesPanel, BoxLayout.Y_AXIS));
-                        choicesPanel.setBackground(ITEM_BG);
-                        choicesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-                        ButtonGroup group = new ButtonGroup();
                         String[] options = question.options().split("\\|");
+                        boolean isNumericScale = options.length >= 3 && options.length <= 11;
+                        List<String> keys = new ArrayList<>();
+                        List<String> labels = new ArrayList<>();
                         for (String option : options) {
                             String[] parts = option.contains("=") ? option.split("=", 2)
                                     : new String[] { option, option };
-                            String label = parts[0].equals(parts[1]) ? parts[1] : parts[0] + " - " + parts[1];
-
-                            ChoiceCard button = new ChoiceCard(label);
-                            button.addActionListener(e -> selected[0] = parts[0]);
-                            group.add(button);
-                            choicesPanel.add(button);
-                            choicesPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                            keys.add(parts[0].trim());
+                            labels.add(parts[1].trim());
+                            try {
+                                Integer.parseInt(parts[0].trim());
+                            } catch (NumberFormatException nfe) {
+                                isNumericScale = false;
+                            }
                         }
-                        qCard.add(choicesPanel);
-                        getters.add(() -> selected[0]);
+
+                        if (isNumericScale) {
+                            JPanel scaleContainer = new JPanel();
+                            scaleContainer.setLayout(new BoxLayout(scaleContainer, BoxLayout.Y_AXIS));
+                            scaleContainer.setBackground(ITEM_BG);
+                            scaleContainer.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                            JPanel pillsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+                            pillsPanel.setBackground(ITEM_BG);
+                            pillsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                            JLabel legend = new JLabel();
+                            legend.setFont(FONT_REGULAR.deriveFont(15f));
+                            legend.setForeground(TEXT_ACCENT);
+                            legend.setBorder(new EmptyBorder(0, 8, 0, 0));
+
+                            String firstKey = keys.get(0);
+                            String firstLabel = labels.get(0);
+                            String lastKey = keys.get(keys.size() - 1);
+                            String lastLabel = labels.get(labels.size() - 1);
+                            String defaultLegend;
+                            if (keys.size() % 2 == 1) {
+                                int midIdx = keys.size() / 2;
+                                defaultLegend = firstKey + " = " + firstLabel + "   |   "
+                                        + keys.get(midIdx) + " = " + labels.get(midIdx) + "   |   "
+                                        + lastKey + " = " + lastLabel;
+                            } else {
+                                defaultLegend = firstKey + " = " + firstLabel + "   |   "
+                                        + lastKey + " = " + lastLabel;
+                            }
+                            legend.setText(defaultLegend);
+
+                            ButtonGroup group = new ButtonGroup();
+                            for (int i = 0; i < keys.size(); i++) {
+                                String valStr = keys.get(i);
+                                String labelStr = labels.get(i);
+                                LikertPill pill = new LikertPill(valStr);
+                                pill.setToolTipText(valStr + " - " + labelStr);
+                                pill.addActionListener(e -> {
+                                    selected[0] = valStr;
+                                    legend.setText(valStr + " = " + labelStr);
+                                    legend.setForeground(new Color(165, 180, 252));
+                                });
+                                group.add(pill);
+                                pillsPanel.add(pill);
+                            }
+                            scaleContainer.add(pillsPanel);
+                            scaleContainer.add(Box.createRigidArea(new Dimension(0, 10)));
+                            scaleContainer.add(legend);
+
+                            qCard.add(scaleContainer);
+                            getters.add(() -> selected[0]);
+                        } else {
+                            JPanel choicesPanel = new JPanel();
+                            choicesPanel.setLayout(new BoxLayout(choicesPanel, BoxLayout.Y_AXIS));
+                            choicesPanel.setBackground(ITEM_BG);
+                            choicesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                            ButtonGroup group = new ButtonGroup();
+                            for (int i = 0; i < keys.size(); i++) {
+                                String k = keys.get(i);
+                                String l = labels.get(i);
+                                String label = k.equals(l) ? l : k + " - " + l;
+
+                                ChoiceCard button = new ChoiceCard(label);
+                                button.addActionListener(e -> selected[0] = k);
+                                group.add(button);
+                                choicesPanel.add(button);
+                                choicesPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                            }
+                            qCard.add(choicesPanel);
+                            getters.add(() -> selected[0]);
+                        }
                     }
                     case "scale" -> {
                         String[] o = question.options().split("\\|");

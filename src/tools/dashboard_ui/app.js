@@ -46,6 +46,54 @@ document.addEventListener('DOMContentLoaded', () => {
   loadLevelList();
   loadExperimentSummary();
 
+  // Accordion toggle button status sync
+  document.querySelectorAll('.action-dropdown').forEach(d => {
+    d.addEventListener('toggle', () => {
+      const btn = document.getElementById('btn-toggle-all');
+      if (!btn) return;
+      const allOpen = Array.from(document.querySelectorAll('.action-dropdown')).every(el => el.open);
+      btn.textContent = allOpen ? 'Colapsar todo' : 'Expandir todo';
+    });
+  });
+
+  // Level Viewer Interactive Scrolling & Wheel Events
+  if (canvasWrapper) {
+    canvasWrapper.addEventListener('scroll', updateSliderState);
+
+    // Mouse wheel horizontal scroll
+    canvasWrapper.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        canvasWrapper.scrollLeft += e.deltaY * 2.2;
+        updateSliderState();
+      }
+    }, { passive: false });
+
+    // Drag to pan level
+    let isDragging = false;
+    let startX = 0;
+    let initialScrollLeft = 0;
+
+    canvasWrapper.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.pageX - canvasWrapper.offsetLeft;
+      initialScrollLeft = canvasWrapper.scrollLeft;
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    canvasWrapper.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - canvasWrapper.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      canvasWrapper.scrollLeft = initialScrollLeft - walk;
+      updateSliderState();
+    });
+  }
+
   // Periodic metrics & status refresh
   setInterval(() => {
     refreshStats();
@@ -106,6 +154,18 @@ function confirmAndRunSetupLab() {
               '¿Deseas comenzar ahora?';
   if (confirm(msg)) {
     runTarget('setup-lab', 'Puesta a Punto Total (Lab 100 & Hugging Face)');
+  }
+}
+
+function toggleAllAccordions() {
+  const dropdowns = document.querySelectorAll('.action-dropdown');
+  const btn = document.getElementById('btn-toggle-all');
+  const anyClosed = Array.from(dropdowns).some(d => !d.open);
+  dropdowns.forEach(d => {
+    d.open = anyClosed;
+  });
+  if (btn) {
+    btn.textContent = anyClosed ? 'Colapsar todo' : 'Expandir todo';
   }
 }
 
@@ -302,7 +362,8 @@ async function loadLevelList() {
     }
 
     fileSelect.innerHTML = files.map(f => {
-      return `<option value="${f.name}">${f.name} (${f.modified})</option>`;
+      const val = f.file || f.name;
+      return `<option value="${val}">${f.name} (${f.modified})</option>`;
     }).join('');
 
     loadLevelContent();
@@ -311,11 +372,19 @@ async function loadLevelList() {
   }
 }
 
+let currentLevelLines = [];
+let currentTileSize = 20;
+
 async function loadLevelContent() {
   const folder = folderSelect.value;
   const fileName = fileSelect.value;
 
-  if (!fileName) return;
+  if (!fileName) {
+    currentLevelLines = [];
+    clearCanvas();
+    updateSliderState();
+    return;
+  }
 
   levelInfoText.textContent = `Cargando nivel ${fileName}...`;
 
@@ -323,17 +392,51 @@ async function loadLevelContent() {
     const res = await fetch(`/api/level-content?folder=${folder}&file=${encodeURIComponent(fileName)}`);
     const data = await res.json();
 
-    currentLevelText = data.content;
-    levelTextView.textContent = data.content;
+    currentLevelText = data.content || '';
+    levelTextView.textContent = currentLevelText;
 
-    const lines = data.content.split('\n').filter(l => l.trim().length > 0);
-    const cols = lines.length > 0 ? lines[0].length : 0;
-    levelInfoText.innerHTML = `<strong>${fileName}</strong> &bull; Dimensiones: <strong>16 filas &times; ${cols} columnas</strong>`;
+    const rawLines = currentLevelText.split(/\r?\n/).map(l => l.trimEnd());
+    while (rawLines.length > 0 && rawLines[rawLines.length - 1].length === 0) {
+      rawLines.pop();
+    }
 
-    renderLevelOnCanvas(lines);
+    currentLevelLines = rawLines;
+
+    if (rawLines.length === 0) {
+      clearCanvas();
+      levelInfoText.innerHTML = `<strong>${fileName}</strong> &bull; <span style="color:#f87171;">⚠️ Archivo vacío (0 bytes)</span>`;
+      renderEmptyLevelPlaceholder(fileName);
+      updateSliderState();
+      return;
+    }
+
+    const rows = rawLines.length;
+    const cols = Math.max(...rawLines.map(l => l.length));
+    levelInfoText.innerHTML = `<strong>${fileName}</strong> &bull; Dimensiones: <strong>${rows} filas &times; ${cols} columnas</strong>`;
+
+    renderLevelOnCanvas(rawLines, currentTileSize);
+    updateSliderState();
   } catch (err) {
     levelInfoText.textContent = `Error al cargar contenido de ${fileName}`;
+    clearCanvas();
   }
+}
+
+function renderEmptyLevelPlaceholder(fileName) {
+  levelCanvas.width = 720;
+  levelCanvas.height = 320;
+  const ctx = levelCanvas.getContext('2d');
+  ctx.fillStyle = '#1e293b';
+  ctx.fillRect(0, 0, 720, 320);
+
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = 'bold 16px Outfit, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`⚠️ El archivo "${fileName}" no contiene datos (0 bytes).`, 360, 140);
+
+  ctx.fillStyle = '#64748b';
+  ctx.font = '13px Outfit, sans-serif';
+  ctx.fillText('Selecciona otro nivel de la lista o genera uno nuevo con MarioGPT.', 360, 175);
 }
 
 function setViewMode(mode) {
@@ -341,12 +444,15 @@ function setViewMode(mode) {
   btnViewCanvas.classList.toggle('active', mode === 'canvas');
   btnViewText.classList.toggle('active', mode === 'text');
 
+  const navBar = document.getElementById('level-nav-bar');
   if (mode === 'canvas') {
     canvasWrapper.classList.remove('hidden');
     levelTextView.classList.add('hidden');
+    if (navBar) navBar.classList.remove('hidden');
   } else {
     canvasWrapper.classList.add('hidden');
     levelTextView.classList.remove('hidden');
+    if (navBar) navBar.classList.add('hidden');
   }
 }
 
@@ -356,15 +462,19 @@ function clearCanvas() {
 }
 
 // 2D Side-Scrolling Mario Tile Renderer
-function renderLevelOnCanvas(lines) {
+function renderLevelOnCanvas(lines, tileSize = 20) {
   if (!lines || lines.length === 0) return;
 
   const rows = lines.length;
-  const cols = lines[0].length;
-  const tileSize = 20; // 20px per tile -> 16 * 20 = 320px high
+  let maxCols = 0;
+  for (let r = 0; r < rows; r++) {
+    if (lines[r].length > maxCols) maxCols = lines[r].length;
+  }
+  const cols = Math.max(1, maxCols);
 
   levelCanvas.width = cols * tileSize;
   levelCanvas.height = rows * tileSize;
+  levelCanvas.style.height = `${rows * tileSize}px`;
 
   const ctx = levelCanvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
@@ -392,9 +502,9 @@ function drawTile(ctx, ch, x, y, size) {
       ctx.fillRect(x, y, size, size);
       ctx.strokeStyle = '#6c3400';
       ctx.strokeRect(x, y, size, size);
-      // Grass top if near surface
+      // Grass top
       ctx.fillStyle = '#00a800';
-      ctx.fillRect(x, y, size, 3);
+      ctx.fillRect(x, y, size, Math.max(2, Math.round(size * 0.15)));
       break;
 
     case '#': // Solid Platform
@@ -409,27 +519,27 @@ function drawTile(ctx, ch, x, y, size) {
       ctx.fillRect(x, y, size, size);
       ctx.strokeStyle = '#000000';
       ctx.strokeRect(x, y, size, size);
-      // Brick mortar line
       ctx.fillStyle = '#000000';
       ctx.fillRect(x, y + size / 2, size, 1);
       ctx.fillRect(x + size / 2, y, 1, size / 2);
       break;
 
     case '?': // Question Block
+    case '*':
       ctx.fillStyle = '#fcb040';
       ctx.fillRect(x, y, size, size);
       ctx.strokeStyle = '#6c3400';
       ctx.strokeRect(x, y, size, size);
       ctx.fillStyle = '#6c3400';
-      ctx.font = 'bold 12px sans-serif';
+      ctx.font = `bold ${Math.round(size * 0.6)}px sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText('?', x + size / 2, y + size - 5);
+      ctx.fillText(ch === '*' ? '★' : '?', x + size / 2, y + size - 4);
       break;
 
     case 'o': // Coin
       ctx.fillStyle = '#fce440';
       ctx.beginPath();
-      ctx.ellipse(x + size / 2, y + size / 2, 4, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(x + size / 2, y + size / 2, size * 0.22, size * 0.38, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#d89000';
       ctx.stroke();
@@ -464,9 +574,11 @@ function drawTile(ctx, ch, x, y, size) {
       break;
 
     case 'g': // Goomba
+    case 'G':
+    case 'E':
       ctx.fillStyle = '#a84000';
       ctx.beginPath();
-      ctx.arc(x + size / 2, y + size / 2 - 2, 6, 0, Math.PI, true);
+      ctx.arc(x + size / 2, y + size / 2 - 2, size * 0.35, 0, Math.PI, true);
       ctx.fill();
       ctx.fillStyle = '#fce4a0';
       ctx.fillRect(x + size / 2 - 4, y + size / 2 - 2, 8, 6);
@@ -476,18 +588,22 @@ function drawTile(ctx, ch, x, y, size) {
       break;
 
     case 'k': // Koopa
-      ctx.fillStyle = '#00a800';
+    case 'K':
+    case 'r':
+    case 'R':
+      ctx.fillStyle = (ch === 'r' || ch === 'R') ? '#dc2626' : '#00a800';
       ctx.beginPath();
-      ctx.ellipse(x + size / 2, y + size / 2, 6, 8, 0, 0, Math.PI * 2);
+      ctx.ellipse(x + size / 2, y + size / 2, size * 0.32, size * 0.42, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#000';
       ctx.stroke();
       break;
 
     case 'y': // Spiny
+    case 'Y':
       ctx.fillStyle = '#fc2000';
       ctx.beginPath();
-      ctx.arc(x + size / 2, y + size / 2, 6, 0, Math.PI * 2);
+      ctx.arc(x + size / 2, y + size / 2, size * 0.35, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#fff';
       ctx.fillRect(x + size / 2 - 1, y + 2, 2, 4);
@@ -505,10 +621,145 @@ function drawTile(ctx, ch, x, y, size) {
       ctx.fillRect(x + 2, y, size - 4, size);
       break;
 
+    case 'M': // Mario Spawn Marker
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(x + 2, y + 2, size - 4, size - 4);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.round(size * 0.65)}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('M', x + size / 2, y + size - 4);
+      break;
+
+    case 'F': // Goal Flagpole
+    case '|':
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(x + size / 2 - 2, y, 4, size);
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.moveTo(x + size / 2 + 2, y + 2);
+      ctx.lineTo(x + size, y + size * 0.3);
+      ctx.lineTo(x + size / 2 + 2, y + size * 0.6);
+      ctx.fill();
+      break;
+
     case '-': // Air
     default:
       // Transparent sky
       break;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Level Viewer Navigation & Scrolling Controls
+// ─────────────────────────────────────────────────────────────
+
+function scrollLevelCanvas(target) {
+  if (!canvasWrapper) return;
+  if (target === 'start') {
+    canvasWrapper.scrollTo({ left: 0, behavior: 'smooth' });
+  } else if (target === 'end') {
+    canvasWrapper.scrollTo({ left: canvasWrapper.scrollWidth, behavior: 'smooth' });
+  } else if (typeof target === 'number') {
+    canvasWrapper.scrollBy({ left: target, behavior: 'smooth' });
+  }
+  setTimeout(updateSliderState, 150);
+}
+
+function onLevelSliderInput(val) {
+  if (!canvasWrapper) return;
+  const maxScroll = canvasWrapper.scrollWidth - canvasWrapper.clientWidth;
+  if (maxScroll <= 0) return;
+  canvasWrapper.scrollLeft = (parseFloat(val) / 100) * maxScroll;
+  const pos = document.getElementById('level-scroll-pos');
+  if (pos) pos.textContent = `${Math.round(val)}%`;
+}
+
+function updateSliderState() {
+  if (!canvasWrapper) return;
+  const maxScroll = canvasWrapper.scrollWidth - canvasWrapper.clientWidth;
+  const slider = document.getElementById('level-scroll-slider');
+  const pos = document.getElementById('level-scroll-pos');
+  if (maxScroll <= 0) {
+    if (slider) {
+      slider.value = 0;
+      slider.disabled = true;
+    }
+    if (pos) pos.textContent = '100%';
+  } else {
+    if (slider) slider.disabled = false;
+    const pct = Math.min(100, Math.max(0, Math.round((canvasWrapper.scrollLeft / maxScroll) * 100)));
+    if (slider) slider.value = pct;
+    if (pos) pos.textContent = `${pct}%`;
+  }
+}
+
+function setLevelTileSize(size) {
+  currentTileSize = size;
+  ['16', '20', '26'].forEach(s => {
+    const btn = document.getElementById(`btn-zoom-${s}`);
+    if (btn) btn.classList.toggle('active', parseInt(s) === size);
+  });
+  if (currentLevelLines && currentLevelLines.length > 0) {
+    renderLevelOnCanvas(currentLevelLines, currentTileSize);
+    updateSliderState();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Level Tester Execution
+// ─────────────────────────────────────────────────────────────
+
+function playSelectedLevel() {
+  const folder = folderSelect ? folderSelect.value : 'nivel0';
+  const fileName = fileSelect ? fileSelect.value : '';
+
+  if (!fileName) {
+    showToast('Selecciona un nivel antes de probarlo.', 'warning');
+    return;
+  }
+
+  // Level relative path from framework directory
+  let levelPath = `../src/levels/${folder}/${fileName}`;
+  if (folder === 'participants') {
+    levelPath = `../src/experiment/results/${fileName}`;
+  }
+
+  // Switch to console so the user sees real-time progress and logs
+  switchTab('console');
+
+  fetch('/api/run', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      target: 'play-level',
+      label: `Probar Nivel: ${fileName}`,
+      level: levelPath
+    })
+  })
+    .then(async res => {
+      if (res.status === 409) {
+        showToast('Ya hay una tarea en ejecución. Espera a que termine o deténla.', 'warning');
+        return null;
+      }
+      return res.json();
+    })
+    .then(data => {
+      if (data && data.status === 'started') {
+        showToast(`Lanzando nivel: ${fileName}`, 'success');
+        appendLog(`\n🎮 Probador de nivel iniciado para "${fileName}"...\nAbriendo ventana en pantalla con silueta 2D, miniatura preliminar y controles.`, 'system');
+      }
+    })
+    .catch(err => {
+      console.error('Error al probar nivel:', err);
+      showToast('Error de conexión al lanzar nivel.', 'error');
+    });
+}
+
+function openLevelViewerAndPlay() {
+  switchTab('levels');
+  const playBtn = document.getElementById('btn-play-level');
+  if (playBtn) {
+    playBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 

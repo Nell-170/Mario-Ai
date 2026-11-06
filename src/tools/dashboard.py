@@ -201,12 +201,13 @@ def extract_progress(line):
     return None
 
 
-def run_target_thread(target, label):
+def run_target_thread(target, label, level=None):
     global ACTIVE_PROCESS
-    append_log(f"--- Iniciando tarea: {label} (make {target}) ---", "system")
+    level_hint = f' LEVEL="{level}"' if level else ''
+    append_log(f"--- Iniciando tarea: {label} (make {target}{level_hint}) ---", "system")
 
     # If it's a graphical task, warn the user that a Java window opens on their desktop
-    if target in ("play-human", "play-levels-generated", "start-experiment", "start-experiment-nogen", "play-and-generate"):
+    if target in ("play-human", "play-level", "play-levels-generated", "start-experiment", "start-experiment-nogen", "play-and-generate"):
         append_log("🎮 Se abrirá una ventana gráfica de Java en tu pantalla. La tarea se mantendrá activa mientras juegues.", "system")
     elif target == "install":
         append_log("🚀 Iniciando instalador unificado Mario AI (entorno virtual, repos, dependencias, compilación y niveles)...", "system")
@@ -223,6 +224,8 @@ def run_target_thread(target, label):
 
     is_windows = sys.platform.startswith("win")
     cmd = ["make", target]
+    if level:
+        cmd.append(f"LEVEL={level}")
 
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
@@ -320,9 +323,27 @@ def get_stats():
             return 0
         return sum(1 for d in p.iterdir() if d.is_dir())
 
+    def count_participant_levels():
+        p_dir = ROOT / "experiment" / "results"
+        if not p_dir.exists():
+            return 0
+        total = 0
+        for p in p_dir.iterdir():
+            if not p.is_dir():
+                continue
+            g = p / "generated"
+            if not g.exists():
+                continue
+            direct = [f for f in g.glob("*.txt") if f.stat().st_size > 0]
+            if direct:
+                total += len(direct)
+            else:
+                total += len([f for f in g.glob("gen*/*.txt") if f.stat().st_size > 0])
+        return total
+
     return {
         "levels_nivel0": count_files("levels/nivel0"),
-        "levels_generated": count_files("levels/generated"),
+        "levels_generated": count_files("levels/generated") + count_participant_levels(),
         "levels_converted": count_files("levels/converted"),
         "telemetry_sessions": count_files("telemetry", ".json"),
         "experiment_participants": count_dirs("experiment/results"),
@@ -330,6 +351,31 @@ def get_stats():
 
 
 def list_levels(folder_key):
+    if folder_key == "participants":
+        results_dir = ROOT / "experiment" / "results"
+        if not results_dir.exists():
+            return []
+        items = []
+        for p in sorted(results_dir.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True):
+            if not p.is_dir():
+                continue
+            gen_dir = p / "generated"
+            if not gen_dir.exists():
+                continue
+            direct = sorted([f for f in gen_dir.glob("*.txt") if f.stat().st_size > 0], key=lambda x: x.name)
+            files_to_add = direct if direct else sorted([f for f in gen_dir.glob("gen*/*.txt") if f.stat().st_size > 0], key=lambda x: x.name)
+            for f in files_to_add:
+                st = f.stat()
+                rel_path = str(f.relative_to(results_dir))
+                items.append({
+                    "name": f"[{p.name}] {f.name}",
+                    "file": rel_path,
+                    "folder": "participants",
+                    "size": st.st_size,
+                    "modified": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st.st_mtime))
+                })
+        return items
+
     folder_map = {
         "nivel0": ROOT / "levels" / "nivel0",
         "generated": ROOT / "levels" / "generated",
@@ -344,6 +390,8 @@ def list_levels(folder_key):
     items = []
     for f in sorted(target_dir.glob("*.txt"), key=lambda x: x.stat().st_mtime, reverse=True):
         st = f.stat()
+        if st.st_size == 0:
+            continue
         items.append({
             "name": f.name,
             "folder": folder_key,
@@ -354,6 +402,15 @@ def list_levels(folder_key):
 
 
 def get_level_content(folder_key, file_name):
+    if folder_key == "participants":
+        results_dir = (ROOT / "experiment" / "results").resolve()
+        target_path = (results_dir / file_name).resolve()
+        if not str(target_path).startswith(str(results_dir)):
+            return None
+        if not target_path.exists() or not target_path.is_file():
+            return None
+        return target_path.read_text(encoding="utf-8", errors="replace")
+
     file_name = Path(file_name).name
     folder_map = {
         "nivel0": ROOT / "levels" / "nivel0",
@@ -525,13 +582,14 @@ class DashboardHandler(SimpleHTTPRequestHandler):
 
             target = data.get("target")
             label = data.get("label", target)
+            level = data.get("level")
 
             with STATE_LOCK:
                 if CURRENT_TASK["running"]:
                     self.send_json({"error": "Ya hay una tarea en ejecución"}, status=409)
                     return
 
-            threading.Thread(target=run_target_thread, args=(target, label), daemon=True).start()
+            threading.Thread(target=run_target_thread, args=(target, label, level), daemon=True).start()
             self.send_json({"status": "started", "target": target, "label": label})
 
         elif url.path == "/api/stop":

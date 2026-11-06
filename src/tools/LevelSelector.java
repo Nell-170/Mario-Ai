@@ -30,7 +30,8 @@ public class LevelSelector {
     private final JLabel countLabel = new JLabel();
     private final JComboBox<String> folderCombo = new JComboBox<>(new String[]{
         "Niveles base (Nivel 0)",
-        "Niveles generados por MarioGPT",
+        "Niveles generados en Experimento (Participantes)",
+        "Niveles generados por MarioGPT (Global)",
         "Niveles convertidos (Todos)"
     });
 
@@ -61,7 +62,17 @@ public class LevelSelector {
         levelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         levelList.setFont(levelList.getFont().deriveFont(15f));
         levelList.setCellRenderer((list, file, index, selected, focused) -> {
-            JLabel label = new JLabel(file.getName() + " (" + file.getParentFile().getName() + ")");
+            String text;
+            String pathStr = file.getAbsolutePath().replace('\\', '/');
+            if (pathStr.contains("/experiment/results/")) {
+                String after = pathStr.substring(pathStr.indexOf("/experiment/results/") + "/experiment/results/".length());
+                String[] parts = after.split("/");
+                String participant = parts.length > 0 ? parts[0] : file.getParentFile().getName();
+                text = file.getName() + "  —  [" + participant + "]";
+            } else {
+                text = file.getName() + " (" + file.getParentFile().getName() + ")";
+            }
+            JLabel label = new JLabel(text);
             label.setOpaque(true);
             label.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
             label.setBackground(selected ? list.getSelectionBackground() : list.getBackground());
@@ -103,36 +114,83 @@ public class LevelSelector {
     private void loadLevels() {
         levelModel.clear();
         String selectedCategory = (String) folderCombo.getSelectedItem();
-        List<File> directories = new ArrayList<>();
+        List<File> filesToAdd = new ArrayList<>();
 
         if ("Niveles base (Nivel 0)".equals(selectedCategory)) {
-            directories.add(new File("../src/levels/nivel0"));
-            directories.add(new File("../levels/nivel0"));
-        } else if ("Niveles generados por MarioGPT".equals(selectedCategory)) {
-            directories.add(new File("../src/levels/generated"));
-            directories.add(new File("../levels/generated"));
+            collectFilesFromDirs(List.of(new File("../src/levels/nivel0"), new File("../levels/nivel0"), new File("src/levels/nivel0")), filesToAdd);
+        } else if ("Niveles generados por MarioGPT (Global)".equals(selectedCategory)) {
+            collectFilesFromDirs(List.of(new File("../src/levels/generated"), new File("../levels/generated"), new File("src/levels/generated")), filesToAdd);
+        } else if ("Niveles generados en Experimento (Participantes)".equals(selectedCategory)) {
+            List<File> searchRoots = List.of(
+                new File("../src/experiment/results"),
+                new File("../experiment/results"),
+                new File("src/experiment/results"),
+                new File("experiment/results")
+            );
+            File resultsDir = null;
+            for (File r : searchRoots) {
+                if (r.exists() && r.isDirectory()) {
+                    resultsDir = r;
+                    break;
+                }
+            }
+            if (resultsDir != null) {
+                File[] participants = resultsDir.listFiles(File::isDirectory);
+                if (participants != null) {
+                    Arrays.sort(participants, Comparator.comparingLong(File::lastModified).reversed());
+                    for (File p : participants) {
+                        File genDir = new File(p, "generated");
+                        if (!genDir.exists() || !genDir.isDirectory()) continue;
+                        File[] direct = genDir.listFiles(f -> f.isFile() && f.getName().endsWith(".txt") && f.length() > 0);
+                        if (direct != null && direct.length > 0) {
+                            Arrays.sort(direct, Comparator.comparing(File::getName));
+                            filesToAdd.addAll(Arrays.asList(direct));
+                        } else {
+                            File[] subGens = genDir.listFiles(File::isDirectory);
+                            if (subGens != null) {
+                                Arrays.sort(subGens, Comparator.comparing(File::getName));
+                                for (File sg : subGens) {
+                                    File[] subFiles = sg.listFiles(f -> f.isFile() && f.getName().endsWith(".txt") && f.length() > 0);
+                                    if (subFiles != null) {
+                                        Arrays.sort(subFiles, Comparator.comparing(File::getName));
+                                        filesToAdd.addAll(Arrays.asList(subFiles));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         } else {
-            directories.add(new File("../src/levels/converted"));
-            directories.add(new File("../levels/converted"));
+            collectFilesFromDirs(List.of(new File("../src/levels/converted"), new File("../levels/converted"), new File("src/levels/converted")), filesToAdd);
         }
 
+        filesToAdd.forEach(file -> {
+            if (!levelModel.contains(file)) {
+                levelModel.addElement(file);
+            }
+        });
+
+        updateCount();
+        if (levelModel.isEmpty()) {
+            countLabel.setText("No hay niveles en esta categoría todavía.");
+        }
+    }
+
+    private void collectFilesFromDirs(List<File> directories, List<File> targetList) {
         for (File dir : directories) {
             if (!dir.exists()) continue;
-            File[] files = dir.listFiles(file -> file.isFile() && file.getName().endsWith(".txt"));
+            File[] files = dir.listFiles(file -> file.isFile() && file.getName().endsWith(".txt") && file.length() > 0);
             if (files != null) {
                 List<File> sorted = Arrays.stream(files)
                         .sorted(Comparator.comparing(File::getName))
                         .collect(Collectors.toList());
-                sorted.forEach(file -> {
-                    if (!levelModel.contains(file)) {
-                        levelModel.addElement(file);
+                for (File f : sorted) {
+                    if (!targetList.contains(f)) {
+                        targetList.add(f);
                     }
-                });
+                }
             }
-        }
-        updateCount();
-        if (levelModel.isEmpty()) {
-            countLabel.setText("No hay niveles en esta categoría todavía.");
         }
     }
 

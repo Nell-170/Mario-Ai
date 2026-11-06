@@ -53,11 +53,14 @@ def run_pygame_bridge(sock):
         right = 1 if (axis_x > 0.4 or hat_x > 0) else 0
         down = 1 if (axis_y > 0.4 or hat_y < 0) else 0
 
-        # Botones: A (0) o Y (3) para salto, B (1) o X (2) o gatillos para correr
-        btn_jump = 1 if (js.get_button(0) or (js.numbuttons > 3 and js.get_button(3)) or hat_y > 0) else 0
-        btn_speed = 1 if (js.get_button(1) or (js.numbuttons > 2 and js.get_button(2))) else 0
-        btn_start = 1 if (js.numbuttons > 7 and js.get_button(7)) else 0
-        btn_restart = 1 if (js.numbuttons > 6 and js.get_button(6)) else 0
+        # Mapeo universal (PS4 / Xbox): Equis / A (0) = Salto, Cuadrado (2/3) / Círculo (1) / L1 / R1 = Correr
+        btn_jump = 1 if (js.get_button(0) or hat_y > 0) else 0
+        btn_speed = 1 if (js.get_button(1)
+                          or (js.get_numbuttons() > 2 and js.get_button(2))
+                          or (js.get_numbuttons() > 3 and js.get_button(3))
+                          or (js.get_numbuttons() > 5 and (js.get_button(4) or js.get_button(5)))) else 0
+        btn_start = 1 if (js.get_numbuttons() > 7 and (js.get_button(7) or (js.get_numbuttons() > 9 and js.get_button(9)))) else 0
+        btn_restart = 1 if (js.get_numbuttons() > 6 and (js.get_button(6) or (js.get_numbuttons() > 8 and js.get_button(8)))) else 0
 
         msg = f"L:{left},R:{right},D:{down},J:{btn_jump},S:{btn_speed},P:{btn_start},RST:{btn_restart}"
         sock.sendto(msg.encode("ascii"), (UDP_IP, UDP_PORT))

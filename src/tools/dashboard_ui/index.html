@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261020_2">
+  <link rel="stylesheet" href="style.css?v=20261105_scroll">
 </head>
 <body>
   <!-- Header -->
@@ -118,20 +118,24 @@
       </div>
 
       <div class="actions-container">
-        <!-- Category: Instalación & Configuración Inicial -->
-        <div class="action-category">
-          <div class="category-title">
-            <span class="icon">🚀</span> Instalación y Configuración Inicial
+        <!-- SECCIÓN 1: ACCIONES PRINCIPALES Y FLUJO DESDE CERO (SIEMPRE VISIBLES) -->
+        <div class="quick-flow-section">
+          <div class="section-label">
+            <span class="label-dot"></span>
+            <span>Flujo Principal / Más Usadas</span>
           </div>
+
           <div class="category-buttons">
+            <!-- 1. Puesta a punto total desde cero -->
             <button class="action-btn highlight-lab" onclick="confirmAndRunSetupLab()">
               <div class="btn-content">
                 <span class="btn-name">🚀 Puesta a Punto Total (Lab 100)</span>
-                <span class="btn-desc">Hugging Face, compila Java, valida niveles y conecta a JeissonServer</span>
+                <span class="btn-desc">Configura compu desde 0: repos, Java, Hugging Face, A* y JeissonServer</span>
               </div>
               <span class="btn-tag">setup-lab</span>
             </button>
 
+            <!-- 2. Instalador estándar -->
             <button class="action-btn highlight" onclick="runTarget('install', 'Instalador Unificado (8 pasos)')">
               <div class="btn-content">
                 <span class="btn-name">⚡ Instalador Completo</span>
@@ -140,186 +144,230 @@
               <span class="btn-tag">install</span>
             </button>
 
-            <button class="action-btn accent" onclick="openOllamaModal()">
-              <div class="btn-content">
-                <span class="btn-name">🔑 Configurar Ollama API Key</span>
-                <span class="btn-desc">Pegar y guardar clave para síntesis de niveles IA</span>
-              </div>
-              <span class="btn-tag">Ollama Cloud</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Category: Juego y Experimento -->
-        <div class="action-category">
-          <div class="category-title">
-            <span class="icon">🎮</span> Juego y Experimento Humano
-          </div>
-          <div class="category-buttons">
+            <!-- 3. Pantalla de Recibidor Kiosco -->
             <a href="recibidor.html" target="_blank" class="action-btn highlight-lab" style="text-decoration:none;">
               <div class="btn-content">
                 <span class="btn-name">🖥️ Pantalla de Recibidor (Modo Kiosco)</span>
-                <span class="btn-desc">Interfaz para participantes con ciclo continuo y retorno automático</span>
+                <span class="btn-desc">Interfaz para participantes con ciclo continuo y retorno</span>
               </div>
               <span class="btn-tag">recibidor</span>
             </a>
 
-            <button class="action-btn primary" onclick="runTarget('play-human', 'Jugar nivel y capturar telemetría')">
-              <div class="btn-content">
-                <span class="btn-name">👤 Jugar (PlayHuman)</span>
-                <span class="btn-desc">Juega un nivel humano y guarda telemetría</span>
-              </div>
-              <span class="btn-tag">play-human</span>
-            </button>
-
-            <button class="action-btn highlight" onclick="runTarget('start-experiment', 'Experimento Formal 6x6 (MarioGPT)')">
+            <!-- 4. Iniciar Experimento formal -->
+            <button class="action-btn primary" onclick="runTarget('start-experiment', 'Experimento Formal 6x6 (MarioGPT)')">
               <div class="btn-content">
                 <span class="btn-name">🧪 Iniciar Experimento 6x6</span>
-                <span class="btn-desc">Protocolo completo con IA y cuestionarios</span>
+                <span class="btn-desc">Protocolo formal completo con IA y cuestionarios</span>
               </div>
               <span class="btn-tag">start-experiment</span>
             </button>
 
-            <button class="action-btn" onclick="runTarget('start-experiment-nogen', 'Experimento rápido (sin generación IA)')">
+            <!-- 5. Jugar nivel humano -->
+            <button class="action-btn" onclick="runTarget('play-human', 'Jugar nivel y capturar telemetría')">
               <div class="btn-content">
-                <span class="btn-name">⚡ Experimento Rápido</span>
-                <span class="btn-desc">Modo prueba sin llamar a MarioGPT</span>
+                <span class="btn-name">👤 Jugar (PlayHuman)</span>
+                <span class="btn-desc">Juega un nivel humano para probar controles y telemetría</span>
               </div>
-              <span class="btn-tag">start-experiment-nogen</span>
-            </button>
-
-            <button class="action-btn" onclick="runTarget('play-levels-generated', 'Selector gráfico de niveles')">
-              <div class="btn-content">
-                <span class="btn-name">🗺️ Selector de Niveles (GUI)</span>
-                <span class="btn-desc">Abre LevelSelector Swing para elegir nivel</span>
-              </div>
-              <span class="btn-tag">play-levels-generated</span>
+              <span class="btn-tag">play-human</span>
             </button>
           </div>
         </div>
 
-        <!-- Category: IA y MarioGPT -->
-        <div class="action-category">
-          <div class="category-title">
-            <span class="icon">🤖</span> Generación Procedural (MarioGPT)
-          </div>
-          <div class="category-buttons">
-            <button class="action-btn" onclick="runTarget('generate-level', 'Generar nivel con MarioGPT')">
-              <div class="btn-content">
-                <span class="btn-name">🧠 Generar Nivel con IA</span>
-                <span class="btn-desc">Crea nivel a partir de la última telemetría</span>
-              </div>
-              <span class="btn-tag">generate-level</span>
-            </button>
-
-            <button class="action-btn" onclick="runTarget('play-and-generate', 'Jugar y luego generar nivel')">
-              <div class="btn-content">
-                <span class="btn-name">🔁 Jugar y Generar Nivel</span>
-                <span class="btn-desc">play-human + generate-level encadenados</span>
-              </div>
-              <span class="btn-tag">play-and-generate</span>
-            </button>
-
-            <button class="action-btn" onclick="runTarget('prompt-telemetry', 'Construir prompt de telemetría')">
-              <div class="btn-content">
-                <span class="btn-name">📝 Prompt de Telemetría</span>
-                <span class="btn-desc">Convierte telemetry/latest.json a texto</span>
-              </div>
-              <span class="btn-tag">prompt-telemetry</span>
+        <!-- SECCIÓN 2: MENÚ DESPLEGABLE DE MISCELÁNEO Y HERRAMIENTAS SECUNDARIAS -->
+        <div class="misc-accordion-section">
+          <div class="section-label-row">
+            <div class="section-label">
+              <span class="label-icon">📁</span>
+              <span>Herramientas y Misceláneo</span>
+            </div>
+            <button type="button" class="btn-toggle-all" onclick="toggleAllAccordions()" id="btn-toggle-all" title="Expandir o colapsar todas las carpetas">
+              Expandir todo
             </button>
           </div>
-        </div>
 
-        <!-- Category: Compilación y Configuración -->
-        <div class="action-category">
-          <div class="category-title">
-            <span class="icon">⚙️</span> Compilación y Entorno
-          </div>
-          <div class="category-buttons">
-            <button class="action-btn accent" onclick="runTarget('compile', 'Compilar framework y herramientas')">
-              <div class="btn-content">
-                <span class="btn-name">🔨 Compilar Todo (Java)</span>
-                <span class="btn-desc">Parchea y compila framework + tools</span>
+          <div class="accordion-list">
+            <!-- Desplegable 1: IA y MarioGPT -->
+            <details class="action-dropdown">
+              <summary class="dropdown-summary">
+                <div class="summary-left">
+                  <span class="summary-icon">🤖</span>
+                  <span class="summary-title">IA & MarioGPT</span>
+                </div>
+                <div class="summary-right">
+                  <span class="summary-badge">3 tareas</span>
+                  <span class="dropdown-chevron">▼</span>
+                </div>
+              </summary>
+              <div class="dropdown-content">
+                <button class="action-btn" onclick="runTarget('generate-level', 'Generar nivel con MarioGPT')">
+                  <div class="btn-content">
+                    <span class="btn-name">🧠 Generar Nivel con IA</span>
+                    <span class="btn-desc">Crea nivel a partir de la última telemetría</span>
+                  </div>
+                  <span class="btn-tag">generate-level</span>
+                </button>
+                <button class="action-btn" onclick="runTarget('play-and-generate', 'Jugar y luego generar nivel')">
+                  <div class="btn-content">
+                    <span class="btn-name">🔁 Jugar y Generar Nivel</span>
+                    <span class="btn-desc">play-human + generate-level encadenados</span>
+                  </div>
+                  <span class="btn-tag">play-and-generate</span>
+                </button>
+                <button class="action-btn" onclick="runTarget('prompt-telemetry', 'Construir prompt de telemetría')">
+                  <div class="btn-content">
+                    <span class="btn-name">📝 Prompt de Telemetría</span>
+                    <span class="btn-desc">Convierte telemetry/latest.json a texto</span>
+                  </div>
+                  <span class="btn-tag">prompt-telemetry</span>
+                </button>
               </div>
-              <span class="btn-tag">compile</span>
-            </button>
+            </details>
 
-            <button class="action-btn" onclick="runTarget('patch-framework', 'Aplicar parche local al framework')">
-              <div class="btn-content">
-                <span class="btn-name">🩹 Aplicar Parche al Framework</span>
-                <span class="btn-desc">tools/framework.patch en mario_ai_framework</span>
+            <!-- Desplegable 2: Compilación y Parches -->
+            <details class="action-dropdown">
+              <summary class="dropdown-summary">
+                <div class="summary-left">
+                  <span class="summary-icon">⚙️</span>
+                  <span class="summary-title">Compilación y Entorno</span>
+                </div>
+                <div class="summary-right">
+                  <span class="summary-badge">5 tareas</span>
+                  <span class="dropdown-chevron">▼</span>
+                </div>
+              </summary>
+              <div class="dropdown-content">
+                <button class="action-btn accent" onclick="runTarget('compile', 'Compilar framework y herramientas')">
+                  <div class="btn-content">
+                    <span class="btn-name">🔨 Compilar Todo (Java)</span>
+                    <span class="btn-desc">Parchea y compila framework + tools</span>
+                  </div>
+                  <span class="btn-tag">compile</span>
+                </button>
+                <button class="action-btn" onclick="runTarget('patch-framework', 'Aplicar parche local al framework')">
+                  <div class="btn-content">
+                    <span class="btn-name">🩹 Aplicar Parche al Framework</span>
+                    <span class="btn-desc">tools/framework.patch en mario_ai_framework</span>
+                  </div>
+                  <span class="btn-tag">patch-framework</span>
+                </button>
+                <button class="action-btn" onclick="runTarget('install-deps', 'Instalar dependencias de Python')">
+                  <div class="btn-content">
+                    <span class="btn-name">📦 Instalar Dependencias Pip</span>
+                    <span class="btn-desc">pip install -r requirements.txt</span>
+                  </div>
+                  <span class="btn-tag">install-deps</span>
+                </button>
+                <button class="action-btn" onclick="runTarget('install-mariogpt', 'Instalar MarioGPT editable')">
+                  <div class="btn-content">
+                    <span class="btn-name">🤖 Instalar MarioGPT</span>
+                    <span class="btn-desc">Clona e instala mario_gpt en modo -e</span>
+                  </div>
+                  <span class="btn-tag">install-mariogpt</span>
+                </button>
+                <button class="action-btn" onclick="openOllamaModal()">
+                  <div class="btn-content">
+                    <span class="btn-name">🔑 Configurar Ollama API Key</span>
+                    <span class="btn-desc">Guardar clave para síntesis de niveles IA</span>
+                  </div>
+                  <span class="btn-tag">Ollama Cloud</span>
+                </button>
               </div>
-              <span class="btn-tag">patch-framework</span>
-            </button>
+            </details>
 
-            <button class="action-btn" onclick="runTarget('install-deps', 'Instalar dependencias de Python')">
-              <div class="btn-content">
-                <span class="btn-name">📦 Instalar Dependencias</span>
-                <span class="btn-desc">pip install -r requirements.txt</span>
+            <!-- Desplegable 3: Dataset Super Mario Maker 2 -->
+            <details class="action-dropdown">
+              <summary class="dropdown-summary">
+                <div class="summary-left">
+                  <span class="summary-icon">📦</span>
+                  <span class="summary-title">Dataset MM2 (Hugging Face)</span>
+                </div>
+                <div class="summary-right">
+                  <span class="summary-badge">3 tareas</span>
+                  <span class="dropdown-chevron">▼</span>
+                </div>
+              </summary>
+              <div class="dropdown-content">
+                <button class="action-btn" onclick="runTarget('filter', 'Filtrar niveles MM2 desde Hugging Face')">
+                  <div class="btn-content">
+                    <span class="btn-name">🔍 Filtrar MM2 (Hugging Face)</span>
+                    <span class="btn-desc">Descarga y filtra niveles de alta calidad</span>
+                  </div>
+                  <span class="btn-tag">filter</span>
+                </button>
+                <button class="action-btn" onclick="runTarget('convert', 'Convertir niveles MM2 a formato texto MAF')">
+                  <div class="btn-content">
+                    <span class="btn-name">🔄 Convertir MM2 a MAF</span>
+                    <span class="btn-desc">Guarda los grids 16xN en levels/converted</span>
+                  </div>
+                  <span class="btn-tag">convert</span>
+                </button>
+                <button class="action-btn" onclick="runTarget('validate', 'Validar niveles con agente A*')">
+                  <div class="btn-content">
+                    <span class="btn-name">🛡️ Validar con Agente A*</span>
+                    <span class="btn-desc">Filtra niveles superables hacia nivel0</span>
+                  </div>
+                  <span class="btn-tag">validate</span>
+                </button>
               </div>
-              <span class="btn-tag">install-deps</span>
-            </button>
+            </details>
 
-            <button class="action-btn" onclick="runTarget('install-mariogpt', 'Instalar MarioGPT editable')">
-              <div class="btn-content">
-                <span class="btn-name">🤖 Instalar MarioGPT</span>
-                <span class="btn-desc">Clona e instala mario_gpt en modo -e</span>
+            <!-- Desplegable 4: Pruebas Secundarias & GUI -->
+            <details class="action-dropdown">
+              <summary class="dropdown-summary">
+                <div class="summary-left">
+                  <span class="summary-icon">🧪</span>
+                  <span class="summary-title">Pruebas Secundarias & GUI</span>
+                </div>
+                <div class="summary-right">
+                  <span class="summary-badge">2 tareas</span>
+                  <span class="dropdown-chevron">▼</span>
+                </div>
+              </summary>
+              <div class="dropdown-content">
+                <button class="action-btn" onclick="runTarget('start-experiment-nogen', 'Experimento rápido (sin generación IA)')">
+                  <div class="btn-content">
+                    <span class="btn-name">⚡ Experimento Rápido</span>
+                    <span class="btn-desc">Modo prueba sin llamar a MarioGPT</span>
+                  </div>
+                  <span class="btn-tag">start-experiment-nogen</span>
+                </button>
+                <button class="action-btn" onclick="runTarget('play-levels-generated', 'Selector gráfico de niveles')">
+                  <div class="btn-content">
+                    <span class="btn-name">🗺️ Selector de Niveles (GUI)</span>
+                    <span class="btn-desc">Abre LevelSelector Swing para elegir nivel</span>
+                  </div>
+                  <span class="btn-tag">play-levels-generated</span>
+                </button>
               </div>
-              <span class="btn-tag">install-mariogpt</span>
-            </button>
-          </div>
-        </div>
+            </details>
 
-        <!-- Category: Pipeline de Dataset -->
-        <div class="action-category">
-          <div class="category-title">
-            <span class="icon">📦</span> Dataset Super Mario Maker 2
-          </div>
-          <div class="category-buttons">
-            <button class="action-btn" onclick="runTarget('filter', 'Filtrar niveles MM2 desde Hugging Face')">
-              <div class="btn-content">
-                <span class="btn-name">🔍 Filtrar MM2 (Hugging Face)</span>
-                <span class="btn-desc">Descarga y filtra niveles de alta calidad</span>
+            <!-- Desplegable 5: Limpieza y Mantenimiento -->
+            <details class="action-dropdown">
+              <summary class="dropdown-summary">
+                <div class="summary-left">
+                  <span class="summary-icon">🧹</span>
+                  <span class="summary-title">Limpieza y Mantenimiento</span>
+                </div>
+                <div class="summary-right">
+                  <span class="summary-badge">4 tareas</span>
+                  <span class="dropdown-chevron">▼</span>
+                </div>
+              </summary>
+              <div class="dropdown-content clean-group">
+                <button class="action-btn btn-outline" onclick="runTarget('clean', 'Limpiar binarios Java')">
+                  <span>Limpiar Java (bin/)</span>
+                </button>
+                <button class="action-btn btn-outline" onclick="runTarget('clean-telemetry', 'Limpiar telemetría')">
+                  <span>Limpiar Telemetría</span>
+                </button>
+                <button class="action-btn btn-outline" onclick="runTarget('clean-levels', 'Limpiar niveles')">
+                  <span>Limpiar Niveles</span>
+                </button>
+                <button class="action-btn btn-outline-danger" onclick="confirmCleanAll()">
+                  <span>⚠️ Limpieza Total</span>
+                </button>
               </div>
-              <span class="btn-tag">filter</span>
-            </button>
-
-            <button class="action-btn" onclick="runTarget('convert', 'Convertir niveles MM2 a formato texto MAF')">
-              <div class="btn-content">
-                <span class="btn-name">🔄 Convertir MM2 a MAF</span>
-                <span class="btn-desc">Guarda los grids 16xN en levels/converted</span>
-              </div>
-              <span class="btn-tag">convert</span>
-            </button>
-
-            <button class="action-btn" onclick="runTarget('validate', 'Validar niveles con agente A*')">
-              <div class="btn-content">
-                <span class="btn-name">🛡️ Validar con Agente A*</span>
-                <span class="btn-desc">Filtra niveles superables hacia nivel0</span>
-              </div>
-              <span class="btn-tag">validate</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Category: Limpieza -->
-        <div class="action-category">
-          <div class="category-title">
-            <span class="icon">🧹</span> Limpieza y Mantenimiento
-          </div>
-          <div class="category-buttons clean-group">
-            <button class="action-btn btn-outline" onclick="runTarget('clean', 'Limpiar binarios Java')">
-              <span>Limpiar Java (bin/)</span>
-            </button>
-            <button class="action-btn btn-outline" onclick="runTarget('clean-telemetry', 'Limpiar telemetría')">
-              <span>Limpiar Telemetría</span>
-            </button>
-            <button class="action-btn btn-outline" onclick="runTarget('clean-levels', 'Limpiar niveles')">
-              <span>Limpiar Niveles</span>
-            </button>
-            <button class="action-btn btn-outline-danger" onclick="confirmCleanAll()">
-              <span>⚠️ Limpieza Total</span>
-            </button>
+            </details>
           </div>
         </div>
       </div>
@@ -399,10 +447,11 @@
               <label for="level-folder-select">Carpeta:</label>
               <select id="level-folder-select" onchange="loadLevelList()">
                 <option value="nivel0">Niveles Base (Nivel 0)</option>
-                <option value="generated">Generados por MarioGPT</option>
-                <option value="converted">Convertidos MM2 (Todos)</option>
+                <option value="participants">Generados en Experimento (Participantes)</option>
                 <option value="generics">Genéricos</option>
                 <option value="familiarization">Familiarización</option>
+                <option value="converted">Convertidos MM2 (Todos)</option>
+                <option value="generated">Generados por MarioGPT (Global)</option>
               </select>
             </div>
             <div class="control-group fill">
@@ -412,6 +461,9 @@
               </select>
             </div>
             <button class="btn-sm" onclick="loadLevelList()">↻ Actualizar</button>
+            <button class="btn-sm btn-play-level" id="btn-play-level" onclick="playSelectedLevel()" title="Jugar y probar este nivel con Mario">
+              ▶ Probar este Nivel
+            </button>
           </div>
 
           <div class="level-meta-bar" id="level-meta-bar">
@@ -425,6 +477,30 @@
           <!-- 2D Graphical Canvas Render -->
           <div class="level-canvas-wrap" id="canvas-wrapper">
             <canvas id="level-canvas" height="320"></canvas>
+          </div>
+
+          <!-- Horizontal Level Navigation Bar -->
+          <div class="level-nav-bar" id="level-nav-bar">
+            <div class="level-nav-buttons">
+              <button type="button" class="btn-xs" onclick="scrollLevelCanvas('start')" title="Ir al inicio del nivel">⏮ Inicio</button>
+              <button type="button" class="btn-xs" onclick="scrollLevelCanvas(-400)" title="Desplazar hacia la izquierda">◀ 400px</button>
+              <button type="button" class="btn-xs" onclick="scrollLevelCanvas(400)" title="Desplazar hacia la derecha">400px ▶</button>
+              <button type="button" class="btn-xs" onclick="scrollLevelCanvas('end')" title="Ir al final del nivel">Fin ⏭</button>
+            </div>
+
+            <!-- Scroll Slider -->
+            <div class="level-slider-wrap">
+              <span class="slider-hint">Desplazamiento:</span>
+              <input type="range" id="level-scroll-slider" min="0" max="100" value="0" oninput="onLevelSliderInput(this.value)">
+              <span id="level-scroll-pos" class="slider-pos">0%</span>
+            </div>
+
+            <div class="level-zoom-wrap">
+              <span class="slider-hint">Bloques:</span>
+              <button type="button" class="btn-xs" onclick="setLevelTileSize(16)" id="btn-zoom-16">16px</button>
+              <button type="button" class="btn-xs active" onclick="setLevelTileSize(20)" id="btn-zoom-20">20px</button>
+              <button type="button" class="btn-xs" onclick="setLevelTileSize(26)" id="btn-zoom-26">26px</button>
+            </div>
           </div>
 
           <!-- Raw Text Viewer -->
@@ -608,6 +684,6 @@
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container"></div>
 
-  <script src="app.js?v=20261020_2"></script>
+  <script src="app.js?v=20261105_playlevel"></script>
 </body>
 </html>
