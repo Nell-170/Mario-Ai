@@ -359,8 +359,7 @@ public class ExperimentRunner {
                 BufferedImage famThumb = renderLevelThumbnail(famContent, 1160, 190);
                 showLevelIntroScreen("Familiarización (" + (f + 1) + " de " + familiarization.size() + ")",
                         "Nivel de práctica " + (f + 1),
-                        "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n"
-                                + "Controles: Flechas = Moverse | S / F / Espacio / Flecha Arriba = Saltar | A / D / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
+                        "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n",
                         "Comenzar práctica " + (f + 1),
                         famThumb);
                 Path telPath = playLevel(famLevel, timer,
@@ -475,8 +474,7 @@ public class ExperimentRunner {
                         "Nivel " + (i + 1),
                         "Observa la silueta del nivel para reconocerlo más tarde en el ranking.\n"
                                 + "Juega a tu ritmo y explora el mapa lo mejor que puedas.\n"
-                                + "Al terminarlo, responderás unas breves preguntas sobre tus impresiones de este nivel.\n"
-                                + "Controles: Flechas = Moverse | S / F / Espacio / Flecha Arriba = Saltar | A / D / Shift = Correr | P = Pausa | R = Reiniciar | Q = Terminar | M = Audio",
+                                + "Al terminarlo, responderás unas breves preguntas sobre tus impresiones de este nivel.\n",
                         "¡Jugar nivel " + (i + 1) + "!",
                         thumbnail);
 
