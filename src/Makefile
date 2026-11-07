@@ -45,7 +45,7 @@ ifeq ($(OS),Windows_NT)
     endif
     PIP_FLAGS   :=
     PATCH_CMD    = powershell -NoProfile -ExecutionPolicy Bypass -File tools/apply-framework-patch.ps1 -Framework "$(FRAMEWORK)"
-    COMPILE_CMD  = powershell -NoProfile -ExecutionPolicy Bypass -File tools\compile-framework.ps1 -Framework "$(FRAMEWORK)"
+    COMPILE_CMD  = powershell -NoProfile -ExecutionPolicy Bypass -File tools/compile-framework.ps1 -Framework "$(FRAMEWORK)"
 else
     PLATFORM    := unix
     ifeq ($(wildcard ../.venv/bin/python),../.venv/bin/python)
@@ -75,6 +75,7 @@ endif
 .PHONY: help install setup-lab gui dashboard recibidor kiosk setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-level play-levels-generated start-experiment \
         start-experiment-nogen test-db sync-db generate-level prompt-telemetry play-and-generate \
+        get-generics-levels \
         tunnel clean clean-telemetry clean-levels clean-experiment-results clean-all clean-fresh
 
 # ── help ──────────────────────────────────────────────────────
@@ -102,6 +103,7 @@ help:
 	@echo "  test-db                Send a TEST_ participant to Supabase and confirm it arrived"
 	@echo "  sync-db                Resend records waiting in experiment/db_pending/"
 	@echo "  generate-level         Generate a level from the latest telemetry"
+	@echo "  get-generics-levels    Batch-generate generic levels from the cluster server (N=count, OUT=dir, PROMPT=text)"
 	@echo "  play-and-generate      play-human + generate-level"
 	@echo "  prompt-telemetry       Build a compact MarioGPT prompt from telemetry/latest.json"
 	@echo "  clean                  Remove generated Java class files"
@@ -140,7 +142,7 @@ kiosk:
 setup:
 	$(call progress,0,Verificando Mario AI Framework...)
 ifeq ($(PLATFORM),windows)
-	@if not exist "$(FRAMEWORK)\.git" git clone https://github.com/amidos2006/Mario-AI-Framework "$(FRAMEWORK)"
+	@test -d "$(FRAMEWORK)/.git" || git clone https://github.com/amidos2006/Mario-AI-Framework "$(FRAMEWORK)"
 else
 	@test -d "$(FRAMEWORK)/.git" || git clone https://github.com/amidos2006/Mario-AI-Framework "$(FRAMEWORK)"
 endif
@@ -156,7 +158,7 @@ install-deps:
 setup-mariogpt:
 	$(call progress,0,Verificando repositorio MarioGPT...)
 ifeq ($(PLATFORM),windows)
-	@if not exist "$(MARIO_GPT)\.git" git clone https://github.com/shyamsn97/mario-gpt.git "$(MARIO_GPT)"
+	@test -d "$(MARIO_GPT)/.git" || git clone https://github.com/shyamsn97/mario-gpt.git "$(MARIO_GPT)"
 else
 	@test -d "$(MARIO_GPT)/.git" || git clone https://github.com/shyamsn97/mario-gpt.git "$(MARIO_GPT)"
 endif
@@ -248,6 +250,19 @@ generate-level: setup-mariogpt
 	$(call progress,0,Iniciando generación procedural con MarioGPT...)
 	@$(PYTHON) tools/mario_gpt_generate.py --telemetry telemetry/latest.json
 	$(call progress,100,Generación completada exitosamente.)
+
+# ── get-generics-levels ───────────────────────────────────────
+N ?= 15
+OUT ?=
+PROMPT ?=
+get-generics-levels:
+	$(call progress,0,Generando niveles en lote con el servidor del clúster...)
+	@chmod +x tools/generar_niveles.sh
+	@ARGS="-n $(N)"; \
+	if [ -n "$(OUT)" ]; then ARGS="$$ARGS -o \"$(OUT)\""; fi; \
+	if [ -n "$(PROMPT)" ]; then ARGS="$$ARGS -p \"$(PROMPT)\""; fi; \
+	eval bash tools/generar_niveles.sh $$ARGS
+	$(call progress,100,Generación en lote terminada.)
 
 # ── play-and-generate ─────────────────────────────────────────
 play-and-generate:
