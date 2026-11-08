@@ -112,6 +112,68 @@ def get_generation_config():
     }
 
 
+def get_sequence_server_status():
+    cfg_file = ROOT / "experiment" / "config.properties"
+    url = ""
+    if cfg_file.exists():
+        for line in cfg_file.read_text(encoding="utf-8", errors="ignore").splitlines():
+            line = line.strip()
+            if line.startswith("sequence_server_url") and "=" in line:
+                url = line.split("=", 1)[1].strip()
+    if not url:
+        return {"configured": False, "alive": False, "url": "", "ping_ms": 0}
+    alive = False
+    ping_ms = 0
+    try:
+        import urllib.request
+        t0 = time.time()
+        base = url.rstrip("/")
+        if base.endswith("/obtener_secuencia"):
+            base = base[: -len("/obtener_secuencia")]
+        req = urllib.request.Request(base + "/", headers={"User-Agent": "MarioAI-Dashboard/1.0"})
+        try:
+            urllib.request.urlopen(req, timeout=1.8).close()
+        except urllib.error.HTTPError:
+            pass
+        alive = True
+        ping_ms = round((time.time() - t0) * 1000)
+    except Exception:
+        alive = False
+    return {"configured": True, "alive": alive, "url": url, "ping_ms": ping_ms}
+
+
+def normalize_sequence_url(raw: str) -> str:
+    raw = raw.strip()
+    if not raw:
+        return ""
+    if "://" not in raw:
+        raw = "http://" + raw
+    host = raw.split("://", 1)[1].split("/", 1)[0]
+    if ":" not in host:
+        scheme, rest = raw.split("://", 1)
+        parts = rest.split("/", 1)
+        raw = scheme + "://" + parts[0] + ":5000" + ("/" + parts[1] if len(parts) > 1 else "")
+    return raw.rstrip("/")
+
+
+def save_sequence_server_url(url: str) -> bool:
+    cfg_file = ROOT / "experiment" / "config.properties"
+    if not cfg_file.exists():
+        return False
+    text = cfg_file.read_text(encoding="utf-8")
+    nl = "\r\n" if "\r\n" in text else "\n"
+    lines = text.splitlines()
+    done = False
+    for i, line in enumerate(lines):
+        if line.strip().startswith("sequence_server_url"):
+            lines[i] = f"sequence_server_url={url}"
+            done = True
+    if not done:
+        lines.append(f"sequence_server_url={url}")
+    cfg_file.write_text(nl.join(lines) + nl, encoding="utf-8", newline="")
+    return True
+
+
 def save_generation_config(new_mode: str, new_url: str = None, hpc_user: str = None, hpc_node: str = None, hpc_port: str = None):
     cfg_file = ROOT / "experiment" / "config.properties"
     if not cfg_file.exists():
@@ -483,6 +545,8 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             self.send_json(stats)
         elif path == "/api/ollama-key":
             self.send_json(get_ollama_status())
+        elif path == "/api/sequence-server":
+            self.send_json(get_sequence_server_status())
         elif path == "/api/status":
             with STATE_LOCK:
                 task_data = dict(CURRENT_TASK)
@@ -551,6 +615,20 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             saved = save_generation_config(new_mode, new_url, hpc_user, hpc_node, hpc_port)
             append_log(f"⚡ Configuración de MarioGPT actualizada ({new_mode})", "system")
             self.send_json({"status": "saved" if saved else "error", "config": get_generation_config()})
+            return
+
+        elif url.path == "/api/sequence-server":
+            content_len = int(self.headers.get("Content-Length", 0))
+            post_body = self.rfile.read(content_len).decode("utf-8")
+            try:
+                data = json.loads(post_body)
+            except Exception:
+                self.send_error(400, "JSON inválido")
+                return
+            new_url = normalize_sequence_url(str(data.get("url", "")))
+            saved = save_sequence_server_url(new_url)
+            append_log(f"⚖️ Servidor de balanceo: {new_url or 'desactivado (asignación local)'}", "system")
+            self.send_json({"status": "saved" if saved else "error", "details": get_sequence_server_status()})
             return
 
         elif url.path == "/api/ollama-key":

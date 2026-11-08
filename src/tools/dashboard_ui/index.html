@@ -26,6 +26,11 @@
         <span style="font-weight:600; color:#fde68a;">🖥️ Pantalla Recibidor</span>
       </a>
 
+      <div id="seq-pill" class="status-pill status-seq" onclick="openSeqModal()" style="cursor:pointer;" title="Servidor de balanceo de secuencias (Cuadrado Latino)">
+        <span class="status-dot"></span>
+        <span id="seq-text">Servidor balanceo: Comprobando...</span>
+      </div>
+
       <div id="ollama-pill" class="status-pill status-ollama" onclick="openOllamaModal()" title="Haga clic para ver o configurar la clave de Ollama Cloud">
         <span class="status-dot"></span>
         <span id="ollama-text">Ollama: Comprobando...</span>
@@ -534,6 +539,39 @@
       </div>
     </section>
   <!-- Modal: Configuración de Ollama API Key -->
+  <div id="seq-modal" class="modal-backdrop hidden" onclick="if (event.target.id === 'seq-modal') closeSeqModal()">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">⚖️</span>
+          <h3>Servidor de balanceo (Cuadrado Latino)</h3>
+        </div>
+        <button class="btn-close" onclick="closeSeqModal()" title="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          Escribe la IP del servidor (por ejemplo <code>10.1.70.25</code>). Si no pones puerto se usa <code>5000</code>.
+          Déjalo vacío para usar la asignación local.
+        </p>
+        <div class="key-status-box">
+          <span class="status-icon" id="seq-status-icon">⚪</span>
+          <div class="key-status-info">
+            <span class="key-status-title" id="seq-status-title">Comprobando...</span>
+            <span class="key-status-sub" id="seq-status-sub"></span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="seq-url-input">IP o URL del servidor:</label>
+          <input type="text" id="seq-url-input" placeholder="10.1.70.25" autocomplete="off" onkeydown="if (event.key === 'Enter') saveSeqServer()">
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+          <button class="btn-sm btn-subtle" onclick="closeSeqModal()">Cancelar</button>
+          <button class="btn-sm btn-primary" onclick="saveSeqServer()">Guardar y probar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="ollama-modal" class="modal-backdrop hidden" onclick="handleModalBackdropClick(event)">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-header">

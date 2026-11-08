@@ -142,9 +142,9 @@ kiosk:
 setup:
 	$(call progress,0,Verificando Mario AI Framework...)
 ifeq ($(PLATFORM),windows)
-	@test -d "$(FRAMEWORK)/.git" || git clone https://github.com/amidos2006/Mario-AI-Framework "$(FRAMEWORK)"
+	@$(if $(wildcard $(FRAMEWORK)/.git),,git clone https://github.com/amidos2006/Mario-AI-Framework "$(FRAMEWORK)")
 else
-	@test -d "$(FRAMEWORK)/.git" || git clone https://github.com/amidos2006/Mario-AI-Framework "$(FRAMEWORK)"
+	@$(if $(wildcard $(FRAMEWORK)/.git),,git clone https://github.com/amidos2006/Mario-AI-Framework "$(FRAMEWORK)")
 endif
 	$(call progress,100,Mario AI Framework verificado.)
 
@@ -158,9 +158,9 @@ install-deps:
 setup-mariogpt:
 	$(call progress,0,Verificando repositorio MarioGPT...)
 ifeq ($(PLATFORM),windows)
-	@test -d "$(MARIO_GPT)/.git" || git clone https://github.com/shyamsn97/mario-gpt.git "$(MARIO_GPT)"
+	@$(if $(wildcard $(MARIO_GPT)/.git),,git clone https://github.com/shyamsn97/mario-gpt.git "$(MARIO_GPT)")
 else
-	@test -d "$(MARIO_GPT)/.git" || git clone https://github.com/shyamsn97/mario-gpt.git "$(MARIO_GPT)"
+	@$(if $(wildcard $(MARIO_GPT)/.git),,git clone https://github.com/shyamsn97/mario-gpt.git "$(MARIO_GPT)")
 endif
 	$(call progress,100,MarioGPT verificado.)
 

@@ -1117,6 +1117,27 @@ select:focus {
   box-shadow: 0 0 8px #f59e0b;
 }
 
+/* Sequence balancing server pill */
+.status-seq {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #fde68a;
+  transition: all 0.25s ease;
+}
+.status-seq .status-dot { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+.status-seq.online {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+}
+.status-seq.online .status-dot { background: #34d399; box-shadow: 0 0 8px #34d399; }
+.status-seq.offline {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #fca5a5;
+}
+.status-seq.offline .status-dot { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
 @keyframes subtlePulse {
   0%, 100% { border-color: rgba(245, 158, 11, 0.45); }
   50% { border-color: rgba(245, 158, 11, 0.85); box-shadow: 0 0 12px rgba(245, 158, 11, 0.3); }

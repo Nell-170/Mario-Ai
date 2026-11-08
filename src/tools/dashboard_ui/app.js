@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   refreshStats();
   refreshOllamaStatus();
+  refreshSequenceServer();
   loadGenerationConfig();
   startStatusPolling();
   loadLevelList();
@@ -98,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(() => {
     refreshStats();
     refreshOllamaStatus();
+    refreshSequenceServer();
     loadGenerationConfig();
   }, 5000);
 });
@@ -1079,6 +1081,94 @@ async function refreshOllamaStatus() {
     updateModalStatusBox(data);
   } catch (err) {
     console.error('Error fetching Ollama status:', err);
+  }
+}
+
+let currentSeqStatus = { configured: false, alive: false, url: '' };
+
+function renderSeqModalStatus(data) {
+  const icon = document.getElementById('seq-status-icon');
+  const title = document.getElementById('seq-status-title');
+  const sub = document.getElementById('seq-status-sub');
+  if (!icon || !title || !sub) return;
+  if (!data.configured) {
+    icon.textContent = '⚪';
+    title.textContent = 'Sin configurar (asignación local)';
+    sub.textContent = '';
+  } else if (data.alive) {
+    icon.textContent = '🟢';
+    title.textContent = `Conectado (${data.ping_ms} ms)`;
+    sub.textContent = data.url;
+  } else {
+    icon.textContent = '🔴';
+    title.textContent = 'Sin conexión';
+    sub.textContent = data.url;
+  }
+}
+
+function openSeqModal() {
+  const modal = document.getElementById('seq-modal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+  renderSeqModalStatus(currentSeqStatus);
+  const input = document.getElementById('seq-url-input');
+  if (input) {
+    input.value = currentSeqStatus.url || '';
+    setTimeout(() => input.focus(), 150);
+  }
+}
+
+function closeSeqModal() {
+  const modal = document.getElementById('seq-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+async function saveSeqServer() {
+  const input = document.getElementById('seq-url-input');
+  if (!input) return;
+  try {
+    const res = await fetch('/api/sequence-server', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: input.value })
+    });
+    const data = await res.json();
+    if (data.details) {
+      currentSeqStatus = data.details;
+      renderSeqModalStatus(data.details);
+      input.value = data.details.url || '';
+    }
+    refreshSequenceServer();
+  } catch (err) {
+    console.error('Error saving sequence server:', err);
+  }
+}
+
+async function refreshSequenceServer() {
+  const pill = document.getElementById('seq-pill');
+  const text = document.getElementById('seq-text');
+  if (!pill || !text) return;
+  try {
+    const res = await fetch('/api/sequence-server');
+    const data = await res.json();
+    currentSeqStatus = data;
+    renderSeqModalStatus(data);
+    pill.classList.remove('online', 'offline');
+    if (!data.configured) {
+      pill.classList.add('offline');
+      text.textContent = 'Servidor balanceo: Sin configurar';
+      pill.title = 'sequence_server_url vacío en config.properties: se usa asignación local';
+    } else if (data.alive) {
+      pill.classList.add('online');
+      text.textContent = 'Servidor balanceo: Conectado ✓';
+      pill.title = `${data.url} (${data.ping_ms} ms)`;
+    } else {
+      pill.classList.add('offline');
+      text.textContent = 'Servidor balanceo: Sin conexión';
+      pill.title = `No responde: ${data.url}\nSe usará asignación local`;
+    }
+  } catch (err) {
+    console.error('Error fetching sequence server status:', err);
   }
 }
 

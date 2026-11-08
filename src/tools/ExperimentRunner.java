@@ -282,7 +282,10 @@ public class ExperimentRunner {
         List<Path> human = drawn.subList(0, 2);
         List<Path> substitutes = drawn.subList(2, drawn.size());
 
-        String group = assignBalanced("group", GROUPS);
+        String group = fetchSequenceFromServer(config);
+        if (group == null) {
+            group = assignBalanced("group", GROUPS);
+        }
         String freeCondition = assignBalanced("free", FREE_CONDITIONS);
         devFreeCondition = freeCondition;
         String id = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + "_" + group;
@@ -3653,6 +3656,66 @@ public class ExperimentRunner {
             chosen.add(pool.get(i % pool.size()));
         }
         return chosen;
+    }
+
+    private static String fetchSequenceFromServer(Properties config) {
+        String base = config.getProperty("sequence_server_url", "").trim();
+        if (base.isEmpty()) {
+            return null;
+        }
+        int attempts = Math.max(1, parseIntProperty(config, "sequence_server_retries", 5));
+        int pauseMs = Math.max(0, parseIntProperty(config, "sequence_server_retry_pause_ms", 3000));
+        int timeoutMs = Math.max(500, parseIntProperty(config, "sequence_server_timeout_ms", 5000));
+        String full = base.endsWith("/obtener_secuencia") ? base : base.replaceAll("/+$", "") + "/obtener_secuencia";
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\"secuencia\"\\s*:\\s*\"(S[1-6])\"");
+        for (int attempt = 1; attempt <= attempts; attempt++) {
+            String reason;
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL(full).openConnection();
+                conn.setConnectTimeout(timeoutMs);
+                conn.setReadTimeout(timeoutMs);
+                conn.setRequestMethod("GET");
+                int code = conn.getResponseCode();
+                if (code == 200) {
+                    StringBuilder sb = new StringBuilder();
+                    try (BufferedReader r = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                        String line;
+                        while ((line = r.readLine()) != null) {
+                            sb.append(line);
+                        }
+                    }
+                    java.util.regex.Matcher m = pattern.matcher(sb);
+                    if (m.find() && SEQUENCES.containsKey(m.group(1))) {
+                        System.out.println("Secuencia asignada por el servidor: " + m.group(1) + " (intento " + attempt + ")");
+                        return m.group(1);
+                    }
+                    reason = "respuesta invalida";
+                } else {
+                    reason = "codigo HTTP " + code;
+                }
+            } catch (Exception e) {
+                reason = String.valueOf(e.getMessage());
+            }
+            System.out.println("Servidor de secuencias: intento " + attempt + "/" + attempts + " fallido (" + reason + ").");
+            if (attempt < attempts) {
+                try {
+                    Thread.sleep(pauseMs);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+        System.out.println("No se pudo contactar al servidor de secuencias; se usa asignacion local.");
+        return null;
+    }
+
+    private static int parseIntProperty(Properties config, String key, int fallback) {
+        try {
+            return Integer.parseInt(config.getProperty(key, "").trim());
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
     }
 
     private static String assignBalanced(String key, String[] options) throws IOException {
