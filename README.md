@@ -1,334 +1,327 @@
-# Entorno base — Generación personalizada de niveles de Mario con IA
+# Generación Adaptativa y Personalizada de Niveles de Super Mario con Inteligencia Artificial
 
-Proyecto de investigación (TFG, Escuela de Ciencias de la Computación e Informática, Universidad de Costa Rica).
+Proyecto de investigación desarrollado en la Escuela de Ciencias de la Computación e Informática (ECCI) de la Universidad de Costa Rica (UCR) como Trabajo Final de Graduación (TFG).
 
-## Pipeline de Generación Adaptativa
-
-```
-Jugador → Telemetría (PlayHuman) → LLM (razonador / prompt) → MarioGPT (generador) → A* (validador) → Jugador
-```
-
-Este repositorio contiene el **entorno base y pipeline de datos**:
-1. **Motor de simulación y juego:** [Mario AI Framework](https://github.com/amidos2006/Mario-AI-Framework) (Java).
-2. **Dataset de Mario Maker 2:** Filtrado por streaming desde Hugging Face (`TheGreatRambler/mm2_level`) y parseo binario mediante Kaitai Struct.
-3. **Conversor MM2 → MAF:** Adaptación a grillas de texto ASCII compatibles con el framework y MarioGPT.
-4. **Validación automática de jugabilidad:** Agente de búsqueda heurística **A\*** (*robinBaumgarten*) en modo headless paralelo.
-5. **Telemetría y Generación con IA:** Captura de métricas de juego del usuario (tiempo, saltos, bajas, daños, velocidad, ruta), traducción a prompts de diseño (local o mediante Ollama), y generación adaptativa con [MarioGPT](https://github.com/shyamsn97/mario-gpt).
-6. **Nivel 0:** Banco inicial de niveles humanos reales validados como jugables.
+El sistema implementa un entorno experimental completo para evaluar la experiencia de juego del usuario frente a diferentes métodos de diseño de niveles en plataformas 2D, comparando niveles creados por humanos (*Super Mario Maker 2*), niveles genéricos prediseñados y niveles generados proceduralmente de forma adaptativa mediante modelos de lenguaje profundo ([MarioGPT](https://github.com/shyamsn97/mario-gpt)) condicionados por la telemetría en tiempo real y razonamiento semántico con modelos de lenguaje masivos ([Ollama](https://ollama.ai/)).
 
 ---
 
-## Estructura del proyecto
+## 🎮 Pipeline de Generación Adaptativa
 
-El repositorio está organizado con las dependencias externas en la raíz y todo el código fuente, herramientas y datos dentro de `src/`:
+```
+                     ┌────────────────────────────────────────────────────────┐
+                     │                                                        │
+                     ▼                                                        │
+┌─────────────────────────┐         ┌──────────────────────────┐              │
+│       Participante      │         │   Extracción Semántica   │              │
+│     (Sesión de Juego)   │────────▶│      y Razonamiento      │              │
+└────────────┬────────────┘         │      (Ollama / LLM)      │              │
+             │                      └─────────────┬────────────┘              │
+             │ Telemetría                         │                           │
+             ▼                                    ▼ Prompt Condicionado       │
+┌─────────────────────────┐         ┌──────────────────────────┐              │
+│  Métricas de Jugabilidad│         │    Modelo Generativo     │              │
+│   (Saltos, bajas, ruta, │         │         MarioGPT         │              │
+│   tiempo, daño, monedas)│         │     (GPT-2 fine-tuned)   │              │
+└─────────────────────────┘         └─────────────┬────────────┘              │
+                                                  │                           │
+                                                  ▼ Nivel ASCII generado      │
+                                    ┌──────────────────────────┐              │
+                                    │ Validación de Jugabilidad│              │
+                                    │    Agente Heurístico A*  │──────────────┘
+                                    │    (robinBaumgarten)     │  Nivel Jugable
+                                    └──────────────────────────┘
+```
+
+El pipeline opera a través de los siguientes componentes integrados:
+1. **Motor de simulación y juego:** [Mario AI Framework](https://github.com/amidos2006/Mario-AI-Framework) (Java), optimizado con parches locales para soportar monitores modernos en alta resolución, audio procedural por síntesis, soporte universal de mandos y telemetría de precisión.
+2. **Dataset de Mario Maker 2:** Filtrado por transmisión continua (*streaming*) desde Hugging Face (`TheGreatRambler/mm2_level`) y análisis binario mediante Kaitai Struct.
+3. **Conversor MM2 → MAF:** Transformación de formatos binarios a grillas matriciales de caracteres ASCII compatibles tanto con el motor de juego como con los *tokens* de MarioGPT.
+4. **Validación automática de jugabilidad:** Agente de búsqueda heurística **A\*** (*robinBaumgarten*) ejecutado en paralelo de manera no gráfica (*headless*) para garantizar que ningún nivel imposible sea presentado a los participantes.
+5. **Telemetría y personalización:** Captura continua de eventos (tiempo consumido, porcentaje de avance, saltos, bajas de enemigos, daños recibidos y coordenadas de muerte, recolección de monedas, velocidad promedio y preferencia estimada de ruta vertical).
+6. **Razonador LLM (Ollama):** Interpretación de las métricas de juego del participante para modular el prompt de generación (ejemplo: número de enemigos, tuberías, bloques y elevación del terreno).
+7. **Generador MarioGPT:** Red neuronal basada en GPT-2 para emitir estructuras de niveles personalizadas.
+8. **Base de datos centralizada:** Persistencia en PostgreSQL para el análisis psicométrico y estadístico de las sesiones.
+
+---
+
+## 🔬 Protocolo y Flujo del Experimento
+
+El protocolo experimental está diseñado bajo un formato riguroso de **Cuadrado Latino balanceado (6×6)** para mitigar efectos de orden, fatiga y aprendizaje. Cuando usted ejecute el experimento (`make start-experiment`), el sistema guiará al participante a través de las siguientes etapas secuenciales:
+
+```
+[1. Bienvenida e Inducción]
+           │
+           ▼
+[2. Niveles de Familiarización (2 niveles de práctica)] ──▶ (Captura de Telemetría Basal)
+           │                                                               │
+           ▼                                                               ▼
+[3. Consentimiento Informado]                             (Encolamiento de generación IA)
+           │
+           ▼
+[4. Cuestionario Inicial (Demografía y Experiencia)]
+           │
+           ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ [5. Bloque Principal: Cuadrado Latino (6 niveles de juego)]            │
+│                                                                        │
+│  Para cada nivel (1 a 6):                                              │
+│    a) Presentación con silueta/miniatura ampliada y esquema de mandos  │
+│    b) Ejecución de la partida con captura de telemetría                │
+│    c) Cuestionario de Nivel inmediato (Escala Likert de 7 puntos)      │
+│                                                                        │
+│  Composición de los 6 niveles:                                         │
+│    • 2 Niveles Personalizados (IA adaptativa MarioGPT + Ollama)        │
+│    • 2 Niveles Genéricos (No personalizados)                           │
+│    • 2 Niveles Humanos (Seleccionados del dataset Nivel 0)             │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+                                   ▼
+[6. Fase de Cierre: Ranking de Niveles y Comentarios Cualitativos]
+                                   │
+                                   ▼
+[7. Fase Voluntaria de Juego Libre (Free Play - hasta 20 minutos)]
+                                   │
+                                   ▼
+[8. Agradecimiento Final y Sincronización en Base de Datos]
+```
+
+### Detalle de cada fase del flujo:
+
+1. **Pantalla de Bienvenida e Instrucciones:**
+   Se introduce al participante al estudio, informándole sobre la estructura general de la sesión (etapa de práctica, niveles de prueba, cuestionarios breves y juego libre voluntario al concluir).
+2. **Niveles de Familiarización (Práctica Previa):**
+   El participante juega dos niveles breves especialmente seleccionados para acostumbrarse a la inercia, la velocidad de desplazamiento y la física de salto de Mario.
+   - *Calibración basal:* La telemetría capturada en estos dos niveles se procesa inmediatamente en segundo plano para inicializar los prompts de Ollama y poner a generar los niveles personalizados antes de que inicie el bloque formal.
+3. **Consentimiento Informado:**
+   Se presentan en pantalla los términos del estudio, el carácter voluntario de su participación y el tratamiento confidencial y anónimo de los datos recopilados.
+   - Si el participante no acepta el consentimiento, el sistema cancela el registro formal y le ofrece la opción de jugar libremente por recreación o cerrar el juego de forma inmediata sin almacenar información en la base de datos.
+4. **Cuestionario Inicial:**
+   Se recopilan datos demográficos y de perfil de juego: edad, dedicación semanal a videojuegos generales y a plataformas en 2D, experiencia previa con títulos de la saga Super Mario y tipo de control utilizado habitualmente. Al completar esta sección, el participante queda formalmente inscrito en la base de datos.
+5. **Bloque Principal del Experimento (6 niveles):**
+   El participante enfrenta los 6 niveles según la secuencia asignada por su grupo del Cuadrado Latino (grupos `S1` a `S6`).
+   - **Tipos de nivel evaluados:** Dos personalizados generados por IA (tipo A / `P`), dos genéricos (tipo B / `N`) y dos diseñados por humanos (tipo C / `H`).
+   - **Pantalla previa:** Antes de entrar a cada nivel, se despliega una ventana de alta resolución con la silueta completa del mapa y los controles mapeados tanto para teclado como para mando (PlayStation / Xbox).
+   - **Cuestionario por nivel:** Al concluir cada nivel (por victoria, muerte o límite de tiempo), el participante responde de inmediato seis preguntas en escala Likert horizontal de 7 puntos (desde `-3 = Totalmente en desacuerdo` hasta `+3 = Totalmente de acuerdo`): disfrute general, competencia percibida, dificultad subjetiva, adecuación del reto, variedad de elementos y deseo de rejugar niveles similares.
+6. **Fase de Cierre y Ranking Comparativo:**
+   Con las experiencias de juego aún frescas en la memoria, el participante ordena visualmente los 6 niveles jugados de mayor a menor preferencia mediante una interfaz asistida por las miniaturas de cada nivel, registrando además comentarios libres sobre las razones de su elección.
+7. **Fase Voluntaria de Juego Libre (*Free Play*):**
+   Se evalúa la motivación intrínseca del participante ofreciéndole la posibilidad de jugar niveles adicionales durante un tiempo máximo de 20 minutos o retirarse si lo prefiere. El tiempo de permanencia y la cantidad de niveles jugados se almacenan como indicadores de compromiso voluntario.
+8. **Finalización y Sincronización:**
+   Se presenta la pantalla de agradecimiento y el sistema transmite todas las métricas de telemetría, respuestas de cuestionarios, orden del ranking y eventos de juego al servidor central PostgreSQL.
+
+---
+
+## 📁 Estructura del Proyecto
 
 ```
 Mario-Ai/
-├── mario_ai_framework/          # Framework de simulación Mario AI (Java) [Clonado en setup]
-│   ├── src/                     # Fuentes del motor + herramientas locales compiladas
-│   └── bin/                     # Clases .class compiladas
-├── mario_gpt/                   # Repositorio de MarioGPT (PyTorch) [Clonado en setup]
-├── src/                         # Código fuente, herramientas y datasets del proyecto
-│   ├── dataset/
-│   │   ├── filter_mm2.py        # Filtrado por streaming del dataset de MM2 en Hugging Face
-│   │   ├── convert_mm2_to_maf.py# Conversor MM2 binario → grilla de texto ASCII MAF
-│   │   ├── level.py / level.ksy # Parser Kaitai del formato binario de MM2
-│   │   ├── mm2_selected.csv     # Metadata de los niveles seleccionados
-│   │   └── mm2_selected_levels.pkl # Blobs binarios de los niveles seleccionados
-│   ├── levels/
-│   │   ├── converted/           # Niveles convertidos de MM2 (salida regenerable, .gitignore)
-│   │   ├── nivel0/              # Niveles humanos VALIDADOS por A* como jugables (Nivel 0)
-│   │   ├── generated/           # Niveles generados por MarioGPT (.gitignore)
-│   │   └── validation_results.csv # Resultados detallados de validación A*
-│   ├── telemetry/
-│   │   └── latest.json          # Telemetría capturada de la última sesión de juego
-│   ├── tools/
-│   │   ├── compile-framework.sh # Script de compilación para Linux / macOS (Bash)
-│   │   ├── compile-framework.ps1# Script de compilación para Windows (PowerShell)
-│   │   ├── ValidateLevels.java  # Validador paralelo headless con agente A*
-│   │   ├── PlayHuman.java       # Lanzador de juego para humanos con captura de telemetría
-│   │   ├── LevelSelector.java   # Selector gráfico (GUI Swing) para elegir y jugar niveles
-│   │   ├── telemetry_to_mariogpt_prompt.py # Traductor telemetría → prompt MarioGPT
-│   │   └── mario_gpt_generate.py # Script de inferencia y generación con MarioGPT
-│   ├── Makefile                 # Automatización cross-platform (Windows, Linux, macOS)
-│   └── requirements.txt         # Dependencias Python
-├── .gitignore
+├── mario_ai_framework/               # Motor de simulación Mario AI Framework (Java)
+│   ├── src/                          # Código fuente del motor con parches aplicados
+│   └── bin/                          # Clases Java compiladas (.class)
+├── mario_gpt/                        # Modelo de lenguaje generativo MarioGPT (PyTorch)
+├── src/                              # Código fuente, herramientas y datos del proyecto
+│   ├── dataset/                      # Extracción y procesamiento de datos
+│   │   ├── filter_mm2.py             # Descarga y filtrado streaming desde Hugging Face
+│   │   ├── convert_mm2_to_maf.py     # Conversión de binario MM2 a matrices ASCII
+│   │   ├── level.py / level.ksy      # Estructura del parser binario Kaitai Struct
+│   │   └── mm2_selected.csv          # Metadatos de niveles seleccionados
+│   ├── experiment/                   # Configuración y persistencia del experimento
+│   │   ├── config.properties         # Configuración general (modos, timer, audio, debug)
+│   │   ├── preguntas.tsv             # Banco de preguntas de cuestionarios (inicial y por nivel)
+│   │   ├── db/                       # Esquemas SQL y utilidades de base de datos PostgreSQL
+│   │   ├── db_pending/               # Cola de respaldo local ante desconexión de red
+│   │   └── results/                  # Carpetas locales por participante con telemetría y niveles
+│   ├── levels/                       # Bancos de niveles organizados por categoría
+│   │   ├── familiarization/          # Niveles de práctica preliminar
+│   │   ├── generics/                 # Niveles genéricos prediseñados
+│   │   ├── nivel0/                   # Niveles humanos validados por A* (Nivel 0)
+│   │   ├── generated/                # Niveles generados de forma individual / libre
+│   │   └── converted/                # Niveles convertidos de Mario Maker 2
+│   ├── telemetry/                    # Archivos de telemetría de sesiones libres
+│   ├── tools/                        # Herramientas de software y scripts auxiliares
+│   │   ├── ExperimentRunner.java     # Motor de ejecución del experimento guiado
+│   │   ├── PlayHuman.java            # Probador de nivel individual para humanos con telemetría
+│   │   ├── LevelSelector.java        # Selector gráfico Swing para explorar y jugar niveles
+│   │   ├── ValidateLevels.java       # Validador paralelo con agente A* inteligente
+│   │   ├── dashboard.py              # Servidor web local de monitoreo y visualización
+│   │   ├── dashboard_ui/             # Interfaz web interactiva (HTML5, CSS3, JS)
+│   │   ├── setup_lab_machine.py      # Instalador y verificador unificado para laboratorios
+│   │   ├── mario_gpt_generate.py     # Inferencia de MarioGPT (Local, Servidor o HPC)
+│   │   ├── telemetry_to_mariogpt_prompt.py # Traducción de telemetría a prompt descriptivo
+│   │   ├── framework.patch           # Parche acumulativo para el motor de Mario AI
+│   │   └── engine/                   # Módulos inyectados (audio procedural, gamepad, HUD)
+│   ├── gamepad.properties            # Mapeo de botones y calibración de mandos
+│   ├── Makefile                      # Automatización de tareas de compilación y ejecución
+│   └── requirements.txt              # Requisitos de bibliotecas de Python
 └── README.md
 ```
 
 ---
 
-## Requisitos Previos
+## ⚙️ Requisitos Previos
 
-| Requisito | Versión Mínima | Propósito |
+| Requisito | Versión Recomendada | Finalidad |
 |---|---|---|
-| **Java JDK** | 25 o superior | Compilar y ejecutar Mario AI Framework, A* y PlayHuman |
-| **Python** | 3.8+ (recomendado 3.10+) | Scripts de dataset, telemetría y modelo MarioGPT |
-| **Git** | 2.x | Clonar repositorios externos |
-| **GNU Make** | 3.81+ *(Opcional pero recomendado)* | Automatizar comandos cross-platform (`make`) |
-
-> 💡 **Nota sobre Make en Windows:** Puedes usar `make` desde **Git Bash** (incluido con Git para Windows), mediante herramientas como Chocolatey (`choco install make`) o Scoop (`scoop install make`), o ejecutar directamente los comandos de PowerShell descritos en la guía paso a paso.
+| **Java JDK** | 17 LTS o superior (probado en 17, 21 y 25) | Compilación y ejecución del motor gráfico Mario AI Framework y herramientas Swing |
+| **Python** | 3.10 o superior | Procesamiento de datos, servidor web, puente Ollama y MarioGPT |
+| **Git** | 2.x | Clonación y control de versiones |
+| **GNU Make** | 3.81 o superior | Automatización de compilación y ejecución unificada (`make`) |
+| **PostgreSQL** *(Opcional para desarrollo)* | 14 o superior | Persistencia de datos del experimento (cuenta con respaldo local offline) |
 
 ---
 
-## Inicio Rápido con `make` (Cross-Platform)
+## 🚀 Puesta a Punto e Instalación Rápida
 
-Todos los comandos de `make` se ejecutan desde la carpeta `src/`:
+Usted puede inicializar todo el entorno ejecutando los siguientes comandos en su terminal:
 
 ```bash
+# Navegar a la carpeta fuente
 cd src
-```
 
-### 1. Configuración y Compilación Inicial
-
-```bash
-# 1. Clonar repositorios externos necesarios (Mario AI Framework y MarioGPT)
+# 1. Clonar repositorios requeridos e instalar dependencias
 make setup
 make setup-mariogpt
-
-# 2. Instalar dependencias de Python y MarioGPT en modo editable
 make install-deps
 make install-mariogpt
 
-# 3. Compilar el framework Java y las herramientas personalizadas
+# 2. Compilar el framework Java y aplicar parches
 make compile
 ```
 
-El instalador general (`install.bat`, `install.sh` o `python install.py`) también aplica los parches del framework, instala las clases de audio procedurales y compila Java automáticamente.
-
-### 2. Flujo de Trabajo y Comandos Disponibles
-
-```bash
-make filter                            # Filtra niveles de MM2 (WANT=80 MAX_SCAN=150000 por defecto)
-make filter WANT=100 MAX_SCAN=200000   # Filtrar con parámetros personalizados
-make convert                           # Convierte niveles binarios MM2 a formato texto MAF
-make validate                          # Valida jugabilidad de niveles convertidos con A*
-make play-human                        # Juega un nivel humano y captura telemetría
-make prompt-telemetry                  # Genera el prompt de MarioGPT a partir de la telemetría
-make generate-level                    # Genera un nuevo nivel con MarioGPT basado en telemetría
-make play-levels-generated             # Abre la interfaz gráfica para seleccionar y jugar niveles
-make play-and-generate                 # Flujo continuo: Jugar -> Generar automáticamente
-make clean                             # Limpia los binarios compilados de Java (.class)
-make clean-telemetry                   # Limpia los archivos de telemetría registrados
-make clean-levels                      # Limpia niveles convertidos, generados y de nivel0
-make clean-experiment-results          # Elimina resultados y respuestas del experimento (pide confirmación)
-make clean-all                         # Limpia TODO (binarios, telemetría, niveles y cachés)
-make help                              # Muestra la ayuda de todos los targets disponibles
-```
-
-## Base de datos del experimento
-
-Los datos de cada sesión (participante, telemetría, respuestas, ranking, juego libre y metadatos de generación de los niveles personalizados) se guardan en **PostgreSQL** (máquina virtual del laboratorio), con respaldo local en `src/experiment/db_pending/` si no hay conexión. Configuración y consultas de análisis: [src/experiment/db/README.md](./src/experiment/db/README.md).
-
-## Música y efectos procedurales
-
-El juego genera en ejecución una melodía de fondo y efectos cortos para saltar, aterrizar, recoger objetos, recibir daño, golpear bloques, patear caparazones, derrotar enemigos y ganar o perder. Los tonos se sintetizan por código: no se usan música oficial de Mario, grabaciones ni muestras de terceros. Pulsa **M** durante el juego para activar o silenciar todo el audio. En el experimento, configura `music=true` o `music=false` en [config.properties](./src/experiment/config.properties); esa bandera controla tanto la música como los efectos. Para los lanzadores independientes del experimento también puedes definir `MARIO_AUDIO=false` en PowerShell antes de iniciar el juego.
+> 💡 **Instalador automático para computadoras de laboratorio:**  
+> Si usted está preparando un equipo para la aplicación presencial de pruebas, puede ejecutar:
+> ```bash
+> python3 tools/setup_lab_machine.py
+> ```
+> Dicho script verificará la versión de Java, configurará el entorno virtual de Python, compilará el código y validará la conectividad con el servidor de generación y la base de datos.
 
 ---
 
-## Guía Paso a Paso Detallada por Sistema Operativo
+## 🖥️ Panel de Control Web y Modo Kiosco
 
-Si no deseas utilizar `make`, puedes seguir las instrucciones nativas para tu plataforma.
+El proyecto incorpora un tablero de control web local desarrollado para facilitar la administración y monitoreo de las pruebas sin necesidad de manipular la terminal durante la sesión:
 
-### 🪟 Windows (PowerShell)
-
-Abre una terminal de **PowerShell** y navega a la carpeta `src`:
-
-```powershell
-cd src
+```bash
+# Iniciar el servidor web local en el puerto 5050
+make dashboard
+# o alternativamente:
+make gui
 ```
 
-#### Paso 1 — Clonar repositorios externos en la raíz del proyecto
-```powershell
-if (-not (Test-Path "..\mario_ai_framework\.git")) {
-    git clone https://github.com/amidos2006/Mario-AI-Framework "..\mario_ai_framework"
-}
-if (-not (Test-Path "..\mario_gpt\.git")) {
-    git clone https://github.com/shyamsn97/mario-gpt.git "..\mario_gpt"
-}
-```
+Una vez iniciado, usted puede abrir su navegador en: **`http://localhost:5050`**
 
-#### Paso 2 — Instalar dependencias de Python
-```powershell
-python -m pip install -r requirements.txt
-python -m pip install -e "..\mario_gpt"
-```
-
-#### Paso 3 — Compilar el framework Java y herramientas personalizadas
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File tools\compile-framework.ps1 -Framework "..\mario_ai_framework"
-```
-
-#### Paso 4 — Filtrar y convertir niveles de Mario Maker 2
-```powershell
-# Filtrar dataset de Hugging Face
-python dataset\filter_mm2.py --want 80 --max-scan 150000
-
-# Convertir blobs binarios a grillas ASCII para el framework
-python dataset\convert_mm2_to_maf.py
-```
-
-#### Paso 5 — Validar niveles con el agente A* (Headless)
-```powershell
-cd ..\mario_ai_framework
-java -Djava.awt.headless=true -cp bin ValidateLevels ..\src\levels\converted ..\src\levels\nivel0 40
-cd ..\src
-```
-
-#### Paso 6 — Jugar un nivel y registrar telemetría
-```powershell
-cd ..\mario_ai_framework
-java -cp bin PlayHuman
-cd ..\src
-
-# Traducir telemetría al prompt de MarioGPT
-python tools\telemetry_to_mariogpt_prompt.py --telemetry telemetry\latest.json --allow-cloud
-```
-
-#### Paso 7 — Generar y jugar niveles generados
-```powershell
-# Generar nivel con MarioGPT
-python tools\mario_gpt_generate.py --telemetry telemetry\latest.json
-
-# Abrir el selector gráfico de niveles
-cd ..\mario_ai_framework
-java -cp bin LevelSelector
-cd ..\src
-```
+### Características del Tablero de Control:
+- **Estadísticas globales:** Cantidad de participantes evaluados, sesiones registradas y banco de niveles por categoría.
+- **Visualizador 2D interactivo:** Inspección en lienzo gráfico (*canvas*) de los bloques y componentes de cualquier nivel, incluyendo los generados proceduralmente dentro de las carpetas de los participantes (`src/experiment/results/*/generated/`).
+- **Probador directo:** Botón para lanzar cualquier nivel seleccionado directamente en el motor de juego.
+- **Pantalla de Recibidor (Modo Kiosco):** Accesible en `http://localhost:5050/recibidor.html` (o mediante `make kiosk` / `make recibidor`), ofrece una vista de espera a pantalla completa para participantes que inicia el experimento con un solo clic y retorna automáticamente al finalizar.
 
 ---
 
-### 🐧 Unix (Linux / macOS)
+## 🕹️ Controles, Mandos y Diagnóstico en Pantalla
 
-Abre tu terminal (**Bash / Zsh**) y navega a la carpeta `src`:
+### 1. Esquema de Teclado
+- **Desplazamiento:** Flechas del teclado o teclas `A` / `D` (Izquierda / Derecha).
+- **Agacharse:** Flecha abajo (`↓`) o tecla `S`.
+- **Salto:** Barra espaciadora, tecla `F` o flecha arriba (`↑`).
+- **Correr / Bola de fuego:** Tecla `Shift`, tecla `D` o tecla `J`.
+- **Pausa:** Tecla `P`.
+- **Reinicio rápido de nivel:** Tecla `R`.
+- **Silenciar audio:** Tecla `M`.
+- **Diagnóstico de controles (HUD):** Tecla **`F3`**.
 
-```bash
-cd src
-```
+### 2. Soporte para Mandos (PlayStation / Xbox)
+El motor detecta automáticamente controles USB y Bluetooth conectados mediante el módulo nativo [`GamepadManager`](file:///home/marioc/Desktop/UCR/Mario-Ai/src/tools/engine/input/GamepadManager.java).
+- **Mando PlayStation (PS4 / PS5):**
+  - **`✖ Equis`**: Saltar.
+  - **`⬛ Cuadrado` / `⭕ Círculo` / `R1` / `L1`**: Correr y lanzar bolas de fuego.
+  - **`Cruceta (D-Pad)` o Stick izquierdo**: Desplazamiento horizontal y agacharse.
+  - **`Options`**: Pausa.
+  - **`Share`**: Reiniciar nivel.
+- **Mando Xbox (Xbox 360 / One / Series):**
+  - **`A`**: Saltar.
+  - **`X` / `B` / `RB` / `LB`**: Correr y lanzar bolas de fuego.
+  - **`Start`**: Pausa.
+  - **`Back`**: Reiniciar nivel.
 
-#### Paso 1 — Clonar repositorios externos en la raíz del proyecto
-```bash
-[ -d "../mario_ai_framework/.git" ] || git clone https://github.com/amidos2006/Mario-AI-Framework "../mario_ai_framework"
-[ -d "../mario_gpt/.git" ] || git clone https://github.com/shyamsn97/mario-gpt.git "../mario_gpt"
-```
+Usted puede personalizar este mapeo editando [`src/gamepad.properties`](file:///home/marioc/Desktop/UCR/Mario-Ai/src/gamepad.properties).
 
-#### Paso 2 — Instalar dependencias de Python
-```bash
-python3 -m pip install -r requirements.txt
-python3 -m pip install -e "../mario_gpt"
-```
-
-#### Paso 3 — Compilar el framework Java y herramientas personalizadas
-```bash
-bash tools/compile-framework.sh "../mario_ai_framework"
-```
-
-#### Paso 4 — Filtrar y convertir niveles de Mario Maker 2
-```bash
-# Filtrar dataset de Hugging Face
-python3 dataset/filter_mm2.py --want 80 --max-scan 150000
-
-# Convertir blobs binarios a grillas ASCII para el framework
-python3 dataset/convert_mm2_to_maf.py
-```
-
-#### Paso 5 — Validar niveles con el agente A* (Headless)
-```bash
-cd "../mario_ai_framework"
-java -Djava.awt.headless=true -cp bin ValidateLevels ../src/levels/converted ../src/levels/nivel0 40
-cd "../src"
-```
-
-#### Paso 6 — Jugar un nivel y registrar telemetría
-```bash
-cd "../mario_ai_framework"
-java -cp bin PlayHuman
-cd "../src"
-
-# Traducir telemetría al prompt de MarioGPT
-python3 tools/telemetry_to_mariogpt_prompt.py --telemetry telemetry/latest.json --allow-cloud
-```
-
-#### Paso 7 — Generar y jugar niveles generados
-```bash
-# Generar nivel con MarioGPT
-python3 tools/mario_gpt_generate.py --telemetry telemetry/latest.json
-
-# Abrir el selector gráfico de niveles
-cd "../mario_ai_framework"
-java -cp bin LevelSelector
-cd "../src"
-```
+### 3. Diagnóstico de Teclas y Mando en Tiempo Real
+Si usted desea verificar qué botones, teclas o ejes analógicos están enviando señal a Mario para comprobar posibles teclas trabadas o calibración de mandos:
+- Active la bandera en [`src/experiment/config.properties`](file:///home/marioc/Desktop/UCR/Mario-Ai/src/experiment/config.properties):
+  ```properties
+  debug_input=true
+  ```
+- O presione la tecla **`F3`** en cualquier momento durante la partida.
+Se desplegará una superposición (*HUD*) en pantalla indicando las 5 acciones de Mario en colores en tiempo real, las teclas físicas oprimidas y los valores numéricos de los ejes del mando.
 
 ---
 
-## Herramientas y Pipeline de Telemetría
+## 🧠 Modos de Generación con IA (MarioGPT)
 
-### 1. `PlayHuman.java` — Registro de Jugabilidad
-Permite jugar con teclado (Flechas para moverse, `S` para saltar, `A` para correr/disparar). Al terminar la partida (victoria, muerte o tiempo agotado), guarda automáticamente las métricas en `src/telemetry/latest.json`:
-- **Métricas:** Estado final (`WIN`/`LOSE`/`TIME_OUT`), completitud del nivel (%), tiempo consumido, número de saltos, bajas de enemigos, daños recibidos y sus coordenadas exactas, monedas recolectadas, velocidad promedio y preferencia estimada de ruta (`high`/`low`).
+Usted puede definir la modalidad de generación en [`src/experiment/config.properties`](file:///home/marioc/Desktop/UCR/Mario-Ai/src/experiment/config.properties) (`generation_mode`) según los recursos de cómputo disponibles:
 
-### 2. `telemetry_to_mariogpt_prompt.py` — Razonador y Traductor
-Transforma el JSON de telemetría en un prompt descriptivo en lenguaje natural para MarioGPT (ej. `many pipes, little enemies, some blocks, high elevation`).
-- **Modo Local:** Heurística determinista basada en el rendimiento del jugador.
-- **Modo Ollama Cloud (`--allow-cloud`):** Si está configurada la variable de entorno `OLLAMA_API_KEY` o un archivo `mario_ai_framework/Ollama-Key.txt`, consulta un modelo de lenguaje en la nube para adaptar el prompt de forma dinámica según el perfil del jugador.
-
-### 3. `LevelSelector.java` — Selector Gráfico de Niveles
-Una interfaz gráfica desarrollada en Java Swing que permite navegar por las carpetas `nivel0/`, `generated/` y `converted/`, seleccionar cualquier archivo `.txt`, visualizar información del nivel y lanzarlo al instante para jugarlo con teclado.
+1. **`Nativo` (Local):**  
+   Ejecuta el modelo MarioGPT directamente en la máquina local haciendo uso de PyTorch (apto para equipos con GPU dedicada o CPUs modernas).
+2. **`JeissonServer` (Servidor HTTP remoto del laboratorio):**  
+   Envía el prompt al servicio central de inferencia alojado en el servidor del laboratorio (`http://jeisson.ecci.ucr.ac.cr:8080`), permitiendo generar niveles en pocos segundos sin consumir recursos en la estación del participante.
+3. **`Tunel` (Clúster HPC):**  
+   Establece un túnel SSH cifrado hacia los nodos de cálculo del clúster institucional gestionados mediante Slurm.
 
 ---
 
-## Niveles Validados (Nivel 0)
+## 📋 Catálogo de Comandos `make`
 
-El agente A* valida niveles de MM2 asegurando que sean mecánicamente completables dentro de las reglas de *Infinite Mario Bros / SMB1*. Algunos ejemplos de niveles validados incluidos:
+Todos los comandos deben ejecutarse desde el directorio `src/`:
 
-| data_id | Nombre Original | Clear Rate (MM2) | Tema |
-|---|---|---|---|
-| `3001459` | ジャンプ | 15.1% | Underground |
-| `3004249` | 試作型・一画面スイッチ迷路 | 29.0% | Underground |
-| `3005554` | Super Mario Land 1-1 | 55.2% | Desert |
-| `3006493` | Undertale MEGALOVANIA | 65.3% | Underground |
-| `3008364` | The Slumbering Deep | 56.9% | Forest |
-| `3008749` | SMB 1-1 Competitive Race | 30.5% | Overworld |
-| `3024914` | 全自動1-1 / Automatic 1-1 | 47.5% | Overworld |
-| `3028504` | Ruins of 1-1 | 17.6% | Desert |
-
-> ℹ️ El detalle de validación de cada nivel (estado, % completitud, tiempo de búsqueda A*) se almacena en `src/levels/validation_results.csv`.
-
----
-
-## Referencia Técnica y Formato de Grillas
-
-### Esquema del Dataset Mario Maker 2
-Dataset en Hugging Face: **`TheGreatRambler/mm2_level`** (~26.6 millones de niveles).
-- Acceso mediante **streaming** (`streaming=True`) para evitar descargas masivas de 100 GB.
-- Descompresión con `zlib` y deserialización binaria con Kaitai Struct (`level.ksy` → `level.py`).
-
-### Mapeo de Tokens MM2 → MAF
-
-| Token MAF | Significado | Elemento de Origen MM2 |
-|:---:|---|---|
-| `-` | Aire / Vacío | Espacio sin colocar |
-| `X` | Suelo / Bloque indestructible | `ground[]`, `hard_block`, `stone`, `ice_block` |
-| `S` | Ladrillo rompible | `block`, `hidden_block` |
-| `#` | Plataforma semisólida | `semisolid_platform`, `mushroom_platform`, `bridge` |
-| `?` | Bloque de interrogación | `question_block` |
-| `o` | Moneda | `coin`, `big_coin`, `red_coin` |
-| `g` | Goomba | `goomba`, `dry_bones` |
-| `k` | Koopa Troopa verde | `koopa`, `buzzy_beetle` |
-| `y` | Spiny | `spiny`, `spike_top` |
-| `< > [ ]` | Tubería (tope y cuerpo) | `pipe` (2 tiles de ancho × alto variable) |
-| `B` / `b` | Cañón Bullet Bill (cabeza / cuerpo) | `bullet_bill_blaster` |
+| Comando | Descripción |
+|---|---|
+| `make start-experiment` | Inicia el protocolo experimental formal completo de Cuadrado Latino con generación IA |
+| `make start-experiment-nogen` | Inicia el experimento en modo rápido (sustituye niveles de IA por niveles humanos de reserva) |
+| `make play-human` | Ejecuta una partida individual con captura de telemetría (`telemetry/latest.json`) |
+| `make play-level LEVEL="ruta"` | Prueba un archivo de nivel específico con presentación gráfica y miniatura |
+| `make play-levels-generated` | Abre la interfaz gráfica Swing ([`LevelSelector`](file:///home/marioc/Desktop/UCR/Mario-Ai/src/tools/LevelSelector.java)) para elegir y jugar niveles |
+| `make gui` o `make dashboard` | Lanza el servidor web local del panel de administración en el puerto 5050 |
+| `make kiosk` o `make recibidor` | Abre el navegador en la pantalla de bienvenida para participantes (Modo Kiosco) |
+| `make filter` | Descarga y filtra niveles de *Super Mario Maker 2* desde Hugging Face |
+| `make convert` | Convierte niveles binarios MM2 a matrices ASCII estándar MAF |
+| `make validate` | Valida jugabilidad mecánica de niveles convertidos mediante el agente A* paralelo |
+| `make generate-level` | Genera un nivel procedural con MarioGPT a partir de la última telemetría registrada |
+| `make play-and-generate` | Ejecuta el ciclo continuo: jugar un nivel y generar automáticamente el siguiente |
+| `make clean` | Elimina los archivos binarios compilados de Java (`.class`) |
+| `make clean-telemetry` | Limpia los registros locales de telemetría de juego |
+| `make clean-levels` | Remueve niveles convertidos y temporales |
+| `make clean-experiment-results`| Elimina datos y respuestas locales de experimentos (solicita confirmación) |
+| `make clean-all` | Limpieza profunda de binarios, cachés y niveles temporales |
+| `make help` | Muestra en terminal la lista de instrucciones disponibles |
 
 ---
 
-## Acknowledgments / Referencias de Terceros
+## 🗄️ Base de Datos y Persistencia
 
-Este proyecto de investigación utiliza las siguientes herramientas y repositorios de código abierto:
+El sistema almacena las sesiones de forma relacional en PostgreSQL. Si durante la sesión se pierde la conexión de red con el servidor de la base de datos, las transacciones se almacenan de manera transparente en archivos JSON dentro de `src/experiment/db_pending/` y se reintentan automáticamente en la siguiente ejecución para evitar pérdida de datos.
 
-- **[Mario AI Framework](https://github.com/amidos2006/Mario-AI-Framework)**: Desarrollado por Ahmed Khalifa, Julian Togelius et al. (Licencia MIT).
-- **[MarioGPT](https://github.com/shyamsn97/mario-gpt)**: Desarrollado por Shyam Sudhakaran et al. (Licencia MIT).
-- **[Dataset mm2_level](https://huggingface.co/datasets/TheGreatRambler/mm2_level)**: Publicado por TheGreatRambler en Hugging Face Datasets.
+Para consultar detalles de conexión, esquemas y scripts de análisis estadístico, por favor revise la guía técnica en:  
+👉 [`src/experiment/db/README.md`](./src/experiment/db/README.md).
 
-> ⚠️ **Nota de descargo de responsabilidad (Disclaimer):**  
-> Este es un proyecto de investigación académica (Trabajo de Fin de Grado - TFG) sin fines de lucro y **no está afiliado, asociado, patrocinado ni respaldado por Nintendo Co., Ltd.** Super Mario Bros., Super Mario Maker y sus elementos gráficos asociados son marcas comerciales y derechos reservados de Nintendo.
+---
+
+## 🎵 Música y Efectos de Sonido Sintetizados
+
+El motor incorpora síntesis de audio procedural en tiempo real escrita en Java puro:
+- No requiere archivos de audio externos (MP3, WAV o sintetizadores de terceros).
+- Incluye música dinámica de acompañamiento y efectos sonoros para saltos, recolección de monedas, impactos, daño, victoria y derrota.
+- Usted puede activar o desactivar el subsistema de sonido ajustando `music=true` o `music=false` en [`src/experiment/config.properties`](file:///home/marioc/Desktop/UCR/Mario-Ai/src/experiment/config.properties) o pulsando la tecla **`M`** durante la partida.
+
+---
+
+## 📚 Agradecimientos y Descargo de Responsabilidad
+
+Este proyecto se fundamenta en los siguientes proyectos y conjuntos de datos de código abierto:
+- **[Mario AI Framework](https://github.com/amidos2006/Mario-AI-Framework)** — Desarrollado por Ahmed Khalifa, Julian Togelius et al. (Licencia MIT).
+- **[MarioGPT](https://github.com/shyamsn97/mario-gpt)** — Desarrollado por Shyam Sudhakaran et al. (Licencia MIT).
+- **[Dataset mm2_level](https://huggingface.co/datasets/TheGreatRambler/mm2_level)** — Publicado por TheGreatRambler en Hugging Face Datasets.
+
+> ⚠️ **Aviso legal de propiedad intelectual (Disclaimer):**  
+> Este es un proyecto de investigación académica y formativa sin fines comerciales. **No está afiliado, patrocinado, respaldado ni asociado con Nintendo Co., Ltd.** Las marcas comerciales *Super Mario*, *Super Mario Bros.*, *Super Mario Maker* y sus componentes audiovisuales asociados son propiedad intelectual exclusiva de Nintendo.
