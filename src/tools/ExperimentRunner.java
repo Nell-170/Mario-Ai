@@ -1719,7 +1719,7 @@ public class ExperimentRunner {
             // 1. Top Bar
             JPanel topBar = new JPanel(new BorderLayout());
             topBar.setBackground(BG_DARK);
-            topBar.setBorder(new EmptyBorder(12, 28, 8, 28));
+            topBar.setBorder(new EmptyBorder(12, 28, 6, 28));
 
             JPanel leftTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
             leftTop.setOpaque(false);
@@ -1760,39 +1760,47 @@ public class ExperimentRunner {
 
             bg.add(topBar, BorderLayout.NORTH);
 
-            // 2. Main Content View
-            JPanel mainView = new JPanel(new BorderLayout(0, 10));
-            mainView.setBackground(BG_DARK);
-            mainView.setBorder(new EmptyBorder(6, 28, 14, 28));
+            // 2. Centered Container (Constrained width: 1160px max, not 100% of screen)
+            JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            centerWrapper.setBackground(BG_DARK);
+            centerWrapper.setBorder(new EmptyBorder(4, 0, 12, 0));
+
+            JPanel mainCard = new JPanel(new BorderLayout(0, 8));
+            mainCard.setBackground(CARD_BG);
+            mainCard.setPreferredSize(new Dimension(1160, 720));
+            mainCard.setMaximumSize(new Dimension(1160, 720));
+            mainCard.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
+                    new EmptyBorder(14, 20, 14, 20)));
 
             JPanel headerPanel = new JPanel();
             headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
             headerPanel.setOpaque(false);
 
             JLabel title = new JLabel("Ordena los niveles del que MÁS te gustó al que MENOS");
-            title.setFont(FONT_BOLD.deriveFont(26f));
+            title.setFont(FONT_BOLD.deriveFont(24f));
             title.setForeground(TEXT_WHITE);
             title.setAlignmentX(Component.LEFT_ALIGNMENT);
             headerPanel.add(title);
             headerPanel.add(Box.createRigidArea(new Dimension(0, 4)));
 
             JLabel desc = new JLabel(
-                    "<html><body style='color: rgb(156, 163, 175); font-size: 13.5px;'>"
+                    "<html><body style='color: rgb(156, 163, 175); font-size: 13.5px; width: 1100px;'>"
                             + "A continuación se presentan los 6 niveles jugados en tu sesión. "
-                            + "<b>Arrastra y suelta las filas con el ratón</b> para ordenarlas a tu gusto (o usa los botones <b>Subir</b> y <b>Bajar</b>). "
+                            + "<b>Arrastra y suelta las filas con el ratón</b> para ordenarlas a tu gusto (o usa los botones <b>Subir / Bajar</b>). "
                             + "La posición <b>#1 debe ser tu favorito</b> y la posición <b>#6 el que menos te gustó</b>. "
-                            + "Haz clic en <b>Ampliar</b> para examinar el nivel completo."
+                            + "<b>Haz clic sobre cualquier miniatura o en 'Ver mapa'</b> para examinar el nivel completo en alta resolución."
                             + "</body></html>");
-            desc.setFont(FONT_REGULAR.deriveFont(15f));
+            desc.setFont(FONT_REGULAR.deriveFont(14f));
             desc.setAlignmentX(Component.LEFT_ALIGNMENT);
             headerPanel.add(desc);
 
-            mainView.add(headerPanel, BorderLayout.NORTH);
+            mainCard.add(headerPanel, BorderLayout.NORTH);
 
             // 3. List Panel for Levels
             JPanel listPanel = new JPanel();
             listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-            listPanel.setBackground(BG_DARK);
+            listPanel.setBackground(CARD_BG);
 
             final int[] dragSource = new int[]{-1};
             final int[] dragTarget = new int[]{-1};
@@ -1805,27 +1813,28 @@ public class ExperimentRunner {
                 for (int i = 0; i < currentList.size(); i++) {
                     final int idx = i;
                     PlayedLevelInfo info = currentList.get(i);
+                    LevelTheme theme = LevelTheme.fromCode(info.type());
 
-                    JPanel rowCard = new JPanel(new BorderLayout(14, 0));
+                    JPanel rowCard = new JPanel(new BorderLayout(12, 0));
                     rowCard.setBackground(ITEM_BG);
                     rowCard.putClientProperty("rowIndex", idx);
 
                     Color borderColor = (idx == 0) ? new Color(245, 158, 11) : (idx == 5 ? new Color(225, 29, 72) : ITEM_BORDER);
                     rowCard.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(borderColor, (idx == 0 || idx == 5) ? 2 : 1, true),
-                            new EmptyBorder(8, 10, 8, 14)));
+                            new EmptyBorder(6, 10, 6, 12)));
                     rowCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-                    rowCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 96));
-                    rowCard.setPreferredSize(new Dimension(1000, 96));
+                    rowCard.setMaximumSize(new Dimension(1110, 92));
+                    rowCard.setPreferredSize(new Dimension(1110, 92));
 
                     // Left Column: Grip Handle + Rank Badge + Step Information
                     JPanel leftCol = new JPanel(new BorderLayout(10, 0));
-                    leftCol.setBackground(ITEM_BG);
-                    leftCol.setPreferredSize(new Dimension(320, 80));
+                    leftCol.setOpaque(false);
+                    leftCol.setPreferredSize(new Dimension(280, 80));
 
                     JPanel gripPanel = new JPanel(new GridBagLayout());
                     gripPanel.setBackground(new Color(36, 40, 56));
-                    gripPanel.setPreferredSize(new Dimension(38, 76));
+                    gripPanel.setPreferredSize(new Dimension(36, 76));
                     gripPanel.setBorder(BorderFactory.createLineBorder(new Color(55, 65, 85), 1, true));
                     gripPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
                     gripPanel.setToolTipText("Haz clic y arrastra con el ratón para mover este nivel");
@@ -1838,8 +1847,8 @@ public class ExperimentRunner {
 
                     JPanel infoPanel = new JPanel();
                     infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-                    infoPanel.setBackground(ITEM_BG);
-                    infoPanel.setBorder(new EmptyBorder(4, 0, 4, 0));
+                    infoPanel.setOpaque(false);
+                    infoPanel.setBorder(new EmptyBorder(3, 0, 3, 0));
 
                     infoPanel.add(createRankBadge(idx));
                     infoPanel.add(Box.createRigidArea(new Dimension(0, 4)));
@@ -1848,9 +1857,9 @@ public class ExperimentRunner {
                     if (developMode) {
                         stepTitle = "Paso " + info.orderPlayed() + " (" + info.stepCode() + " - " + info.type() + (info.levelIndex() + 1) + ")";
                     }
-                    JLabel stepLabel = new JLabel(stepTitle);
+                    JLabel stepLabel = new JLabel(stepTitle + "  •  " + theme.getDisplayName());
                     stepLabel.setFont(FONT_SEMIBOLD.deriveFont(13f));
-                    stepLabel.setForeground(TEXT_MUTED);
+                    stepLabel.setForeground(new Color(203, 213, 225));
                     infoPanel.add(stepLabel);
 
                     if (developMode) {
@@ -1862,41 +1871,59 @@ public class ExperimentRunner {
                     leftCol.add(infoPanel, BorderLayout.CENTER);
                     rowCard.add(leftCol, BorderLayout.WEST);
 
-                    // Center Column: Thumbnail Canvas (Mario Sky Blue)
+                    // Center Column: Interactive Thumbnail Canvas
                     JPanel thumbPanel = new JPanel(new BorderLayout());
-                    thumbPanel.setBackground(new Color(92, 148, 252));
+                    thumbPanel.setBackground(new Color(20, 24, 36));
                     thumbPanel.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true));
                     thumbPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    thumbPanel.setToolTipText("Haz clic para ampliar este nivel en pantalla completa");
+                    thumbPanel.setToolTipText("🔍 Haz clic para abrir el mapa completo en alta resolución");
 
                     JLabel thumbLabel = new JLabel(new ImageIcon(info.thumbnail()));
                     thumbLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                    thumbLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     thumbPanel.add(thumbLabel, BorderLayout.CENTER);
 
-                    thumbPanel.addMouseListener(new MouseAdapter() {
+                    JLabel zoomHint = new JLabel(" 🔍 Clic para examinar mapa ");
+                    zoomHint.setFont(FONT_BOLD.deriveFont(11f));
+                    zoomHint.setForeground(Color.WHITE);
+                    zoomHint.setBackground(new Color(15, 23, 42, 210));
+                    zoomHint.setOpaque(true);
+                    zoomHint.setBorder(new EmptyBorder(2, 6, 2, 6));
+                    thumbPanel.add(zoomHint, BorderLayout.EAST);
+
+                    MouseAdapter openZoomAdapter = new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
-                            String zoomTitle = "Nivel del Paso " + info.orderPlayed() + (developMode ? " (" + info.levelFile().getFileName() + ")" : "");
-                            showLevelZoomModal(masterFrame, zoomTitle, info.levelContent());
+                            String zoomTitle = "Nivel del Paso " + info.orderPlayed() + " (" + theme.getDisplayName() + ")";
+                            if (developMode) {
+                                zoomTitle += " [" + info.levelFile().getFileName() + "]";
+                            }
+                            showLevelZoomModal(masterFrame, zoomTitle, info.levelContent(), theme);
                         }
-                    });
+                    };
+                    thumbPanel.addMouseListener(openZoomAdapter);
+                    thumbLabel.addMouseListener(openZoomAdapter);
                     rowCard.add(thumbPanel, BorderLayout.CENTER);
 
-                    // Right Column: Controls (Ampliar / Subir / Bajar)
-                    JPanel rightCol = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 24));
-                    rightCol.setBackground(ITEM_BG);
-                    rightCol.setPreferredSize(new Dimension(250, 80));
+                    // Right Column: Controls (Ver mapa / Subir / Bajar)
+                    JPanel rightCol = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 22));
+                    rightCol.setOpaque(false);
+                    rightCol.setPreferredSize(new Dimension(230, 80));
 
-                    ModernButton zoomBtn = new ModernButton("Ampliar", new Color(30, 41, 59), new Color(51, 65, 85),
-                            new Color(15, 23, 42), TEXT_WHITE, 8, 8, 12, 13f);
+                    ModernButton zoomBtn = new ModernButton("Ver mapa 🔍", new Color(30, 41, 59), new Color(51, 65, 85),
+                            new Color(15, 23, 42), TEXT_WHITE, 8, 8, 12, 12.5f);
+                    zoomBtn.setToolTipText("Examina el mapa completo de este nivel con desplazamiento");
                     zoomBtn.addActionListener(e -> {
-                        String zoomTitle = "Nivel del Paso " + info.orderPlayed() + (developMode ? " (" + info.levelFile().getFileName() + ")" : "");
-                        showLevelZoomModal(masterFrame, zoomTitle, info.levelContent());
+                        String zoomTitle = "Nivel del Paso " + info.orderPlayed() + " (" + theme.getDisplayName() + ")";
+                        if (developMode) {
+                            zoomTitle += " [" + info.levelFile().getFileName() + "]";
+                        }
+                        showLevelZoomModal(masterFrame, zoomTitle, info.levelContent(), theme);
                     });
                     rightCol.add(zoomBtn);
 
-                    ModernButton upBtn = new ModernButton("Subir", new Color(45, 52, 72), new Color(65, 75, 105),
-                            new Color(30, 35, 50), Color.WHITE, 8, 8, 12, 13f);
+                    ModernButton upBtn = new ModernButton("▲ Subir", new Color(45, 52, 72), new Color(65, 75, 105),
+                            new Color(30, 35, 50), Color.WHITE, 8, 8, 12, 12.5f);
                     upBtn.setEnabled(idx > 0);
                     upBtn.addActionListener(e -> {
                         Collections.swap(currentList, idx, idx - 1);
@@ -1904,8 +1931,8 @@ public class ExperimentRunner {
                     });
                     rightCol.add(upBtn);
 
-                    ModernButton downBtn = new ModernButton("Bajar", new Color(45, 52, 72), new Color(65, 75, 105),
-                            new Color(30, 35, 50), Color.WHITE, 8, 8, 12, 13f);
+                    ModernButton downBtn = new ModernButton("▼ Bajar", new Color(45, 52, 72), new Color(65, 75, 105),
+                            new Color(30, 35, 50), Color.WHITE, 8, 8, 12, 12.5f);
                     downBtn.setEnabled(idx < currentList.size() - 1);
                     downBtn.addActionListener(e -> {
                         Collections.swap(currentList, idx, idx + 1);
@@ -1915,7 +1942,7 @@ public class ExperimentRunner {
 
                     rowCard.add(rightCol, BorderLayout.EAST);
 
-                    // Drag & Drop Listener attached to rowCard, gripPanel, and leftCol
+                    // Fluid Drag & Drop Listener
                     MouseAdapter dragListener = new MouseAdapter() {
                         @Override
                         public void mousePressed(MouseEvent e) {
@@ -1928,7 +1955,7 @@ public class ExperimentRunner {
                         @Override
                         public void mouseDragged(MouseEvent e) {
                             if (dragStartPt[0] == null || dragSource[0] < 0) return;
-                            if (!isDragging[0] && dragStartPt[0].distance(e.getLocationOnScreen()) > 5) {
+                            if (!isDragging[0] && dragStartPt[0].distance(e.getLocationOnScreen()) > 4) {
                                 isDragging[0] = true;
                                 if (masterFrame != null) {
                                     masterFrame.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
@@ -1936,16 +1963,9 @@ public class ExperimentRunner {
                             }
                             if (isDragging[0]) {
                                 Point pInList = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), listPanel);
-                                int hover = -1;
-                                for (Component comp : listPanel.getComponents()) {
-                                    if (comp instanceof JPanel jp && jp.getClientProperty("rowIndex") != null) {
-                                        if (pInList.y >= jp.getY() && pInList.y <= jp.getY() + jp.getHeight()) {
-                                            hover = (int) jp.getClientProperty("rowIndex");
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (hover >= 0 && hover < currentList.size() && hover != dragTarget[0]) {
+                                int slotHeight = 92 + 8; // card height + spacing
+                                int hover = Math.max(0, Math.min(currentList.size() - 1, (pInList.y + 40) / slotHeight));
+                                if (hover != dragTarget[0]) {
                                     dragTarget[0] = hover;
                                     updateDragHighlight(listPanel, dragSource[0], dragTarget[0]);
                                 }
@@ -1993,16 +2013,17 @@ public class ExperimentRunner {
 
             JScrollPane scroll = new JScrollPane(listPanel);
             scroll.setBorder(BorderFactory.createEmptyBorder());
-            scroll.setBackground(BG_DARK);
-            scroll.getViewport().setBackground(BG_DARK);
+            scroll.setBackground(CARD_BG);
+            scroll.getViewport().setBackground(CARD_BG);
             scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scroll.getVerticalScrollBar().setUnitIncrement(24);
             applyDarkScrollbar(scroll);
-            mainView.add(scroll, BorderLayout.CENTER);
+            mainCard.add(scroll, BorderLayout.CENTER);
 
             // 4. Action Buttons Footer
             JPanel actionsPanel = new JPanel(new BorderLayout(16, 0));
             actionsPanel.setOpaque(false);
-            actionsPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+            actionsPanel.setBorder(new EmptyBorder(8, 0, 0, 0));
 
             JPanel leftActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 14, 0));
             leftActions.setOpaque(false);
@@ -2027,15 +2048,17 @@ public class ExperimentRunner {
 
             JPanel rightHint = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 6));
             rightHint.setOpaque(false);
-            JLabel hintLbl = new JLabel("[Arrastra y suelta las filas con el ratón o usa Subir / Bajar]");
+            JLabel hintLbl = new JLabel("[Arrastra con el ratón o usa Subir / Bajar  •  Clic en miniatura para ampliar]");
             hintLbl.setFont(FONT_SEMIBOLD.deriveFont(13f));
             hintLbl.setForeground(new Color(148, 163, 184));
             rightHint.add(hintLbl);
             actionsPanel.add(rightHint, BorderLayout.EAST);
 
-            mainView.add(actionsPanel, BorderLayout.SOUTH);
+            mainCard.add(actionsPanel, BorderLayout.SOUTH);
 
-            bg.add(mainView, BorderLayout.CENTER);
+            centerWrapper.add(mainCard);
+            bg.add(centerWrapper, BorderLayout.CENTER);
+
             masterFrame.setContentPane(bg);
             masterFrame.revalidate();
             masterFrame.repaint();
@@ -2258,6 +2281,11 @@ public class ExperimentRunner {
     }
 
     private static BufferedImage renderLevelFull(String content, int tileSize) {
+        return renderLevelFull(content, tileSize, LevelTheme.DAY);
+    }
+
+    private static BufferedImage renderLevelFull(String content, int tileSize, LevelTheme theme) {
+        if (theme == null) theme = LevelTheme.DAY;
         String[] rawLines = content.split("\\r?\\n");
         List<String> lines = new ArrayList<>();
         for (String l : rawLines) {
@@ -2278,8 +2306,7 @@ public class ExperimentRunner {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = img.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(new Color(92, 148, 252));
-        g2.fillRect(0, 0, width, height);
+        theme.paintBackground(g2, width, height);
 
         for (int r = 0; r < rows; r++) {
             String line = lines.get(r);
@@ -2419,32 +2446,49 @@ public class ExperimentRunner {
     }
 
     private static void showLevelZoomModal(JFrame parent, String levelTitle, String levelContent) {
-        JDialog dialog = new JDialog(parent, "Vista Detallada - " + levelTitle, true);
+        showLevelZoomModal(parent, levelTitle, levelContent, LevelTheme.DAY);
+    }
+
+    private static void showLevelZoomModal(JFrame parent, String levelTitle, String levelContent, LevelTheme theme) {
+        if (theme == null) theme = LevelTheme.DAY;
+        JDialog dialog = new JDialog(parent, "Explorador de Nivel - " + levelTitle, true);
         dialog.setLayout(new BorderLayout());
         dialog.getContentPane().setBackground(BG_DARK);
 
-        JPanel header = new JPanel();
-        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+        JPanel header = new JPanel(new BorderLayout(16, 0));
         header.setBackground(CARD_BG);
-        header.setBorder(new EmptyBorder(16, 20, 16, 20));
+        header.setBorder(new EmptyBorder(14, 22, 14, 22));
+
+        JPanel leftHeader = new JPanel();
+        leftHeader.setLayout(new BoxLayout(leftHeader, BoxLayout.Y_AXIS));
+        leftHeader.setOpaque(false);
 
         JLabel titleLabel = new JLabel("Mapa: " + levelTitle);
         titleLabel.setFont(FONT_BOLD.deriveFont(22f));
         titleLabel.setForeground(TEXT_WHITE);
-        header.add(titleLabel);
-        header.add(Box.createRigidArea(new Dimension(0, 6)));
+        leftHeader.add(titleLabel);
+        leftHeader.add(Box.createRigidArea(new Dimension(0, 4)));
 
-        JLabel subLabel = new JLabel("Desplaza la barra inferior hacia la derecha para recorrer todo el nivel horizontalmente.");
-        subLabel.setFont(FONT_REGULAR.deriveFont(15f));
-        subLabel.setForeground(TEXT_MUTED);
-        header.add(subLabel);
+        JLabel subLabel = new JLabel(
+                "<html><body style='color: rgb(156, 163, 175); font-size: 13.5px;'>"
+                + "Arrastra directamente sobre el mapa con el ratón, usa la rueda o los botones inferiores para examinar el nivel de inicio a fin."
+                + "</body></html>");
+        subLabel.setFont(FONT_REGULAR.deriveFont(14f));
+        leftHeader.add(subLabel);
+        header.add(leftHeader, BorderLayout.CENTER);
+
+        JPanel rightBadges = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 4));
+        rightBadges.setOpaque(false);
+        rightBadges.add(createBadge(theme.getDisplayName().toUpperCase()));
+        header.add(rightBadges, BorderLayout.EAST);
 
         dialog.add(header, BorderLayout.NORTH);
 
-        BufferedImage fullImg = renderLevelFull(levelContent, 18);
+        // Render at crisp 22px tiles
+        int tileSize = 22;
+        BufferedImage fullImg = renderLevelFull(levelContent, tileSize, theme);
         JLabel imageLabel = new JLabel(new ImageIcon(fullImg));
-        imageLabel.setBackground(new Color(92, 148, 252));
-        imageLabel.setOpaque(true);
+        imageLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         centerPanel.setBackground(BG_DARK);
@@ -2454,25 +2498,96 @@ public class ExperimentRunner {
         scroll.setBorder(BorderFactory.createLineBorder(ITEM_BORDER, 1));
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-        scroll.getHorizontalScrollBar().setUnitIncrement(36);
+        scroll.getHorizontalScrollBar().setUnitIncrement(48);
         applyDarkScrollbar(scroll);
+
+        // Pan with mouse drag
+        Point[] mousePanStart = new Point[1];
+        int[] scrollPanStart = new int[1];
+        MouseAdapter panAdapter = new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                mousePanStart[0] = e.getLocationOnScreen();
+                scrollPanStart[0] = scroll.getHorizontalScrollBar().getValue();
+                imageLabel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (mousePanStart[0] != null) {
+                    int dx = mousePanStart[0].x - e.getLocationOnScreen().x;
+                    scroll.getHorizontalScrollBar().setValue(scrollPanStart[0] + dx);
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                mousePanStart[0] = null;
+                imageLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+        };
+        imageLabel.addMouseListener(panAdapter);
+        imageLabel.addMouseMotionListener(panAdapter);
+
+        // Mouse wheel horizontal scroll
+        scroll.addMouseWheelListener(e -> {
+            int amount = e.getWheelRotation() * 70;
+            scroll.getHorizontalScrollBar().setValue(scroll.getHorizontalScrollBar().getValue() + amount);
+        });
 
         dialog.add(scroll, BorderLayout.CENTER);
 
-        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 12));
+        // Footer
+        JPanel footer = new JPanel(new BorderLayout(16, 0));
         footer.setBackground(CARD_BG);
+        footer.setBorder(new EmptyBorder(12, 22, 12, 22));
 
-        ModernButton closeBtn = new ModernButton("Cerrar vista previa (ESC)", ACCENT_PRIMARY, ACCENT_HOVER, ACCENT_PRESSED, Color.WHITE, 10, 10, 20, 14f);
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        navPanel.setOpaque(false);
+
+        ModernButton leftBtn = new ModernButton("◀ Desplazar Izquierda (←)", new Color(45, 52, 72), new Color(65, 75, 105),
+                new Color(30, 35, 50), Color.WHITE, 8, 8, 14, 13f);
+        leftBtn.addActionListener(e -> {
+            scroll.getHorizontalScrollBar().setValue(scroll.getHorizontalScrollBar().getValue() - 320);
+        });
+        navPanel.add(leftBtn);
+
+        ModernButton rightBtn = new ModernButton("Desplazar Derecha (→) ▶", new Color(45, 52, 72), new Color(65, 75, 105),
+                new Color(30, 35, 50), Color.WHITE, 8, 8, 14, 13f);
+        rightBtn.addActionListener(e -> {
+            scroll.getHorizontalScrollBar().setValue(scroll.getHorizontalScrollBar().getValue() + 320);
+        });
+        navPanel.add(rightBtn);
+
+        JLabel panHint = new JLabel("(También puedes arrastrar el mapa con el ratón o usar la rueda)");
+        panHint.setFont(FONT_REGULAR.deriveFont(13f));
+        panHint.setForeground(TEXT_MUTED);
+        navPanel.add(panHint);
+        footer.add(navPanel, BorderLayout.WEST);
+
+        JPanel closePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        closePanel.setOpaque(false);
+        ModernButton closeBtn = new ModernButton("Cerrar visor (ESC)", ACCENT_PRIMARY, ACCENT_HOVER, ACCENT_PRESSED, Color.WHITE, 10, 10, 20, 14f);
         closeBtn.addActionListener(e -> dialog.dispose());
-        footer.add(closeBtn);
+        closePanel.add(closeBtn);
+        footer.add(closePanel, BorderLayout.EAST);
 
         dialog.add(footer, BorderLayout.SOUTH);
 
+        // Keyboard actions
         dialog.getRootPane().registerKeyboardAction(e -> dialog.dispose(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
+        dialog.getRootPane().registerKeyboardAction(e -> {
+            scroll.getHorizontalScrollBar().setValue(scroll.getHorizontalScrollBar().getValue() - 220);
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        dialog.getRootPane().registerKeyboardAction(e -> {
+            scroll.getHorizontalScrollBar().setValue(scroll.getHorizontalScrollBar().getValue() + 220);
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        dialog.setSize(1060, 460);
+        int dialogW = Math.min(1240, (parent != null && parent.getWidth() > 100) ? parent.getWidth() - 60 : 1240);
+        int dialogH = Math.min(540, (parent != null && parent.getHeight() > 100) ? parent.getHeight() - 80 : 540);
+        dialog.setSize(dialogW, dialogH);
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
     }
