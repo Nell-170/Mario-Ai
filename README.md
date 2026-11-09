@@ -307,21 +307,24 @@ Para consultar detalles de conexión, esquemas y scripts de análisis estadísti
 
 ---
 
-## 🎵 Música y Efectos de Sonido Sintetizados
+## 🎵 Música y Efectos de Sonido
 
-El motor incorpora síntesis de audio procedural en tiempo real escrita en Java puro:
-- No requiere archivos de audio externos (MP3, WAV o sintetizadores de terceros).
-- Incluye música dinámica de acompañamiento y efectos sonoros para saltos, recolección de monedas, impactos, daño, victoria y derrota.
-- Usted puede activar o desactivar el subsistema de sonido ajustando `music=true` o `music=false` en [`src/experiment/config.properties`](file:///home/marioc/Desktop/UCR/Mario-Ai/src/experiment/config.properties) o pulsando la tecla **`M`** durante la partida.
+El juego cuenta con un subsistema sonoro optimizado para mantener la ambientación clásica de plataformas:
+- **Música de fondo:** Utiliza la pista chiptune *«Pixelland»* compuesta por Kevin MacLeod ([incompetech.com](https://incompetech.com/)), licenciada bajo Creative Commons: By Attribution 4.0 ([CC-BY 4.0](http://creativecommons.org/licenses/by/4.0/)). Se reproduce de forma continua en bucle durante los niveles.
+- **Efectos de sonido:** Saltos, recolección de monedas, impactos, daño y estados de victoria/derrota generados por síntesis procedural en tiempo real.
+- **Controles:** Usted puede activar o silenciar el sonido en cualquier momento ajustando `music=true` o `music=false` en [`src/experiment/config.properties`](file:///home/marioc/Desktop/UCR/Mario-Ai/src/experiment/config.properties) o pulsando la tecla **`M`** durante la partida.
 
 ---
 
 ## 📚 Agradecimientos y Descargo de Responsabilidad
 
-Este proyecto se fundamenta en los siguientes proyectos y conjuntos de datos de código abierto:
+Este proyecto se fundamenta en los siguientes proyectos, composiciones y conjuntos de datos de código abierto:
 - **[Mario AI Framework](https://github.com/amidos2006/Mario-AI-Framework)** — Desarrollado por Ahmed Khalifa, Julian Togelius et al. (Licencia MIT).
 - **[MarioGPT](https://github.com/shyamsn97/mario-gpt)** — Desarrollado por Shyam Sudhakaran et al. (Licencia MIT).
 - **[Dataset mm2_level](https://huggingface.co/datasets/TheGreatRambler/mm2_level)** — Publicado por TheGreatRambler en Hugging Face Datasets.
+- **Música:** *"Pixelland"* Kevin MacLeod ([incompetech.com](https://incompetech.com/))  
+  Licensed under Creative Commons: By Attribution 4.0 License  
+  http://creativecommons.org/licenses/by/4.0/
 
 > ⚠️ **Aviso legal de propiedad intelectual (Disclaimer):**  
 > Este es un proyecto de investigación académica y formativa sin fines comerciales. **No está afiliado, patrocinado, respaldado ni asociado con Nintendo Co., Ltd.** Las marcas comerciales *Super Mario*, *Super Mario Bros.*, *Super Mario Maker* y sus componentes audiovisuales asociados son propiedad intelectual exclusiva de Nintendo.
