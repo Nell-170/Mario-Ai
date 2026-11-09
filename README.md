@@ -14,7 +14,7 @@ El sistema implementa un entorno experimental completo para evaluar la experienc
                      ▼                                                        │
 ┌─────────────────────────┐         ┌──────────────────────────┐              │
 │       Participante      │         │   Extracción Semántica   │              │
-│     (Sesión de Juego)   │────────▶│      y Razonamiento      │              │
+│     (Sesión de Juego)   │───────▶│      y Razonamiento      │              │
 └────────────┬────────────┘         │      (Ollama / LLM)      │              │
              │                      └─────────────┬────────────┘              │
              │ Telemetría                         │                           │
