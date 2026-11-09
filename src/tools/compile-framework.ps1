@@ -43,4 +43,23 @@ if ($LASTEXITCODE -ne 0) {
     }
 }
 
+# Driver JDBC de PostgreSQL (base de datos del experimento): se extrae dentro de bin/
+# para que todos los "java -cp bin ..." lo encuentren sin cambiar el classpath.
+$libDir = Join-Path $PSScriptRoot "lib"
+$binFull = (Resolve-Path $bin).Path
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+Get-ChildItem -Path $libDir -Filter *.jar -ErrorAction SilentlyContinue | ForEach-Object {
+    $zip = [System.IO.Compression.ZipFile]::OpenRead($_.FullName)
+    try {
+        foreach ($entry in $zip.Entries) {
+            if ($entry.FullName.EndsWith("/")) { continue }
+            $dest = Join-Path $binFull $entry.FullName
+            New-Item -ItemType Directory -Force -Path (Split-Path $dest) | Out-Null
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $dest, $true)
+        }
+    } finally {
+        $zip.Dispose()
+    }
+}
+
 Write-Output "[100%] [████████████████████] ¡Compilación completada exitosamente!"

@@ -1,20 +1,23 @@
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.Duration;
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -23,20 +26,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Cliente mínimo para guardar los datos del experimento en Supabase (PostgREST).
+ * Cliente mínimo para guardar los datos del experimento en PostgreSQL (JDBC directo).
  *
  * <p>Garantía principal: ningún dato se pierde. Cada registro se escribe primero como
- * archivo en {@code experiment/db_pending/} y solo se borra cuando Supabase confirma
- * la inserción. Si no hay red, el proyecto está pausado o falta la configuración, los
- * archivos quedan ahí y se reenvían en orden al iniciar la siguiente sesión.</p>
+ * archivo en {@code experiment/db_pending/} y solo se borra cuando PostgreSQL confirma
+ * la inserción. Si no hay red, la máquina virtual está apagada o falta la configuración,
+ * los archivos quedan ahí y se reenvían en orden al iniciar la siguiente sesión.</p>
  *
  * <p>Reenviar un registro que ya llegó no crea duplicados: las claves únicas de cada tabla lo
- * rechazan con el código 23505 y el cliente lo trata como "ya guardado". Así la llave del
- * laboratorio solo necesita permiso de inserción (ni lectura ni modificación).</p>
+ * rechazan con el código 23505 y el cliente lo trata como "ya guardado". Así el rol del
+ * laboratorio ({@code mario_lab}) solo necesita permiso de inserción.</p>
  *
- * <p>Configuración (en este orden de prioridad): variables de entorno
- * {@code SUPABASE_URL} / {@code SUPABASE_KEY}, o {@code experiment/database.properties}
- * con {@code supabase_url=} y {@code supabase_key=}.</p>
+ * <p>Configuración: {@code experiment/database.properties} con {@code db_host}, {@code db_port},
+ * {@code db_name}, {@code db_user}, {@code db_password} (y opcional {@code db_sslmode}), o las
+ * variables de entorno {@code DB_HOST}, {@code DB_PORT}, {@code DB_NAME}, {@code DB_USER},
+ * {@code DB_PASSWORD}. El driver JDBC de PostgreSQL se copia dentro de {@code bin/} al compilar.</p>
  */
 public final class ExperimentDB {
 
@@ -44,27 +48,37 @@ public final class ExperimentDB {
     public record RawJson(String json) {
     }
 
-    private static final java.util.Set<String> TABLES = java.util.Set.of(
-            "participants", "level_plays", "closure", "free_play");
+    private static final Set<String> TABLES = Set.of("participants", "level_plays", "closure", "free_play");
+    private static final String IDENTIFIER = "[a-z_][a-z0-9_]*";
 
     /** Resultado de un envío. */
     private enum Outcome { STORED, REJECTED, RETRY }
 
-    private final String baseUrl;
-    private final String apiKey;
+    private final String jdbcUrl;
+    private final String user;
+    private final String password;
+    private final String target; // host:puerto/base, para mensajes
     private final Path outbox;
     private final Path failedDir;
-    private final HttpClient http;
     private final ExecutorService worker;
     private final AtomicInteger counter = new AtomicInteger();
     private volatile String lastStatus = "sin actividad";
+    private volatile boolean driverWarned = false;
 
-    private ExperimentDB(String baseUrl, String apiKey, Path outbox) {
-        this.baseUrl = baseUrl == null ? null : baseUrl.replaceAll("/+$", "");
-        this.apiKey = apiKey;
+    private ExperimentDB(String host, String port, String name, String user, String password, String sslmode,
+            Path outbox) {
+        boolean ok = host != null && name != null && user != null;
+        String p = port == null ? "5432" : port;
+        this.target = ok ? host + ":" + p + "/" + name : null;
+        this.jdbcUrl = ok
+                ? "jdbc:postgresql://" + host + ":" + p + "/" + name
+                        + "?connectTimeout=8&socketTimeout=30&ApplicationName=MarioAI-Experiment"
+                        + (sslmode == null ? "" : "&sslmode=" + sslmode)
+                : null;
+        this.user = user;
+        this.password = password == null ? "" : password;
         this.outbox = outbox;
         this.failedDir = outbox.resolve("failed");
-        this.http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(8)).build();
         this.worker = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r, "experiment-db-sync");
             t.setDaemon(true);
@@ -83,21 +97,26 @@ public final class ExperimentDB {
                 System.err.println("[DB] No se pudo leer " + file + ": " + e.getMessage());
             }
         }
-        String url = firstNonBlank(System.getenv("SUPABASE_URL"), props.getProperty("supabase_url"));
-        String key = firstNonBlank(System.getenv("SUPABASE_KEY"), props.getProperty("supabase_key"));
-        ExperimentDB db = new ExperimentDB(url, key, experimentDir.resolve("db_pending"));
+        ExperimentDB db = new ExperimentDB(
+                firstNonBlank(System.getenv("DB_HOST"), props.getProperty("db_host")),
+                firstNonBlank(System.getenv("DB_PORT"), props.getProperty("db_port")),
+                firstNonBlank(System.getenv("DB_NAME"), props.getProperty("db_name")),
+                firstNonBlank(System.getenv("DB_USER"), props.getProperty("db_user")),
+                firstNonBlank(System.getenv("DB_PASSWORD"), props.getProperty("db_password")),
+                firstNonBlank(System.getenv("DB_SSLMODE"), props.getProperty("db_sslmode")),
+                experimentDir.resolve("db_pending"));
         if (!db.isConfigured()) {
-            System.out.println("[DB] Supabase no configurado: los registros se guardarán en "
+            System.out.println("[DB] Base de datos no configurada: los registros se guardarán en "
                     + db.outbox.toAbsolutePath() + " hasta que se configure experiment/database.properties.");
         } else {
-            System.out.println("[DB] Supabase configurado: " + db.baseUrl);
+            System.out.println("[DB] PostgreSQL configurado: " + db.target);
         }
         db.flushAsync();
         return db;
     }
 
     public boolean isConfigured() {
-        return baseUrl != null && !baseUrl.isBlank() && apiKey != null && !apiKey.isBlank();
+        return jdbcUrl != null;
     }
 
     public String getLastStatus() {
@@ -157,71 +176,130 @@ public final class ExperimentDB {
             lastStatus = "sin configurar (" + pendingCount() + " pendientes)";
             return;
         }
-        for (Path file : listPending()) {
-            try {
-                String content = Files.readString(file, StandardCharsets.UTF_8);
-                String table = extractTable(content);
-                String rowJson = extractRow(content);
-                Outcome outcome = post(table, rowJson);
+        List<Path> pending = listPending();
+        if (pending.isEmpty()) {
+            return;
+        }
+        if (!driverAvailable()) {
+            lastStatus = "falta el driver JDBC (" + pending.size() + " pendientes)";
+            return;
+        }
+        DriverManager.setLoginTimeout(10);
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, user, password)) {
+            conn.setAutoCommit(true);
+            for (Path file : pending) {
+                String table;
+                String rowJson;
+                try {
+                    String content = Files.readString(file, StandardCharsets.UTF_8);
+                    table = extractTable(content);
+                    rowJson = extractRow(content);
+                    if (!TABLES.contains(table)) {
+                        throw new IllegalStateException("tabla desconocida: " + table);
+                    }
+                } catch (IOException | RuntimeException e) {
+                    System.err.println("[DB] Archivo pendiente ilegible " + file.getFileName() + ": " + e.getMessage());
+                    moveToFailed(file);
+                    continue;
+                }
+                Outcome outcome = insertRow(conn, table, rowJson);
                 if (outcome == Outcome.STORED) {
                     Files.deleteIfExists(file);
                     lastStatus = "ok";
                 } else if (outcome == Outcome.REJECTED) {
-                    // Datos rechazados por el esquema: apartarlos para revisión sin bloquear el resto.
-                    Files.createDirectories(failedDir);
-                    Files.move(file, failedDir.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+                    moveToFailed(file);
                     System.err.println("[DB] Registro rechazado, movido a db_pending/failed/: " + file.getFileName());
                 } else {
-                    // Red caída, proyecto pausado, llave inválida, participante aún no guardado...: reintentar luego.
                     lastStatus = "reintento pendiente (" + pendingCount() + " pendientes)";
                     return;
                 }
-            } catch (IOException | InterruptedException e) {
-                lastStatus = "sin conexión (" + pendingCount() + " pendientes)";
-                System.err.println("[DB] Sin conexión con Supabase (" + e.getClass().getSimpleName()
-                        + (e.getMessage() == null ? "" : ": " + e.getMessage()) + "); se reintentará más tarde.");
-                return;
-            } catch (RuntimeException e) {
-                System.err.println("[DB] Archivo pendiente ilegible " + file.getFileName() + ": " + e.getMessage());
-                try {
-                    Files.createDirectories(failedDir);
-                    Files.move(file, failedDir.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException ignored) {
-                }
             }
+        } catch (SQLException e) {
+            lastStatus = "sin conexión (" + pendingCount() + " pendientes)";
+            System.err.println("[DB] No se pudo conectar a PostgreSQL en " + target + " (" + describe(e)
+                    + "); se reintentará más tarde.");
+        } catch (IOException e) {
+            System.err.println("[DB] Error de archivos en db_pending/: " + e.getMessage());
         }
     }
 
-    private Outcome post(String table, String rowJson) throws IOException, InterruptedException {
-        String url = baseUrl + "/rest/v1/" + table;
-        HttpRequest.Builder req = HttpRequest.newBuilder(URI.create(url))
-                .timeout(Duration.ofSeconds(15))
-                .header("apikey", apiKey)
-                .header("Content-Type", "application/json")
-                .header("Prefer", "return=minimal")
-                .POST(HttpRequest.BodyPublishers.ofString(rowJson, StandardCharsets.UTF_8));
-        // Las llaves "legacy" (JWT anon) también van como Bearer; las nuevas sb_publishable_ no.
-        if (!apiKey.startsWith("sb_")) {
-            req.header("Authorization", "Bearer " + apiKey);
-        }
-        HttpResponse<String> resp = http.send(req.build(), HttpResponse.BodyHandlers.ofString());
-        int code = resp.statusCode();
-        String body = resp.body() == null ? "" : resp.body();
-        if (code >= 200 && code < 300) {
+    /**
+     * Inserta una fila a partir de su JSON. PostgreSQL convierte cada campo al tipo de su
+     * columna (texto, enteros, booleanos, text[], jsonb, timestamptz) con jsonb_populate_record.
+     */
+    private Outcome insertRow(Connection conn, String table, String rowJson) {
+        try {
+            List<String> columns = new ArrayList<>();
+            try (PreparedStatement keys = conn.prepareStatement("select array(select jsonb_object_keys(?::jsonb))")) {
+                keys.setString(1, rowJson);
+                try (ResultSet rs = keys.executeQuery()) {
+                    rs.next();
+                    Array arr = rs.getArray(1);
+                    for (Object k : (Object[]) arr.getArray()) {
+                        String col = String.valueOf(k);
+                        if (!col.matches(IDENTIFIER)) {
+                            System.err.println("[DB] Columna inválida '" + col + "' en " + table);
+                            return Outcome.REJECTED;
+                        }
+                        columns.add(col);
+                    }
+                }
+            }
+            if (columns.isEmpty()) {
+                return Outcome.REJECTED;
+            }
+            String cols = String.join(", ", columns);
+            String sql = "insert into public." + table + " (" + cols + ") select " + cols
+                    + " from jsonb_populate_record(null::public." + table + ", ?::jsonb)";
+            try (PreparedStatement ins = conn.prepareStatement(sql)) {
+                ins.setString(1, rowJson);
+                ins.executeUpdate();
+            }
             return Outcome.STORED;
+        } catch (SQLException e) {
+            String state = e.getSQLState() == null ? "" : e.getSQLState();
+            if (state.equals("23505")) {
+                return Outcome.STORED; // clave duplicada: el registro ya estaba guardado (reenvío)
+            }
+            System.err.println("[DB] " + table + " -> " + describe(e));
+            if (state.equals("23503")) {
+                return Outcome.RETRY; // FK: el participante todavía no llegó; se reintenta en orden
+            }
+            if (state.equals("42501") || state.equals("42P01") || state.equals("3F000")) {
+                return Outcome.RETRY; // sin permisos / falta el esquema: problema de configuración, no de datos
+            }
+            if (state.startsWith("22") || state.startsWith("23") || state.startsWith("42")) {
+                return Outcome.REJECTED; // datos inválidos para el esquema
+            }
+            return Outcome.RETRY; // conexión caída, base reiniciándose, etc.
         }
-        if (body.contains("\"23505\"")) {
-            return Outcome.STORED; // clave duplicada: el registro ya estaba guardado (reenvío)
+    }
+
+    private boolean driverAvailable() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            return true;
+        } catch (ClassNotFoundException e) {
+            if (!driverWarned) {
+                driverWarned = true;
+                System.err.println("[DB] No se encontró el driver JDBC de PostgreSQL en bin/. "
+                        + "Recompila con 'make compile' (copia src/tools/lib/postgresql-*.jar).");
+            }
+            return false;
         }
-        System.err.println("[DB] " + table + " -> HTTP " + code + ": "
-                + (body.length() > 300 ? body.substring(0, 300) + "..." : body));
-        if (body.contains("\"23503\"")) {
-            return Outcome.RETRY; // FK: el participante todavía no llegó; se reintenta en orden
+    }
+
+    private static String describe(SQLException e) {
+        String msg = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage().strip();
+        return (e.getSQLState() == null ? "" : "SQLState " + e.getSQLState() + ": ") + msg;
+    }
+
+    private void moveToFailed(Path file) {
+        try {
+            Files.createDirectories(failedDir);
+            Files.move(file, failedDir.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ignored) {
         }
-        if (code == 400 || code == 422) {
-            return Outcome.REJECTED; // datos inválidos para el esquema
-        }
-        return Outcome.RETRY; // 401/403 llave, 404 tabla, 5xx/503 proyecto pausado, etc.
     }
 
     private List<Path> listPending() {
@@ -266,10 +344,10 @@ public final class ExperimentDB {
      * lo pendiente en db_pending/. Se ejecuta desde mario_ai_framework/, como el experimento.
      */
     public static void main(String[] args) {
-        ExperimentDB db = open(java.nio.file.Paths.get("../src/experiment"));
+        ExperimentDB db = open(Paths.get("../src/experiment"));
         if (!db.isConfigured()) {
             System.out.println("[DB] FALTA CONFIGURACIÓN: crea src/experiment/database.properties "
-                    + "(copia database.properties.example) con supabase_url y supabase_key.");
+                    + "(copia database.properties.example) con db_host, db_name, db_user y db_password.");
             System.exit(2);
         }
         boolean test = args.length > 0 && "--test".equals(args[0]);
@@ -280,7 +358,7 @@ public final class ExperimentDB {
             p.put("id", id);
             p.put("sequence_group", "TEST");
             p.put("machine", machineName());
-            p.put("code_version", codeVersion(java.nio.file.Paths.get("../src")));
+            p.put("code_version", codeVersion(Paths.get("../src")));
             p.put("initial_survey", Map.of("nota", "registro de prueba de make test-db"));
             db.insert("participants", p);
             Map<String, Object> lp = row();
@@ -299,7 +377,7 @@ public final class ExperimentDB {
         int pending = db.pendingCount();
         if (pending == 0) {
             System.out.println(test
-                    ? "[DB] OK: Supabase recibió los registros de prueba. Revísalos en Table Editor -> participants (id TEST_...)."
+                    ? "[DB] OK: PostgreSQL recibió los registros de prueba (participants.id = TEST_...)."
                     : "[DB] OK: no quedan registros pendientes.");
             System.exit(0);
         }

@@ -45,4 +45,17 @@ if ! javac $RELEASE_FLAG -version &>/dev/null; then
 fi
 
 javac $RELEASE_FLAG -d "$BIN" -encoding UTF-8 "${java_files[@]}"
+
+# Driver JDBC de PostgreSQL (base de datos del experimento): se extrae dentro de bin/
+# para que todos los "java -cp bin ..." lo encuentren sin cambiar el classpath.
+for lib_jar in "$SCRIPT_DIR"/lib/*.jar; do
+    [ -f "$lib_jar" ] || continue
+    if command -v jar &>/dev/null; then
+        (cd "$BIN" && jar xf "$lib_jar")
+    elif command -v unzip &>/dev/null; then
+        unzip -oq "$lib_jar" -d "$BIN"
+    else
+        python3 -c "import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$lib_jar" "$BIN"
+    fi
+done
 echo -e "\033[1;36m[100%]\033[0m \033[1;32m[████████████████████]\033[0m ¡Compilación completada exitosamente!"

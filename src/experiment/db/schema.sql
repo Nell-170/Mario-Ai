@@ -1,7 +1,13 @@
 -- =====================================================================
--- Esquema de la base de datos del experimento (Supabase / PostgreSQL)
--- Ejecutar UNA vez en: Supabase -> SQL Editor -> New query -> Run.
+-- Esquema de la base de datos del experimento (PostgreSQL 13+)
+-- Ejecutar UNA vez en la máquina virtual, conectado a la base del experimento
+-- con un usuario administrador (el dueño de la base o postgres):
+--
+--     psql -h localhost -U postgres -d <nombre_de_la_base> -f schema.sql
+--
 -- Es idempotente: se puede volver a ejecutar sin perder datos.
+-- Crea el rol "mario_lab" (el que usan las PCs del laboratorio) SIN contraseña;
+-- después hay que asignársela (ver README.md, paso 3).
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
@@ -81,35 +87,30 @@ create table if not exists public.free_play (
 );
 
 -- ---------------------------------------------------------------------
--- 5. Seguridad: la llave que va en las máquinas SOLO puede insertar.
---    No puede leer, modificar ni borrar. Los datos se consultan desde
---    el panel de Supabase (Table Editor / SQL Editor).
+-- 5. Seguridad: el rol de las PCs del laboratorio SOLO puede insertar.
+--    No puede leer, modificar ni borrar. Los datos se consultan con un
+--    usuario administrador (psql, pgAdmin, DBeaver...).
 -- ---------------------------------------------------------------------
-alter table public.participants enable row level security;
-alter table public.level_plays  enable row level security;
-alter table public.closure      enable row level security;
-alter table public.free_play    enable row level security;
+do $$
+begin
+    if not exists (select 1 from pg_roles where rolname = 'mario_lab') then
+        create role mario_lab nologin;   -- la contraseña y LOGIN se asignan aparte
+    end if;
+end
+$$;
 
-revoke all on public.participants, public.level_plays, public.closure, public.free_play from anon, authenticated;
-grant insert on public.participants, public.level_plays, public.closure, public.free_play to anon;
+revoke all on public.participants, public.level_plays, public.closure, public.free_play from mario_lab;
+grant usage on schema public to mario_lab;
+grant insert on public.participants, public.level_plays, public.closure, public.free_play to mario_lab;
 -- Reenvíos sin duplicados: las claves únicas rechazan un registro repetido (error 23505)
--- y el cliente lo interpreta como "ya guardado". Por eso anon no necesita permiso de lectura.
-
-drop policy if exists "lab inserts" on public.participants;
-drop policy if exists "lab inserts" on public.level_plays;
-drop policy if exists "lab inserts" on public.closure;
-drop policy if exists "lab inserts" on public.free_play;
-create policy "lab inserts" on public.participants for insert to anon with check (true);
-create policy "lab inserts" on public.level_plays  for insert to anon with check (true);
-create policy "lab inserts" on public.closure      for insert to anon with check (true);
-create policy "lab inserts" on public.free_play    for insert to anon with check (true);
+-- y el cliente lo interpreta como "ya guardado". Por eso mario_lab no necesita leer.
 
 -- ---------------------------------------------------------------------
--- 6. Vistas de análisis en un esquema privado (no expuesto por la API).
---    Consultar desde el SQL Editor y exportar a CSV con "Download".
+-- 6. Vistas de análisis (solo para administradores).
+--    Exportar a CSV:  \copy (select * from analysis.main_levels) to 'main_levels.csv' csv header
 -- ---------------------------------------------------------------------
 create schema if not exists analysis;
-revoke all on schema analysis from anon, authenticated;
+revoke all on schema analysis from public;
 
 -- Una fila por nivel del protocolo con respuestas y telemetría aplanadas.
 create or replace view analysis.main_levels as

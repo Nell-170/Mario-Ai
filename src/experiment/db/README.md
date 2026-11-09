@@ -1,32 +1,65 @@
-# Base de datos del experimento (Supabase)
+# Base de datos del experimento (PostgreSQL)
 
-Cada sesión del experimento se guarda en una base de datos Postgres en Supabase,
-además de los TSV locales de `experiment/results/` (que se mantienen como respaldo).
+Cada sesión del experimento se guarda en PostgreSQL, en la máquina virtual del laboratorio
+(`10.1.70.39`), además de los TSV locales de `experiment/results/`, que se mantienen como respaldo.
+Las PCs del experimento se conectan directo por JDBC (puerto 5432) y deben estar en la misma red.
 
-## Configuración inicial (una sola vez)
+## 1. Preparar la máquina virtual (una sola vez)
 
-1. Crear un proyecto en <https://supabase.com> (región sugerida: la más cercana, p. ej. `us-east-1`).
-2. En el proyecto: **SQL Editor → New query**, pegar el contenido de [`schema.sql`](./schema.sql) y **Run**.
-   El script se puede volver a ejecutar sin perder datos.
-3. En **Project Settings → API** (o el botón **Connect**), copiar:
-   - **Project URL**
-   - **Publishable key** (`sb_publishable_...`) o, si el proyecto solo muestra llaves legacy, la llave **anon**.
-   ⚠️ Nunca usar la llave *secret* / *service_role* en las máquinas del laboratorio.
+**a) Aceptar conexiones de la red.** En `postgresql.conf` (ubicarlo con `sudo -u postgres psql -c "show config_file"`):
 
-## Configuración de cada máquina del laboratorio
+```
+listen_addresses = '*'          # o: 'localhost,10.1.70.39'
+```
+
+**b) Permitir solo al rol del laboratorio, desde la red del laboratorio.** En `pg_hba.conf`
+(`show hba_file`), agregar una línea; cambiar la subred por la real del laboratorio:
+
+```
+# TYPE  DATABASE             USER       ADDRESS          METHOD
+host    NOMBRE_DE_LA_BASE    mario_lab  10.1.70.0/24     scram-sha-256
+```
+
+**c) Reiniciar y abrir el puerto:**
+
+```bash
+sudo systemctl restart postgresql
+sudo ufw allow from 10.1.70.0/24 to any port 5432 proto tcp   # si la VM usa ufw
+```
+
+## 2. Crear las tablas
+
+Desde la VM, con el usuario administrador:
+
+```bash
+psql -h localhost -U postgres -d NOMBRE_DE_LA_BASE -f schema.sql
+```
+
+El script es idempotente (se puede volver a correr sin perder datos). Crea las 4 tablas,
+las vistas de análisis y el rol `mario_lab`.
+
+## 3. Darle contraseña al rol del laboratorio
+
+```bash
+psql -h localhost -U postgres -d NOMBRE_DE_LA_BASE \
+     -c "alter role mario_lab login password 'UNA_CONTRASEÑA_LARGA';"
+```
+
+`mario_lab` solo puede **insertar**: no puede leer, modificar ni borrar datos. Si alguien
+copia la contraseña de una PC del laboratorio, no puede ver ni dañar lo que ya está guardado.
+
+## 4. Configurar cada PC del laboratorio
 
 ```bash
 cd src/experiment
 cp database.properties.example database.properties
-# editar database.properties con la URL y la llave del paso 3
+# editar: db_name y db_password (db_host ya es 10.1.70.39, db_user ya es mario_lab)
+cd .. && make compile     # incluye el driver JDBC de PostgreSQL en bin/
 ```
 
-`database.properties` está en `.gitignore`. También se pueden usar las variables de
-entorno `SUPABASE_URL` y `SUPABASE_KEY`.
+`database.properties` está en `.gitignore`.
 
-Al iniciar `make start-experiment` la consola muestra `[DB] Supabase configurado: ...`.
-
-## Probar la conexión
+## 5. Probar la conexión
 
 ```bash
 cd src
@@ -34,13 +67,26 @@ make test-db   # envía un participante TEST_... y confirma que llegó
 make sync-db   # reenvía lo que haya quedado en experiment/db_pending/
 ```
 
-Para borrar los datos de prueba (SQL Editor, con la cuenta del proyecto):
+Si falla, el mensaje `[DB]` dice el motivo:
+
+| Mensaje | Causa probable |
+|---|---|
+| `connect timed out` / `Connection refused` | VM apagada, `listen_addresses`, firewall o la PC no está en la red del laboratorio |
+| `SQLState 28000: no pg_hba.conf entry` | falta la línea de `pg_hba.conf` para esa subred, base o usuario |
+| `SQLState 28P01: password authentication failed` | contraseña incorrecta en `database.properties` |
+| `SQLState 3D000: database ... does not exist` | `db_name` incorrecto |
+| `SQLState 42P01` / `42501` | no se corrió `schema.sql` en esa base |
+| `No se encontró el driver JDBC` | falta `make compile` |
+
+Prueba rápida de red desde una PC del laboratorio: `nc -vz 10.1.70.39 5432`
+(en Windows: `Test-NetConnection 10.1.70.39 -Port 5432`).
+
+Para borrar los datos de prueba (en la VM, como administrador):
 
 ```sql
-delete from public.level_plays where participant_id like 'TEST_%' or participant_id in
-  (select id from public.participants where develop_mode or sequence_group = 'TEST');
-delete from public.closure   where participant_id in (select id from public.participants where develop_mode or sequence_group = 'TEST');
-delete from public.free_play where participant_id in (select id from public.participants where develop_mode or sequence_group = 'TEST');
+delete from public.level_plays where participant_id in (select id from public.participants where develop_mode or sequence_group = 'TEST');
+delete from public.closure     where participant_id in (select id from public.participants where develop_mode or sequence_group = 'TEST');
+delete from public.free_play   where participant_id in (select id from public.participants where develop_mode or sequence_group = 'TEST');
 delete from public.participants where develop_mode or sequence_group = 'TEST';
 ```
 
@@ -63,26 +109,34 @@ Si el participante no acepta el consentimiento, **no se envía nada**.
 ## Garantía de no pérdida de datos
 
 Cada registro se escribe primero en `experiment/db_pending/` y solo se borra cuando
-Supabase confirma que lo guardó. Si no hay red o el proyecto está pausado (los proyectos
-gratuitos se pausan tras 7 días sin uso), los registros esperan ahí y se reenvían en orden
-al iniciar la siguiente sesión. Reenviar no crea duplicados.
+PostgreSQL confirma que lo guardó. Si la VM no responde, los registros esperan ahí y se
+reenvían en orden al iniciar la siguiente sesión (o con `make sync-db`). Reenviar no crea duplicados.
 
 - `db_pending/*.json`: pendientes de envío (normal si hubo un corte de red).
 - `db_pending/failed/*.json`: rechazados por el esquema (revisar; no se borran).
 
 **No borrar `db_pending/`** antes de confirmar que quedó vacía.
 
-## Seguridad
+## Respaldos
 
-La llave de las máquinas solo puede **insertar**: no puede leer, modificar ni borrar
-(Row Level Security). Los datos se consultan desde el panel de Supabase.
+La VM es ahora la única copia central. Conviene un respaldo periódico, por ejemplo diario con cron:
+
+```bash
+pg_dump -h localhost -U postgres -Fc NOMBRE_DE_LA_BASE > ~/backups/mario_$(date +%F).dump
+```
 
 ## Análisis
 
-En el SQL Editor (los resultados se exportan a CSV con **Download**):
+Conectado como administrador (psql, pgAdmin o DBeaver):
 
 ```sql
 select * from analysis.main_levels;          -- 1 fila por nivel del protocolo, respuestas + telemetría
 select * from analysis.rankings;             -- ranking aplanado
 select * from analysis.personalized_quality; -- niveles P: ¿generados o respaldo?
+```
+
+Exportar a CSV desde psql:
+
+```
+\copy (select * from analysis.main_levels) to 'main_levels.csv' csv header
 ```
