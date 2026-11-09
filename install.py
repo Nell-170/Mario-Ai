@@ -798,6 +798,14 @@ def main():
             ],
             critical=True,
         )
+    # Driver JDBC de PostgreSQL (base de datos del experimento): se extrae dentro de bin/
+    # para que todos los "java -cp bin ..." lo encuentren sin cambiar el classpath.
+    import zipfile
+    for lib_jar in sorted((src_dir / "tools" / "lib").glob("*.jar")):
+        with zipfile.ZipFile(lib_jar) as zf:
+            zf.extractall(fw_bin)
+        progress.info(f"Driver incluido en bin/: {lib_jar.name}")
+
     progress.success(f"Compilación exitosa. Clases generadas en {fw_bin.relative_to(root)}.")
 
     # ── PASO 6: Verificación y Directorios de Niveles ───────────────

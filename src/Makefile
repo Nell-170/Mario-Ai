@@ -100,7 +100,7 @@ help:
 	@echo "  play-levels-generated  Select and play levels via GUI selector"
 	@echo "  start-experiment       Run 6x6 Latin square experiment with MarioGPT"
 	@echo "  start-experiment-nogen Run experiment skipping level generation"
-	@echo "  test-db                Send a TEST_ participant to Supabase and confirm it arrived"
+	@echo "  test-db                Send a TEST_ participant to PostgreSQL and confirm it arrived"
 	@echo "  sync-db                Resend records waiting in experiment/db_pending/"
 	@echo "  generate-level         Generate a level from the latest telemetry"
 	@echo "  get-generics-levels    Batch-generate generic levels from the cluster server (N=count, OUT=dir, PROMPT=text)"

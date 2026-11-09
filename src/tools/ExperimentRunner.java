@@ -175,7 +175,7 @@ public class ExperimentRunner {
     private static int personalizedPlayedCount = 0;
     private static boolean devSidePanelCollapsed = false;
     private static HpcTunnelManager hpcTunnelManager = null;
-    // Base de datos del experimento (Supabase con respaldo local en experiment/db_pending/).
+    // Base de datos del experimento (PostgreSQL con respaldo local en experiment/db_pending/).
     private static ExperimentDB db = null;
 
     private static boolean shouldShowDevGenSidePanel() {

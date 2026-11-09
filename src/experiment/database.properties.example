@@ -1,11 +1,15 @@
 # Copiar este archivo como database.properties (mismo directorio) y completar.
 # database.properties está en .gitignore: NO se sube al repositorio.
 #
-# Supabase -> Project Settings -> API (o "Connect"):
-#   supabase_url = Project URL
-#   supabase_key = publishable key (sb_publishable_...) o la llave "anon" (legacy)
-# Nunca usar la llave secret / service_role en las máquinas del laboratorio.
+# Conexión a PostgreSQL en la máquina virtual del laboratorio.
+# Usar el rol mario_lab (solo puede insertar), NUNCA el usuario postgres/administrador.
+db_host=10.1.70.39
+db_port=5432
+db_name=NOMBRE_DE_LA_BASE
+db_user=mario_lab
+db_password=CAMBIAR
+# Opcional: si se configura SSL en el servidor, p. ej. db_sslmode=require
+# db_sslmode=require
 #
-# También se pueden usar las variables de entorno SUPABASE_URL y SUPABASE_KEY.
-supabase_url=https://TU-PROYECTO.supabase.co
-supabase_key=sb_publishable_xxxxxxxxxxxxxxxxxxxxxxxx
+# También se pueden usar las variables de entorno DB_HOST, DB_PORT, DB_NAME, DB_USER,
+# DB_PASSWORD y DB_SSLMODE (tienen prioridad sobre este archivo).

@@ -118,7 +118,7 @@ make help                              # Muestra la ayuda de todos los targets d
 
 ## Base de datos del experimento
 
-Los datos de cada sesión (participante, telemetría, respuestas, ranking, juego libre y metadatos de generación de los niveles personalizados) se guardan en **Supabase**, con respaldo local en `src/experiment/db_pending/` si no hay conexión. Configuración y consultas de análisis: [src/experiment/db/README.md](./src/experiment/db/README.md).
+Los datos de cada sesión (participante, telemetría, respuestas, ranking, juego libre y metadatos de generación de los niveles personalizados) se guardan en **PostgreSQL** (máquina virtual del laboratorio), con respaldo local en `src/experiment/db_pending/` si no hay conexión. Configuración y consultas de análisis: [src/experiment/db/README.md](./src/experiment/db/README.md).
 
 ## Música y efectos procedurales
 
