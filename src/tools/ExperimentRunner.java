@@ -85,6 +85,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JSeparator;
@@ -1368,11 +1369,12 @@ public class ExperimentRunner {
                         BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
                         new EmptyBorder(16, 20, 16, 20)));
                 qCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-                qCard.setMaximumSize(new Dimension(940, 360));
+                qCard.setMaximumSize(new Dimension(940, Integer.MAX_VALUE));
 
                 String cleanText = question.text();
                 JLabel qTitle = new JLabel(
-                        "<html><body style='width:850px'>" + (q + 1) + ". " + cleanText + "</body></html>");
+                        "<html><table width='840' cellpadding='0' cellspacing='0'><tr><td style='font-family:sans-serif; font-size:18px; font-weight:bold; color:#f8fafc;'>"
+                                + (q + 1) + ". " + cleanText + "</td></tr></table></html>");
                 qTitle.setFont(FONT_BOLD.deriveFont(18f));
                 qTitle.setForeground(TEXT_WHITE);
                 qTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -1517,35 +1519,78 @@ public class ExperimentRunner {
                         getters.add(() -> selected[0]);
                     }
                     case "multichoice" -> {
-                        JPanel choicesPanel = new JPanel();
-                        choicesPanel.setLayout(new BoxLayout(choicesPanel, BoxLayout.Y_AXIS));
-                        choicesPanel.setBackground(ITEM_BG);
-                        choicesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                        JPanel matrixPanel = new JPanel();
+                        matrixPanel.setLayout(new BoxLayout(matrixPanel, BoxLayout.Y_AXIS));
+                        matrixPanel.setBackground(ITEM_BG);
+                        matrixPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-                        List<MultiChoiceCard> checkBoxes = new ArrayList<>();
-                        List<String> rawKeys = new ArrayList<>();
+                        // Fila de encabezado Sí / No
+                        JPanel headerRow = new JPanel(new BorderLayout(16, 0));
+                        headerRow.setOpaque(false);
+                        headerRow.setMaximumSize(new Dimension(900, 26));
+                        headerRow.setPreferredSize(new Dimension(900, 26));
+                        headerRow.setBorder(new EmptyBorder(0, 16, 4, 12));
+                        headerRow.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+                        JLabel hDevice = new JLabel("OPCIÓN / DISPOSITIVO");
+                        hDevice.setFont(FONT_BOLD.deriveFont(12f));
+                        hDevice.setForeground(TEXT_MUTED);
+                        headerRow.add(hDevice, BorderLayout.CENTER);
+
+                        JPanel hCols = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+                        hCols.setOpaque(false);
+                        JLabel hYes = new JLabel("SÍ", SwingConstants.CENTER);
+                        hYes.setPreferredSize(new Dimension(76, 20));
+                        hYes.setFont(FONT_BOLD.deriveFont(13f));
+                        hYes.setForeground(new Color(165, 180, 252));
+
+                        JLabel hNo = new JLabel("NO", SwingConstants.CENTER);
+                        hNo.setPreferredSize(new Dimension(76, 20));
+                        hNo.setFont(FONT_BOLD.deriveFont(13f));
+                        hNo.setForeground(TEXT_MUTED);
+
+                        hCols.add(hYes);
+                        hCols.add(hNo);
+                        headerRow.add(hCols, BorderLayout.EAST);
+                        matrixPanel.add(headerRow);
+                        matrixPanel.add(Box.createRigidArea(new Dimension(0, 4)));
+
+                        List<YesNoRowItem> rowItems = new ArrayList<>();
                         String[] options = question.options().split("\\|");
                         for (String option : options) {
                             String[] parts = option.contains("=") ? option.split("=", 2)
                                     : new String[] { option, option };
-                            String label = parts[0].equals(parts[1]) ? parts[1] : parts[0] + " - " + parts[1];
+                            String key = parts[0].trim();
+                            String label = parts[1].trim();
 
-                            MultiChoiceCard button = new MultiChoiceCard(label);
-                            checkBoxes.add(button);
-                            rawKeys.add(parts[0]);
-                            choicesPanel.add(button);
-                            choicesPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                            YesNoRowItem item = new YesNoRowItem(label, key);
+                            rowItems.add(item);
+                            matrixPanel.add(item);
+                            matrixPanel.add(Box.createRigidArea(new Dimension(0, 8)));
                         }
-                        qCard.add(choicesPanel);
+
+                        qCard.add(matrixPanel);
                         getters.add(() -> {
+                            boolean hasUnanswered = false;
+                            int yesCount = 0;
                             List<String> chosen = new ArrayList<>();
-                            for (int idx = 0; idx < checkBoxes.size(); idx++) {
-                                if (checkBoxes.get(idx).isSelected()) {
-                                    chosen.add(rawKeys.get(idx));
+                            for (YesNoRowItem item : rowItems) {
+                                if (!item.isAnswered()) {
+                                    hasUnanswered = true;
+                                } else if (item.isYes()) {
+                                    yesCount++;
+                                    chosen.add(item.getKey());
                                 }
                             }
-                            return chosen.isEmpty() ? null : String.join(";", chosen);
+                            if (hasUnanswered) {
+                                errorLabel.setText("Por favor indica 'Sí' o 'No' en cada una de las opciones.");
+                                return null;
+                            }
+                            if (yesCount == 0) {
+                                errorLabel.setText("Debes indicar 'Sí' en al menos una de las opciones.");
+                                return null;
+                            }
+                            return String.join(";", chosen);
                         });
                     }
                     default -> throw new IllegalStateException("Tipo de pregunta desconocido: " + question.type());
@@ -1572,12 +1617,19 @@ public class ExperimentRunner {
                     ACCENT_PRESSED, Color.WHITE, 12);
             continueBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
             continueBtn.addActionListener(e -> {
-                boolean allFilled = getters.stream().allMatch(g -> g.get() != null);
-                if (allFilled) {
-                    future.complete(getters.stream().map(Supplier::get).toArray(String[]::new));
-                } else {
-                    errorLabel.setText("Por favor responde todas las preguntas antes de continuar.");
+                errorLabel.setText(" ");
+                List<String> results = new ArrayList<>();
+                for (Supplier<String> g : getters) {
+                    String val = g.get();
+                    if (val == null) {
+                        if (errorLabel.getText() == null || errorLabel.getText().isBlank()) {
+                            errorLabel.setText("Por favor responde todas las preguntas antes de continuar.");
+                        }
+                        return;
+                    }
+                    results.add(val);
                 }
+                future.complete(results.toArray(new String[0]));
             });
             card.add(continueBtn);
 
@@ -3475,6 +3527,112 @@ public class ExperimentRunner {
             int textY = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
             g2.drawString(getText(), textX, textY);
             g2.dispose();
+        }
+    }
+
+    static class YesNoRadioOption extends JRadioButton {
+        private final boolean isYes;
+
+        public YesNoRadioOption(String text, boolean isYes) {
+            super(text);
+            this.isYes = isYes;
+            setFont(FONT_SEMIBOLD.deriveFont(15f));
+            setContentAreaFilled(false);
+            setBorderPainted(false);
+            setFocusPainted(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            setPreferredSize(new Dimension(76, 36));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            boolean sel = isSelected();
+            boolean hover = getModel().isRollover();
+
+            if (sel) {
+                g2.setColor(isYes ? new Color(49, 46, 129, 220) : new Color(51, 65, 85, 220));
+                g2.fillRoundRect(0, 2, getWidth(), getHeight() - 4, 8, 8);
+                g2.setColor(isYes ? ACCENT_PRIMARY : new Color(100, 116, 139));
+                g2.drawRoundRect(0, 2, getWidth() - 1, getHeight() - 5, 8, 8);
+            } else if (hover) {
+                g2.setColor(new Color(38, 43, 60, 140));
+                g2.fillRoundRect(0, 2, getWidth(), getHeight() - 4, 8, 8);
+            }
+
+            int d = 16;
+            int cy = (getHeight() - d) / 2;
+            int cx = 10;
+
+            Color circleColor = sel ? (isYes ? ACCENT_PRIMARY : new Color(148, 163, 184))
+                                    : (hover ? new Color(100, 116, 139) : new Color(60, 66, 88));
+            g2.setColor(circleColor);
+            g2.setStroke(new BasicStroke(1.5f));
+            if (sel) {
+                g2.fillOval(cx, cy, d, d);
+                g2.setColor(Color.WHITE);
+                g2.fillOval(cx + 4, cy + 4, d - 8, d - 8);
+            } else {
+                g2.drawOval(cx, cy, d - 1, d - 1);
+            }
+
+            g2.setColor(sel ? Color.WHITE : (hover ? new Color(225, 230, 240) : new Color(148, 163, 184)));
+            FontMetrics fm = g2.getFontMetrics(getFont());
+            int tx = cx + d + 8;
+            int ty = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+            g2.drawString(getText(), tx, ty);
+
+            g2.dispose();
+        }
+    }
+
+    static class YesNoRowItem extends JPanel {
+        private final YesNoRadioOption yesBtn;
+        private final YesNoRadioOption noBtn;
+        private final String key;
+
+        public YesNoRowItem(String label, String key) {
+            this.key = key;
+            setLayout(new BorderLayout(16, 0));
+            setBackground(new Color(24, 28, 40));
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(45, 52, 72), 1, true),
+                    new EmptyBorder(8, 16, 8, 12)));
+            setMaximumSize(new Dimension(900, 48));
+            setPreferredSize(new Dimension(900, 48));
+            setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            JLabel lbl = new JLabel(label);
+            lbl.setFont(FONT_REGULAR.deriveFont(16f));
+            lbl.setForeground(TEXT_WHITE);
+            add(lbl, BorderLayout.CENTER);
+
+            JPanel radios = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+            radios.setOpaque(false);
+
+            yesBtn = new YesNoRadioOption("Sí", true);
+            noBtn = new YesNoRadioOption("No", false);
+
+            ButtonGroup bg = new ButtonGroup();
+            bg.add(yesBtn);
+            bg.add(noBtn);
+
+            radios.add(yesBtn);
+            radios.add(noBtn);
+            add(radios, BorderLayout.EAST);
+        }
+
+        public boolean isAnswered() {
+            return yesBtn.isSelected() || noBtn.isSelected();
+        }
+
+        public boolean isYes() {
+            return yesBtn.isSelected();
+        }
+
+        public String getKey() {
+            return key;
         }
     }
 
