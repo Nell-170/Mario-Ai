@@ -1040,7 +1040,7 @@ index aa278681..d3df5b74 100755
          drawString(g, text, x * 8 + 5, y * 8 + 5, 0);
          drawString(g, text, x * 8 + 4, y * 8 + 4, c);
 diff --git a/src/engine/core/MarioWorld.java b/src/engine/core/MarioWorld.java
-index 2ddf12a1..83de9e30 100644
+index 2ddf12a1..dd4d4824 100644
 --- a/src/engine/core/MarioWorld.java
 +++ b/src/engine/core/MarioWorld.java
 @@ -8,6 +8,7 @@ import engine.effects.*;
@@ -1110,11 +1110,11 @@ index 2ddf12a1..83de9e30 100644
 +            int[][] tempBackground = new int[][]{
 +                    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 +                    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-+                    new int[]{31, 32, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-+                    new int[]{34, 35, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
++                    new int[]{31, 32, 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
++                    new int[]{34, 35, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 +                    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-+                    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 31, 32, 33, 0, 0, 0, 0},
-+                    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 36, 0, 0, 0, 0},
++                    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 31, 32, 33, 0, 0, 0, 0, 0},
++                    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 34, 35, 36, 0, 0, 0, 0, 0},
 +                    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 +                    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 +            };
@@ -1135,10 +1135,10 @@ index 2ddf12a1..83de9e30 100644
          for (MarioSprite sprite : sprites) {
              if (sprite.type == SpriteType.MUSHROOM || sprite.type == SpriteType.LIFE_MUSHROOM ||
 diff --git a/src/engine/graphics/MarioBackground.java b/src/engine/graphics/MarioBackground.java
-index aefb824b..68f77310 100644
+index aefb824b..d09f9d4a 100644
 --- a/src/engine/graphics/MarioBackground.java
 +++ b/src/engine/graphics/MarioBackground.java
-@@ -9,23 +9,57 @@ import java.awt.Image;
+@@ -9,39 +9,81 @@ import java.awt.Image;
  import java.awt.Transparency;
  
  import engine.helper.Assets;
@@ -1199,7 +1199,25 @@ index aefb824b..68f77310 100644
      }
  
      private void updateArea(int[][] indeces) {
-@@ -42,6 +76,10 @@ public class MarioBackground extends MarioGraphics {
+         g.setBackground(new Color(0, 0, 0, 0));
+         g.clearRect(0, 0, this.width, this.height);
+-        for (int x = 0; x < indeces[0].length; x++) {
+-            for (int y = 0; y < indeces.length; y++) {
+-                int xTile = indeces[y][x] % 8;
+-                int yTile = indeces[y][x] / 8;
+-                g.drawImage(Assets.level[xTile][yTile], x * 16, y * 16, 16, 16, null);
++        for (int y = 0; y < indeces.length; y++) {
++            for (int x = 0; x < indeces[y].length; x++) {
++                int tile = indeces[y][x];
++                if (tile <= 0) continue;
++                int xTile = tile % 8;
++                int yTile = tile / 8;
++                if (xTile < Assets.level.length && yTile < Assets.level[xTile].length && Assets.level[xTile][yTile] != null) {
++                    g.drawImage(Assets.level[xTile][yTile], x * 16, y * 16, 16, 16, null);
++                }
+             }
+         }
+     }
  
      @Override
      public void render(Graphics og, int x, int y) {
