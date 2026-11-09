@@ -87,9 +87,11 @@ try {
     Copy-Item (Join-Path $scriptDir "ExperimentDB.java") (Join-Path $src "ExperimentDB.java") -Force
     New-Item -ItemType Directory -Force -Path (Join-Path $src "engine\audio") | Out-Null
     New-Item -ItemType Directory -Force -Path (Join-Path $src "engine\input") | Out-Null
+    New-Item -ItemType Directory -Force -Path (Join-Path $src "engine\helper") | Out-Null
     Copy-Item (Join-Path $scriptDir "engine\audio\ProceduralMusic.java") (Join-Path $src "engine\audio\ProceduralMusic.java") -Force
     Copy-Item (Join-Path $scriptDir "engine\audio\ProceduralEffects.java") (Join-Path $src "engine\audio\ProceduralEffects.java") -Force
     Copy-Item (Join-Path $scriptDir "engine\input\GamepadManager.java") (Join-Path $src "engine\input\GamepadManager.java") -Force
+    Copy-Item (Join-Path $scriptDir "engine\helper\LevelTheme.java") (Join-Path $src "engine\helper\LevelTheme.java") -Force
     Write-Output "  [OK] Herramientas Java sincronizadas con exito."
 } finally {
     Pop-Location

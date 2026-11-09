@@ -101,7 +101,12 @@ El protocolo experimental está diseñado bajo un formato riguroso de **Cuadrado
 5. **Bloque Principal del Experimento (6 niveles):**
    El participante enfrenta los 6 niveles según la secuencia asignada por su grupo del Cuadrado Latino (grupos `S1` a `S6`).
    - **Tipos de nivel evaluados:** Dos personalizados generados por IA (tipo A / `P`), dos genéricos (tipo B / `N`) y dos diseñados por humanos (tipo C / `H`).
-   - **Pantalla previa:** Antes de entrar a cada nivel, se despliega una ventana de alta resolución con la silueta completa del mapa y los controles mapeados tanto para teclado como para mando (PlayStation / Xbox).
+   - **Atmósferas y temas visuales por condición:** Para otorgar identidad visual a cada categoría y facilitar que el participante los recuerde en la fase final de ranking, cada condición cuenta con su propio fondo:
+     - **F (Familiarización):** *Amanecer* (cielo celeste matutino suave).
+     - **G / N (Genéricos):** *Día soleado* (azul clásico de Super Mario con nubes blancas).
+     - **H (Humanos):** *Atardecer* (degradado cálido naranja-dorado crepuscular).
+     - **P (Personalizados IA):** *Noche* (cielo azul marino profundo con luna creciente y estrellas titilantes).
+   - **Pantalla previa:** Antes de entrar a cada nivel, se despliega una ventana de alta resolución con la silueta completa del mapa ambientada con el tema visual del nivel y los controles mapeados tanto para teclado como para mando (PlayStation / Xbox).
    - **Cuestionario por nivel:** Al concluir cada nivel (por victoria, muerte o límite de tiempo), el participante responde de inmediato seis preguntas en escala Likert horizontal de 7 puntos (desde `-3 = Totalmente en desacuerdo` hasta `+3 = Totalmente de acuerdo`): disfrute general, competencia percibida, dificultad subjetiva, adecuación del reto, variedad de elementos y deseo de rejugar niveles similares.
 6. **Fase de Cierre y Ranking Comparativo:**
    Con las experiencias de juego aún frescas en la memoria, el participante ordena visualmente los 6 niveles jugados de mayor a menor preferencia mediante una interfaz asistida por las miniaturas de cada nivel, registrando además comentarios libres sobre las razones de su elección.

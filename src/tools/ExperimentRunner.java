@@ -99,6 +99,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import engine.core.MarioGame;
+import engine.helper.LevelTheme;
 import engine.core.MarioResult;
 
 public class ExperimentRunner {
@@ -363,14 +364,14 @@ public class ExperimentRunner {
                         timer
                 );
                 String famContent = sanitizeLevel(Files.readString(famLevel));
-                BufferedImage famThumb = renderLevelThumbnail(famContent, 1160, 190);
+                BufferedImage famThumb = renderLevelThumbnail(famContent, 1160, 190, LevelTheme.DAWN);
                 showLevelIntroScreen("Familiarización (" + (f + 1) + " de " + familiarization.size() + ")",
                         "Nivel de práctica " + (f + 1),
                         "Jugarás este nivel previo para familiarizarte con el salto, velocidad y los controles.\n",
                         "Comenzar práctica " + (f + 1),
                         famThumb);
                 Path telPath = playLevel(famLevel, timer,
-                        dir.resolve("telemetry_fam" + (f + 1) + ".json"));
+                        dir.resolve("telemetry_fam" + (f + 1) + ".json"), LevelTheme.DAWN);
                 famTelemetries.add(telPath);
                 if (!skipGeneration) {
                     generation.enqueue(f, telPath);
@@ -499,7 +500,8 @@ public class ExperimentRunner {
                 );
 
                 String levelContent = sanitizeLevel(Files.readString(levelFile));
-                BufferedImage thumbnail = renderLevelThumbnail(levelContent, 1160, 190);
+                LevelTheme stepTheme = LevelTheme.fromCode(step.type());
+                BufferedImage thumbnail = renderLevelThumbnail(levelContent, 1160, 190, stepTheme);
                 playedLevels.add(new PlayedLevelInfo(i + 1, step.type(), step.index(), stepCode, levelFile, levelContent, thumbnail));
 
                 showLevelIntroScreen("Nivel " + (i + 1) + " de " + steps.size(),
@@ -510,7 +512,7 @@ public class ExperimentRunner {
                         "¡Jugar nivel " + (i + 1) + "!",
                         thumbnail);
 
-                lastTelemetry = playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"));
+                lastTelemetry = playLevel(levelFile, timer, dir.resolve("telemetry_L" + (i + 1) + ".json"), stepTheme);
                 if (step.type() == 'P') {
                     personalizedPlayedCount++;
                 }
@@ -670,9 +672,14 @@ public class ExperimentRunner {
     }
 
     private static Path playLevel(Path levelFile, int timer, Path telemetryFile) throws IOException {
+        return playLevel(levelFile, timer, telemetryFile, LevelTheme.DAY);
+    }
+
+    private static Path playLevel(Path levelFile, int timer, Path telemetryFile, LevelTheme theme) throws IOException {
         String level = sanitizeLevel(Files.readString(levelFile));
         int seed = new Random().nextInt(1_000_000);
         MarioGame game = new MarioGame();
+        game.setTheme(theme != null ? theme : LevelTheme.DAY);
         activeGame = game;
         MarioResult result;
         try {
@@ -858,7 +865,8 @@ public class ExperimentRunner {
                     timer
             );
             long levelStart = System.currentTimeMillis();
-            Path telemetry = playLevel(current, timer, dir.resolve("telemetry_free" + playedCount + ".json"));
+            LevelTheme freeTheme = personalized ? LevelTheme.NIGHT : (condition.equals("N") ? LevelTheme.DAY : LevelTheme.SUNSET);
+            Path telemetry = playLevel(current, timer, dir.resolve("telemetry_free" + playedCount + ".json"), freeTheme);
             playedMillis += System.currentTimeMillis() - levelStart;
             recordLevelPlay(id, "free_play", playedCount, personalized ? 'P' : (condition.equals("N") ? 'N' : 'H'),
                     personalized ? currentSlot : -1, replay ? "replay" : null, current,
@@ -2141,6 +2149,11 @@ public class ExperimentRunner {
     // ==========================================
 
     private static BufferedImage renderLevelThumbnail(String content, int targetWidth, int targetHeight) {
+        return renderLevelThumbnail(content, targetWidth, targetHeight, LevelTheme.DAY);
+    }
+
+    private static BufferedImage renderLevelThumbnail(String content, int targetWidth, int targetHeight, LevelTheme theme) {
+        if (theme == null) theme = LevelTheme.DAY;
         String[] rawLines = content.split("\\r?\\n");
         List<String> lines = new ArrayList<>();
         for (String l : rawLines) {
@@ -2151,8 +2164,7 @@ public class ExperimentRunner {
         if (lines.isEmpty()) {
             BufferedImage blank = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = blank.createGraphics();
-            g.setColor(new Color(92, 148, 252));
-            g.fillRect(0, 0, targetWidth, targetHeight);
+            theme.paintBackground(g, targetWidth, targetHeight);
             g.dispose();
             return blank;
         }
@@ -2169,9 +2181,8 @@ public class ExperimentRunner {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-        // Background Sky #5c94fc
-        g2.setColor(new Color(92, 148, 252));
-        g2.fillRect(0, 0, targetWidth, targetHeight);
+        // Background Sky matching theme
+        theme.paintBackground(g2, targetWidth, targetHeight);
 
         for (int r = 0; r < rows; r++) {
             String line = lines.get(r);

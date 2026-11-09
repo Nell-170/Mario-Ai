@@ -43,6 +43,7 @@ import engine.core.MarioAgentEvent;
 import engine.core.MarioEvent;
 import engine.core.MarioResult;
 import engine.helper.EventType;
+import engine.helper.LevelTheme;
 
 public class PlayHuman {
     public static void main(String[] args) throws Exception {
@@ -50,11 +51,14 @@ public class PlayHuman {
         String rawLevel = null;
         int timer = 60;
         String customTelemetry = null;
+        LevelTheme userTheme = null;
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i].trim();
             if ("--no-intro".equalsIgnoreCase(arg) || "--skip-intro".equalsIgnoreCase(arg)) {
                 skipIntro = true;
+            } else if ("--theme".equalsIgnoreCase(arg) && i + 1 < args.length) {
+                userTheme = LevelTheme.fromString(args[++i].trim());
             } else if ("--level".equalsIgnoreCase(arg) && i + 1 < args.length) {
                 rawLevel = args[++i].trim();
             } else if ("--timer".equalsIgnoreCase(arg) && i + 1 < args.length) {
@@ -90,9 +94,10 @@ public class PlayHuman {
 
         String levelPath = resolvedPath.toString();
         String level = Files.readString(resolvedPath);
+        LevelTheme activeTheme = (userTheme != null) ? userTheme : LevelTheme.fromString(resolvedPath.getFileName().toString());
 
         if (!skipIntro) {
-            boolean start = showIntroScreen(resolvedPath.getFileName().toString(), levelPath, level);
+            boolean start = showIntroScreen(resolvedPath.getFileName().toString(), levelPath, level, activeTheme);
             if (!start) {
                 System.out.println("Partida cancelada desde la pantalla de presentación del nivel.");
                 return;
@@ -107,7 +112,7 @@ public class PlayHuman {
         System.out.println("Nivel:      " + levelPath);
         System.out.println("Seed:       " + sessionSeed);
 
-        GameSession session = runSession(level, timer, sessionSeed);
+        GameSession session = runSession(level, timer, sessionSeed, activeTheme);
         MarioResult result = session.result;
 
         System.out.println("Estado:     " + result.getGameStatus());
@@ -205,7 +210,12 @@ public class PlayHuman {
     }
 
     private static GameSession runSession(String level, int timer, int sessionSeed) {
+        return runSession(level, timer, sessionSeed, LevelTheme.DAY);
+    }
+
+    private static GameSession runSession(String level, int timer, int sessionSeed, LevelTheme theme) {
         MarioGame game = new MarioGame();
+        game.setTheme(theme != null ? theme : LevelTheme.DAY);
         MarioResult result = game.runGame(
                 new agents.human.Agent(),
                 level,
@@ -323,6 +333,10 @@ public class PlayHuman {
     // ==========================================
 
     private static boolean showIntroScreen(String levelName, String displayPath, String levelContent) {
+        return showIntroScreen(levelName, displayPath, levelContent, LevelTheme.DAY);
+    }
+
+    private static boolean showIntroScreen(String levelName, String displayPath, String levelContent, LevelTheme theme) {
         if (GraphicsEnvironment.isHeadless()) {
             return true;
         }
@@ -350,7 +364,7 @@ public class PlayHuman {
             int diagramW = (contentW - 14) / 2;
             int diagramH = 225;
 
-            BufferedImage thumb = renderLevelThumbnail(levelContent, contentW, 190);
+            BufferedImage thumb = renderLevelThumbnail(levelContent, contentW, 190, theme);
 
             JPanel mainPanel = new JPanel();
             mainPanel.setBackground(new Color(15, 23, 42)); // Slate 900
@@ -718,6 +732,11 @@ public class PlayHuman {
     }
 
     private static BufferedImage renderLevelThumbnail(String content, int targetWidth, int targetHeight) {
+        return renderLevelThumbnail(content, targetWidth, targetHeight, LevelTheme.DAY);
+    }
+
+    private static BufferedImage renderLevelThumbnail(String content, int targetWidth, int targetHeight, LevelTheme theme) {
+        if (theme == null) theme = LevelTheme.DAY;
         String[] rawLines = content.split("\\r?\\n");
         List<String> lines = new ArrayList<>();
         for (String l : rawLines) {
@@ -728,8 +747,7 @@ public class PlayHuman {
         if (lines.isEmpty()) {
             BufferedImage blank = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = blank.createGraphics();
-            g.setColor(new Color(92, 148, 252));
-            g.fillRect(0, 0, targetWidth, targetHeight);
+            theme.paintBackground(g, targetWidth, targetHeight);
             g.dispose();
             return blank;
         }
@@ -746,9 +764,8 @@ public class PlayHuman {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-        // Sky background
-        g2.setColor(new Color(92, 148, 252));
-        g2.fillRect(0, 0, targetWidth, targetHeight);
+        // Sky background matching theme
+        theme.paintBackground(g2, targetWidth, targetHeight);
 
         for (int r = 0; r < rows; r++) {
             String line = lines.get(r);
