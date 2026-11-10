@@ -1685,22 +1685,40 @@ public class ExperimentRunner {
         for (Component comp : listPanel.getComponents()) {
             if (comp instanceof JPanel jp && jp.getClientProperty("rowIndex") != null) {
                 int idx = (int) jp.getClientProperty("rowIndex");
+                JLabel gripLabel = (JLabel) jp.getClientProperty("gripLabel");
+                JPanel gripP = (JPanel) jp.getClientProperty("gripPanel");
+
                 if (idx == srcIdx) {
-                    jp.setBackground(new Color(40, 44, 68));
+                    jp.setBackground(new Color(45, 42, 85));
                     jp.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(new Color(129, 140, 248), 2, true),
-                            new EmptyBorder(8, 10, 8, 14)));
-                } else if (idx == targetIdx) {
-                    jp.setBackground(new Color(18, 48, 38));
+                            new EmptyBorder(8, 12, 8, 14)));
+                    if (gripP != null) gripP.setBackground(new Color(99, 102, 241));
+                    if (gripLabel != null) {
+                        gripLabel.setText("✊");
+                        gripLabel.setForeground(Color.WHITE);
+                    }
+                } else if (idx == targetIdx && srcIdx >= 0 && srcIdx != targetIdx) {
+                    jp.setBackground(new Color(16, 52, 42));
                     jp.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(new Color(52, 211, 153), 2, true),
-                            new EmptyBorder(8, 10, 8, 14)));
+                            new EmptyBorder(8, 12, 8, 14)));
+                    if (gripP != null) gripP.setBackground(new Color(16, 185, 129));
+                    if (gripLabel != null) {
+                        gripLabel.setText("🎯");
+                        gripLabel.setForeground(Color.WHITE);
+                    }
                 } else {
                     Color borderColor = (idx == 0) ? new Color(245, 158, 11) : (idx == 5 ? new Color(225, 29, 72) : ITEM_BORDER);
                     jp.setBackground(ITEM_BG);
                     jp.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(borderColor, (idx == 0 || idx == 5) ? 2 : 1, true),
-                            new EmptyBorder(8, 10, 8, 14)));
+                            new EmptyBorder(8, 12, 8, 14)));
+                    if (gripP != null) gripP.setBackground(new Color(36, 40, 56));
+                    if (gripLabel != null) {
+                        gripLabel.setText(":::");
+                        gripLabel.setForeground(new Color(165, 180, 252));
+                    }
                 }
             }
         }
@@ -1760,18 +1778,18 @@ public class ExperimentRunner {
 
             bg.add(topBar, BorderLayout.NORTH);
 
-            // 2. Centered Container (Constrained width: 1160px max, not 100% of screen)
-            JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            // 2. Centered Container (Constrained width: 1160px max, 100% vertical height)
+            Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+            int sideMargin = Math.max(16, (screen.width - 1160) / 2);
+            JPanel centerWrapper = new JPanel(new BorderLayout());
             centerWrapper.setBackground(BG_DARK);
-            centerWrapper.setBorder(new EmptyBorder(4, 0, 12, 0));
+            centerWrapper.setBorder(new EmptyBorder(4, sideMargin, 16, sideMargin));
 
-            JPanel mainCard = new JPanel(new BorderLayout(0, 8));
+            JPanel mainCard = new JPanel(new BorderLayout(0, 10));
             mainCard.setBackground(CARD_BG);
-            mainCard.setPreferredSize(new Dimension(1160, 720));
-            mainCard.setMaximumSize(new Dimension(1160, 720));
             mainCard.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(ITEM_BORDER, 1, true),
-                    new EmptyBorder(14, 20, 14, 20)));
+                    new EmptyBorder(16, 22, 16, 22)));
 
             JPanel headerPanel = new JPanel();
             headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
@@ -1806,6 +1824,60 @@ public class ExperimentRunner {
             final int[] dragTarget = new int[]{-1};
             final boolean[] isDragging = new boolean[]{false};
             final Point[] dragStartPt = new Point[]{null};
+            final Point[] dragMousePos = new Point[]{null};
+
+            // Custom GlassPane for live Drag & Drop floating card animation
+            JPanel dragGlassPane = new JPanel() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    if (isDragging[0] && dragMousePos[0] != null && dragSource[0] >= 0 && dragSource[0] < currentList.size()) {
+                        Graphics2D g2 = (Graphics2D) g.create();
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+                        PlayedLevelInfo draggedInfo = currentList.get(dragSource[0]);
+                        LevelTheme t = LevelTheme.fromCode(draggedInfo.type());
+                        Point p = dragMousePos[0];
+                        int boxW = 340;
+                        int boxH = 58;
+                        int bx = p.x - boxW / 2;
+                        int by = p.y - boxH - 12;
+
+                        // Drop shadow
+                        g2.setColor(new Color(0, 0, 0, 130));
+                        g2.fillRoundRect(bx + 4, by + 4, boxW, boxH, 16, 16);
+
+                        // Elevated floating card
+                        g2.setColor(new Color(30, 27, 75, 238));
+                        g2.fillRoundRect(bx, by, boxW, boxH, 16, 16);
+                        g2.setColor(new Color(129, 140, 248));
+                        g2.setStroke(new BasicStroke(2.2f));
+                        g2.drawRoundRect(bx, by, boxW, boxH, 16, 16);
+
+                        // Thumbnail preview
+                        if (draggedInfo.thumbnail() != null) {
+                            g2.drawImage(draggedInfo.thumbnail(), bx + 10, by + 10, 84, 38, null);
+                            g2.setColor(new Color(99, 102, 241));
+                            g2.drawRect(bx + 9, by + 9, 85, 39);
+                        }
+
+                        // Title and detail
+                        g2.setFont(FONT_BOLD.deriveFont(13f));
+                        g2.setColor(Color.WHITE);
+                        g2.drawString("✊ Nivel del Paso " + draggedInfo.orderPlayed(), bx + 106, by + 25);
+                        g2.setFont(FONT_SEMIBOLD.deriveFont(11f));
+                        g2.setColor(new Color(196, 181, 253));
+                        g2.drawString("Tema: " + t.getDisplayName() + "  •  Reordenando", bx + 106, by + 43);
+
+                        g2.dispose();
+                    }
+                }
+            };
+            dragGlassPane.setOpaque(false);
+            if (masterFrame != null) {
+                masterFrame.setGlassPane(dragGlassPane);
+            }
 
             Runnable[] refreshRef = new Runnable[1];
             refreshRef[0] = () -> {
@@ -1824,8 +1896,8 @@ public class ExperimentRunner {
                             BorderFactory.createLineBorder(borderColor, (idx == 0 || idx == 5) ? 2 : 1, true),
                             new EmptyBorder(6, 10, 6, 12)));
                     rowCard.setAlignmentX(Component.LEFT_ALIGNMENT);
-                    rowCard.setMaximumSize(new Dimension(1110, 92));
-                    rowCard.setPreferredSize(new Dimension(1110, 92));
+                    rowCard.setMaximumSize(new Dimension(1110, 96));
+                    rowCard.setPreferredSize(new Dimension(1110, 96));
 
                     // Left Column: Grip Handle + Rank Badge + Step Information
                     JPanel leftCol = new JPanel(new BorderLayout(10, 0));
@@ -1834,7 +1906,7 @@ public class ExperimentRunner {
 
                     JPanel gripPanel = new JPanel(new GridBagLayout());
                     gripPanel.setBackground(new Color(36, 40, 56));
-                    gripPanel.setPreferredSize(new Dimension(36, 76));
+                    gripPanel.setPreferredSize(new Dimension(38, 76));
                     gripPanel.setBorder(BorderFactory.createLineBorder(new Color(55, 65, 85), 1, true));
                     gripPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
                     gripPanel.setToolTipText("Haz clic y arrastra con el ratón para mover este nivel");
@@ -1844,6 +1916,9 @@ public class ExperimentRunner {
                     gripIcon.setForeground(new Color(165, 180, 252));
                     gripPanel.add(gripIcon);
                     leftCol.add(gripPanel, BorderLayout.WEST);
+
+                    rowCard.putClientProperty("gripPanel", gripPanel);
+                    rowCard.putClientProperty("gripLabel", gripIcon);
 
                     JPanel infoPanel = new JPanel();
                     infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
@@ -1942,7 +2017,7 @@ public class ExperimentRunner {
 
                     rowCard.add(rightCol, BorderLayout.EAST);
 
-                    // Fluid Drag & Drop Listener
+                    // Fluid Drag & Drop Listener with real-time feedback
                     MouseAdapter dragListener = new MouseAdapter() {
                         @Override
                         public void mousePressed(MouseEvent e) {
@@ -1962,13 +2037,20 @@ public class ExperimentRunner {
                                 }
                             }
                             if (isDragging[0]) {
+                                if (masterFrame != null) {
+                                    Point pInFrame = new Point(e.getLocationOnScreen());
+                                    SwingUtilities.convertPointFromScreen(pInFrame, masterFrame);
+                                    dragMousePos[0] = pInFrame;
+                                    dragGlassPane.setVisible(true);
+                                    dragGlassPane.repaint();
+                                }
                                 Point pInList = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), listPanel);
-                                int slotHeight = 92 + 8; // card height + spacing
+                                int slotHeight = 96 + 16; // card height + generous vertical margin
                                 int hover = Math.max(0, Math.min(currentList.size() - 1, (pInList.y + 40) / slotHeight));
                                 if (hover != dragTarget[0]) {
                                     dragTarget[0] = hover;
-                                    updateDragHighlight(listPanel, dragSource[0], dragTarget[0]);
                                 }
+                                updateDragHighlight(listPanel, dragSource[0], dragTarget[0]);
                             }
                         }
 
@@ -1976,6 +2058,8 @@ public class ExperimentRunner {
                         public void mouseReleased(MouseEvent e) {
                             if (masterFrame != null) {
                                 masterFrame.setCursor(Cursor.getDefaultCursor());
+                                dragGlassPane.setVisible(false);
+                                dragGlassPane.repaint();
                             }
                             if (isDragging[0]) {
                                 isDragging[0] = false;
@@ -2003,7 +2087,7 @@ public class ExperimentRunner {
                     rowCard.addMouseMotionListener(dragListener);
 
                     listPanel.add(rowCard);
-                    listPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                    listPanel.add(Box.createRigidArea(new Dimension(0, 16)));
                 }
                 listPanel.revalidate();
                 listPanel.repaint();

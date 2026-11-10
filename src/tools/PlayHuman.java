@@ -1,3 +1,4 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -13,6 +14,7 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -552,98 +554,163 @@ public class PlayHuman {
         g2.setColor(new Color(165, 180, 252)); // Indigo 300
         g2.drawString("🎮 CONTROL / MANDO (PS4 / XBOX)", 16, 22);
 
-        int cx = w / 2;
-        int cy = h / 2 + 14;
+        // Top right: Options (Pausa) & Share (Reiniciar)
+        drawKeycap(g2, "P", w - 42, 11, 24, 20, new Color(56, 189, 248), Color.WHITE);
+        g2.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        g2.setColor(new Color(203, 213, 225));
+        g2.drawString("Pausa", w - 82, 25);
 
-        // Gamepad Silhouette (Expanded & Proportional)
-        g2.setColor(new Color(51, 65, 85));
-        g2.fillRoundRect(cx - 135, cy - 42, 270, 84, 40, 40);
-        g2.fillRoundRect(cx - 150, cy - 25, 60, 95, 35, 35); // Left grip
-        g2.fillRoundRect(cx + 90, cy - 25, 60, 95, 35, 35);  // Right grip
-        g2.setColor(new Color(71, 85, 105));
-        g2.drawRoundRect(cx - 135, cy - 42, 270, 84, 40, 40);
+        drawKeycap(g2, "R", w - 116, 11, 24, 20, new Color(244, 63, 94), Color.WHITE);
+        g2.drawString("Reiniciar", w - 172, 25);
+
+        int cx = w / 2;
+        int cy = 112;
 
         // Bumpers (L1 / R1)
-        g2.setColor(new Color(100, 116, 139));
-        g2.fillRoundRect(cx - 118, cy - 54, 55, 12, 6, 6);
-        g2.fillRoundRect(cx + 63, cy - 54, 55, 12, 6, 6);
-        g2.setColor(new Color(148, 163, 184));
-        g2.setFont(new Font("SansSerif", Font.BOLD, 10));
-        g2.drawString("L1 (Correr)", cx - 120, cy - 58);
-        g2.drawString("R1 (Correr)", cx + 65, cy - 58);
-
-        // Center Touchpad / Logo area
-        g2.setColor(new Color(15, 23, 42));
-        g2.fillRoundRect(cx - 36, cy - 36, 72, 40, 10, 10);
         g2.setColor(new Color(71, 85, 105));
-        g2.drawRoundRect(cx - 36, cy - 36, 72, 40, 10, 10);
+        g2.fillRoundRect(cx - 98, cy - 48, 44, 13, 6, 6);
+        g2.fillRoundRect(cx + 54, cy - 48, 44, 13, 6, 6);
+        g2.setColor(new Color(148, 163, 184));
+        g2.setFont(new Font("SansSerif", Font.BOLD, 9));
+        g2.drawString("L1", cx - 83, cy - 38);
+        g2.drawString("R1", cx + 71, cy - 38);
 
-        // Share / Options buttons
-        g2.setColor(new Color(203, 213, 225));
-        g2.setFont(new Font("SansSerif", Font.BOLD, 10));
-        g2.fillOval(cx - 48, cy - 18, 8, 8);
-        g2.drawString("Share: R", cx - 94, cy - 24);
-        g2.fillOval(cx + 40, cy - 18, 8, 8);
-        g2.drawString("Options: P", cx + 38, cy - 24);
+        // Top callout for Bumpers: L1 / R1 Correr
+        drawCalloutBadge(g2, "L1 / R1: Correr", cx - 44, 40, new Color(249, 115, 22), Color.WHITE);
+
+        // Ergonomic Gamepad Chassis (Path silhouette)
+        GeneralPath body = new GeneralPath();
+        body.moveTo(cx - 96, cy - 36);
+        body.lineTo(cx + 96, cy - 36);
+        body.quadTo(cx + 124, cy - 30, cx + 128, cy - 2);
+        body.quadTo(cx + 132, cy + 38, cx + 116, cy + 68);
+        body.quadTo(cx + 104, cy + 76, cx + 90, cy + 72);
+        body.quadTo(cx + 74, cy + 62, cx + 64, cy + 32);
+        body.quadTo(cx + 38, cy + 44, cx, cy + 42); // Bottom center scoop
+        body.quadTo(cx - 38, cy + 44, cx - 64, cy + 32);
+        body.quadTo(cx - 74, cy + 62, cx - 90, cy + 72);
+        body.quadTo(cx - 104, cy + 76, cx - 116, cy + 68);
+        body.quadTo(cx - 132, cy + 38, cx - 128, cy - 2);
+        body.quadTo(cx - 124, cy - 30, cx - 96, cy - 36);
+        body.closePath();
+
+        // Fill chassis
+        g2.setColor(new Color(45, 55, 72));
+        g2.fill(body);
+
+        // Grip inner accents (subtle grip textures)
+        g2.setColor(new Color(38, 46, 62));
+        g2.fillRoundRect(cx - 122, cy + 4, 30, 56, 18, 18);
+        g2.fillRoundRect(cx + 92, cy + 4, 30, 56, 18, 18);
+
+        // Draw chassis outline
+        g2.setColor(new Color(71, 85, 105));
+        g2.setStroke(new BasicStroke(1.5f));
+        g2.draw(body);
+
+        // Center Touchpad / Guide area
+        g2.setColor(new Color(15, 23, 42));
+        g2.fillRoundRect(cx - 28, cy - 30, 56, 28, 8, 8);
+        g2.setColor(new Color(71, 85, 105));
+        g2.drawRoundRect(cx - 28, cy - 30, 56, 28, 8, 8);
+
+        // Glowing Lightbar
+        g2.setColor(new Color(99, 102, 241));
+        g2.fillRoundRect(cx - 22, cy - 29, 44, 3, 2, 2);
+
+        // PS / Home logo button in center
+        g2.setColor(new Color(30, 41, 59));
+        g2.fillOval(cx - 7, cy + 6, 14, 14);
+        g2.setColor(new Color(71, 85, 105));
+        g2.drawOval(cx - 7, cy + 6, 14, 14);
+
+        // Share / Options pill buttons
+        g2.setColor(new Color(148, 163, 184));
+        g2.fillRoundRect(cx - 38, cy - 16, 5, 10, 2, 2);
+        g2.fillRoundRect(cx + 33, cy - 16, 5, 10, 2, 2);
+        g2.setFont(new Font("SansSerif", Font.PLAIN, 8));
+        g2.drawString("Share", cx - 44, cy - 20);
+        g2.drawString("Options", cx + 24, cy - 20);
+
+        // Dual Analog Thumbsticks
+        drawThumbstick(g2, cx - 36, cy + 22);
+        drawThumbstick(g2, cx + 36, cy + 22);
 
         // D-Pad (Left side)
-        int dpx = cx - 95;
-        int dpy = cy + 4;
+        int dpx = cx - 82;
+        int dpy = cy - 2;
         g2.setColor(new Color(15, 23, 42));
-        g2.fillRect(dpx - 7, dpy - 20, 14, 40);
-        g2.fillRect(dpx - 20, dpy - 7, 40, 14);
+        g2.fillRect(dpx - 7, dpy - 18, 14, 36);
+        g2.fillRect(dpx - 18, dpy - 7, 36, 14);
         g2.setColor(new Color(56, 189, 248)); // Cyan highlight
-        g2.drawRect(dpx - 7, dpy - 20, 14, 40);
-        g2.drawRect(dpx - 20, dpy - 7, 40, 14);
-
-        // D-Pad Callout: Moverse
-        drawCalloutBadge(g2, "D-Pad: Moverse", cx - 145, cy + 54, new Color(56, 189, 248), Color.BLACK);
+        g2.setStroke(new BasicStroke(1.2f));
+        g2.drawRect(dpx - 7, dpy - 18, 14, 36);
+        g2.drawRect(dpx - 18, dpy - 7, 36, 14);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 8));
+        g2.setColor(new Color(186, 230, 253));
+        g2.drawString("▲", dpx - 4, dpy - 9);
+        g2.drawString("▼", dpx - 4, dpy + 16);
+        g2.drawString("◀", dpx - 16, dpy + 4);
+        g2.drawString("▶", dpx + 9, dpy + 4);
 
         // Action Buttons (Right side - Diamond layout)
-        int abx = cx + 95;
-        int aby = cy + 4;
+        int abx = cx + 82;
+        int aby = cy - 2;
 
-        // Bottom button: ✖ Equis (Cross) -> SALTAR
+        // Top button: 🔺 Triángulo (Triangle / Y)
+        int triX = abx;
+        int triY = aby - 18;
+        g2.setColor(new Color(71, 85, 105));
+        g2.fillOval(triX - 10, triY - 10, 20, 20);
+        g2.setColor(new Color(250, 204, 21)); // Yellow
+        g2.setFont(new Font("SansSerif", Font.BOLD, 10));
+        g2.drawString("▲", triX - 4, triY + 4);
+
+        // Left button: ⬛ Cuadrado (Square / X) -> CORRER
+        int sqX = abx - 18;
+        int sqY = aby;
+        g2.setColor(new Color(249, 115, 22)); // Orange
+        g2.fillOval(sqX - 10, sqY - 10, 20, 20);
+        g2.setColor(Color.WHITE);
+        g2.drawString("■", sqX - 4, sqY + 4);
+
+        // Right button: ⭕ Círculo (Circle / B) -> Correr
+        int circX = abx + 18;
+        int circY = aby;
+        g2.setColor(new Color(234, 88, 12)); // Darker orange
+        g2.fillOval(circX - 10, circY - 10, 20, 20);
+        g2.setColor(Color.WHITE);
+        g2.drawString("●", circX - 4, circY + 4);
+
+        // Bottom button: ✖ Equis (Cross / A) -> SALTAR
         int crossX = abx;
         int crossY = aby + 18;
         g2.setColor(new Color(34, 197, 94)); // Green
-        g2.fillOval(crossX - 11, crossY - 11, 22, 22);
+        g2.fillOval(crossX - 10, crossY - 10, 20, 20);
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        g2.drawString("✖", crossX - 5, crossY + 5);
+        g2.drawString("✖", crossX - 4, crossY + 4);
 
-        // Left button: ⬛ Cuadrado (Square) -> CORRER
-        int sqX = abx - 18;
-        int sqY = aby - 1;
-        g2.setColor(new Color(249, 115, 22)); // Orange
-        g2.fillOval(sqX - 11, sqY - 11, 22, 22);
-        g2.setColor(Color.WHITE);
-        g2.drawString("■", sqX - 5, sqY + 5);
-
-        // Right button: ⭕ Círculo (Circle) -> Correr
-        int circX = abx + 18;
-        int circY = aby - 1;
-        g2.setColor(new Color(249, 115, 22, 190));
-        g2.fillOval(circX - 11, circY - 11, 22, 22);
-        g2.setColor(Color.WHITE);
-        g2.drawString("●", circX - 5, circY + 5);
-
-        // Top button: 🔺 Triángulo (Triangle)
-        int triX = abx;
-        int triY = aby - 20;
-        g2.setColor(new Color(100, 116, 139));
-        g2.fillOval(triX - 11, triY - 11, 22, 22);
-        g2.setColor(Color.WHITE);
-        g2.drawString("▲", triX - 5, triY + 5);
-
-        // Callout Square: Correr
-        drawCalloutBadge(g2, "■ Cuadrado: Correr", abx - 45, cy - 36, new Color(249, 115, 22), Color.WHITE);
-
-        // Callout Cross: Saltar
-        drawCalloutBadge(g2, "✖ Equis: Saltar", abx + 15, cy + 54, new Color(34, 197, 94), Color.WHITE);
+        // Bottom Callout Badges (Dedicated row, perfectly spaced, zero overlapping)
+        drawCalloutBadge(g2, "D-Pad / Stick: Moverse", 20, h - 34, new Color(56, 189, 248), Color.BLACK);
+        drawCalloutBadge(g2, "■ / ●: Correr", cx + 8, h - 34, new Color(249, 115, 22), Color.WHITE);
+        drawCalloutBadge(g2, "✖ Equis / A: Saltar", w - 146, h - 34, new Color(34, 197, 94), Color.WHITE);
 
         g2.dispose();
         return img;
+    }
+
+    private static void drawThumbstick(Graphics2D g2, int sx, int sy) {
+        g2.setColor(new Color(15, 23, 42));
+        g2.fillOval(sx - 15, sy - 15, 30, 30);
+        g2.setColor(new Color(71, 85, 105));
+        g2.drawOval(sx - 15, sy - 15, 30, 30);
+        g2.setColor(new Color(30, 41, 59));
+        g2.fillOval(sx - 11, sy - 11, 22, 22);
+        g2.setColor(new Color(100, 116, 139));
+        g2.drawOval(sx - 11, sy - 11, 22, 22);
+        g2.setColor(new Color(71, 85, 105));
+        g2.drawLine(sx - 4, sy, sx + 4, sy);
+        g2.drawLine(sx, sy - 4, sx, sy + 4);
     }
 
     public static BufferedImage renderKeyboardDiagram(int w, int h) {
