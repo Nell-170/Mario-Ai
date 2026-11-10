@@ -74,7 +74,7 @@ endif
 # ── Phony targets ─────────────────────────────────────────────
 .PHONY: help install setup-lab gui dashboard recibidor kiosk setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-level play-levels-generated start-experiment \
-        start-experiment-nogen test-db sync-db generate-level prompt-telemetry play-and-generate \
+        start-experiment-nogen test-db sync-db db-tunnel db-push-config db-pull-config generate-level prompt-telemetry play-and-generate \
         get-generics-levels \
         tunnel clean clean-telemetry clean-levels clean-experiment-results clean-all clean-fresh
 
@@ -101,6 +101,9 @@ help:
 	@echo "  start-experiment       Run 6x6 Latin square experiment with MarioGPT"
 	@echo "  start-experiment-nogen Run experiment skipping level generation"
 	@echo "  test-db                Send a TEST_ participant to PostgreSQL and confirm it arrived"
+	@echo "  db-tunnel              Open the SSH tunnel to the database VM (Ctrl+C to close)"
+	@echo "  db-push-config         Upload experiment/database.properties to the VM"
+	@echo "  db-pull-config         Download database.properties from the VM"
 	@echo "  sync-db                Resend records waiting in experiment/db_pending/"
 	@echo "  generate-level         Generate a level from the latest telemetry"
 	@echo "  get-generics-levels    Batch-generate generic levels from the cluster server (N=count, OUT=dir, PROMPT=text)"
@@ -129,7 +132,17 @@ gui: dashboard
 
 dashboard:
 	$(call progress,0,Iniciando Mario AI Web Control Center...)
-	@$(PYTHON) tools/dashboard.py
+	@$(PYTHON) tools/db_tunnel.py run -- $(PYTHON) tools/dashboard.py
+
+# ── túnel y configuración de la base de datos (VM) ─────────────
+db-tunnel:
+	@$(PYTHON) tools/db_tunnel.py tunnel
+
+db-push-config:
+	@$(PYTHON) tools/db_tunnel.py push
+
+db-pull-config:
+	@$(PYTHON) tools/db_tunnel.py pull
 
 # ── recibidor / kiosk ─────────────────────────────────────────
 recibidor: kiosk
