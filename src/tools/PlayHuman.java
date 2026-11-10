@@ -552,7 +552,7 @@ public class PlayHuman {
         // Header Title
         g2.setFont(new Font("SansSerif", Font.BOLD, 13));
         g2.setColor(new Color(165, 180, 252)); // Indigo 300
-        g2.drawString("🎮 CONTROL / MANDO (PS4 / XBOX)", 16, 22);
+        g2.drawString("CONTROL / MANDO (PS4 / XBOX)", 16, 22);
 
         // Top right: Options (Pausa) & Share (Reiniciar)
         drawKeycap(g2, "P", w - 42, 11, 24, 20, new Color(56, 189, 248), Color.WHITE);
@@ -657,7 +657,7 @@ public class PlayHuman {
         int abx = cx + 82;
         int aby = cy - 2;
 
-        // Top button: 🔺 Triángulo (Triangle / Y)
+        // Top button: Triangulo (Triangle / Y)
         int triX = abx;
         int triY = aby - 18;
         g2.setColor(new Color(71, 85, 105));
@@ -666,7 +666,7 @@ public class PlayHuman {
         g2.setFont(new Font("SansSerif", Font.BOLD, 10));
         g2.drawString("▲", triX - 4, triY + 4);
 
-        // Left button: ⬛ Cuadrado (Square / X) -> CORRER
+        // Left button: Cuadrado (Square / X) -> CORRER
         int sqX = abx - 18;
         int sqY = aby;
         g2.setColor(new Color(249, 115, 22)); // Orange
@@ -674,7 +674,7 @@ public class PlayHuman {
         g2.setColor(Color.WHITE);
         g2.drawString("■", sqX - 4, sqY + 4);
 
-        // Right button: ⭕ Círculo (Circle / B) -> Correr
+        // Right button: Circulo (Circle / B) -> Correr
         int circX = abx + 18;
         int circY = aby;
         g2.setColor(new Color(234, 88, 12)); // Darker orange
@@ -728,7 +728,7 @@ public class PlayHuman {
         // Header Title
         g2.setFont(new Font("SansSerif", Font.BOLD, 13));
         g2.setColor(new Color(165, 180, 252)); // Indigo 300
-        g2.drawString("⌨️ TECLADO (ERCILLER & FLECHAS)", 16, 22);
+        g2.drawString("TECLADO (ERCILLER & FLECHAS)", 16, 22);
 
         // Top right: P (Pausa) & R (Reiniciar)
         drawKeycap(g2, "P", w - 48, 14, 26, 22, new Color(56, 189, 248), Color.WHITE);

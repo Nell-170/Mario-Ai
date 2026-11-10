@@ -1695,7 +1695,7 @@ public class ExperimentRunner {
                             new EmptyBorder(8, 12, 8, 14)));
                     if (gripP != null) gripP.setBackground(new Color(99, 102, 241));
                     if (gripLabel != null) {
-                        gripLabel.setText("✊");
+                        gripLabel.setText(":::");
                         gripLabel.setForeground(Color.WHITE);
                     }
                 } else if (idx == targetIdx && srcIdx >= 0 && srcIdx != targetIdx) {
@@ -1705,7 +1705,7 @@ public class ExperimentRunner {
                             new EmptyBorder(8, 12, 8, 14)));
                     if (gripP != null) gripP.setBackground(new Color(16, 185, 129));
                     if (gripLabel != null) {
-                        gripLabel.setText("🎯");
+                        gripLabel.setText(":::");
                         gripLabel.setForeground(Color.WHITE);
                     }
                 } else {
@@ -1805,9 +1805,9 @@ public class ExperimentRunner {
             JLabel desc = new JLabel(
                     "<html><body style='color: rgb(156, 163, 175); font-size: 13.5px; width: 1100px;'>"
                             + "A continuación se presentan los 6 niveles jugados en tu sesión. "
-                            + "<b>Arrastra y suelta las filas con el ratón</b> para ordenarlas a tu gusto (o usa los botones <b>Subir / Bajar</b>). "
+                            + "<b>Arrastra y suelta las filas con el ratón</b> para ordenarlas a tu gusto. "
                             + "La posición <b>#1 debe ser tu favorito</b> y la posición <b>#6 el que menos te gustó</b>. "
-                            + "<b>Haz clic sobre cualquier miniatura o en 'Ver mapa'</b> para examinar el nivel completo en alta resolución."
+                            + "<b>Haz clic sobre cualquier miniatura</b> para examinar el nivel completo en alta resolución."
                             + "</body></html>");
             desc.setFont(FONT_REGULAR.deriveFont(14f));
             desc.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -1865,7 +1865,7 @@ public class ExperimentRunner {
                         // Title and detail
                         g2.setFont(FONT_BOLD.deriveFont(13f));
                         g2.setColor(Color.WHITE);
-                        g2.drawString("✊ Nivel del Paso " + draggedInfo.orderPlayed(), bx + 106, by + 25);
+                        g2.drawString("Nivel del Paso " + draggedInfo.orderPlayed(), bx + 106, by + 25);
                         g2.setFont(FONT_SEMIBOLD.deriveFont(11f));
                         g2.setColor(new Color(196, 181, 253));
                         g2.drawString("Tema: " + t.getDisplayName() + "  •  Reordenando", bx + 106, by + 43);
@@ -1902,7 +1902,7 @@ public class ExperimentRunner {
                     // Left Column: Grip Handle + Rank Badge + Step Information
                     JPanel leftCol = new JPanel(new BorderLayout(10, 0));
                     leftCol.setOpaque(false);
-                    leftCol.setPreferredSize(new Dimension(280, 80));
+                    leftCol.setPreferredSize(new Dimension(340, 80));
 
                     JPanel gripPanel = new JPanel(new GridBagLayout());
                     gripPanel.setBackground(new Color(36, 40, 56));
@@ -1951,14 +1951,14 @@ public class ExperimentRunner {
                     thumbPanel.setBackground(new Color(20, 24, 36));
                     thumbPanel.setBorder(BorderFactory.createLineBorder(new Color(51, 65, 85), 1, true));
                     thumbPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    thumbPanel.setToolTipText("🔍 Haz clic para abrir el mapa completo en alta resolución");
+                    thumbPanel.setToolTipText("Haz clic para abrir el mapa completo en alta resolución");
 
                     JLabel thumbLabel = new JLabel(new ImageIcon(info.thumbnail()));
                     thumbLabel.setHorizontalAlignment(SwingConstants.CENTER);
                     thumbLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                     thumbPanel.add(thumbLabel, BorderLayout.CENTER);
 
-                    JLabel zoomHint = new JLabel(" 🔍 Clic para examinar mapa ");
+                    JLabel zoomHint = new JLabel(" Clic para examinar mapa ");
                     zoomHint.setFont(FONT_BOLD.deriveFont(11f));
                     zoomHint.setForeground(Color.WHITE);
                     zoomHint.setBackground(new Color(15, 23, 42, 210));
@@ -1979,43 +1979,6 @@ public class ExperimentRunner {
                     thumbPanel.addMouseListener(openZoomAdapter);
                     thumbLabel.addMouseListener(openZoomAdapter);
                     rowCard.add(thumbPanel, BorderLayout.CENTER);
-
-                    // Right Column: Controls (Ver mapa / Subir / Bajar)
-                    JPanel rightCol = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 22));
-                    rightCol.setOpaque(false);
-                    rightCol.setPreferredSize(new Dimension(230, 80));
-
-                    ModernButton zoomBtn = new ModernButton("Ver mapa 🔍", new Color(30, 41, 59), new Color(51, 65, 85),
-                            new Color(15, 23, 42), TEXT_WHITE, 8, 8, 12, 12.5f);
-                    zoomBtn.setToolTipText("Examina el mapa completo de este nivel con desplazamiento");
-                    zoomBtn.addActionListener(e -> {
-                        String zoomTitle = "Nivel del Paso " + info.orderPlayed() + " (" + theme.getDisplayName() + ")";
-                        if (developMode) {
-                            zoomTitle += " [" + info.levelFile().getFileName() + "]";
-                        }
-                        showLevelZoomModal(masterFrame, zoomTitle, info.levelContent(), theme);
-                    });
-                    rightCol.add(zoomBtn);
-
-                    ModernButton upBtn = new ModernButton("▲ Subir", new Color(45, 52, 72), new Color(65, 75, 105),
-                            new Color(30, 35, 50), Color.WHITE, 8, 8, 12, 12.5f);
-                    upBtn.setEnabled(idx > 0);
-                    upBtn.addActionListener(e -> {
-                        Collections.swap(currentList, idx, idx - 1);
-                        refreshRef[0].run();
-                    });
-                    rightCol.add(upBtn);
-
-                    ModernButton downBtn = new ModernButton("▼ Bajar", new Color(45, 52, 72), new Color(65, 75, 105),
-                            new Color(30, 35, 50), Color.WHITE, 8, 8, 12, 12.5f);
-                    downBtn.setEnabled(idx < currentList.size() - 1);
-                    downBtn.addActionListener(e -> {
-                        Collections.swap(currentList, idx, idx + 1);
-                        refreshRef[0].run();
-                    });
-                    rightCol.add(downBtn);
-
-                    rowCard.add(rightCol, BorderLayout.EAST);
 
                     // Fluid Drag & Drop Listener with real-time feedback
                     MouseAdapter dragListener = new MouseAdapter() {
@@ -2132,7 +2095,7 @@ public class ExperimentRunner {
 
             JPanel rightHint = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 6));
             rightHint.setOpaque(false);
-            JLabel hintLbl = new JLabel("[Arrastra con el ratón o usa Subir / Bajar  •  Clic en miniatura para ampliar]");
+            JLabel hintLbl = new JLabel("[Arrastra con el ratón para reordenar  •  Haz clic en cualquier miniatura para examinar mapa]");
             hintLbl.setFont(FONT_SEMIBOLD.deriveFont(13f));
             hintLbl.setForeground(new Color(148, 163, 184));
             rightHint.add(hintLbl);
