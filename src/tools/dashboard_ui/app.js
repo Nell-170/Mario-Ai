@@ -148,12 +148,12 @@ function confirmCleanAll() {
 
 function confirmAndRunSetupLab() {
   const msg = '🚀 ¿Deseas iniciar la PUESTA A PUNTO TOTAL para el Lab 100?\n\n' +
-    'Este proceso automático:\n' +
-    '  1. Compilará el framework Java con soporte para Java 21/17.\n' +
-    '  2. Descargará y filtrará niveles humanos desde Hugging Face.\n' +
-    '  3. Convertirá y validará los niveles con el agente Robin Baumgarten (A*).\n' +
-    '  4. Configurará JeissonServer y verificará la conexión HTTP en la red UCR.\n\n' +
-    '¿Deseas comenzar ahora?';
+              'Este proceso automático:\n' +
+              '  1. Compilará el framework Java con soporte para Java 21/17.\n' +
+              '  2. Descargará y filtrará niveles humanos desde Hugging Face.\n' +
+              '  3. Convertirá y validará los niveles con el agente Robin Baumgarten (A*).\n' +
+              '  4. Configurará JeissonServer y verificará la conexión HTTP en la red UCR.\n\n' +
+              '¿Deseas comenzar ahora?';
   if (confirm(msg)) {
     runTarget('setup-lab', 'Puesta a Punto Total (Lab 100 & Hugging Face)');
   }
