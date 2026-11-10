@@ -343,8 +343,13 @@ public class GamepadManager {
         if (name == null || name.isEmpty()) return false;
         String lower = name.toLowerCase(java.util.Locale.ROOT);
         return lower.contains("mouse") || lower.contains("mouce") ||
-               lower.contains("touchpad") || lower.contains("trackball") ||
-               lower.contains("keyboard");
+               lower.contains("touchpad") || lower.contains("trackpad") ||
+               lower.contains("trackball") || lower.contains("keyboard") ||
+               lower.contains("teclado") || lower.contains("accelerometer") ||
+               lower.contains("acelerometro") || lower.contains("accel") ||
+               lower.contains("sensor") || lower.contains("gyro") ||
+               lower.contains("motion") || lower.contains("lis3lv02dl") ||
+               lower.contains("headset") || lower.contains("audio");
     }
 
     private boolean isGamepadEnabled() {
