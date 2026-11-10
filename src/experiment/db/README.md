@@ -59,6 +59,36 @@ cd .. && make compile     # incluye el driver JDBC de PostgreSQL en bin/
 
 `database.properties` está en `.gitignore`.
 
+## 4b. Túnel SSH y configuración centralizada (alternativa al puerto directo)
+
+Si la red no deja pasar el puerto de Postgres (p. ej. desde la VPN), el experimento puede
+conectarse por un túnel SSH. `make gui` lo hace todo solo:
+
+1. Abre el túnel `ssh -N -L 15432:localhost:5432 investigacioncc@10.1.70.39`.
+2. Descarga `database.properties` desde la VM (`~/mario-ai/database.properties`) y lo
+   guarda en `src/experiment/` con `db_host=localhost` y `db_port=15432`.
+3. Arranca el dashboard. Al cerrarlo (Ctrl+C), cierra el túnel.
+
+Si la VM no responde, el dashboard arranca igual y los datos quedan en `db_pending/`.
+
+**Una sola vez**, desde una PC que ya tenga un `database.properties` correcto:
+
+```bash
+cd src
+make db-push-config     # sube experiment/database.properties a la VM (permisos 600)
+```
+
+Otros comandos:
+
+```bash
+make db-tunnel          # solo abre el túnel (Ctrl+C para cerrarlo)
+make db-pull-config     # solo descarga la configuración de la VM
+```
+
+Los valores (usuario SSH, IP, puertos, ruta en la VM) están en `experiment/config.properties`
+(claves `db_tunnel_*`). Para no escribir la contraseña de SSH cada vez, instalar una llave
+en cada PC: `ssh-keygen -t ed25519` y luego `ssh-copy-id investigacioncc@10.1.70.39`.
+
 ## 5. Probar la conexión
 
 ```bash
