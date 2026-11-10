@@ -1291,6 +1291,15 @@ function openOllamaModal() {
   const input = document.getElementById('ollama-key-input');
   if (input) {
     input.value = '';
+    if (!input.dataset.boundEnter) {
+      input.dataset.boundEnter = 'true';
+      input.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          saveOllamaKeyFromModal();
+        }
+      });
+    }
     setTimeout(() => input.focus(), 150);
   }
 }
