@@ -2093,14 +2093,6 @@ public class ExperimentRunner {
             leftActions.add(resetBtn);
             actionsPanel.add(leftActions, BorderLayout.WEST);
 
-            JPanel rightHint = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 6));
-            rightHint.setOpaque(false);
-            JLabel hintLbl = new JLabel("[Arrastra con el ratón para reordenar  •  Haz clic en cualquier miniatura para examinar mapa]");
-            hintLbl.setFont(FONT_SEMIBOLD.deriveFont(13f));
-            hintLbl.setForeground(new Color(148, 163, 184));
-            rightHint.add(hintLbl);
-            actionsPanel.add(rightHint, BorderLayout.EAST);
-
             mainCard.add(actionsPanel, BorderLayout.SOUTH);
 
             centerWrapper.add(mainCard);
@@ -2310,7 +2302,7 @@ public class ExperimentRunner {
             String line = lines.get(r);
             for (int c = 0; c < line.length(); c++) {
                 char ch = line.charAt(c);
-                if (ch == '-' || Character.isWhitespace(ch)) {
+                if (ch == '-' || ch == 'x' || Character.isWhitespace(ch)) {
                     continue;
                 }
                 int x0 = (int) Math.round((double) c * targetWidth / cols);
@@ -2359,7 +2351,7 @@ public class ExperimentRunner {
             String line = lines.get(r);
             for (int c = 0; c < line.length(); c++) {
                 char ch = line.charAt(c);
-                if (ch == '-' || Character.isWhitespace(ch)) continue;
+                if (ch == '-' || ch == 'x' || Character.isWhitespace(ch)) continue;
                 int x = c * tileSize;
                 int y = r * tileSize;
                 drawTileOnGraphics(g2, ch, x, y, tileSize, tileSize);
@@ -2371,7 +2363,7 @@ public class ExperimentRunner {
 
     private static void drawTileOnGraphics(Graphics2D g, char ch, int x, int y, int w, int h) {
         switch (ch) {
-            case 'X', 'x' -> { // Solid Ground
+            case 'X' -> { // Solid Ground
                 g.setColor(new Color(216, 104, 0)); // #d86800 SMB ground
                 g.fillRect(x, y, w, h);
                 // Grass top strip

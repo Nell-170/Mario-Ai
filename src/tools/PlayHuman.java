@@ -838,7 +838,7 @@ public class PlayHuman {
             String line = lines.get(r);
             for (int c = 0; c < line.length(); c++) {
                 char ch = line.charAt(c);
-                if (ch == '-' || Character.isWhitespace(ch)) {
+                if (ch == '-' || ch == 'x' || Character.isWhitespace(ch)) {
                     continue;
                 }
                 int x0 = (int) Math.round((double) c * targetWidth / cols);
@@ -857,7 +857,7 @@ public class PlayHuman {
 
     private static void drawTileOnGraphics(Graphics2D g, char ch, int x, int y, int w, int h) {
         switch (ch) {
-            case 'X', 'x' -> { // Solid Ground
+            case 'X' -> { // Solid Ground
                 g.setColor(new Color(216, 104, 0));
                 g.fillRect(x, y, w, h);
                 g.setColor(new Color(0, 168, 0));
