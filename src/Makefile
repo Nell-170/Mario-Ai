@@ -75,7 +75,7 @@ endif
 .PHONY: help install setup-lab gui dashboard recibidor kiosk setup install-deps setup-mariogpt install-mariogpt compile patch-framework \
         filter convert validate play-human play-level play-levels-generated start-experiment \
         start-experiment-nogen test-db sync-db db-tunnel db-push-config db-pull-config generate-level prompt-telemetry play-and-generate \
-        get-generics-levels \
+        get-generics-levels ollama-keys-status ollama-keys-reset test-ollama-keys \
         tunnel clean clean-telemetry clean-levels clean-experiment-results clean-all clean-fresh
 
 # ── help ──────────────────────────────────────────────────────
@@ -109,6 +109,9 @@ help:
 	@echo "  get-generics-levels    Batch-generate generic levels from the cluster server (N=count, OUT=dir, PROMPT=text)"
 	@echo "  play-and-generate      play-human + generate-level"
 	@echo "  prompt-telemetry       Build a compact MarioGPT prompt from telemetry/latest.json"
+	@echo "  ollama-keys-status     Show Ollama Cloud keys, status, and active cooldowns"
+	@echo "  ollama-keys-reset      Reset cooldowns on all configured Ollama keys"
+	@echo "  test-ollama-keys       Run unit tests for Ollama key rotation & fallback"
 	@echo "  clean                  Remove generated Java class files"
 	@echo "  clean-telemetry        Remove all recorded telemetry files"
 	@echo "  clean-levels           Remove converted, generated and validated levels"
@@ -290,6 +293,16 @@ prompt-telemetry:
 	$(call progress,0,Convirtiendo telemetría a prompt MarioGPT...)
 	@$(PYTHON) tools/telemetry_to_mariogpt_prompt.py --telemetry telemetry/latest.json
 	$(call progress,100,Prompt generado.)
+
+# ── ollama-keys ───────────────────────────────────────────────
+ollama-keys-status:
+	@$(PYTHON) tools/ollama_keys.py status
+
+ollama-keys-reset:
+	@$(PYTHON) tools/ollama_keys.py reset
+
+test-ollama-keys:
+	@$(PYTHON) -m unittest discover -s tools/tests -v
 
 # ── clean ─────────────────────────────────────────────────────
 clean:

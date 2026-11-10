@@ -298,13 +298,26 @@ def detect_java() -> Tuple[Optional[str], Optional[str]]:
     return javac_path, java_path
 
 
+def save_keys_merged(key_file: Path, new_keys_text: str):
+    """Guarda o anexa una o varias claves sin duplicados ni borrar las existentes."""
+    existing = []
+    if key_file.exists():
+        existing = [l.strip() for l in key_file.read_text(encoding="utf-8").splitlines() if l.strip()]
+    for line in new_keys_text.strip().splitlines():
+        line = line.strip()
+        if line and line not in existing:
+            existing.append(line)
+    key_file.parent.mkdir(parents=True, exist_ok=True)
+    key_file.write_text("\n".join(existing) + "\n", encoding="utf-8")
+
+
 def prompt_ollama_key_gui(progress: InstallerProgress, default_key: str = "") -> Optional[str]:
     """Displays a graphical window for the user to easily paste the Ollama API key."""
     title = "Configuración de Ollama Cloud — Mario AI"
     desc = (
         "No se encontró el archivo necesario de Ollama (mario_ai_framework/Ollama-Key.txt).\n\n"
-        "Pega aquí tu API Key de Ollama Cloud para la síntesis de niveles con IA:\n"
-        "(Se guardará automáticamente en mario_ai_framework/Ollama-Key.txt)"
+        "Pega aquí tus API Keys de Ollama Cloud (una o varias, una por línea) para la síntesis de niveles con IA:\n"
+        "(Se guardarán automáticamente en mario_ai_framework/Ollama-Key.txt)"
     )
 
     has_display = bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY") or sys.platform in ("win32", "darwin"))
@@ -487,9 +500,8 @@ def main():
         key_file = framework_dir / "Ollama-Key.txt"
         entered_key = prompt_ollama_key_gui(InstallerProgress(1))
         if entered_key and entered_key.strip():
-            key_file.parent.mkdir(parents=True, exist_ok=True)
-            key_file.write_text(entered_key.strip() + "\n", encoding="utf-8")
-            print(f"  {C_GREEN}✓{C_RESET} API Key guardada exitosamente en {key_file.relative_to(root)}")
+            save_keys_merged(key_file, entered_key)
+            print(f"  {C_GREEN}✓{C_RESET} API Key(s) guardada(s) exitosamente en {key_file.relative_to(root)}")
         else:
             print(f"  {C_YELLOW}⚠{C_RESET} No se ingresó ninguna clave.")
         return
@@ -903,18 +915,15 @@ def main():
 
     api_key = None
     if arg_api_key:
-        api_key = arg_api_key
-        key_file.parent.mkdir(parents=True, exist_ok=True)
-        key_file.write_text(api_key + "\n", encoding="utf-8")
+        save_keys_merged(key_file, arg_api_key)
         progress.success(f"API Key configurada desde argumento CLI y guardada en {key_file.relative_to(root)}")
     elif key_file.exists() and key_file.read_text(encoding="utf-8").strip():
         api_key = key_file.read_text(encoding="utf-8").strip()
-        progress.success(f"Archivo de API Key de Ollama encontrado ({key_file.relative_to(root)}).")
+        count = len([l for l in api_key.splitlines() if l.strip() and not l.strip().startswith('#')])
+        progress.success(f"Archivo de API Keys de Ollama encontrado ({key_file.relative_to(root)} con {count} clave(s)).")
     elif os.environ.get("OLLAMA_API_KEY", "").strip():
-        api_key = os.environ.get("OLLAMA_API_KEY", "").strip()
-        key_file.parent.mkdir(parents=True, exist_ok=True)
-        key_file.write_text(api_key + "\n", encoding="utf-8")
-        progress.success("API Key de Ollama detectada desde variable de entorno OLLAMA_API_KEY.")
+        save_keys_merged(key_file, os.environ.get("OLLAMA_API_KEY", "").strip())
+        progress.success("API Key de Ollama detectada desde variable de entorno OLLAMA_API_KEY y agregada.")
     elif skip_key:
         progress.info("Configuración de API Key omitida por argumento CLI (--skip-key).")
     else:
@@ -923,9 +932,7 @@ def main():
 
         entered_key = prompt_ollama_key_gui(progress)
         if entered_key and entered_key.strip():
-            api_key = entered_key.strip()
-            key_file.parent.mkdir(parents=True, exist_ok=True)
-            key_file.write_text(api_key + "\n", encoding="utf-8")
+            save_keys_merged(key_file, entered_key)
             progress.success(f"API Key guardada exitosamente en {key_file.relative_to(root)}")
         else:
             progress.warning("No se proporcionó API Key. El generador utilizará el modo local determinista.")

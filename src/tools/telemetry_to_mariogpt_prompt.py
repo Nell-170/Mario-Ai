@@ -154,32 +154,24 @@ def build_user_message(data):
     )
 
 
-def resolve_api_key():
-    env_key = os.environ.get("OLLAMA_API_KEY")
-    if env_key and env_key.strip():
-        return env_key.strip()
+# Intentar importar gestor de rotación de claves
+try:
+    import ollama_keys
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import ollama_keys
 
-    candidate_paths = [
-        Path("mario_ai_framework/Ollama-Key.txt"),
-        Path("../mario_ai_framework/Ollama-Key.txt"),
-        Path("./mario_ai_framework/Ollama-Key.txt"),
-    ]
-    for path in candidate_paths:
-        try:
-            if path.exists():
-                value = path.read_text(encoding="utf-8").strip()
-                if value:
-                    return value
-        except OSError:
-            pass
-    return None
+
+def resolve_api_key():
+    """Mantenido para compatibilidad hacia atrás: devuelve la primera clave válida."""
+    keys = ollama_keys.load_keys()
+    return keys[0] if keys else None
 
 
 def call_ollama(model, telemetry_json, url):
-    api_key = resolve_api_key()
-    if not api_key:
-        raise RuntimeError("No se encontró la API key de Ollama. Define OLLAMA_API_KEY o crea mario_ai_framework/Ollama-Key.txt")
-
+    """
+    Invoca Ollama con rotación de claves, cooldowns y fallback a daemon local.
+    """
     payload = {
         "model": model,
         "messages": [
@@ -189,28 +181,23 @@ def call_ollama(model, telemetry_json, url):
         "stream": False,
         "options": {"temperature": 0.2, "top_p": 0.9},
     }
-    data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}",
-    }
-    req = request.Request(url, data=data, headers=headers)
+
     try:
-        with request.urlopen(req, timeout=60) as resp:
-            body = json.loads(resp.read().decode("utf-8"))
-            if isinstance(body, dict):
-                if "message" in body and isinstance(body["message"], dict):
-                    text = body["message"].get("content")
-                    if text:
-                        return text.strip()
-                text = body.get("response")
-                if text:
-                    return text.strip()
-            raise ValueError(f"Respuesta inesperada de Ollama: {body!r}")
-    except error.HTTPError as exc:
-        raise RuntimeError(f"Ollama respondió con error HTTP {exc.code}: {exc.read().decode('utf-8', 'ignore')}")
+        # 1. Intentar Ollama Cloud con rotación de claves
+        return ollama_keys.ollama_chat(payload, url=url)
+    except ollama_keys.AllKeysUnavailable as exc:
+        print(f"[OLLAMA] Claves Cloud no disponibles ({exc}). Probando daemon local...", file=sys.stderr)
+        # 2. Intentar Ollama daemon local (localhost:11434)
+        local_res = ollama_keys.local_ollama_chat(payload)
+        if local_res:
+            return local_res
+        raise RuntimeError(f"Ollama Cloud y Local no disponibles ({exc})")
     except Exception as exc:
-        raise RuntimeError(f"No se pudo consultar Ollama: {exc}")
+        # 2b. Intentar Ollama daemon local ante cualquier error de red cloud
+        local_res = ollama_keys.local_ollama_chat(payload)
+        if local_res:
+            return local_res
+        raise RuntimeError(f"Fallo en consulta a Ollama: {exc}")
 
 
 def parse_args():
@@ -235,20 +222,31 @@ def main():
 
     if args.allow_cloud:
         try:
-            result = call_ollama(args.ollama_model, telemetry, args.ollama_url)
-            print("\nString para MarioGPT (Ollama):", file=sys.stderr)
+            res = call_ollama(args.ollama_model, telemetry, args.ollama_url)
+            prompt_text = res.get("content") if isinstance(res, dict) else str(res).strip()
+            source_val = res.get("source", "ollama") if isinstance(res, dict) else "ollama"
+            kid = res.get("key_id") if isinstance(res, dict) else None
+            attempts_cnt = res.get("attempts", 1) if isinstance(res, dict) else 1
+
+            print(f"\nString para MarioGPT (Ollama - {kid or 'cloud'}):", file=sys.stderr)
             if args.json_output:
-                print(json.dumps({"prompt": result, "source": "ollama", "model": args.ollama_model},
-                                 ensure_ascii=False))
+                out = {
+                    "prompt": prompt_text,
+                    "source": source_val,
+                    "model": args.ollama_model,
+                    "key_id": kid,
+                    "attempts": attempts_cnt,
+                }
+                print(json.dumps(out, ensure_ascii=False))
             else:
-                print(result)
+                print(prompt_text)
             return 0
         except Exception as exc:
             print(f"Advertencia: no se pudo usar Ollama ({exc}). Se usará la versión local determinista.", file=sys.stderr)
 
-    print("Aviso: no se encontró OLLAMA_API_KEY ni mario_ai_framework/Ollama-Key.txt; usando prompt local.", file=sys.stderr)
+    print("Aviso: usando prompt determinista heurístico como respaldo.", file=sys.stderr)
     if args.json_output:
-        print(json.dumps({"prompt": fallback_prompt, "source": "heuristic", "model": None}, ensure_ascii=False))
+        print(json.dumps({"prompt": fallback_prompt, "source": "heuristic", "model": None, "fallback": "heuristic"}, ensure_ascii=False))
     else:
         print("\nString para MarioGPT (fallback local):")
         print(fallback_prompt)

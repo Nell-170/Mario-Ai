@@ -148,12 +148,12 @@ function confirmCleanAll() {
 
 function confirmAndRunSetupLab() {
   const msg = '🚀 ¿Deseas iniciar la PUESTA A PUNTO TOTAL para el Lab 100?\n\n' +
-              'Este proceso automático:\n' +
-              '  1. Compilará el framework Java con soporte para Java 21/17.\n' +
-              '  2. Descargará y filtrará niveles humanos desde Hugging Face.\n' +
-              '  3. Convertirá y validará los niveles con el agente Robin Baumgarten (A*).\n' +
-              '  4. Configurará JeissonServer y verificará la conexión HTTP en la red UCR.\n\n' +
-              '¿Deseas comenzar ahora?';
+    'Este proceso automático:\n' +
+    '  1. Compilará el framework Java con soporte para Java 21/17.\n' +
+    '  2. Descargará y filtrará niveles humanos desde Hugging Face.\n' +
+    '  3. Convertirá y validará los niveles con el agente Robin Baumgarten (A*).\n' +
+    '  4. Configurará JeissonServer y verificará la conexión HTTP en la red UCR.\n\n' +
+    '¿Deseas comenzar ahora?';
   if (confirm(msg)) {
     runTarget('setup-lab', 'Puesta a Punto Total (Lab 100 & Hugging Face)');
   }
@@ -1069,9 +1069,16 @@ async function refreshOllamaStatus() {
 
     pill.classList.remove('configured', 'missing');
     if (data.configured) {
-      pill.classList.add('configured');
-      text.textContent = 'Ollama: Lista ✓';
-      pill.title = `Ollama Cloud activa (${data.masked_key})\nArchivo: ${data.key_path}\nHaga clic para ver o editar`;
+      const total = data.count || 1;
+      const avail = data.available_count !== undefined ? data.available_count : total;
+      if (avail > 0) {
+        pill.classList.add('configured');
+        text.textContent = `Ollama: ${avail}/${total} lista${avail > 1 ? 's' : ''} ✓`;
+      } else {
+        pill.classList.add('missing');
+        text.textContent = `Ollama: ${total} en enfriamiento ⏳`;
+      }
+      pill.title = `Ollama Cloud (${avail}/${total} disponibles)\nArchivo: ${data.key_path}\nHaga clic para ver o editar`;
     } else {
       pill.classList.add('missing');
       text.textContent = 'Ollama: No configurada ⚠';
@@ -1177,19 +1184,102 @@ function updateModalStatusBox(data) {
   const icon = document.getElementById('key-status-icon');
   const title = document.getElementById('key-status-title');
   const sub = document.getElementById('key-status-sub');
+  const container = document.getElementById('ollama-keys-container');
+  const list = document.getElementById('ollama-keys-list');
   if (!box || !title) return;
 
   box.classList.remove('configured', 'missing');
   if (data.configured) {
+    const total = data.count || 1;
+    const avail = data.available_count !== undefined ? data.available_count : total;
     box.classList.add('configured');
-    icon.textContent = '🟢';
-    title.textContent = `Clave activa y vinculada (${data.masked_key})`;
+    icon.textContent = avail > 0 ? '🟢' : '🟡';
+    title.textContent = `${avail} de ${total} claves disponibles para rotación`;
     sub.textContent = `Archivo destino: ${data.key_path}`;
+
+    if (container && list && data.keys && data.keys.length > 0) {
+      container.style.display = 'block';
+      list.innerHTML = data.keys.map(k => {
+        const isOk = k.state === 'lista';
+        const stColor = isOk ? '#22c55e' : (k.state === 'inválida' ? '#ef4444' : '#f59e0b');
+        const cdText = k.cooldown_remaining_s > 0 ? ` (${Math.round(k.cooldown_remaining_s)}s)` : '';
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-bottom:1px solid rgba(148,163,184,0.1); font-size:12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${stColor};"></span>
+              <span style="font-family:monospace; color:#f1f5f9;">#${k.index} ${k.masked}</span>
+              <span style="font-size:11px; color:${stColor}; font-weight:600;">${k.state.toUpperCase()}${cdText}</span>
+            </div>
+            <button type="button" onclick="removeOllamaKey('${k.id}')" style="background:transparent; border:none; cursor:pointer; color:#ef4444; font-size:13px;" title="Eliminar esta clave">✕</button>
+          </div>
+        `;
+      }).join('');
+    } else if (container) {
+      container.style.display = 'none';
+    }
   } else {
     box.classList.add('missing');
     icon.textContent = '🟠';
-    title.textContent = 'No se detectó clave de Ollama Cloud';
-    sub.textContent = 'La síntesis de niveles usará el modo local determinista hasta ingresar la clave.';
+    title.textContent = 'No se detectaron claves de Ollama Cloud';
+    sub.textContent = 'La síntesis de niveles usará el modo local determinista hasta ingresar al menos una clave.';
+    if (container) container.style.display = 'none';
+  }
+}
+
+async function resetOllamaCooldowns() {
+  try {
+    const res = await fetch('/api/ollama-key/reset', { method: 'POST' });
+    if (res.ok) {
+      showToast('✓ Enfriamientos de Ollama restablecidos');
+      refreshOllamaStatus();
+    }
+  } catch (err) {
+    console.error('Error resetting cooldowns:', err);
+  }
+}
+
+async function removeOllamaKey(id) {
+  if (!confirm(`¿Desea eliminar la clave ${id} del pool?`)) return;
+  try {
+    const res = await fetch('/api/ollama-key/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    if (res.ok) {
+      showToast('✓ Clave eliminada');
+      refreshOllamaStatus();
+    }
+  } catch (err) {
+    console.error('Error removing key:', err);
+  }
+}
+
+async function replaceOllamaKeysFromModal() {
+  const input = document.getElementById('ollama-key-input');
+  if (!input) return;
+  const key = input.value.trim();
+  if (!key) {
+    alert('Ingrese al menos una API Key en el campo de texto.');
+    input.focus();
+    return;
+  }
+  if (!confirm('¿Desea reemplazar TODAS las claves existentes por las que ingresó?')) return;
+
+  try {
+    const res = await fetch('/api/ollama-key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'replace', key })
+    });
+    const data = await res.json();
+    if (res.ok && data.configured) {
+      showToast('✓ Lista de claves reemplazada exitosamente');
+      input.value = '';
+      refreshOllamaStatus();
+    }
+  } catch (err) {
+    console.error('Error replacing keys:', err);
   }
 }
 

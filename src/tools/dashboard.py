@@ -37,35 +37,74 @@ def ensure_jdk_path():
 
 ensure_jdk_path()
 
+try:
+    import ollama_keys
+except ImportError:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import ollama_keys
+
 
 def get_ollama_status():
-    key_file = PROJECT_ROOT / "mario_ai_framework" / "Ollama-Key.txt"
-
-    key = ""
-    if key_file.exists() and key_file.read_text(encoding="utf-8").strip():
-        key = key_file.read_text(encoding="utf-8").strip()
-    elif os.environ.get("OLLAMA_API_KEY", "").strip():
-        key = os.environ.get("OLLAMA_API_KEY", "").strip()
-
-    masked = ""
-    if key:
-        if len(key) > 8:
-            masked = key[:4] + "••••••••" + key[-4:]
-        else:
-            masked = "••••••••"
+    keys = ollama_keys.load_keys()
+    key_file = ollama_keys.resolve_key_file()
+    sm = ollama_keys.KeyStateManager()
+    key_statuses = sm.get_all_status(keys) if keys else []
+    avail_count = sum(1 for s in key_statuses if s["state"] == "lista")
+    first_masked = key_statuses[0]["masked"] if key_statuses else ""
 
     return {
-        "configured": bool(key),
-        "masked_key": masked,
-        "key_path": str(key_file.relative_to(PROJECT_ROOT)) if key else "mario_ai_framework/Ollama-Key.txt"
+        "configured": len(keys) > 0,
+        "count": len(keys),
+        "available_count": avail_count,
+        "masked_key": first_masked,
+        "key_path": str(key_file.relative_to(PROJECT_ROOT)) if key_file.exists() else "mario_ai_framework/Ollama-Key.txt",
+        "keys": key_statuses,
     }
 
 
-def save_ollama_key(key_value: str):
-    key_value = key_value.strip()
-    key_file = PROJECT_ROOT / "mario_ai_framework" / "Ollama-Key.txt"
+def save_ollama_keys_raw(text: str) -> bool:
+    key_file = ollama_keys.resolve_key_file()
     key_file.parent.mkdir(parents=True, exist_ok=True)
-    key_file.write_text(key_value + "\n", encoding="utf-8")
+    lines = [line.strip() for line in text.strip().splitlines() if line.strip() and not line.startswith("#")]
+    seen = set()
+    cleaned = []
+    for l in lines:
+        if l not in seen:
+            seen.add(l)
+            cleaned.append(l)
+    tmp = key_file.with_suffix(".tmp")
+    tmp.write_text("\n".join(cleaned) + "\n", encoding="utf-8")
+    if os.name != "nt":
+        try:
+            os.chmod(tmp, 0o600)
+        except OSError:
+            pass
+    tmp.replace(key_file)
+    return True
+
+
+def append_ollama_key(key_value: str) -> bool:
+    key_value = key_value.strip()
+    if not key_value:
+        return False
+    keys = ollama_keys.load_keys()
+    lines = [l.strip() for l in key_value.splitlines() if l.strip() and not l.startswith("#")]
+    for l in lines:
+        if l not in keys:
+            keys.append(l)
+    return save_ollama_keys_raw("\n".join(keys))
+
+
+def save_ollama_key(key_value: str) -> bool:
+    """Compatibilidad: anexa o guarda claves."""
+    return append_ollama_key(key_value)
+
+
+def remove_ollama_key(target_id: str) -> bool:
+    keys = ollama_keys.load_keys()
+    remaining = [k for k in keys if ollama_keys.key_id(k) != target_id]
+    save_ollama_keys_raw("\n".join(remaining))
+    ollama_keys.KeyStateManager().reset(target_id)
     return True
 
 
@@ -631,22 +670,48 @@ class DashboardHandler(SimpleHTTPRequestHandler):
             self.send_json({"status": "saved" if saved else "error", "details": get_sequence_server_status()})
             return
 
-        elif url.path == "/api/ollama-key":
+        elif url.path in ("/api/ollama-key", "/api/ollama-key/reset", "/api/ollama-key/remove"):
             content_len = int(self.headers.get("Content-Length", 0))
             post_body = self.rfile.read(content_len).decode("utf-8")
-            try:
-                data = json.loads(post_body)
-            except Exception:
-                self.send_error(400, "JSON inválido")
+            data = {}
+            if post_body:
+                try:
+                    data = json.loads(post_body)
+                except Exception:
+                    self.send_error(400, "JSON inválido")
+                    return
+
+            action = data.get("action", "")
+            if url.path == "/api/ollama-key/reset" or action == "reset":
+                target_id = data.get("id")
+                ollama_keys.KeyStateManager().reset(target_id)
+                append_log(f"🔄 Enfriamientos de Ollama restablecidos ({target_id or 'todas las claves'}).", "system")
+                self.send_json({"status": "reset", "details": get_ollama_status()})
                 return
 
-            key = data.get("key", "").strip()
-            if key:
-                save_ollama_key(key)
-                append_log("🔑 Clave de Ollama Cloud actualizada y guardada correctamente.", "system")
-                self.send_json({"status": "saved", "configured": True, "details": get_ollama_status()})
-            else:
+            if url.path == "/api/ollama-key/remove" or action == "remove":
+                target_id = data.get("id", "").strip()
+                if not target_id:
+                    self.send_error(400, "Falta el id de la clave a eliminar")
+                    return
+                remove_ollama_key(target_id)
+                append_log(f"🗑️ Clave de Ollama {target_id} eliminada.", "system")
+                self.send_json({"status": "removed", "details": get_ollama_status()})
+                return
+
+            raw_keys = data.get("keys") or data.get("key", "").strip()
+            if not raw_keys:
                 self.send_error(400, "La clave no puede estar vacía")
+                return
+
+            if action == "replace":
+                save_ollama_keys_raw(raw_keys)
+                append_log("🔑 Lista de claves de Ollama Cloud reemplazada correctamente.", "system")
+            else:
+                append_ollama_key(raw_keys)
+                append_log("🔑 Clave(s) de Ollama Cloud agregada(s) correctamente.", "system")
+
+            self.send_json({"status": "saved", "configured": True, "details": get_ollama_status()})
             return
 
         elif url.path == "/api/run":

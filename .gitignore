@@ -24,6 +24,8 @@ src/levels/test_output/
 # API keys and secrets
 *Ollama-Key.txt
 *.key
+*.ollama-key-state.json*
+.ollama-key-state.json*
 .env
 
 # Generated telemetry
