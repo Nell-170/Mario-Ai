@@ -110,9 +110,22 @@
 .flegend{position:absolute;right:30px;top:112px;z-index:5;border:3px solid var(--ink);background:#fff;padding:8px 10px;font-size:11px;line-height:1.8;opacity:0;transition:opacity .4s;pointer-events:none}
 .full .flegend{opacity:1}
 .flegend i{display:inline-block;width:12px;height:12px;border:2px solid var(--ink);margin-right:6px;vertical-align:-2px}
+
+/* ---------- zoom in captura hugging face ---------- */
+.hf-zoom-overlay{position:absolute;left:50%;top:64px;transform:translateX(-50%) scale(.92);width:1160px;height:580px;z-index:45;display:flex;opacity:0;pointer-events:none;transition:opacity .35s ease,transform .4s cubic-bezier(.2,.9,.3,1.15)}
+.hf-zoom-overlay.on{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto}
+.hf-zoom-win{width:100%;height:100%;background:#fff;border:4px solid var(--ink);box-shadow:8px 8px 0 var(--ink);display:flex;flex-direction:column;overflow:hidden}
+.hf-zoom-bar{background:var(--ink);color:#fff;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;font:400 11px var(--pixel);user-select:none;flex-shrink:0}
+.hf-zoom-bar .hf-bar-l{display:flex;align-items:center;gap:10px}
+.hf-zoom-bar .hf-tag{background:var(--pink);color:var(--ink);padding:2px 8px;font-weight:700;border-radius:2px}
+.hf-zoom-body{flex:1;background:#18181b;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.hf-zoom-body img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block}
+.hf-zoom-foot{background:#f7f4f2;border-top:3px solid var(--ink);padding:9px 16px;display:flex;justify-content:space-between;align-items:center;font:500 13px var(--body);color:var(--ink);flex-shrink:0}
+.hf-zoom-foot b{color:var(--violet)}
+.hf-zoom-foot small{font:400 9px var(--pixel);color:var(--pink-d)}
 </style>
 
-  <section class="slide" id="s-flow" data-min="1" data-max="14" data-sec="Metodología">
+  <section class="slide" id="s-flow" data-min="1" data-max="15" data-sec="Metodología">
     <svg id="fsvg" viewBox="-80 -229 2700 1519" preserveAspectRatio="xMidYMid meet">
       <defs>
         <marker id="arw" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1a1a1a"/></marker>
@@ -127,10 +140,30 @@
       <div class="ptag">1 · SELECCIÓN DE NIVELES</div>
       <p class="pp">Partimos del conjunto de niveles de <b>Super Mario Maker 2</b> publicado en <b>Hugging Face</b>: miles de niveles hechos por personas.</p>
       <div class="docs" id="docs"></div>
-      <label class="shot" data-key="hf" style="height:140px"><span>CAPTURA · DATASET EN HUGGING FACE<br>(clic para cargar imagen)</span><img alt=""><input type="file" accept="image/*"></label>
+      <label class="shot" data-key="hf" id="shotHf" style="height:140px;cursor:pointer" title="Clic para ampliar captura"><span>CAPTURA · DATASET EN HUGGING FACE<br>(clic para ampliar)</span><img alt=""><input type="file" accept="image/*"></label>
     </div>
-    <!-- 2 -->
-    <div class="fp" data-p="2">
+    <!-- 2: ZOOM IN HUGGING FACE -->
+    <div class="fp" data-p="2" style="display:none"></div>
+    <div class="hf-zoom-overlay" id="hfZoom">
+      <div class="hf-zoom-win">
+        <div class="hf-zoom-bar">
+          <div class="hf-bar-l">
+            <span>HUGGING FACE</span>
+            <span class="hf-tag">DATASET · SUPER MARIO MAKER 2</span>
+          </div>
+          <span class="hf-bar-r">1920 × 1034 ▢ ✕</span>
+        </div>
+        <div class="hf-zoom-body" id="hfZoomBody" title="Clic para continuar">
+          <img src="img/Screenshot_20261115_142401.png" alt="Dataset Super Mario Maker 2 en Hugging Face">
+        </div>
+        <div class="hf-zoom-foot">
+          <span><b>Repositorio público:</b> Miles de niveles creados por jugadores humanos, con metadatos y telemetría.</span>
+          <small class="blink">PRESIONA ▶ PARA CONTINUAR</small>
+        </div>
+      </div>
+    </div>
+    <!-- 3 -->
+    <div class="fp" data-p="3">
       <div class="ptag">2 · FILTRACIÓN POR CRITERIO</div>
       <p class="pp">Cada nivel pasa por tres filtros. Entre los que sobreviven, <b>se seleccionan los más populares</b>.</p>
       <div class="funwrap" id="funwrap">
@@ -145,16 +178,16 @@
         <div class="fout">★ Los más populares <b id="funN">0</b></div>
       </div>
     </div>
-    <!-- 3 -->
-    <div class="fp" data-p="3">
+    <!-- 4 -->
+    <div class="fp" data-p="4">
       <div class="ptag">3 · VERIFICACIÓN CON A*</div>
       <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y entra al banco <b>«Nivel 0»</b>.</p>
       <svg class="astar" id="astar" viewBox="0 0 560 200" height="214"></svg>
       <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE → NIVEL 0</span></div>
       <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Menta: ruta encontrada. Esta validación se hace de antemano, solo para los niveles humanos.</small></p>
     </div>
-    <!-- 4 -->
-    <div class="fp" data-p="4">
+    <!-- 5 -->
+    <div class="fp" data-p="5">
       <div class="ptag">PARTE 2 · 1 · BIENVENIDA</div>
       <p class="pp">La persona llega al laboratorio y se le explica cómo será la sesión.</p>
       <div class="win-mock"><div class="bar"><span>BIENVENIDA</span><span>▢ ✕</span></div>
@@ -162,16 +195,16 @@
       <p class="pp" style="margin-top:8px"><small>Maqueta ilustrativa: reemplázala con la captura real.</small></p>
       <label class="shot" data-key="welcome" style="height:150px"><span>CAPTURA · PANTALLA DE BIENVENIDA<br>(clic para cargar imagen)</span><img alt=""><input type="file" accept="image/*"></label>
     </div>
-    <!-- 5 -->
-    <div class="fp" data-p="5">
+    <!-- 6 -->
+    <div class="fp" data-p="6">
       <div class="ptag">2 · NIVELES DE FAMILIARIZACIÓN (F)</div>
       <p class="pp">La persona juega <b>2 niveles de práctica</b>. Mientras juega, capturamos su <b>telemetría</b>.</p>
       <div class="tele" id="tele"></div>
       <p class="pp" style="margin-top:8px"><small>Ejemplo ilustrativo: ajusta los campos a las métricas que realmente registras.</small></p>
       <label class="shot" data-key="fam" style="height:96px"><span>CAPTURA · NIVEL DE FAMILIARIZACIÓN</span><img alt=""><input type="file" accept="image/*"></label>
     </div>
-    <!-- 6 -->
-    <div class="fp" data-p="6">
+    <!-- 7 -->
+    <div class="fp" data-p="7">
       <div class="ptag">3 · CONSENTIMIENTO INFORMADO</div>
       <p class="pp">Antes de seguir, la persona decide. Prueba las dos ramas:</p>
       <div class="win-mock"><div class="bar"><span>CONSENTIMIENTO INFORMADO</span><span>▢ ✕</span></div>
@@ -179,8 +212,8 @@
           <div style="display:flex;gap:12px;margin-top:14px"><button class="pbtn no" id="cNo">NO ACEPTO</button><button class="pbtn yes" id="cYes">ACEPTO</button></div></div></div>
       <div class="res" id="cres">Elige una opción.</div>
     </div>
-    <!-- 7 -->
-    <div class="fp" data-p="7">
+    <!-- 8 -->
+    <div class="fp" data-p="8">
       <div class="ptag">4 · ENCUESTA INICIAL</div>
       <p class="pp">Preguntas iniciales antes de comenzar el bloque principal.</p>
       <div class="win-mock"><div class="bar"><span>ENCUESTA INICIAL</span><span>▢ ✕</span></div>
@@ -188,16 +221,16 @@
       <p class="pp" style="margin-top:8px"><small>Maqueta ilustrativa.</small></p>
       <label class="shot" data-key="survey" style="height:110px"><span>CAPTURA · ENCUESTA INICIAL</span><img alt=""><input type="file" accept="image/*"></label>
     </div>
-    <!-- 8 -->
-    <div class="fp" data-p="8">
+    <!-- 9 -->
+    <div class="fp" data-p="9">
       <div class="ptag">EN SEGUNDO PLANO · GENERACIÓN</div>
       <p class="pp">Al terminar la familiarización, la telemetría pasa por el LLM, que produce un <b>prompt para MarioGPT</b>. MarioGPT genera los niveles personalizados <b>mientras el participante sigue jugando</b>.</p>
       <div class="chain"><span>Telemetría</span><i>▶</i><span>Ollama</span><i>▶</i><span>MarioGPT</span><i>▶</i><span style="background:var(--pink)">Nivel P</span></div>
       <div class="prompt" id="prompt"></div>
       <p class="pp" style="margin-top:10px"><small>Prompt de ejemplo, ilustrativo. Los niveles generados no se validan con A* durante el experimento.</small></p>
     </div>
-    <!-- 9 -->
-    <div class="fp" data-p="9">
+    <!-- 10 -->
+    <div class="fp" data-p="10">
       <div class="ptag">5 · BLOQUE PRINCIPAL</div>
       <p class="pp">Cada participante juega <b>6 niveles de tres tipos</b>, <b>asignados en orden aleatorio desde un servidor</b>.</p>
       <div class="cards6" id="cards6"></div>
@@ -208,22 +241,22 @@
       </div>
       <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
     </div>
-    <!-- 10 -->
-    <div class="fp" data-p="10">
+    <!-- 11 -->
+    <div class="fp" data-p="11">
       <div class="ptag">CUESTIONARIO TRAS CADA NIVEL</div>
       <p class="pp">6 preguntas en escala de 7 puntos, de <b>−3 a +3</b>. Prueba el cuestionario:</p>
       <div id="lik"></div>
       <label class="shot" data-key="quest" style="height:100px;margin-top:8px"><span>CAPTURA · CUESTIONARIO REAL</span><img alt=""><input type="file" accept="image/*"></label>
     </div>
-    <!-- 11 -->
-    <div class="fp" data-p="11">
+    <!-- 12 -->
+    <div class="fp" data-p="12">
       <div class="ptag">6 · RANKING Y COMENTARIOS</div>
       <p class="pp">La persona <b>ordena los 6 niveles</b> que jugó y deja comentarios. Prueba reordenarlos:</p>
       <div id="rank"></div>
       <div class="cmt">Comentarios libres…</div>
     </div>
-    <!-- 12 -->
-    <div class="fp" data-p="12">
+    <!-- 13 -->
+    <div class="fp" data-p="13">
       <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
       <p class="pp">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>. Es opcional.</p>
       <div class="cond">Condición: <button data-c="P">P</button><button data-c="N">N</button><button data-c="H">H</button></div>
@@ -231,15 +264,15 @@
       <div class="metrics"><div>Tiempo jugado<b id="mT">0 min</b></div><div>Niveles jugados<b id="mL">0</b></div></div>
       <p class="pp"><small>Ambos valores se registran como medida de compromiso.</small></p>
     </div>
-    <!-- 13 -->
-    <div class="fp" data-p="13">
+    <!-- 14 -->
+    <div class="fp" data-p="14">
       <div class="ptag">8 · FINAL</div>
       <div class="thanks">¡GRACIAS<br>POR JUGAR!</div>
       <p class="pp">Fin de la sesión. Los datos del participante quedan registrados para el análisis.</p>
       <img class="spr" data-spr="hero:happy" data-s="9" alt="" style="margin:14px auto 0" id="endhero">
     </div>
-    <!-- 14 -->
-    <div class="fp" data-p="14" style="display:none"></div>
+    <!-- 15 -->
+    <div class="fp" data-p="15" style="display:none"></div>
 
     <div class="flegend"><i style="background:var(--mint)"></i>Parte 1<br><i style="background:#fff"></i>Parte 2<br><i style="background:#ffb3da"></i>Segundo plano<br><i style="background:var(--gold-l)"></i>Decisión</div>
     <div class="fhint blink">CLIC EN UNA CAJA PARA VOLVER A SU EXPLICACIÓN</div>
@@ -274,45 +307,45 @@
   /* ---------- nodos y aristas ---------- */
   const NODES={
     hf:   {x:310, y:170,w:340,h:100,l:['Selección de niveles','Hugging Face'],c:'mint',n:1,at:1},
-    fil:  {x:730, y:170,w:340,h:100,l:['Filtración','por criterio'],c:'mint',n:2,at:2},
-    astar:{x:1150,y:170,w:340,h:100,l:['Verificación','con A*'],c:'mint',n:3,at:3},
-    bank: {x:1560,y:170,w:340,h:100,l:['Banco «Nivel 0»','niveles humanos (H)'],c:'gold',at:3,go:3,db:1},
-    welcome:{x:160,y:640,w:250,h:100,l:['Bienvenida','Explicación de sesión'],c:'white',n:1,at:4},
-    fam:  {x:480, y:640,w:280,h:100,l:['Niveles de','familiarización (F)'],c:'white',n:2,at:5},
-    cons: {x:790, y:640,w:240,h:170,l:['Consentimiento','informado'],c:'gold',n:3,at:6,dia:1},
-    exit: {x:790, y:450,w:300,h:80, l:['Se borran los datos','y se sale'],c:'danger',at:6,go:6},
-    survey:{x:1100,y:640,w:250,h:100,l:['Encuesta','inicial'],c:'white',n:4,at:7},
-    tele: {x:480, y:940,w:220,h:100,l:['Telemetría'],c:'pink',at:8},
-    ollama:{x:800,y:940,w:220,h:100,l:['Ollama','(LLM)'],c:'pink',at:8},
-    mgpt: {x:1120,y:940,w:220,h:100,l:['MarioGPT'],c:'pink',at:8},
-    pers: {x:1480,y:940,w:270,h:100,l:['Nivel','personalizado (P)'],c:'pink',at:8},
-    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles genéricos','prediseñados (N)'],c:'gold',at:9,go:9},
-    block:{x:1450,y:640,w:300,h:130,l:['Bloque principal','6 niveles: P · N · H','orden aleatorio'],c:'block',n:5,at:9},
-    quest:{x:1430,y:470,w:210,h:80, l:['Cuestionario','6 preguntas'],c:'white',at:10},
-    rank: {x:1830,y:640,w:260,h:100,l:['Ranking y','comentarios'],c:'white',n:6,at:11},
-    free: {x:2160,y:640,w:270,h:100,l:['Juego libre','voluntario ≤ 20 min'],c:'white',n:7,at:12},
-    end:  {x:2460,y:640,w:170,h:100,l:['Final'],c:'end',n:8,at:13}
+    fil:  {x:730, y:170,w:340,h:100,l:['Filtración','por criterio'],c:'mint',n:2,at:3},
+    astar:{x:1150,y:170,w:340,h:100,l:['Verificación','con A*'],c:'mint',n:3,at:4},
+    bank: {x:1560,y:170,w:340,h:100,l:['Banco «Nivel 0»','niveles humanos (H)'],c:'gold',at:4,go:4,db:1},
+    welcome:{x:160,y:640,w:250,h:100,l:['Bienvenida','Explicación de sesión'],c:'white',n:1,at:5},
+    fam:  {x:480, y:640,w:280,h:100,l:['Niveles de','familiarización (F)'],c:'white',n:2,at:6},
+    cons: {x:790, y:640,w:240,h:170,l:['Consentimiento','informado'],c:'gold',n:3,at:7,dia:1},
+    exit: {x:790, y:450,w:300,h:80, l:['Se borran los datos','y se sale'],c:'danger',at:7,go:7},
+    survey:{x:1100,y:640,w:250,h:100,l:['Encuesta','inicial'],c:'white',n:4,at:8},
+    tele: {x:480, y:940,w:220,h:100,l:['Telemetría'],c:'pink',at:9},
+    ollama:{x:800,y:940,w:220,h:100,l:['Ollama','(LLM)'],c:'pink',at:9},
+    mgpt: {x:1120,y:940,w:220,h:100,l:['MarioGPT'],c:'pink',at:9},
+    pers: {x:1480,y:940,w:270,h:100,l:['Nivel','personalizado (P)'],c:'pink',at:9},
+    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles genéricos','prediseñados (N)'],c:'gold',at:10,go:10},
+    block:{x:1450,y:640,w:300,h:130,l:['Bloque principal','6 niveles: P · N · H','orden aleatorio'],c:'block',n:5,at:10},
+    quest:{x:1430,y:470,w:210,h:80, l:['Cuestionario','6 preguntas'],c:'white',at:11},
+    rank: {x:1830,y:640,w:260,h:100,l:['Ranking y','comentarios'],c:'white',n:6,at:12},
+    free: {x:2160,y:640,w:270,h:100,l:['Juego libre','voluntario ≤ 20 min'],c:'white',n:7,at:13},
+    end:  {x:2460,y:640,w:170,h:100,l:['Final'],c:'end',n:8,at:14}
   };
-  const FOCUS={1:['hf'],2:['fil'],3:['astar'],4:['welcome'],5:['fam'],6:['cons'],7:['survey'],8:['tele','ollama','mgpt','pers'],9:['block'],10:['quest'],11:['rank'],12:['free'],13:['end'],14:[]};
+  const FOCUS={1:['hf'],2:['hf'],3:['fil'],4:['astar'],5:['welcome'],6:['fam'],7:['cons'],8:['survey'],9:['tele','ollama','mgpt','pers'],10:['block'],11:['quest'],12:['rank'],13:['free'],14:['end'],15:[]};
   const EDGES=[
-    {d:'M480 170H560',at:2},{d:'M900 170H980',at:3},{d:'M1320 170H1390',at:3},
-    {d:'M1560 220V575',at:9,lbl:['H',1590,420]},
-    {d:'M285 640H340',at:5},{d:'M620 640H670',at:6},
-    {d:'M910 640H975',at:7,lbl:['Sí',924,690],id:'eYes'},
-    {d:'M790 555V490',at:6,lbl:['No',814,532],id:'eNo'},
-    {d:'M1225 640H1300',at:9},{d:'M1600 640H1700',at:11},{d:'M1960 640H2025',at:12},{d:'M2295 640H2375',at:13},
-    {d:'M480 690V890',at:8,dash:1},{d:'M590 940H690',at:8,dash:1},{d:'M910 940H1010',at:8,dash:1},{d:'M1230 940H1345',at:8,dash:1},
-    {d:'M1480 890V705',at:9,lbl:['P',1448,806]},
-    {d:'M1850 890V790H1560V705',at:9,lbl:['N',1700,772]},
-    {d:'M1450 575V510',at:10,both:1}
+    {d:'M480 170H560',at:3},{d:'M900 170H980',at:4},{d:'M1320 170H1390',at:4},
+    {d:'M1560 220V575',at:10,lbl:['H',1590,420]},
+    {d:'M285 640H340',at:6},{d:'M620 640H670',at:7},
+    {d:'M910 640H975',at:8,lbl:['Sí',924,690],id:'eYes'},
+    {d:'M790 555V490',at:7,lbl:['No',814,532],id:'eNo'},
+    {d:'M1225 640H1300',at:10},{d:'M1600 640H1700',at:12},{d:'M1960 640H2025',at:13},{d:'M2295 640H2375',at:14},
+    {d:'M480 690V890',at:9,dash:1},{d:'M590 940H690',at:9,dash:1},{d:'M910 940H1010',at:9,dash:1},{d:'M1230 940H1345',at:9,dash:1},
+    {d:'M1480 890V705',at:10,lbl:['P',1448,806]},
+    {d:'M1850 890V790H1560V705',at:10,lbl:['N',1700,772]},
+    {d:'M1450 575V510',at:11,both:1}
   ];
   const nodeEls={}, edgeEls=[], extra=[];
   // carril de generación + banners (debajo de los nodos)
-  const lane=E('rect',{class:'lane',x:330,y:830,width:1335,height:215,rx:0},world); extra.push([lane,8]);
-  const laneL=E('text',{class:'lanelbl',x:350,y:866},world); laneL.textContent='GENERACIÓN EN SEGUNDO PLANO'; extra.push([laneL,8]);
+  const lane=E('rect',{class:'lane',x:330,y:830,width:1335,height:215,rx:0},world); extra.push([lane,9]);
+  const laneL=E('text',{class:'lanelbl',x:350,y:866},world); laneL.textContent='GENERACIÓN EN SEGUNDO PLANO'; extra.push([laneL,9]);
   function banner(txt,x,y,w,c,at){ const g=E('g',{class:'banner'},world); E('rect',{x:x+6,y:y+6,width:w,height:54,fill:'#1a1a1a'},g); E('rect',{x,y,width:w,height:54,fill:c,stroke:'#1a1a1a','stroke-width':5},g); const t=E('text',{x:x+20,y:y+39},g); t.textContent=txt; extra.push([g,at]); }
-  banner('PARTE 1 · SELECCIÓN DE NIVELES HUMANOS',110,34,590,COLS_M(),14);
-  banner('PARTE 2 · APLICACIÓN DEL EXPERIMENTO',110,330,560,'#f6d36b',14);
+  banner('PARTE 1 · SELECCIÓN DE NIVELES HUMANOS',110,34,590,COLS_M(),15);
+  banner('PARTE 2 · APLICACIÓN DEL EXPERIMENTO',110,330,560,'#f6d36b',15);
   function COLS_M(){ return COL.mint; }
   EDGES.forEach(ed=>{
     const g=E('g',{class:'fedge'+(ed.dash?' dash':'')},world);
@@ -347,10 +380,10 @@
     (function f(now){ const k=Math.min(1,(now-t0)/ms), e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
       cvw={cx:s.cx+(t.cx-s.cx)*e,cy:s.cy+(t.cy-s.cy)*e,lk:s.lk+(t.lk-s.lk)*e}; setVB(cvw); if(k<1) camRaf=requestAnimationFrame(f); })(t0);
   }
-  const CAMS={1:camFor(310,170,1,330,300),2:camFor(730,170,1,330,300),3:camFor(1235,170,.75,250,300),4:camFor(160,640,1,300,330),
-    5:camFor(480,640,1,330,330),6:camFor(790,560,.85,300,340),7:camFor(1100,640,1,330,330),8:camFor(975,940,.48,340,330),
-    9:camFor(1500,560,.66,330,380),10:camFor(1450,560,.9,330,360),11:camFor(1830,640,1,330,330),12:camFor(2160,640,1,330,330),
-    13:camFor(2460,640,1,300,330),14:{cx:1270,cy:530.5,lk:Math.log(.474)}};
+  const CAMS={1:camFor(310,170,1,330,300),2:camFor(310,170,1,330,300),3:camFor(730,170,1,330,300),4:camFor(1235,170,.75,250,300),
+    5:camFor(160,640,1,300,330),6:camFor(480,640,1,330,330),7:camFor(790,560,.85,300,340),8:camFor(1100,640,1,330,330),
+    9:camFor(975,940,.48,340,330),10:camFor(1500,560,.66,330,380),11:camFor(1450,560,.9,330,360),12:camFor(1830,640,1,330,330),
+    13:camFor(2160,640,1,330,330),14:camFor(2460,640,1,300,330),15:{cx:1270,cy:530.5,lk:Math.log(.474)}};
 
   /* ---------- temporizadores / limpieza ---------- */
   let timers=[],ints=[],rafs=[],peek=new Set(),extraEls=[];
@@ -379,13 +412,24 @@
     if(src){ img.src=src; s.classList.add('has'); }
     s.querySelector('input').onchange=e=>{ const f=e.target.files[0]; if(!f)return; img.src=URL.createObjectURL(f); s.classList.add('has'); }; });
 
+  const shotHf=$('#shotHf');
+  if(shotHf){
+    shotHf.addEventListener('click',e=>{
+      if(e.target.tagName!=='INPUT'){ e.preventDefault(); setStep(2,'fwd'); }
+    });
+  }
+  const hfZoomBody=$('#hfZoomBody');
+  if(hfZoomBody){
+    hfZoomBody.addEventListener('click',()=>next());
+  }
+
   // 1 · documentos
   (function(){ const box=$('#docs'), likes=['2.4k','1.9k','1.2k','890','640'];
     for(let i=0;i<5;i++){ const d=document.createElement('div'); d.className='doc'; d.style.left=(6+i*98)+'px'; d.style.setProperty('--dy',Math.abs(i-2)*8); d.style.setProperty('--r',(i-2)*5); d.style.transitionDelay=(i*90)+'ms';
       d.innerHTML=`<img src="${lvlThumb(i+3)}" alt=""><b>nivel_${100+i*37}</b><i>♥ ${likes[i]}</i><div style="margin-top:3px;color:#666">.json</div>`; box.appendChild(d); } })();
 
-  // 2 · embudo
-  PA[2]={on(){
+  // 3 · embudo
+  PA[3]={on(){
     const box=$('#fundots'),N=$('#funN'); let n=0,alive=0; N.textContent='0'; box.innerHTML='';
     const cl=['#ff7fc0','#94ddc6','#f6d36b','#8aa24a'], cx=252;
     const fx=[.85,.5,.22];
@@ -402,8 +446,8 @@
     I(spawn,300); spawn();
   }};
 
-  // 3 · A*
-  PA[3]={on(){
+  // 4 · A*
+  PA[4]={on(){
     const sv=$('#astar'), C=20, badge=$('#abadge'); sv.innerHTML=''; badge.classList.remove('show');
     const gaps=new Set([10,11,12,20,21]), plat=new Set([9,10,11,12,13]);
     for(let c=0;c<28;c++){ if(!gaps.has(c)){ E('rect',{x:c*C,y:8*C,width:C,height:2*C,fill:'#c98a4b'},sv); E('rect',{x:c*C,y:8*C,width:C,height:5,fill:'#7a4a1f'},sv); }
@@ -420,11 +464,11 @@
     T(()=>{ path.forEach(([c,r],j)=>setTimeout(()=>{ E('circle',{cx:c*C+10,cy:r*C+10,r:4.5,fill:'#4fbf98',stroke:'#1a1a1a','stroke-width':1},pg); },j*22)); },1900);
     T(()=>{ hero.setAttribute('opacity',1); let j=0; I(()=>{ if(j<path.length){ const [c,r]=path[j++]; hero.setAttribute('x',c*C+2); hero.setAttribute('y',(r+1)*C-18); } },70); },2700);
     T(()=>badge.classList.add('show'),4700);
-    T(()=>{ if(slide.classList.contains('active')&&step===3){ PA[3].off(); PA[3].on(); } },8200);
+    T(()=>{ if(slide.classList.contains('active')&&step===4){ PA[4].off(); PA[4].on(); } },8200);
   },off(){}};
 
-  // 5 · telemetría
-  PA[5]={on(){
+  // 6 · telemetría
+  PA[6]={on(){
     const box=$('#tele'); let t=0,sal=0,mue=0,mon=0,ene=0,last={},now=0;
     const render=()=>{ const f=(k,v)=>(now-(last[k]||-1e9)<260?`<span class="fl">${v}</span>`:`<em>${v}</em>`);
       box.innerHTML=`{\n  "participante": <em>"P07"</em>,\n  "nivel": <em>"F1"</em>,\n  "tiempo_s": ${f('t',t.toFixed(1))},\n  "saltos": ${f('s',sal)},\n  "muertes": ${f('m',mue)},\n  "monedas": ${f('c',mon)},\n  "enemigos_derrotados": ${f('e',ene)}\n}`; };
@@ -432,29 +476,29 @@
     I(()=>{ now+=100; t+=.1; if(Math.random()<.22){ sal++; last.s=now; } if(Math.random()<.04){ mue++; last.m=now; } if(Math.random()<.1){ mon++; last.c=now; } if(Math.random()<.05){ ene++; last.e=now; } last.t=now; render(); },100);
   }};
 
-  // 6 · consentimiento
+  // 7 · consentimiento
   const cres=$('#cres');
   function choose(b){
     const exit=nodeEls.exit,eNo=edgeEls.find(e=>e.id==='eNo').g,eYes=edgeEls.find(e=>e.id==='eYes').g,sv=nodeEls.survey;
     exit.classList.toggle('hl',b==='no'); eNo.classList.toggle('hl',b==='no');
     ['exit'].forEach(()=>{}); if(b==='no'){ peek.delete('survey'); peek.delete('eYes'); eYes.classList.remove('run'); }
     if(b==='yes'){ peek.add('survey'); peek.add('eYes'); }
-    paint(6);
+    paint(7);
     if(b==='yes'){ eYes.classList.add('run'); sv.classList.add('focus'); } else sv.classList.remove('focus');
     cres.className='res '+b; cres.textContent=b==='no'?'No acepta → se borran sus datos y se sale de la sesión.':'Acepta → continuamos con la encuesta inicial.';
   }
   $('#cNo').onclick=e=>{ e.currentTarget.blur(); choose('no'); }; $('#cYes').onclick=e=>{ e.currentTarget.blur(); choose('yes'); };
-  PA[6]={on(){ cres.className='res'; cres.textContent='Elige una opción.'; T(()=>choose('no'),1100); T(()=>choose('yes'),3600); },
+  PA[7]={on(){ cres.className='res'; cres.textContent='Elige una opción.'; T(()=>choose('no'),1100); T(()=>choose('yes'),3600); },
          off(){ peek.clear(); nodeEls.exit.classList.remove('hl'); edgeEls.forEach(e=>e.g.classList.remove('hl','run')); }};
 
-  // 8 · generación
-  PA[8]={on(){
+  // 9 · generación
+  PA[9]={on(){
     const out=$('#prompt'), txt='Prompt → MarioGPT: «Nivel con saltos exigentes sobre vacíos, pocos enemigos y plataformas elevadas.»'; let i=0; out.textContent='';
     if(reduce) out.textContent=txt; else I(()=>{ if(i<txt.length) out.textContent=txt.slice(0,++i); },32);
     packet([[480,700],[480,940],[1120,940],[1480,940],[1480,720]],520);
   }};
 
-  // 9 · bloque principal
+  // 10 · bloque principal
   const c6=$('#cards6'); let order=['P','H','N','P','H','N'].map((t,i)=>({t,id:i})); const c6els={};
   order.forEach(o=>{ const d=document.createElement('div'); d.className='c6'; d.innerHTML=`<img src="${lvlThumb(40+o.id*11+(o.t==='P'?5:0),28,16,3)}" alt=""><b class="t-${o.t}">${o.t}</b>`; c6els[o.id]=d; c6.appendChild(d); });
   function shuffle(){
@@ -465,36 +509,36 @@
     order.forEach(o=>{ const a=first[o.id],b=c6els[o.id].getBoundingClientRect(); c6els[o.id].animate([{transform:`translate(${(a.left-b.left)/sc}px,${(a.top-b.top)/sc}px)`},{transform:'none'}],{duration:550,easing:'cubic-bezier(.3,1.3,.5,1)'}); });
   }
   $('#shuf').onclick=e=>{ e.currentTarget.blur(); shuffle(); };
-  PA[9]={on(){ T(shuffle,700); }};
+  PA[10]={on(){ T(shuffle,700); }};
 
-  // 10 · cuestionario
+  // 11 · cuestionario
   (function(){ const box=$('#lik'), names=['Disfrute','Competencia','Dificultad percibida','Ajuste del reto','Variedad','Deseo de rejugar'], rows=[];
     let h='<div class="lik"><span></span>'+[-3,-2,-1,0,1,2,3].map(v=>`<span class="hd">${v>0?'+'+v:v}</span>`).join('')+'</div>'; box.innerHTML=h;
     names.forEach(nm=>{ const r=document.createElement('div'); r.className='lik'; r.innerHTML=`<span>${nm}</span>`+[-3,-2,-1,0,1,2,3].map(v=>`<button data-v="${v}" aria-label="${nm} ${v}"></button>`).join('');
       r.querySelectorAll('button').forEach(b=>b.onclick=()=>{ b.blur(); sel(r,+b.dataset.v); }); box.appendChild(r); rows.push(r); });
     window.__likSel=sel; function sel(r,v){ r.querySelectorAll('button').forEach(b=>{ const x=+b.dataset.v; b.className=x===v?'on '+(v<0?'neg':v>0?'pos':'zero'):''; }); }
-    PA[10]={on(){ rows.forEach(r=>sel(r,99)); rows.forEach((r,i)=>T(()=>sel(r,Math.floor(Math.random()*7)-3),500+i*350)); }};
+    PA[11]={on(){ rows.forEach(r=>sel(r,99)); rows.forEach((r,i)=>T(()=>sel(r,Math.floor(Math.random()*7)-3),500+i*350)); }};
   })();
 
-  // 11 · ranking
+  // 12 · ranking
   (function(){ const box=$('#rank'); let list=['P1','H1','N1','H2','P2','N2'];
     const draw=()=>{ box.innerHTML=''; list.forEach((id,i)=>{ const t=id[0],d=document.createElement('div'); d.className='rk';
       d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'Genérico':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
       const [up,dn]=d.querySelectorAll('button'); up.onclick=()=>{ if(i>0){ [list[i-1],list[i]]=[list[i],list[i-1]]; draw(); } }; dn.onclick=()=>{ if(i<5){ [list[i+1],list[i]]=[list[i],list[i+1]]; draw(); } }; box.appendChild(d); }); };
     draw(); })();
 
-  // 12 · juego libre
+  // 13 · juego libre
   (function(){ let cond='P',sim=0,lv=0,nextLv=150; const tm=$('#timer'),mT=$('#mT'),mL=$('#mL');
     const paintC=()=>$$('.cond button').forEach(b=>b.className=b.dataset.c===cond?'on '+cond:'');
     $$('.cond button').forEach(b=>b.onclick=()=>{ b.blur(); cond=b.dataset.c; sim=0;lv=0;nextLv=150; paintC(); });
     const fmt=s=>{ const r=Math.max(0,1200-s); return String(Math.floor(r/60)).padStart(2,'0')+':'+String(Math.floor(r%60)).padStart(2,'0'); };
-    PA[12]={on(){ sim=0;lv=0;nextLv=150; paintC(); I(()=>{ sim+=reduce?0:5; if(sim>=1200){ sim=0;lv=0;nextLv=150; } if(sim>=nextLv){ lv++; nextLv+=110+Math.random()*90; }
+    PA[13]={on(){ sim=0;lv=0;nextLv=150; paintC(); I(()=>{ sim+=reduce?0:5; if(sim>=1200){ sim=0;lv=0;nextLv=150; } if(sim>=nextLv){ lv++; nextLv+=110+Math.random()*90; }
       tm.firstChild.nodeValue=fmt(sim); mT.textContent=Math.floor(sim/60)+' min'; mL.textContent=lv; },100); }}; })();
 
-  // 13 · final
-  PA[13]={on(){ T(()=>{ if(step===13) burst(300,330,22); },600); }};
-  // 14 · vista completa: el participante recorre la Parte 2
-  PA[14]={on(){ packet([[160,640],[480,640],[790,640],[1100,640],[1450,640],[1830,640],[2160,640],[2460,640]],330,px(heroRows('happy'),1)); T(()=>{},0); }};
+  // 14 · final
+  PA[14]={on(){ T(()=>{ if(step===14) burst(300,330,22); },600); }};
+  // 15 · vista completa: el participante recorre la Parte 2
+  PA[15]={on(){ packet([[160,640],[480,640],[790,640],[1100,640],[1450,640],[1830,640],[2160,640],[2460,640]],330,px(heroRows('happy'),1)); T(()=>{},0); }};
 
   /* ---------- visibilidad ---------- */
   function paint(n){
@@ -502,19 +546,20 @@
     edgeEls.forEach(e=>e.g.classList.toggle('vis',!!(e.at<=n||(e.id&&peek.has(e.id)))));
     extra.forEach(([g,at])=>g.classList.toggle('vis',at<=n));
   }
-  const CHIP={1:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],2:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],3:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],8:[2,'PARTE 2 · GENERACIÓN EN SEGUNDO PLANO'],14:[3,'DIAGRAMA COMPLETO']};
+  const CHIP={1:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],2:[1,'PARTE 1 · DATASET EN HUGGING FACE (ZOOM)'],3:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],4:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],9:[2,'PARTE 2 · GENERACIÓN EN SEGUNDO PLANO'],15:[3,'DIAGRAMA COMPLETO']};
 
   H['s-flow']={
     enter(){ camTo(CAMS[1],0); },
-    leave(){ clearAnim(); panels.forEach(p=>p.classList.remove('on')); },
+    leave(){ clearAnim(); panels.forEach(p=>p.classList.remove('on')); $('#hfZoom')?.classList.remove('on'); },
     step(n,old){
-      clearAnim(); peek.clear(); slide.classList.toggle('full',n===14);
+      clearAnim(); peek.clear(); slide.classList.toggle('full',n===15);
       edgeEls.forEach(e=>e.g.classList.remove('hl','run')); nodeEls.exit.classList.remove('hl');
       Object.values(nodeEls).forEach(g=>g.classList.remove('focus')); (FOCUS[n]||[]).forEach(id=>nodeEls[id].classList.add('focus'));
       paint(n);
       const c=CHIP[n]||[2,'PARTE 2 · APLICACIÓN DEL EXPERIMENTO']; chip.dataset.p=c[0]; chip.textContent=c[1];
       camTo(CAMS[n],old<1?0:1100);
       panels.forEach(p=>p.classList.toggle('on',+p.dataset.p===n));
+      $('#hfZoom')?.classList.toggle('on', n === 2);
       PA[n]?.on?.();
     }
   };
