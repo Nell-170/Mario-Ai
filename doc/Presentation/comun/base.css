@@ -1,0 +1,51 @@
+/* Estilos compartidos por todas las filminas: variables, escenario, navegación,
+   animaciones de aparición y adornos pixel (nubes, suelo, parpadeo...). */
+:root{
+  --bg:#ece8e5; --ink:#1a1a1a;
+  --pink:#ff7fc0; --pink-d:#e0559f; --mint:#94ddc6; --mint-d:#4fbf98;
+  --olive:#8aa24a; --gold:#dba93b; --gold-l:#f6d36b; --ruby:#c1121f; --violet:#a31bb0;
+  --display:'Bebas Neue','Oswald','Arial Narrow',Impact,sans-serif;
+  --body:'Montserrat','Segoe UI',system-ui,sans-serif;
+  --pixel:'Press Start 2P','Courier New',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#d8d3ce;overflow:hidden;font-family:var(--body);color:var(--ink)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;margin:-360px 0 0 -640px;transform-origin:50% 50%;background:#fff;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.18)}
+.slide{position:absolute;inset:0;display:none;background:#fff}
+.slide.active{display:block}
+.slide.gray{background:var(--bg)}
+.h1{position:absolute;left:60px;top:34px;margin:0;font:400 66px/1 var(--display);letter-spacing:1px}
+img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+.abs{position:absolute}
+.reveal{opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease;pointer-events:none}
+.reveal.show{opacity:1;transform:none;pointer-events:auto}
+.pop-in{opacity:0;transform:scale(.6);transition:opacity .35s ease,transform .4s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+.pop-in.show{opacity:1;transform:none;pointer-events:auto}
+
+/* ---------- nav ---------- */
+#nav{position:absolute;left:0;right:0;bottom:6px;height:34px;display:flex;align-items:center;justify-content:center;gap:16px;z-index:50}
+.nbtn{font:400 12px var(--pixel);width:34px;height:28px;border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);cursor:pointer;color:var(--ink);padding:0}
+.nbtn:hover{background:var(--gold-l)}
+.nbtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+#prog{display:flex;gap:6px;align-items:center}
+.pc{width:12px;height:12px;background:#ddd7d2;border:2px solid var(--ink);transition:transform .2s,background .2s}
+.pc.done{background:var(--gold-l)}
+.pc.cur{background:var(--pink);transform:scale(1.4)}
+#fx{position:absolute;inset:0;pointer-events:none;z-index:40}
+#wipe{position:absolute;inset:0;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(9,1fr);pointer-events:none;z-index:60}
+#wipe i{display:block;transform:scale(0)}
+
+/* ---------- adornos compartidos ---------- */
+.ground{position:absolute;left:0;right:0;bottom:0;height:80px;background-image:var(--brick);background-size:40px 40px;image-rendering:pixelated}
+.blink{animation:blink 1.1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.cloud{position:absolute;opacity:.9;animation:drift linear infinite}
+@keyframes drift{from{transform:translateX(-160px)}to{transform:translateX(1440px)}}
+.bob{animation:bob 1.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-14px)}}
+.spin{animation:spin 1.1s steps(6) infinite}
+@keyframes spin{0%{transform:scaleX(1)}50%{transform:scaleX(.15)}100%{transform:scaleX(1)}}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}

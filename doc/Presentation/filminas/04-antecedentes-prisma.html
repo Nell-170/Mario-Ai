@@ -1,0 +1,95 @@
+<!-- ============ FILMINA: ANTECEDENTES · PRISMA ============ -->
+
+<style>
+/* ---------- prisma ---------- */
+.qblock{position:absolute;left:60px;top:132px;width:440px;font:500 12.5px/1.65 'Courier New',monospace}
+.qblock .grp{display:block;padding:8px 10px;margin-bottom:4px;border:3px solid var(--ink);background:#fff}
+.qblock .tag{display:block;font:400 8px var(--pixel);margin-bottom:5px}
+.qblock .g1{background:#ffe2f1;box-shadow:4px 4px 0 var(--pink)}
+.qblock .g2{background:#e1f6ef;box-shadow:4px 4px 0 var(--mint-d)}
+.qblock .g3{background:#fbf0cf;box-shadow:4px 4px 0 var(--gold)}
+.qblock .and{display:block;text-align:center;font:400 10px var(--pixel);margin:6px 0}
+.acm-note{position:absolute;left:60px;top:604px;width:440px;display:flex;align-items:center;gap:12px;font-size:14px}
+.dbchip{position:absolute;top:118px;width:130px;height:40px;border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;gap:8px;font:600 14px var(--body);color:#fff;background:var(--olive);cursor:default}
+.dbchip b{font-weight:700;color:var(--ink);background:#fff;padding:1px 7px}
+.dbchip.acm{background:var(--ruby);border-style:dashed;opacity:.85}
+.dbchip:hover{transform:translateY(-3px)}
+.wires{position:absolute;inset:0;pointer-events:none}
+.wires path{fill:none;stroke:var(--ink);stroke-width:2.5;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .7s ease .1s}
+.wires path.show{stroke-dashoffset:0}
+.wires path.dash{stroke:#999;stroke-dasharray:.04 .03}
+.wires path.dash.show{stroke-dasharray:.04 .03;stroke-dashoffset:0}
+.wires polygon{fill:var(--ink);opacity:0;transition:opacity .3s .6s}
+.wires polygon.show{opacity:1}
+.circ{position:absolute;width:104px;height:104px;margin:-52px 0 0 -52px;border:4px solid var(--violet);border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.circ span{font:500 14px var(--body)}
+.circ b{font:400 46px/1 var(--display);color:var(--violet);margin-top:2px}
+.pbox{position:absolute;border:2.5px solid var(--ink);background:#fff;padding:9px 12px;font-size:13px;line-height:1.55}
+.pbox h4{margin:0 0 3px;font:600 14px var(--body)}
+.pbox h4 b{color:var(--violet);font-weight:700}
+.exrow{display:grid;grid-template-columns:150px 26px 1fr;align-items:center;gap:6px;padding:1px 0;cursor:default;position:relative}
+.exrow i{display:block;height:9px;background:var(--pink);width:var(--w);transition:transform .2s;transform-origin:left}
+.exrow:hover i{transform:scaleY(1.7);background:var(--pink-d)}
+.exrow:hover::after{content:attr(data-pct);position:absolute;right:-4px;top:-16px;background:var(--ink);color:#fff;font:400 8px var(--pixel);padding:3px 5px}
+.incl{position:absolute;width:200px;height:56px;border:3px solid var(--ink);background:var(--gold);display:flex;align-items:center;justify-content:center;gap:12px;font:600 18px var(--body)}
+.incl b{font:400 38px var(--display);color:#fff;text-shadow:2px 2px 0 var(--ink)}
+</style>
+
+  <section class="slide" id="s-prisma" data-min="1" data-max="5">
+    <h1 class="h1">ANTECEDENTES</h1>
+
+    <div class="qblock reveal" data-at="1">
+      <span class="grp g1"><span class="tag">GRUPO 1 · PCG</span>("procedural content generation" OR "procedural content generation via machine learning" OR … )</span>
+      <span class="and">AND</span>
+      <span class="grp g2"><span class="tag">GRUPO 2 · MODELADO DEL JUGADOR</span>( "player modeling" OR "player behavior" OR "player telemetry" OR … )</span>
+      <span class="and">AND</span>
+      <span class="grp g3"><span class="tag">GRUPO 3 · VIDEOJUEGOS</span>( "video game" OR "gaming" OR "platformers" OR "Super Mario" OR … )</span>
+    </div>
+    <div class="acm-note reveal" data-at="1"><img class="spr" data-spr="warn" data-s="4" alt=""><span>Nota: ACM no está por problemas técnicos</span></div>
+
+    <div class="dbchip reveal" data-at="1" style="left:528px">Scopus: <b>54</b></div>
+    <div class="dbchip reveal" data-at="1" style="left:670px">IEEE: <b>72</b></div>
+    <div class="dbchip acm reveal" data-at="1" style="left:812px">ACM</div>
+
+    <svg class="wires" viewBox="0 0 1280 720">
+      <path data-at="2" pathLength="1" d="M593 158V182H735V198"/>
+      <path data-at="2" pathLength="1" d="M735 158V198"/>
+      <path data-at="2" class="dash" pathLength="1" d="M877 158V182H735"/>
+      <path data-at="3" pathLength="1" d="M735 302V388"/>
+      <path data-at="3" pathLength="1" d="M735 345H800"/>
+      <polygon data-at="3" points="727,380 735,392 743,380"/>
+      <path data-at="4" pathLength="1" d="M735 492V600"/>
+      <path data-at="4" pathLength="1" d="M735 540H800"/>
+      <polygon data-at="4" points="727,592 735,604 743,592"/>
+    </svg>
+
+    <div class="circ pop-in" data-at="2" style="left:735px;top:250px"><span>Identified</span><b id="n-ident">126</b></div>
+    <div class="pbox reveal" data-at="3" style="left:800px;top:312px;width:260px">
+      <h4>Removed: <b id="n-rem">29</b></h4>
+      <div class="exrow" data-pct="72%"><span>Duplicates</span><b>21</b><i style="--w:100%"></i></div>
+      <div class="exrow" data-pct="28%"><span>No full papers</span><b>8</b><i style="--w:38%"></i></div>
+    </div>
+    <div class="circ pop-in" data-at="3" style="left:735px;top:440px"><span>Screened</span><b id="n-scr">97</b></div>
+    <div class="pbox reveal" data-at="4" style="left:800px;top:476px;width:320px">
+      <h4>Excluded: <b id="n-exc">85</b></h4>
+      <div class="exrow" data-pct="60%"><span>Not 2D platformer</span><b>51</b><i style="--w:100%"></i></div>
+      <div class="exrow" data-pct="24%"><span>Off-topic/reviews</span><b>20</b><i style="--w:39%"></i></div>
+      <div class="exrow" data-pct="9%"><span>Not player-driven</span><b>8</b><i style="--w:16%"></i></div>
+      <div class="exrow" data-pct="7%"><span>No adaptive PCG</span><b>6</b><i style="--w:12%"></i></div>
+    </div>
+    <div class="incl pop-in" data-at="5" id="incl" style="left:635px;top:606px">Included <b id="n-inc">12</b><img class="spr" data-spr="check" data-s="4" alt=""></div>
+  </section>
+
+<script>
+/* ============================================================
+   ANTECEDENTES · PRISMA
+   ============================================================ */
+H['s-prisma']={
+  step(n,old){
+    if(n>=2&&old<2) countTo(document.getElementById('n-ident'),126);
+    if(n>=3&&old<3){ countTo(document.getElementById('n-rem'),29,700); countTo(document.getElementById('n-scr'),97); }
+    if(n>=4&&old<4) countTo(document.getElementById('n-exc'),85);
+    if(n>=5&&old<5){ countTo(document.getElementById('n-inc'),12,700); setTimeout(()=>{ if(step===5) burst(735,610,14); },350); }
+  }
+};
+</script>
