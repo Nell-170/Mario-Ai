@@ -210,7 +210,233 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .tg{display:inline-block;min-width:68px;padding:3px 8px;font:700 12px var(--body);border:2px solid var(--ink)}
 .tg.y{background:var(--mint)} .tg.n{background:var(--pink)} .tg.p{background:var(--gold-l)}
 
-/* ===== 06-metodologia.html ===== */
+/* ===== 06-niveles.html ===== */
+  /* ---------- Taxonomía de niveles (F, G, P, H) ---------- */
+  .levels-wrap {
+    position: absolute;
+    left: 60px;
+    top: 110px;
+    width: 1160px;
+  }
+
+  .lvl-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .lvl-subtitle .tag {
+    font: 400 10px var(--pixel);
+    background: var(--ink);
+    color: #fff;
+    padding: 6px 12px;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, .2);
+  }
+
+  .lvl-subtitle .desc {
+    font: 500 14px var(--body);
+    color: #444;
+  }
+
+  /* Grid de 4 tarjetas */
+  .lvl-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  .lvl-card {
+    background: #fff;
+    border: 4px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 14px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    user-select: none;
+    transition: transform .25s cubic-bezier(.2, .9, .3, 1.2), box-shadow .25s ease, opacity .25s ease, filter .25s ease;
+    min-height: 382px;
+  }
+
+  .lvl-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+
+  .lvl-card.active {
+    transform: translateY(-8px);
+    box-shadow: 10px 10px 0 var(--ink);
+    border-color: var(--ink);
+    filter: none;
+    opacity: 1;
+  }
+
+  .lvl-card.dim {
+    opacity: .42;
+    filter: grayscale(.65);
+    transform: none;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, .4);
+  }
+
+  /* Encabezado de la tarjeta */
+  .lvl-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--ink);
+  }
+
+  .lvl-badge {
+    width: 52px;
+    height: 52px;
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 400 38px/1 var(--display);
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .b-F { background: #ffffff; }
+  .b-G { background: var(--gold-l); }
+  .b-P { background: var(--pink); }
+  .b-H { background: var(--mint); }
+
+  .lvl-head-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .lvl-pill {
+    font: 400 8px var(--pixel);
+    padding: 3px 6px;
+    border: 2px solid var(--ink);
+    display: inline-block;
+    align-self: flex-start;
+    color: var(--ink);
+  }
+
+  .p-F { background: #e8eaed; }
+  .p-G { background: var(--gold-l); }
+  .p-P { background: var(--pink); }
+  .p-H { background: var(--mint); }
+
+  .lvl-title {
+    font: 700 15px/1.15 var(--body);
+    margin: 0;
+    color: var(--ink);
+  }
+
+  /* Detalles y cuerpo */
+  .lvl-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    flex: 1;
+  }
+
+  .lvl-row {
+    background: #f8f7f5;
+    border: 2px solid var(--ink);
+    padding: 7px 9px;
+  }
+
+  .lvl-row b {
+    display: block;
+    font: 400 8px var(--pixel);
+    color: var(--ink);
+    margin-bottom: 4px;
+    letter-spacing: .5px;
+  }
+
+  .lvl-row span {
+    color: #2b2b2b;
+    font-weight: 500;
+  }
+
+  .lvl-footer-tag {
+    margin-top: auto;
+    padding-top: 8px;
+    font: 600 11.5px var(--body);
+    color: var(--violet);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .lvl-footer-tag::before {
+    content: "▶";
+    font: 400 8px var(--pixel);
+    color: var(--pink-d);
+  }
+
+  /* Tira de flujo al fondo (Timeline experimental) */
+  .lvl-timeline {
+    margin-top: 16px;
+    border: 3px solid var(--ink);
+    background: #fff;
+    box-shadow: 5px 5px 0 var(--ink);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .lt-phase {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lt-tag {
+    font: 400 8.5px var(--pixel);
+    background: var(--ink);
+    color: #fff;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+
+  .lt-flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 600 13px var(--body);
+  }
+
+  .lt-box {
+    padding: 3px 8px;
+    border: 2px solid var(--ink);
+    font: 400 12px var(--display);
+    letter-spacing: .5px;
+  }
+
+  .lt-arrow {
+    font-size: 11px;
+    color: var(--ink);
+  }
+
+  .lt-sep {
+    height: 32px;
+    width: 2px;
+    background: var(--ink);
+  }
+
+  .lvl-timeline.hl-flow {
+    background: #fffaf0;
+    border-color: var(--ink);
+  }
+
+/* ===== 07-metodologia.html ===== */
   /* ---------- metodología: diagrama con zoom ---------- */
   #s-flow .h1 {
     z-index: 5
@@ -757,7 +983,8 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     background: var(--pink)
   }
 
-  .t-N {
+  .t-N,
+  .t-G {
     background: var(--gold-l)
   }
 
@@ -939,7 +1166,8 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     background: var(--pink)
   }
 
-  .cond button.on.N {
+  .cond button.on.N,
+  .cond button.on.G {
     background: var(--gold-l)
   }
 
@@ -1360,6 +1588,155 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <table class="cmp" id="cmp"><thead></thead><tbody></tbody></table>
   </section>
 
+<!-- ============ FILMINA: TAXONOMÍA DE NIVELES ============ -->
+
+
+
+<section class="slide" id="s-levels" data-min="0" data-max="4" data-sec="Metodología">
+  <h1 class="h1">METODOLOGÍA</h1>
+
+  <div class="levels-wrap">
+    <div class="lvl-subtitle">
+      <span class="tag">CONDICIONES EXPERIMENTALES</span>
+      <span class="desc">Clasificación y origen de los 4 tipos de niveles utilizados en el estudio:</span>
+    </div>
+
+    <div class="lvl-grid">
+      <!-- 1. NIVEL F -->
+      <div class="lvl-card" data-card="1">
+        <div class="lvl-card-head">
+          <div class="lvl-badge b-F">F</div>
+          <div class="lvl-head-info">
+            <span class="lvl-pill p-F">CALIBRACIÓN</span>
+            <h3 class="lvl-title">Familiarización</h3>
+          </div>
+        </div>
+        <div class="lvl-body">
+          <div class="lvl-row">
+            <b>ORIGEN</b>
+            <span>2 niveles reales de Super Mario Maker 2 con mayor aprobación comunitaria.</span>
+          </div>
+          <div class="lvl-row">
+            <b>TELEMETRÍA</b>
+            <span>Captura la <b>telemetría basal</b> del jugador (velocidad, saltos, muertes).</span>
+          </div>
+          <div class="lvl-row">
+            <b>PROPÓSITO</b>
+            <span>Permite adaptarse a los controles. Alimenta al modelo IA para generar los niveles P.</span>
+          </div>
+          <div class="lvl-footer-tag">Fase inicial de práctica</div>
+        </div>
+      </div>
+
+      <!-- 2. NIVEL G -->
+      <div class="lvl-card" data-card="2">
+        <div class="lvl-card-head">
+          <div class="lvl-badge b-G">G</div>
+          <div class="lvl-head-info">
+            <span class="lvl-pill p-G">CONTROL</span>
+            <h3 class="lvl-title">Genéricos</h3>
+          </div>
+        </div>
+        <div class="lvl-body">
+          <div class="lvl-row">
+            <b>ORIGEN</b>
+            <span>Generados con el pipeline de IA (Ollama + MarioGPT).</span>
+          </div>
+          <div class="lvl-row">
+            <b>TELEMETRÍA</b>
+            <span>Utilizan telemetría de un <b>perfil ajeno</b> (no del participante en curso).</span>
+          </div>
+          <div class="lvl-row">
+            <b>PROPÓSITO</b>
+            <span>Aísla el efecto de la personalización frente a la simple novedad de jugar con IA.</span>
+          </div>
+          <div class="lvl-footer-tag">Control experimental fijo</div>
+        </div>
+      </div>
+
+      <!-- 3. NIVEL P -->
+      <div class="lvl-card" data-card="3">
+        <div class="lvl-card-head">
+          <div class="lvl-badge b-P">P</div>
+          <div class="lvl-head-info">
+            <span class="lvl-pill p-P">PROPUESTA</span>
+            <h3 class="lvl-title">Personalizados</h3>
+          </div>
+        </div>
+        <div class="lvl-body">
+          <div class="lvl-row">
+            <b>ORIGEN</b>
+            <span>Generados por IA procedural en segundo plano tras jugar la fase F.</span>
+          </div>
+          <div class="lvl-row">
+            <b>TELEMETRÍA</b>
+            <span>Sintetizados a partir de la <b>telemetría real registrada en F</b>.</span>
+          </div>
+          <div class="lvl-row">
+            <b>PROPÓSITO</b>
+            <span>Evalúa si el ajuste adaptativo al estilo del jugador incrementa disfrute y flujo.</span>
+          </div>
+          <div class="lvl-footer-tag">Condición adaptativa principal</div>
+        </div>
+      </div>
+
+      <!-- 4. NIVEL H -->
+      <div class="lvl-card" data-card="4">
+        <div class="lvl-card-head">
+          <div class="lvl-badge b-H">H</div>
+          <div class="lvl-head-info">
+            <span class="lvl-pill p-H">BASELINE</span>
+            <h3 class="lvl-title">Humanos</h3>
+          </div>
+        </div>
+        <div class="lvl-body">
+          <div class="lvl-row">
+            <b>ORIGEN</b>
+            <span>Dataset público Hugging Face (~26.6M niveles SMM2 humanos).</span>
+          </div>
+          <div class="lvl-row">
+            <b>VALIDACIÓN</b>
+            <span>Filtrados por zona de flujo (clear rate 30–50%) y 100% superables con <b>A*</b>.</span>
+          </div>
+          <div class="lvl-row">
+            <b>PROPÓSITO</b>
+            <span>Línea base representativa de diseño humano para comparar contra la IA.</span>
+          </div>
+          <div class="lvl-footer-tag">Referente de diseño humano</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tira de flujo inferior -->
+    <div class="lvl-timeline" id="lvl-flow-strip">
+      <div class="lt-phase">
+        <span class="lt-tag">FASE 1 · CALIBRACIÓN</span>
+        <div class="lt-flow">
+          <span class="lt-box b-F">F (2 niveles)</span>
+          <span class="lt-arrow">──▶</span>
+          <span>Telemetría basal</span>
+          <span class="lt-arrow">──▶</span>
+          <span class="lt-box b-P">Genera P</span>
+        </div>
+      </div>
+      <div class="lt-sep"></div>
+      <div class="lt-phase">
+        <span class="lt-tag">FASE 2 · BLOQUE PRINCIPAL (6 NIVELES)</span>
+        <div class="lt-flow">
+          <span>Orden aleatorio ciego:</span>
+          <span class="lt-box b-P">P</span>
+          <span>+</span>
+          <span class="lt-box b-G">G</span>
+          <span>+</span>
+          <span class="lt-box b-H">H</span>
+          <span class="lt-arrow">──▶</span>
+          <span>Evaluación y Ranking</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FILMINA: METODOLOGÍA · DIAGRAMA DE FLUJO ============ -->
 
 
@@ -1539,9 +1916,9 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
         servidor</b>.</p>
     <div class="cards6" id="cards6"></div>
     <div class="leg3">
-      <p><span class="k t-P">P</span><span><b>Personalizados:</b> generados con IA a partir de la telemetría del
+      <p><span class="k t-P">P</span><span><b>Personalizados (P):</b> generados con IA a partir de la telemetría del
           participante.</span></p>
-      <p><span class="k t-N">N</span><span><b>Genéricos:</b> prediseñados, no dependen del participante.</span></p>
+      <p><span class="k t-G">G</span><span><b>Genéricos (G):</b> generados con telemetría que no es del usuario (control).</span></p>
       <p><span class="k t-H">H</span><span><b>Humanos (H):</b> de Super Mario Maker 2, validados con A* de
           antemano.</span></p>
     </div>
@@ -1566,7 +1943,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <div class="fp" data-p="13">
     <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
     <p class="pp">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>. Es opcional.</p>
-    <div class="cond">Condición: <button data-c="P">P</button><button data-c="N">N</button><button data-c="H">H</button>
+    <div class="cond">Condición: <button data-c="P">P</button><button data-c="G">G</button><button data-c="H">H</button>
     </div>
     <div class="timer" id="timer">20:00<small>(demo acelerada)</small></div>
     <div class="metrics">
@@ -1600,7 +1977,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <div id="slide-num" class="slide-num" aria-live="polite" title="Ir a paso" style="display:none">
     <b class="sn-cur" id="sn-cur">1</b>
     <span class="sn-sep">/</span>
-    <span class="sn-tot" id="sn-tot">31</span>
+    <span class="sn-tot" id="sn-tot">36</span>
   </div>
 </div>
 
@@ -2010,7 +2387,49 @@ H['s-prisma']={
   apply();
 })();
 
-/* ===== 06-metodologia.html ===== */
+/* ===== 06-niveles.html ===== */
+  (function () {
+    const slide = $('#s-levels');
+    if (!slide) return;
+    const cards = $$('#s-levels .lvl-card');
+    const strip = $('#lvl-flow-strip');
+
+    cards.forEach(c => {
+      c.addEventListener('click', () => {
+        if (busy) return;
+        const target = +c.dataset.card;
+        setStep(step === target ? 0 : target, target > step ? 'fwd' : 'back');
+      });
+    });
+
+    H['s-levels'] = {
+      enter(n) {
+        this.step(n || 0);
+      },
+      leave() {
+        cards.forEach(c => c.classList.remove('active', 'dim'));
+      },
+      step(n) {
+        cards.forEach((c, idx) => {
+          const cardNum = idx + 1;
+          if (n === 0) {
+            c.classList.remove('active', 'dim');
+          } else if (n === cardNum) {
+            c.classList.add('active');
+            c.classList.remove('dim');
+          } else {
+            c.classList.add('dim');
+            c.classList.remove('active');
+          }
+        });
+        if (strip) {
+          strip.classList.toggle('hl-flow', n === 0 || n === 4);
+        }
+      }
+    };
+  })();
+
+/* ===== 07-metodologia.html ===== */
   /* ============================================================
      METODOLOGÍA — diagrama de flujo con cámara (zoom) y paneles
      ============================================================ */
@@ -2051,8 +2470,8 @@ H['s-prisma']={
       ollama: { x: 800, y: 940, w: 220, h: 100, l: ['Ollama', '(LLM)'], c: 'pink', at: 9 },
       mgpt: { x: 1120, y: 940, w: 220, h: 100, l: ['MarioGPT'], c: 'pink', at: 9 },
       pers: { x: 1480, y: 940, w: 270, h: 100, l: ['Nivel', 'personalizado (P)'], c: 'pink', at: 9 },
-      gen: { x: 1850, y: 940, w: 280, h: 100, l: ['Niveles genéricos', 'prediseñados (N)'], c: 'gold', at: 10, go: 10 },
-      block: { x: 1450, y: 640, w: 300, h: 130, l: ['Bloque principal', '6 niveles: P · N · H', 'orden aleatorio'], c: 'block', n: 5, at: 10 },
+      gen: { x: 1850, y: 940, w: 280, h: 100, l: ['Niveles genéricos', 'no personalizados (G)'], c: 'gold', at: 10, go: 10 },
+      block: { x: 1450, y: 640, w: 300, h: 130, l: ['Bloque principal', '6 niveles: P · G · H', 'orden aleatorio'], c: 'block', n: 5, at: 10 },
       quest: { x: 1430, y: 470, w: 210, h: 80, l: ['Cuestionario', '6 preguntas'], c: 'white', at: 11 },
       rank: { x: 1830, y: 640, w: 260, h: 100, l: ['Ranking y', 'comentarios'], c: 'white', n: 6, at: 12 },
       free: { x: 2160, y: 640, w: 270, h: 100, l: ['Juego libre', 'voluntario ≤ 20 min'], c: 'white', n: 7, at: 13 },
@@ -2068,7 +2487,7 @@ H['s-prisma']={
       { d: 'M1225 640H1300', at: 10 }, { d: 'M1600 640H1700', at: 12 }, { d: 'M1960 640H2025', at: 13 }, { d: 'M2295 640H2375', at: 14 },
       { d: 'M480 690V890', at: 9, dash: 1 }, { d: 'M590 940H690', at: 9, dash: 1 }, { d: 'M910 940H1010', at: 9, dash: 1 }, { d: 'M1230 940H1345', at: 9, dash: 1 },
       { d: 'M1480 890V705', at: 10, lbl: ['P', 1448, 806] },
-      { d: 'M1850 890V790H1560V705', at: 10, lbl: ['N', 1700, 772] },
+      { d: 'M1850 890V790H1560V705', at: 10, lbl: ['G', 1700, 772] },
       { d: 'M1450 575V510', at: 11, both: 1 }
     ];
     const nodeEls = {}, edgeEls = [], extra = [];
@@ -2272,7 +2691,7 @@ H['s-prisma']={
     };
 
     // 10 · bloque principal
-    const c6 = $('#cards6'); let order = ['P', 'H', 'N', 'P', 'H', 'N'].map((t, i) => ({ t, id: i })); const c6els = {};
+    const c6 = $('#cards6'); let order = ['P', 'H', 'G', 'P', 'H', 'G'].map((t, i) => ({ t, id: i })); const c6els = {};
     order.forEach(o => { const d = document.createElement('div'); d.className = 'c6'; d.innerHTML = `<img src="${lvlThumb(40 + o.id * 11 + (o.t === 'P' ? 5 : 0), 28, 16, 3)}" alt=""><b class="t-${o.t}">${o.t}</b>`; c6els[o.id] = d; c6.appendChild(d); });
     function shuffle() {
       const first = Object.fromEntries(order.map(o => [o.id, c6els[o.id].getBoundingClientRect()]));
@@ -2298,11 +2717,11 @@ H['s-prisma']={
 
     // 12 · ranking
     (function () {
-      const box = $('#rank'); let list = ['P1', 'H1', 'N1', 'H2', 'P2', 'N2'];
+      const box = $('#rank'); let list = ['P1', 'H1', 'G1', 'H2', 'P2', 'G2'];
       const draw = () => {
         box.innerHTML = ''; list.forEach((id, i) => {
           const t = id[0], d = document.createElement('div'); d.className = 'rk';
-          d.innerHTML = `<span class="n">${i + 1}</span><img src="${lvlThumb(60 + id.charCodeAt(0) + (+id[1]) * 17, 28, 16, 3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t === 'P' ? 'Personalizado' : t === 'N' ? 'Genérico' : 'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
+          d.innerHTML = `<span class="n">${i + 1}</span><img src="${lvlThumb(60 + id.charCodeAt(0) + (+id[1]) * 17, 28, 16, 3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t === 'P' ? 'Personalizado' : t === 'G' ? 'Genérico' : 'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
           const [up, dn] = d.querySelectorAll('button'); up.onclick = () => { if (i > 0) { [list[i - 1], list[i]] = [list[i], list[i - 1]]; draw(); } }; dn.onclick = () => { if (i < 5) { [list[i + 1], list[i]] = [list[i], list[i + 1]]; draw(); } }; box.appendChild(d);
         });
       };
