@@ -627,7 +627,62 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .rhint{position:absolute;left:62px;top:104px;font:400 9px var(--pixel);z-index:3;opacity:0;transition:opacity .4s}
 #s-res[data-step="0"] .rhint{opacity:1}
 
-/* ===== 09-anexo.html ===== */
+/* ===== 09-agradecimiento.html ===== */
+#s-thanks .t {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 76px;
+  text-align: center;
+  font: 400 96px/.95 var(--display);
+  letter-spacing: 2px;
+  color: var(--ink);
+}
+#s-thanks .sub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 172px;
+  text-align: center;
+  font: 400 24px/1.3 var(--display);
+  color: var(--violet);
+  letter-spacing: 1px;
+}
+#s-thanks .authors {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 245px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.85;
+}
+#s-thanks .authors small {
+  color: #555;
+}
+#s-thanks .uni {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 420px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+#s-thanks .q-pill {
+  position: absolute;
+  left: 50%;
+  top: 470px;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 8px 18px;
+  font: 400 11px var(--pixel);
+  color: var(--ink);
+}
+
+/* ===== 10-anexos.html ===== */
 /* ---------- estilos para anexos ---------- */
 #s-anexos {
   position: relative;
@@ -1267,6 +1322,34 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     </div>
     <div class="rhint blink">CLIC EN UN GRÁFICO PARA AMPLIARLO</div>
   </section>
+
+<!-- ============ FILMINA: AGRADECIMIENTO ============ -->
+
+
+
+<section class="slide gray" id="s-thanks" data-min="0" data-max="0" data-sec="Agradecimiento">
+  <img class="spr cloud" data-spr="cloud" data-s="6" style="top:50px;animation-duration:70s;animation-delay:-5s" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="5" style="top:220px;animation-duration:90s;animation-delay:-40s" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="7" style="top:410px;animation-duration:80s;animation-delay:-20s" alt="">
+
+  <div class="t">¡MUCHAS GRACIAS!</div>
+  <div class="sub">TELEMETRY-BASED ADAPTIVE LEVEL GENERATION IN 2D PLATFORMERS</div>
+
+  <div class="authors">
+    1) Emmanuel González-Sandoval <small>antonio.gonzalezsandoval@ucr.ac.cr</small><br>
+    2) Mario Cordero-Aguilar <small>mariogabriel.cordero@ucr.ac.cr</small><br>
+    3) Anabelle Porras-Carrillo <small>anabelle.porras@ucr.ac.cr</small>
+  </div>
+
+  <div class="uni">Universidad de Costa Rica · 2026</div>
+
+  <div class="q-pill blink">¿PREGUNTAS O COMENTARIOS?</div>
+
+  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:380px;top:540px;animation-delay:-.3s" alt="">
+  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:880px;top:540px;animation-delay:-.8s" alt="">
+  <img class="spr abs bob" data-spr="hero:happy" data-s="6" style="left:604px;top:526px" alt="">
+  <div class="ground"></div>
+</section>
 
 <!-- ============ FILMINA: ANEXOS · DETALLES DEL DATASET Y FILTRADO ============ -->
 
@@ -2226,7 +2309,17 @@ H['s-prisma']={
   };
 })();
 
-/* ===== 09-anexo.html ===== */
+/* ===== 09-agradecimiento.html ===== */
+/* ============================================================
+   AGRADECIMIENTO
+   ============================================================ */
+H['s-thanks'] = {
+  enter() {
+    burst(640, 480, 24);
+  }
+};
+
+/* ===== 10-anexos.html ===== */
 (function(){
   const slide = document.getElementById('s-anexos');
   if(!slide) return;
