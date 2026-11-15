@@ -41,10 +41,16 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 .nbtn{font:400 12px var(--pixel);width:34px;height:28px;border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);cursor:pointer;color:var(--ink);padding:0}
 .nbtn:hover{background:var(--gold-l)}
 .nbtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
-#prog{display:flex;gap:6px;align-items:center}
-.pc{width:12px;height:12px;background:#ddd7d2;border:2px solid var(--ink);transition:transform .2s,background .2s}
-.pc.done{background:var(--gold-l)}
-.pc.cur{background:var(--pink);transform:scale(1.4)}
+.sec-nav{display:flex;align-items:center;gap:8px;background:#fff;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);height:28px;padding:0 10px}
+.ssep{color:#888;font:600 12px var(--body);user-select:none}
+.sitem{background:none;border:none;padding:2px 8px;font:600 12px var(--body);color:#555;cursor:pointer;border-radius:2px;letter-spacing:.2px;transition:all .15s}
+.sitem:hover{color:var(--ink);background:var(--gold-l)}
+.sitem.on{color:var(--ink);font-weight:700;background:var(--pink);border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);padding:1px 7px}
+#slide-num{position:absolute;right:20px;bottom:9px;height:28px;padding:0 12px;border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);color:var(--ink);font:400 13px/28px var(--pixel);display:flex;align-items:center;gap:6px;z-index:55;user-select:none;cursor:pointer;transition:background .15s,transform .15s}
+#slide-num:hover{background:var(--gold-l);transform:translateY(-2px)}
+#slide-num .sn-cur{color:var(--pink-d);font-weight:400}
+#slide-num .sn-sep{color:#888}
+#slide-num .sn-tot{color:var(--ink)}
 #fx{position:absolute;inset:0;pointer-events:none;z-index:40}
 #wipe{position:absolute;inset:0;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(9,1fr);pointer-events:none;z-index:60}
 #wipe i{display:block;transform:scale(0)}
@@ -68,7 +74,6 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 #s-title .authors{position:absolute;left:0;right:0;top:330px;text-align:center;font-size:15px;line-height:1.85}
 #s-title .authors small{color:#555}
 #s-title .uni{position:absolute;left:0;right:0;top:470px;text-align:center;font-size:16px;font-weight:500}
-.press{position:absolute;left:0;right:0;top:535px;text-align:center;font:400 13px var(--pixel)}
 
 /* ===== 02-introduccion.html ===== */
 /* ---------- intro ---------- */
@@ -393,7 +398,6 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       3) Anabelle Porras-Carrillo <small>anabelle.porras@ucr.ac.cr</small>
     </div>
     <div class="uni">Universidad de Costa Rica, 2026</div>
-    <div class="press blink">PRESIONA ▶ PARA EMPEZAR</div>
     <img class="spr abs bob" data-spr="coin" data-s="4" style="left:430px;top:540px;animation-delay:-.2s" alt="">
     <img class="spr abs bob" data-spr="coin" data-s="4" style="left:850px;top:560px;animation-delay:-.7s" alt="">
     <img class="spr abs bob" data-spr="hero:happy" data-s="6" style="left:604px;top:526px" alt="">
@@ -404,7 +408,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-  <section class="slide" id="s-intro" data-min="1" data-max="3">
+  <section class="slide" id="s-intro" data-min="1" data-max="3" data-sec="Introducción">
     <h1 class="h1">INTRODUCCIÓN</h1>
 
     <div class="tv">
@@ -463,7 +467,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-  <section class="slide gray" id="s-q" data-min="1" data-max="2">
+  <section class="slide gray" id="s-q" data-min="1" data-max="2" data-sec="Pregunta">
     <h1 class="h1">PREGUNTA DE INVESTIGACIÓN</h1>
     <img class="spr cloud" data-spr="cloud" data-s="5" style="top:150px;animation-duration:90s;animation-delay:-20s" alt="">
     <img class="spr cloud" data-spr="cloud" data-s="6" style="top:520px;animation-duration:75s;animation-delay:-50s" alt="">
@@ -477,7 +481,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-  <section class="slide" id="s-prisma" data-min="1" data-max="5">
+  <section class="slide" id="s-prisma" data-min="1" data-max="5" data-sec="Antecedentes">
     <h1 class="h1">ANTECEDENTES</h1>
 
     <div class="qblock reveal" data-at="1">
@@ -526,7 +530,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-  <section class="slide" id="s-table" data-min="0" data-max="4">
+  <section class="slide" id="s-table" data-min="0" data-max="4" data-sec="Antecedentes">
     <h1 class="h1">ANTECEDENTES</h1>
     <div class="fpanel">
       <h3>¿QUÉ ESTUDIOS CUMPLEN…?</h3>
@@ -545,7 +549,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-  <section class="slide" id="s-flow" data-min="1" data-max="14">
+  <section class="slide" id="s-flow" data-min="1" data-max="14" data-sec="Metodología">
     <svg id="fsvg" viewBox="-80 -229 2700 1519" preserveAspectRatio="xMidYMid meet">
       <defs>
         <marker id="arw" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1a1a1a"/></marker>
@@ -685,7 +689,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-  <section class="slide" id="s-res" data-min="0" data-max="6" data-despues-de="s-flow:10">
+  <section class="slide" id="s-res" data-min="0" data-max="6" data-despues-de="s-flow:10" data-sec="Resultados">
     <h1 class="h1">RESULTADOS</h1>
     <div class="rleg">
       <span><i style="background:var(--mint-d)"></i>Humano (H)</span>
@@ -709,9 +713,14 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <div id="fx"></div>
   <div id="wipe"></div>
   <div id="nav">
-    <button class="nbtn" id="bprev" aria-label="Anterior">◀</button>
-    <div id="prog"></div>
+    <button class="nbtn" id="bprev" aria-label="Anterior" style="display:none">◀</button>
+    <div id="sec-nav" class="sec-nav" style="display:none"></div>
     <button class="nbtn" id="bnext" aria-label="Siguiente">▶</button>
+  </div>
+  <div id="slide-num" class="slide-num" aria-live="polite" title="Ir a paso" style="display:none">
+    <b class="sn-cur" id="sn-cur">1</b>
+    <span class="sn-sep">/</span>
+    <span class="sn-tot" id="sn-tot">30</span>
   </div>
 </div>
 
@@ -816,22 +825,89 @@ async function goSlide(n,dir,at){
   });
   busy=false;
 }
-/* barra de progreso: una monedita por sub-paso */
-const prog=document.getElementById('prog');
-const units=[]; slides.forEach((s,i)=>{ for(let k=mn(s);k<=mx(s);k++) units.push([i,k]); });
+/* barra de navegación: secciones */
+const secNav=document.getElementById('sec-nav');
+const SECTIONS=[];
+slides.forEach((s,idx)=>{
+  const name=s.dataset.sec;
+  if(!name) return;
+  const existing=SECTIONS.find(sec=>sec.name===name);
+  if(!existing) SECTIONS.push({name,firstSlide:idx,lastSlide:idx});
+  else existing.lastSlide=idx;
+});
+if(secNav){
+  secNav.innerHTML='';
+  SECTIONS.forEach((sec,i)=>{
+    if(i>0){
+      const sep=document.createElement('span');
+      sep.className='ssep';
+      sep.textContent='|';
+      secNav.appendChild(sep);
+    }
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='sitem';
+    btn.dataset.sec=sec.name;
+    btn.textContent=sec.name;
+    btn.title=`Ir a ${sec.name} (filmina ${sec.firstSlide+1})`;
+    btn.onclick=(e)=>{
+      e.currentTarget.blur();
+      if(cur<sec.firstSlide||cur>sec.lastSlide){
+        // siempre al primer sub-paso de la sección, se llegue desde adelante o desde atrás
+        goSlide(sec.firstSlide, sec.firstSlide>cur?'fwd':'back', mn(slides[sec.firstSlide]));
+      }
+    };
+    secNav.appendChild(btn);
+  });
+}
+/* lista de transiciones totales (una unidad por cada paso de cada filmina) */
+const units=[];
+slides.forEach((s,i)=>{
+  for(let k=mn(s);k<=mx(s);k++) units.push([i,k]);
+});
 /* data-despues-de="id-de-otra-section:paso" intercala esta filmina justo después
    de ese sub-paso de la otra; al terminarla se vuelve al sub-paso siguiente */
 slides.forEach((s,i)=>{
   const d=s.dataset.despuesDe; if(!d) return;
   const [id,st]=d.split(':'), mine=units.filter(u=>u[0]===i);
-  const j=units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
-  units.splice(0,units.length,...units.filter(u=>u[0]!==i));
-  units.splice(units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st)+1,0,...mine);
+  const rest=units.filter(u=>u[0]!==i);
+  const j=rest.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
+  rest.splice(j+1,0,...mine); units.splice(0,units.length,...rest);
 });
-units.forEach(()=>{ const d=document.createElement('i'); d.className='pc'; prog.appendChild(d); });
 function updateNav(){
-  const idx=units.findIndex(u=>u[0]===cur&&u[1]===step);
-  [...prog.children].forEach((d,i)=>{ d.className='pc'+(i<idx?' done':'')+(i===idx?' cur':''); });
+  const isCover = cur === 0;
+  if(secNav){
+    secNav.style.display = isCover ? 'none' : 'flex';
+    const currentSecName = slides[cur]?.dataset.sec || '';
+    secNav.querySelectorAll('.sitem').forEach(btn => {
+      btn.classList.toggle('on', btn.dataset.sec === currentSecName);
+    });
+  }
+  const snEl = document.getElementById('slide-num');
+  if(snEl){
+    snEl.style.display = isCover ? 'none' : 'flex';
+  }
+  const bprev = document.getElementById('bprev');
+  if(bprev){
+    bprev.style.display = isCover ? 'none' : '';
+  }
+  const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
+  const snCur = document.getElementById('sn-cur');
+  const snTot = document.getElementById('sn-tot');
+  if(snCur) snCur.textContent = String(currentUnitIndex >= 0 ? currentUnitIndex + 1 : cur + 1);
+  if(snTot) snTot.textContent = String(units.length);
+}
+const snEl=document.getElementById('slide-num');
+if(snEl){
+  snEl.onclick=()=>{
+    const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
+    const val=prompt(`Ir a transición (1 a ${units.length}):`, (currentUnitIndex >= 0 ? currentUnitIndex : cur) + 1);
+    const n=parseInt(val,10);
+    if(!isNaN(n)&&n>=1&&n<=units.length&&!busy){
+      const i=units.findIndex(u=>u[0]===cur&&u[1]===step);
+      if(n-1!==i) goUnit(units[n-1], n-1>i?'fwd':'back');
+    }
+  };
 }
 /* transición pixelada */
 const wipeEl=document.getElementById('wipe'); const cells=[];
@@ -849,6 +925,10 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='PageDown'||(!inCtl&&(e.key===' '||e.key==='Enter'))){ e.preventDefault(); next(); }
   else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prev(); }
   else if(e.key==='f'||e.key==='F'){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.(); }
+  else if(!inCtl && e.key>='1' && e.key<=String(slides.length)){
+    const targetIdx=parseInt(e.key,10)-1;
+    if(targetIdx!==cur){ e.preventDefault(); goSlide(targetIdx, targetIdx>cur?'fwd':'back'); }
+  }
 });
 let tx=null; addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
 addEventListener('touchend',e=>{ if(tx==null)return; const d=e.changedTouches[0].clientX-tx; if(Math.abs(d)>60){ d<0?next():prev(); } tx=null; });
