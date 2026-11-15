@@ -1059,22 +1059,21 @@
       <div class="fs-arrow">▶</div>
       <div class="fs-card"><span class="fs-title">FILTRADOS</span><b>~25K</b><small>SMB1 y flujo</small></div>
       <div class="fs-arrow">▶</div>
-      <div class="fs-card hl"><span class="fs-title">NIVEL 0</span><b id="funN">14</b><small>A* verificados</small>
+      <div class="fs-card hl"><span class="fs-title">NIVELES H</span><b id="funN">14</b><small>A* verificados</small>
       </div>
     </div>
 
     <p class="pp" style="margin-top:6px;font-size:13px;line-height:1.4"><small><b>Destino:</b> Los mejores se validan
-        con <b>A* (Baumgarten)</b>. Los superables forman el banco de <b>Niveles Humanos (H)</b> del experimento y los 2
+        con <b>A* (Baumgarten)</b>. Los superables forman el banco de <b>Niveles H (Humanos)</b> del experimento y los 2
         de <b>Familiarización (F)</b>.</small></p>
   </div>
   <!-- 4 -->
   <div class="fp" data-p="4">
     <div class="ptag">3 · VERIFICACIÓN CON A*</div>
-    <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y entra
-      al banco <b>«Nivel 0»</b>.</p>
+    <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y pasa a ser parte de los <b>Niveles H</b>.</p>
     <svg class="astar" id="astar" viewBox="0 0 560 200" height="214"></svg>
     <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE
-        → NIVEL 0</span></div>
+        → NIVELES H</span></div>
     <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Menta: ruta encontrada. Esta validación
         se hace de antemano, solo para los niveles humanos.</small></p>
   </div>
@@ -1164,7 +1163,7 @@
       <p><span class="k t-P">P</span><span><b>Personalizados:</b> generados con IA a partir de la telemetría del
           participante.</span></p>
       <p><span class="k t-N">N</span><span><b>Genéricos:</b> prediseñados, no dependen del participante.</span></p>
-      <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, banco «Nivel 0», validados con A* de
+      <p><span class="k t-H">H</span><span><b>Humanos (H):</b> de Super Mario Maker 2, validados con A* de
           antemano.</span></p>
     </div>
     <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
@@ -1243,7 +1242,7 @@
       hf: { x: 310, y: 170, w: 340, h: 100, l: ['Selección de niveles', 'Hugging Face'], c: 'mint', n: 1, at: 1 },
       fil: { x: 730, y: 170, w: 340, h: 100, l: ['Filtración', 'por criterio'], c: 'mint', n: 2, at: 3 },
       astar: { x: 1150, y: 170, w: 340, h: 100, l: ['Verificación', 'con A*'], c: 'mint', n: 3, at: 4 },
-      bank: { x: 1560, y: 170, w: 340, h: 100, l: ['Banco «Nivel 0»', 'niveles humanos (H)'], c: 'gold', at: 4, go: 4, db: 1 },
+      bank: { x: 1560, y: 170, w: 340, h: 100, l: ['Niveles H'], c: 'gold', at: 4, go: 4, db: 1 },
       welcome: { x: 160, y: 640, w: 250, h: 100, l: ['Bienvenida', 'Explicación de sesión'], c: 'white', n: 1, at: 5 },
       fam: { x: 480, y: 640, w: 280, h: 100, l: ['Niveles de', 'familiarización (F)'], c: 'white', n: 2, at: 6 },
       cons: { x: 790, y: 640, w: 240, h: 170, l: ['Consentimiento', 'informado'], c: 'gold', n: 3, at: 7, dia: 1 },
@@ -1293,12 +1292,23 @@
       if (n.dia) {
         const pts = `${n.x},${y0} ${n.x + n.w / 2},${n.y} ${n.x},${y0 + n.h} ${n.x - n.w / 2},${n.y}`;
         E('polygon', { class: 'sh', points: pts, transform: 'translate(9 9)' }, g); E('polygon', { class: 'bx', points: pts, fill: COL[n.c] }, g);
+      } else if (n.db) {
+        const rh = 18, x1 = n.x + n.w / 2, y1 = n.y + n.h / 2;
+        const body = `M ${x0} ${y0 + rh} A ${n.w / 2} ${rh} 0 0 1 ${x1} ${y0 + rh} L ${x1} ${y1 - rh} A ${n.w / 2} ${rh} 0 0 1 ${x0} ${y1 - rh} Z`;
+        const topRim = `M ${x0} ${y0 + rh} A ${n.w / 2} ${rh} 0 0 0 ${x1} ${y0 + rh}`;
+        // Sombra retro del cilindro
+        E('path', { class: 'sh', d: body, transform: 'translate(9 9)' }, g);
+        // Cuerpo del cilindro con borde grueso ink
+        E('path', { class: 'bx', d: body, fill: COL[n.c] }, g);
+        // Tapa superior del cilindro de base de datos
+        E('path', { d: topRim, fill: 'none', stroke: '#1a1a1a', 'stroke-width': 5 }, g);
       } else {
         E('rect', { class: 'sh', x: x0 + 9, y: y0 + 9, width: n.w, height: n.h }, g); E('rect', { class: 'bx', x: x0, y: y0, width: n.w, height: n.h, fill: COL[n.c] }, g);
-        if (n.db) { E('rect', { x: x0 + 10, y: y0 + 10, width: n.w - 20, height: n.h - 20, fill: 'none', stroke: '#1a1a1a', 'stroke-width': 2.5 }, g); }
       }
-      const k = n.l.length, f1 = n.dia ? 22 : (k === 1 ? 32 : 25), start = n.y - ((k - 1) * 29) / 2 + 9;
-      n.l.forEach((txt, i) => { const t = E('text', { class: i ? 'l2' : 'l1', x: n.x, y: start + i * 29, 'font-size': i ? (k === 3 ? 20 : 21) : f1 }, g); t.textContent = txt; });
+      const k = n.l.length;
+      const f1 = n.dia ? 22 : (n.db ? 34 : (k === 1 ? 32 : 25));
+      const start = n.db ? (n.y + 16) : (n.y - ((k - 1) * 29) / 2 + 9);
+      n.l.forEach((txt, i) => { const t = E('text', { class: (i || n.db) ? 'l1' : 'l1', x: n.x, y: start + i * 29, 'font-size': i ? (k === 3 ? 20 : 21) : f1 }, g); t.textContent = txt; });
       if (n.n) { const bx = n.dia ? n.x - n.w / 2 + 34 : x0, by = n.dia ? n.y - n.h / 2 + 34 : y0; E('circle', { class: 'bd', cx: bx + 2, cy: by + 2, r: 25, stroke: '#1a1a1a', 'stroke-width': 4 }, g); const t = E('text', { class: 'bn', x: bx + 2, y: by + 12 }, g); t.textContent = n.n; }
       g.addEventListener('click', () => { if (!slide.classList.contains('full') || busy) return; const to = n.go || n.at; setStep(to, 'back'); });
     });
