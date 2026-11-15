@@ -112,16 +112,26 @@ if(secNav){
   });
 }
 function updateNav(){
-  const currentSecName=slides[cur]?.dataset.sec||'';
+  const isCover = cur === 0;
   if(secNav){
-    secNav.querySelectorAll('.sitem').forEach(btn=>{
-      btn.classList.toggle('on', btn.dataset.sec===currentSecName);
+    secNav.style.display = isCover ? 'none' : 'flex';
+    const currentSecName = slides[cur]?.dataset.sec || '';
+    secNav.querySelectorAll('.sitem').forEach(btn => {
+      btn.classList.toggle('on', btn.dataset.sec === currentSecName);
     });
   }
-  const snCur=document.getElementById('sn-cur');
-  const snTot=document.getElementById('sn-tot');
-  if(snCur) snCur.textContent=String(cur+1);
-  if(snTot) snTot.textContent=String(slides.length);
+  const snEl = document.getElementById('slide-num');
+  if(snEl){
+    snEl.style.display = isCover ? 'none' : 'flex';
+  }
+  const bprev = document.getElementById('bprev');
+  if(bprev){
+    bprev.style.display = isCover ? 'none' : '';
+  }
+  const snCur = document.getElementById('sn-cur');
+  const snTot = document.getElementById('sn-tot');
+  if(snCur) snCur.textContent = String(cur + 1);
+  if(snTot) snTot.textContent = String(slides.length);
 }
 const snEl=document.getElementById('slide-num');
 if(snEl){
