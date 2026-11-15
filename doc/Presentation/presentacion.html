@@ -459,990 +459,378 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
 /* ===== 07-metodologia.html ===== */
-  /* ---------- metodología: diagrama con zoom ---------- */
-  #s-flow .h1 {
-    z-index: 5
-  }
-
-  .fchip {
-    position: absolute;
-    left: 470px;
-    top: 50px;
-    z-index: 5;
-    font: 400 10px/1.5 var(--pixel);
-    padding: 8px 12px;
-    border: 3px solid var(--ink);
-    background: var(--mint);
-    transition: background .3s;
-    max-width: 640px
-  }
-
-  .fchip[data-p="2"] {
-    background: var(--gold-l)
-  }
-
-  .fchip[data-p="3"] {
-    background: #fff
-  }
-
-  #fsvg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%
-  }
-
-  .fnode {
-    opacity: 0;
-    transform-box: fill-box;
-    transform-origin: center;
-    transform: scale(.7);
-    transition: opacity .45s, transform .5s cubic-bezier(.3, 1.5, .5, 1)
-  }
-
-  .fnode.vis {
-    opacity: 1;
-    transform: none
-  }
-
-  .fnode text {
-    font-family: var(--body);
-    fill: var(--ink);
-    text-anchor: middle;
-    pointer-events: none
-  }
-
-  .fnode .l1 {
-    font-weight: 700
-  }
-
-  .fnode .l2 {
-    font-weight: 500
-  }
-
-  .fnode .bd {
-    fill: var(--violet)
-  }
-
-  .fnode .bn {
-    font: 400 26px var(--display);
-    fill: #fff;
-    text-anchor: middle
-  }
-
-  .fnode .sh {
-    fill: var(--ink)
-  }
-
-  .fnode .bx {
-    stroke: var(--ink);
-    stroke-width: 6;
-    stroke-linejoin: miter
-  }
-
-  .fnode.focus .bx {
-    stroke: var(--violet)
-  }
-
-  .fnode.focus .sh {
-    fill: var(--violet)
-  }
-
-  .fnode.hl .bx {
-    stroke: var(--ruby)
-  }
-
-  .full .fnode {
-    cursor: pointer
-  }
-
-  .full .fnode:hover {
-    transform: translateY(-6px)
-  }
-
-  .fedge {
-    opacity: 0;
-    transition: opacity .3s .45s
-  }
-
-  .fedge.vis {
-    opacity: 1
-  }
-
-  .fedge path {
-    fill: none;
-    stroke: var(--ink);
-    stroke-width: 6;
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    transition: stroke-dashoffset .7s ease .1s
-  }
-
-  .fedge.vis path {
-    stroke-dashoffset: 0
-  }
-
-  .fedge.dash path {
-    stroke-dasharray: .03 .02
-  }
-
-  .fedge.dash.vis path {
-    stroke-dasharray: .03 .02;
-    stroke-dashoffset: 0
-  }
-
-  .fedge.vis.run path {
-    animation: dashrun 1s linear infinite
-  }
-
-  @keyframes dashrun {
-    to {
-      stroke-dashoffset: -.05
-    }
-  }
-
-  .fedge.hl path {
-    stroke: var(--ruby)
-  }
-
-  .fedge text {
-    font: 400 44px var(--display);
-    fill: var(--violet)
-  }
-
-  .lane {
-    fill: #fff0f8;
-    stroke: var(--pink-d);
-    stroke-width: 5;
-    stroke-dasharray: 18 10;
-    opacity: 0;
-    transition: opacity .5s
-  }
-
-  .lane.vis {
-    opacity: 1
-  }
-
-  .lanelbl,
-  .banner text {
-    font: 400 30px var(--display);
-    letter-spacing: 1.5px
-  }
-
-  .lanelbl {
-    fill: var(--pink-d);
-    opacity: 0;
-    transition: opacity .5s
-  }
-
-  .lanelbl.vis {
-    opacity: 1
-  }
-
-  .banner {
-    opacity: 0;
-    transition: opacity .5s
-  }
-
-  .banner.vis {
-    opacity: 1
-  }
-
-  .banner text {
-    fill: var(--ink)
-  }
-
-  .pdot {
-    fill: var(--violet)
-  }
-
-  .fp {
-    position: absolute;
-    left: 690px;
-    top: 112px;
-    width: 540px;
-    height: 556px;
-    opacity: 0;
-    transform: translateX(34px);
-    pointer-events: none;
-    transition: opacity .4s, transform .45s;
-    z-index: 6;
-    background: #fff;
-    border: 4px solid var(--ink);
-    box-shadow: 7px 7px 0 var(--ink);
-    padding: 16px 18px;
-    overflow: hidden
-  }
-
-  .fp.on {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto
-  }
-
-  .ptag {
-    display: inline-block;
-    font: 400 10px var(--pixel);
-    padding: 7px 10px;
-    background: var(--ink);
-    color: #fff;
-    margin-bottom: 12px
-  }
-
-  .pp {
-    margin: 0 0 12px;
-    font-size: 15px;
-    line-height: 1.5
-  }
-
-  .pp small,
-  .note {
-    font-size: 12px;
-    color: #666;
-    font-style: italic
-  }
-
-  .shot {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border: 3px dashed var(--ink);
-    background: #f7f4f2;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    font: 400 8px/1.8 var(--pixel);
-    color: #666
-  }
-
-  .shot img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none
-  }
-
-  .shot.has img {
-    display: block
-  }
-
-  .shot.has span {
-    display: none
-  }
-
-  .shot input {
-    display: none
-  }
-
-  .docs {
-    position: relative;
-    height: 200px;
-    margin-bottom: 6px
-  }
-
-  .doc {
-    position: absolute;
-    top: 10px;
-    width: 118px;
-    height: 158px;
-    background: #fff;
-    border: 3px solid var(--ink);
-    box-shadow: 4px 4px 0 var(--ink);
-    padding: 5px;
-    font-size: 10px;
-    opacity: 0;
-    transform: translateY(30px) rotate(0);
-    transition: all .55s cubic-bezier(.3, 1.4, .5, 1)
-  }
-
-  .doc img {
-    width: 100%;
-    image-rendering: pixelated;
-    border: 2px solid var(--ink);
-    display: block
-  }
-
-  .doc b {
-    display: block;
-    margin-top: 5px;
-    font: 600 11px var(--body)
-  }
-
-  .doc i {
-    font-style: normal;
-    color: var(--pink-d);
-    font-weight: 700
-  }
-
-  .doc::after {
-    content: "";
-    position: absolute;
-    right: -3px;
-    top: -3px;
-    border: 9px solid;
-    border-color: #fff var(--bg) var(--bg) #fff;
-    border-width: 9px;
-    box-shadow: -1px 1px 0 var(--ink)
-  }
-
-  .fp.on .doc {
-    opacity: 1;
-    transform: translateY(calc(var(--dy)*1px)) rotate(calc(var(--r)*1deg))
-  }
-
-  .funwrap {
-    position: relative;
-    height: 350px
-  }
-
-  .funnel {
-    position: absolute;
-    left: 0;
-    top: 0
-  }
-
-  .fdot {
-    position: absolute;
-    width: 13px;
-    height: 13px;
-    border: 2px solid var(--ink)
-  }
-
-  .fout {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    transform: translateX(-50%);
-    background: var(--gold-l);
-    border: 3px solid var(--ink);
-    padding: 7px 12px;
-    font: 600 14px var(--body);
-    white-space: nowrap;
-    box-shadow: 4px 4px 0 var(--ink)
-  }
-
-  .fout b {
-    font: 400 22px var(--display);
-    color: var(--violet);
-    margin-left: 4px
-  }
-
-  .astar {
-    display: block;
-    border: 3px solid var(--ink);
-    background: #d9f2ec;
-    width: 100%
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 6px 10px;
-    border: 3px solid var(--ink);
-    background: var(--mint);
-    font: 400 9px var(--pixel);
-    opacity: 0;
-    transition: opacity .3s, transform .3s;
-    transform: scale(.7)
-  }
-
-  .badge.show {
-    opacity: 1;
-    transform: none
-  }
-
-  .win-mock {
-    border: 3px solid var(--ink);
-    background: #fff
-  }
-
-  .win-mock .bar {
-    background: var(--ink);
-    color: #fff;
-    font: 400 8px var(--pixel);
-    padding: 7px 10px;
-    display: flex;
-    justify-content: space-between
-  }
-
-  .win-mock .bd2 {
-    padding: 14px 16px;
-    font-size: 14.5px;
-    line-height: 1.6
-  }
-
-  .win-mock ol {
-    margin: 8px 0 0;
-    padding-left: 22px
-  }
-
-  .skel {
-    height: 12px;
-    background: #e5e0dc;
-    margin: 10px 0
-  }
-
-  .pbtn {
-    font: 400 9px var(--pixel);
-    border: 3px solid var(--ink);
-    background: #fff;
-    padding: 9px 12px;
-    cursor: pointer;
-    box-shadow: 3px 3px 0 var(--ink);
-    color: var(--ink)
-  }
-
-  .pbtn:hover {
-    background: var(--gold-l)
-  }
-
-  .pbtn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 var(--ink)
-  }
-
-  .pbtn.yes {
-    background: var(--mint)
-  }
-
-  .pbtn.no {
-    background: #ffb3b3
-  }
-
-  .tele {
-    background: #23232b;
-    color: #b6f5dc;
-    font: 500 13px/1.75 'Courier New', monospace;
-    padding: 14px 16px;
-    border: 3px solid var(--ink);
-    white-space: pre
-  }
-
-  .tele em {
-    font-style: normal;
-    color: #ffd77a
-  }
-
-  .tele .fl {
-    background: #ffd77a;
-    color: #23232b
-  }
-
-  .res {
-    margin-top: 14px;
-    padding: 12px 14px;
-    border: 3px solid var(--ink);
-    font: 600 15px/1.45 var(--body);
-    min-height: 58px;
-    background: #f7f4f2
-  }
-
-  .res.no {
-    background: #ffd0d0
-  }
-
-  .res.yes {
-    background: #d7f4e8
-  }
-
-  .chain {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 6px 0 12px;
-    font: 700 12px var(--body)
-  }
-
-  .chain span {
-    padding: 7px 8px;
-    border: 3px solid var(--ink);
-    background: #ffd0ea
-  }
-
-  .chain i {
-    font-style: normal
-  }
-
-  .prompt {
-    background: #fff0f8;
-    border: 3px solid var(--pink-d);
-    padding: 10px 12px;
-    font: 500 13px/1.6 'Courier New', monospace;
-    margin-top: 10px
-  }
-
-  .cards6 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 6px 0 10px;
-    position: relative
-  }
-
-  .c6 {
-    border: 3px solid var(--ink);
-    background: #fff;
-    padding: 4px;
-    box-shadow: 3px 3px 0 var(--ink)
-  }
-
-  .c6 img {
-    width: 100%;
-    image-rendering: pixelated;
-    display: block;
-    border: 2px solid var(--ink)
-  }
-
-  .c6 b {
-    display: block;
-    font: 400 9px var(--pixel);
-    padding: 5px 4px 3px
-  }
-
-  .t-P {
-    background: var(--pink)
-  }
-
-  .t-N,
-  .t-G {
-    background: var(--gold-l)
-  }
-
-  .t-H {
-    background: var(--mint)
-  }
-
-  .leg3 {
-    font-size: 13px;
-    line-height: 1.5
-  }
-
-  .leg3 p {
-    margin: 0 0 6px;
-    display: flex;
-    gap: 8px;
-    align-items: flex-start
-  }
-
-  .leg3 .k {
-    flex: none;
-    font: 400 9px var(--pixel);
-    border: 3px solid var(--ink);
-    padding: 5px 6px
-  }
-
-  .lik {
-    display: grid;
-    grid-template-columns: 150px repeat(7, 1fr);
-    gap: 5px;
-    align-items: center;
-    font-size: 12.5px;
-    font-weight: 600;
-    margin-bottom: 7px
-  }
-
-  .lik .hd {
-    font: 400 8px var(--pixel);
-    text-align: center;
-    color: #555
-  }
-
-  .lik button {
-    height: 26px;
-    border: 3px solid var(--ink);
-    background: #fff;
-    cursor: pointer;
-    padding: 0
-  }
-
-  .lik button:hover {
-    background: var(--gold-l)
-  }
-
-  .lik button.on {
-    background: var(--ink)
-  }
-
-  .lik button.on.neg {
-    background: var(--pink-d)
-  }
-
-  .lik button.on.pos {
-    background: var(--mint-d)
-  }
-
-  .lik button.on.zero {
-    background: var(--gold)
-  }
-
-  .rk {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border: 3px solid var(--ink);
-    padding: 4px 8px 4px 4px;
-    margin-bottom: 6px;
-    background: #fff;
-    font: 700 13px var(--body)
-  }
-
-  .rk img {
-    width: 56px;
-    image-rendering: pixelated;
-    border: 2px solid var(--ink)
-  }
-
-  .rk .n {
-    font: 400 22px var(--display);
-    width: 22px
-  }
-
-  .rk .tg2 {
-    font: 400 8px var(--pixel);
-    padding: 4px 5px;
-    border: 2px solid var(--ink)
-  }
-
-  .rk .sp {
-    flex: 1
-  }
-
-  .rk button {
-    border: 2px solid var(--ink);
-    background: #fff;
-    width: 26px;
-    height: 26px;
-    cursor: pointer;
-    font-size: 12px;
-    padding: 0
-  }
-
-  .rk button:hover {
-    background: var(--gold-l)
-  }
-
-  .cmt {
-    border: 3px solid var(--ink);
-    background: #fff;
-    padding: 8px 10px;
-    font-size: 13px;
-    color: #888;
-    font-style: italic;
-    height: 54px
-  }
-
-  .timer {
-    font: 400 76px/1 var(--display);
-    margin: 2px 0 8px
-  }
-
-  .timer small {
-    font: 400 12px var(--pixel);
-    color: #555;
-    margin-left: 8px
-  }
-
-  .metrics {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 10px 0
-  }
-
-  .metrics div {
-    border: 3px solid var(--ink);
-    padding: 10px 12px;
-    background: #f7f4f2;
-    font-size: 12px;
-    font-weight: 600
-  }
-
-  .metrics b {
-    display: block;
-    font: 400 40px/1.1 var(--display);
-    color: var(--violet)
-  }
-
-  .cond {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 6px;
-    font-size: 13px;
-    font-weight: 600
-  }
-
-  .cond button {
-    font: 400 11px var(--pixel);
-    border: 3px solid var(--ink);
-    width: 40px;
-    height: 36px;
-    background: #fff;
-    cursor: pointer;
-    padding: 0
-  }
-
-  .cond button.on.P {
-    background: var(--pink)
-  }
-
-  .cond button.on.N,
-  .cond button.on.G {
-    background: var(--gold-l)
-  }
-
-  .cond button.on.H {
-    background: var(--mint)
-  }
-
-  .thanks {
-    font: 400 70px/1 var(--display);
-    margin: 10px 0 6px
-  }
-
-  .fhint {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 50px;
-    text-align: center;
-    font: 400 10px var(--pixel);
-    z-index: 5;
-    opacity: 0;
-    transition: opacity .4s
-  }
-
-  .full .fhint {
-    opacity: 1
-  }
-
-  .flegend {
-    position: absolute;
-    right: 30px;
-    top: 112px;
-    z-index: 5;
-    border: 3px solid var(--ink);
-    background: #fff;
-    padding: 8px 10px;
-    font-size: 11px;
-    line-height: 1.8;
-    opacity: 0;
-    transition: opacity .4s;
-    pointer-events: none
-  }
-
-  .full .flegend {
-    opacity: 1
-  }
-
-  .flegend i {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border: 2px solid var(--ink);
-    margin-right: 6px;
-    vertical-align: -2px
-  }
-
-  /* ---------- zoom in captura hugging face ---------- */
-  .hf-zoom-overlay {
-    position: absolute;
-    left: 50%;
-    top: 64px;
-    transform: translateX(-50%) scale(.92);
-    width: 1160px;
-    height: 580px;
-    z-index: 45;
-    display: flex;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .35s ease, transform .4s cubic-bezier(.2, .9, .3, 1.15)
-  }
-
-  .hf-zoom-overlay.on {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-    pointer-events: auto
-  }
-
-  .hf-zoom-win {
-    width: 100%;
-    height: 100%;
-    background: #fff;
-    border: 4px solid var(--ink);
-    box-shadow: 8px 8px 0 var(--ink);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden
-  }
-
-  .hf-zoom-bar {
-    background: var(--ink);
-    color: #fff;
-    padding: 8px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font: 400 11px var(--pixel);
-    user-select: none;
-    flex-shrink: 0
-  }
-
-  .hf-zoom-bar .hf-bar-l {
-    display: flex;
-    align-items: center;
-    gap: 10px
-  }
-
-  .hf-zoom-bar .hf-tag {
-    background: var(--pink);
-    color: var(--ink);
-    padding: 2px 8px;
-    font-weight: 700;
-    border-radius: 2px
-  }
-
-  .hf-zoom-body {
-    flex: 1;
-    background: #18181b;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer
-  }
-
-  .hf-zoom-body img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    display: block
-  }
-
-  .hf-zoom-foot {
-    background: #f7f4f2;
-    border-top: 3px solid var(--ink);
-    padding: 9px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font: 500 13px var(--body);
-    color: var(--ink);
-    flex-shrink: 0
-  }
-
-  .hf-zoom-foot b {
-    color: var(--violet)
-  }
-
-  .hf-zoom-foot small {
-    font: 400 9px var(--pixel);
-    color: var(--pink-d)
-  }
-
-  /* ---------- código y embudo interactivo ---------- */
-  .code-filter {
-    background: #23232b;
-    color: #e4e4e7;
-    border: 3px solid var(--ink);
-    padding: 9px 11px;
-    font: 500 11px/1.6 'Courier New', monospace;
-    margin: 6px 0 10px;
-    box-shadow: 4px 4px 0 var(--ink)
-  }
-
-  .code-filter .cf-kw {
-    color: #ff7fc0;
-    font-weight: 700
-  }
-
-  .code-filter .cf-str {
-    color: #94ddc6
-  }
-
-  .code-filter .cf-num {
-    color: #f6d36b
-  }
-
-  .code-filter .cf-com {
-    color: #a1a1aa;
-    font-style: italic
-  }
-
-  .code-filter .cf-line {
-    display: flex;
-    justify-content: space-between;
-    padding: 1px 4px;
-    border-radius: 2px;
-    transition: background .25s, color .25s
-  }
-
-  .code-filter .cf-line.active {
-    background: rgba(255, 127, 192, .35);
-    color: #fff
-  }
-
-  .code-filter .cf-cnt {
-    font: 400 8.5px/1.6 var(--pixel);
-    color: #ffd77a;
-    margin-left: 8px;
-    white-space: nowrap
-  }
-
-  .filter-stats {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-    margin: 8px 0 6px
-  }
-
-  .fs-card {
-    flex: 1;
-    border: 3px solid var(--ink);
-    background: #f7f4f2;
-    padding: 6px 8px;
-    text-align: center;
-    box-shadow: 3px 3px 0 var(--ink)
-  }
-
-  .fs-card.hl {
-    background: var(--gold-l);
-    border-color: var(--ink)
-  }
-
-  .fs-card .fs-title {
-    display: block;
-    font: 400 8px var(--pixel);
-    color: #555;
-    margin-bottom: 2px
-  }
-
-  .fs-card b {
-    display: block;
-    font: 400 24px/1 var(--display);
-    color: var(--violet)
-  }
-
-  .fs-card small {
-    display: block;
-    font-size: 10px;
-    color: #666;
-    line-height: 1.2;
-    margin-top: 2px
-  }
-
-  .fs-arrow {
-    font-size: 14px;
-    color: var(--ink);
-    font-weight: 700;
-    user-select: none
-  }
+/* ---------- metodología: diagrama con zoom ---------- */
+#s-flow .h1{z-index:5}
+.fchip{position:absolute;left:470px;top:50px;z-index:5;font:400 10px/1.5 var(--pixel);padding:8px 12px;border:3px solid var(--ink);background:var(--mint);transition:background .3s;max-width:640px}
+.fchip[data-p="2"]{background:var(--gold-l)} .fchip[data-p="3"]{background:#fff}
+#fsvg{position:absolute;inset:0;width:100%;height:100%}
+.fnode{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.7);transition:opacity .45s,transform .5s cubic-bezier(.3,1.5,.5,1)}
+.fnode.vis{opacity:1;transform:none}
+.fnode text{font-family:var(--body);fill:var(--ink);text-anchor:middle;pointer-events:none}
+.fnode .l1{font-weight:700} .fnode .l2{font-weight:500}
+.fnode .bd{fill:var(--violet)} .fnode .bn{font:400 26px var(--display);fill:#fff;text-anchor:middle}
+.fnode .sh{fill:var(--ink)}
+.fnode .bx{stroke:var(--ink);stroke-width:6;stroke-linejoin:miter}
+.fnode.focus .bx{stroke:var(--violet)}
+.fnode.focus .sh{fill:var(--violet)}
+.fnode.hl .bx{stroke:var(--ruby)}
+.full .fnode{cursor:pointer}
+.full .fnode:hover{transform:translateY(-6px)}
+.fedge{opacity:0;transition:opacity .3s .45s}
+.fedge.vis{opacity:1}
+.fedge path{fill:none;stroke:var(--ink);stroke-width:6;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .7s ease .1s}
+.fedge.vis path{stroke-dashoffset:0}
+.fedge.dash path{stroke-dasharray:.03 .02}
+.fedge.dash.vis path{stroke-dasharray:.03 .02;stroke-dashoffset:0}
+.fedge.vis.run path{animation:dashrun 1s linear infinite}
+@keyframes dashrun{to{stroke-dashoffset:-.05}}
+.fedge.hl path{stroke:var(--ruby)}
+.fedge text{font:400 44px var(--display);fill:var(--violet)}
+.lane{fill:#fff0f8;stroke:var(--pink-d);stroke-width:5;stroke-dasharray:18 10;opacity:0;transition:opacity .5s}
+.lane.vis{opacity:1}
+.lanelbl,.banner text{font:400 30px var(--display);letter-spacing:1.5px}
+.lanelbl{fill:var(--pink-d);opacity:0;transition:opacity .5s} .lanelbl.vis{opacity:1}
+.banner{opacity:0;transition:opacity .5s} .banner.vis{opacity:1}
+.banner text{fill:var(--ink)}
+.pdot{fill:var(--violet)}
+
+.fp{position:absolute;left:690px;top:112px;width:540px;height:556px;opacity:0;transform:translateX(34px);pointer-events:none;transition:opacity .4s,transform .45s;z-index:6;
+  background:#fff;border:4px solid var(--ink);box-shadow:7px 7px 0 var(--ink);padding:16px 18px;overflow:hidden}
+.fp.on{opacity:1;transform:none;pointer-events:auto}
+.ptag{display:inline-block;font:400 10px var(--pixel);padding:7px 10px;background:var(--ink);color:#fff;margin-bottom:12px}
+.pp{margin:0 0 12px;font-size:15px;line-height:1.5}
+.pp small,.note{font-size:12px;color:#666;font-style:italic}
+.shot{display:flex;align-items:center;justify-content:center;text-align:center;border:3px dashed var(--ink);background:#f7f4f2;position:relative;overflow:hidden;cursor:pointer;font:400 8px/1.8 var(--pixel);color:#666}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.shot.has img{display:block} .shot.has span{display:none}
+.shot input{display:none}
+.docs{position:relative;height:200px;margin-bottom:6px}
+.doc{position:absolute;top:10px;width:118px;height:158px;background:#fff;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:5px;font-size:10px;opacity:0;transform:translateY(30px) rotate(0);transition:all .55s cubic-bezier(.3,1.4,.5,1)}
+.doc img{width:100%;image-rendering:pixelated;border:2px solid var(--ink);display:block}
+.doc b{display:block;margin-top:5px;font:600 11px var(--body)} .doc i{font-style:normal;color:var(--pink-d);font-weight:700}
+.doc::after{content:"";position:absolute;right:-3px;top:-3px;border:9px solid;border-color:#fff var(--bg) var(--bg) #fff;border-width:9px;box-shadow:-1px 1px 0 var(--ink)}
+.fp.on .doc{opacity:1;transform:translateY(calc(var(--dy)*1px)) rotate(calc(var(--r)*1deg))}
+.funwrap{position:relative;height:350px}
+.funnel{position:absolute;left:0;top:0}
+.fdot{position:absolute;width:13px;height:13px;border:2px solid var(--ink)}
+.fout{position:absolute;left:50%;bottom:0;transform:translateX(-50%);background:var(--gold-l);border:3px solid var(--ink);padding:7px 12px;font:600 14px var(--body);white-space:nowrap;box-shadow:4px 4px 0 var(--ink)}
+.fout b{font:400 22px var(--display);color:var(--violet);margin-left:4px}
+.astar{display:block;border:3px solid var(--ink);background:#d9f2ec;width:100%}
+.badge{display:inline-block;padding:6px 10px;border:3px solid var(--ink);background:var(--mint);font:400 9px var(--pixel);opacity:0;transition:opacity .3s,transform .3s;transform:scale(.7)}
+.badge.show{opacity:1;transform:none}
+.win-mock{border:3px solid var(--ink);background:#fff}
+.win-mock .bar{background:var(--ink);color:#fff;font:400 8px var(--pixel);padding:7px 10px;display:flex;justify-content:space-between}
+.win-mock .bd2{padding:14px 16px;font-size:14.5px;line-height:1.6}
+.win-mock ol{margin:8px 0 0;padding-left:22px}
+.skel{height:12px;background:#e5e0dc;margin:10px 0}
+.pbtn{font:400 9px var(--pixel);border:3px solid var(--ink);background:#fff;padding:9px 12px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);color:var(--ink)}
+.pbtn:hover{background:var(--gold-l)} .pbtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.pbtn.yes{background:var(--mint)} .pbtn.no{background:#ffb3b3}
+.tele{background:#23232b;color:#b6f5dc;font:500 13px/1.75 'Courier New',monospace;padding:14px 16px;border:3px solid var(--ink);white-space:pre}
+.tele em{font-style:normal;color:#ffd77a} .tele .fl{background:#ffd77a;color:#23232b}
+.res{margin-top:14px;padding:12px 14px;border:3px solid var(--ink);font:600 15px/1.45 var(--body);min-height:58px;background:#f7f4f2}
+.res.no{background:#ffd0d0} .res.yes{background:#d7f4e8}
+.chain{display:flex;align-items:center;gap:6px;margin:6px 0 12px;font:700 12px var(--body)}
+.chain span{padding:7px 8px;border:3px solid var(--ink);background:#ffd0ea}
+.chain i{font-style:normal}
+.prompt{background:#fff0f8;border:3px solid var(--pink-d);padding:10px 12px;font:500 13px/1.6 'Courier New',monospace;margin-top:10px}
+.cards6{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 10px;position:relative}
+.c6{border:3px solid var(--ink);background:#fff;padding:4px;box-shadow:3px 3px 0 var(--ink)}
+.c6 img{width:100%;image-rendering:pixelated;display:block;border:2px solid var(--ink)}
+.c6 b{display:block;font:400 9px var(--pixel);padding:5px 4px 3px}
+.t-P{background:var(--pink)} .t-N{background:var(--gold-l)} .t-H{background:var(--mint)}
+.leg3{font-size:13px;line-height:1.5} .leg3 p{margin:0 0 6px;display:flex;gap:8px;align-items:flex-start}
+.leg3 .k{flex:none;font:400 9px var(--pixel);border:3px solid var(--ink);padding:5px 6px}
+.lik{display:grid;grid-template-columns:150px repeat(7,1fr);gap:5px;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:7px}
+.lik .hd{font:400 8px var(--pixel);text-align:center;color:#555}
+.lik button{height:26px;border:3px solid var(--ink);background:#fff;cursor:pointer;padding:0}
+.lik button:hover{background:var(--gold-l)} .lik button.on{background:var(--ink)}
+.lik button.on.neg{background:var(--pink-d)} .lik button.on.pos{background:var(--mint-d)} .lik button.on.zero{background:var(--gold)}
+.rk{display:flex;align-items:center;gap:8px;border:3px solid var(--ink);padding:4px 8px 4px 4px;margin-bottom:6px;background:#fff;font:700 13px var(--body)}
+.rk img{width:56px;image-rendering:pixelated;border:2px solid var(--ink)}
+.rk .n{font:400 22px var(--display);width:22px}
+.rk .tg2{font:400 8px var(--pixel);padding:4px 5px;border:2px solid var(--ink)}
+.rk .sp{flex:1}
+.rk button{border:2px solid var(--ink);background:#fff;width:26px;height:26px;cursor:pointer;font-size:12px;padding:0}
+.rk button:hover{background:var(--gold-l)}
+.cmt{border:3px solid var(--ink);background:#fff;padding:8px 10px;font-size:13px;color:#888;font-style:italic;height:54px}
+.timer{font:400 76px/1 var(--display);margin:2px 0 8px}
+.timer small{font:400 12px var(--pixel);color:#555;margin-left:8px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.metrics div{border:3px solid var(--ink);padding:10px 12px;background:#f7f4f2;font-size:12px;font-weight:600}
+.metrics b{display:block;font:400 40px/1.1 var(--display);color:var(--violet)}
+.cond{display:flex;gap:8px;align-items:center;margin-bottom:6px;font-size:13px;font-weight:600}
+.cond button{font:400 11px var(--pixel);border:3px solid var(--ink);width:40px;height:36px;background:#fff;cursor:pointer;padding:0}
+.cond button.on.P{background:var(--pink)} .cond button.on.N{background:var(--gold-l)} .cond button.on.H{background:var(--mint)}
+.thanks{font:400 70px/1 var(--display);margin:10px 0 6px}
+.fhint{position:absolute;left:0;right:0;bottom:50px;text-align:center;font:400 10px var(--pixel);z-index:5;opacity:0;transition:opacity .4s}
+.full .fhint{opacity:1}
+.flegend{position:absolute;right:30px;top:112px;z-index:5;border:3px solid var(--ink);background:#fff;padding:8px 10px;font-size:11px;line-height:1.8;opacity:0;transition:opacity .4s;pointer-events:none}
+.full .flegend{opacity:1}
+.flegend i{display:inline-block;width:12px;height:12px;border:2px solid var(--ink);margin-right:6px;vertical-align:-2px}
+
+/* ===== 08-resultados.html ===== */
+/* ---------- resultados: 6 gráficos con zoom ---------- */
+.rleg{position:absolute;left:330px;right:60px;top:40px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px 16px;font:600 12.5px var(--body);z-index:3}
+.rleg span{display:flex;align-items:center;gap:6px}
+.rleg i{display:inline-block;width:13px;height:13px;border:2.5px solid var(--ink)}
+.rleg svg{display:block}
+.rmeta{position:absolute;right:60px;top:74px;font:400 8px/1.6 var(--pixel);color:#555;z-index:3}
+.rmeta b{font-weight:400;background:var(--gold-l);color:var(--ink);border:2px solid var(--ink);padding:3px 6px;margin-right:6px}
+.rcard{position:absolute;background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);cursor:pointer;
+  transition:left .6s cubic-bezier(.5,0,.2,1),top .6s cubic-bezier(.5,0,.2,1),width .6s cubic-bezier(.5,0,.2,1),height .6s cubic-bezier(.5,0,.2,1),opacity .4s,box-shadow .2s;
+  opacity:0}
+.rcard.in{opacity:1}
+.rcard.gone{opacity:0;pointer-events:none}
+.rcard:hover{box-shadow:7px 7px 0 var(--violet)}
+.rcard.big{cursor:zoom-out;z-index:2}
+.rcard svg{display:block;width:100%;height:100%}
+.rcard text{font-family:var(--body);fill:var(--ink)}
+.rcard .rt{font:400 23px var(--display);letter-spacing:1px;text-anchor:middle}
+.rcard .ax{font-size:10px;fill:#666;text-anchor:end}
+.rcard .xl{font-size:10px;font-weight:700;text-anchor:middle}
+.rcard .mv{font-size:9.5px;font-weight:700}
+.rcard .gl{stroke:#e8e3df;stroke-width:1}
+.rcard .z{stroke:#9a948f;stroke-width:1.2;stroke-dasharray:4 3}
+.rcard .eb{transform-box:fill-box;transform-origin:center;transform:scaleY(0);transition:transform .55s cubic-bezier(.3,1.4,.5,1)}
+.rcard .pt{opacity:0;transition:opacity .3s}
+.rcard.in .eb{transform:none}
+.rcard.in .pt{opacity:1}
+.rcard .br path{fill:none;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .5s ease}
+.rcard .br text{font-size:9.5px;font-weight:700;text-anchor:middle;opacity:0;transition:opacity .3s}
+.rcard.in .br path{stroke-dashoffset:0}
+.rcard.in .br text{opacity:1}
+.rcard .br.sig path{stroke:var(--violet);stroke-width:2.6}
+.rcard .br.sig text{fill:var(--violet)}
+.rcard .br.frag path{stroke-dasharray:.035 .02;stroke-dashoffset:0}
+.rcard .br.ns path{stroke:#9a948f;stroke-width:1.4}
+.rcard .br.ns text{fill:#8a847f;font-weight:600}
+.rside{position:absolute;left:868px;top:118px;width:352px;height:552px;background:#fff;border:4px solid var(--ink);box-shadow:7px 7px 0 var(--ink);padding:16px 18px;
+  opacity:0;transform:translateX(34px);pointer-events:none;transition:opacity .4s .2s,transform .45s .2s;z-index:3}
+.rside.on{opacity:1;transform:none;pointer-events:auto}
+.rchips{display:flex;gap:6px;margin-bottom:14px}
+.rchips button{font:400 9px var(--pixel);border:3px solid var(--ink);background:#fff;height:30px;min-width:30px;padding:0 6px;cursor:pointer;color:var(--ink)}
+.rchips button:hover{background:var(--gold-l)}
+.rchips button.on{background:var(--ink);color:#fff}
+.rchips .all{margin-left:auto}
+.rside .ptag2{display:inline-block;font:400 10px var(--pixel);padding:7px 10px;background:var(--ink);color:#fff;margin-bottom:12px}
+.rmeans{margin:0 0 12px;font-size:13px}
+.rmeans p{display:flex;align-items:center;gap:8px;margin:0 0 5px}
+.rmeans i{flex:none;width:12px;height:12px;border:2.5px solid var(--ink)}
+.rmeans span{flex:1;font-weight:600}
+.rmeans b{font:400 22px/1 var(--display);letter-spacing:.5px}
+.rmeans small{font-size:11px;color:#777;width:92px;text-align:right}
+.rread{font-size:14px;line-height:1.5;margin:0}
+.rread p{margin:0 0 8px}
+.rread .k{color:var(--violet);font-weight:700}
+.rwarn{margin-top:10px;padding:8px 10px;border:3px solid var(--ink);background:var(--gold-l);font:600 12.5px/1.45 var(--body)}
+.rhint{position:absolute;left:62px;top:104px;font:400 9px var(--pixel);z-index:3;opacity:0;transition:opacity .4s}
+#s-res[data-step="0"] .rhint{opacity:1}
+
+/* ===== 09-anexo.html ===== */
+/* ---------- estilos para anexos ---------- */
+#s-anexos {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+}
+.anx-tabs {
+  position: absolute;
+  left: 360px;
+  top: 42px;
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+.anx-tab {
+  font: 400 10px var(--pixel);
+  padding: 8px 14px;
+  border: 3px solid var(--ink);
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  transition: all .2s;
+}
+.anx-tab:hover {
+  background: var(--gold-l);
+}
+.anx-tab.on {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+.anx-panel {
+  position: absolute;
+  left: 60px;
+  top: 110px;
+  width: 1160px;
+  height: 560px;
+  display: none;
+  opacity: 0;
+  transition: opacity .35s;
+}
+.anx-panel.on {
+  display: grid;
+  opacity: 1;
+}
+
+/* Panel 0: Vista Dataset Hugging Face */
+#anx-p0 {
+  grid-template-columns: 710px 420px;
+  gap: 30px;
+  align-items: start;
+}
+.anx-img-win {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--ink);
+  overflow: hidden;
+}
+.anx-img-bar {
+  background: var(--ink);
+  color: #fff;
+  padding: 7px 12px;
+  font: 400 9px var(--pixel);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.anx-img-body {
+  padding: 8px;
+  background: #111;
+  max-height: 480px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.anx-img-body img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 2px solid #333;
+}
+.anx-card {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--ink);
+  padding: 20px;
+}
+.anx-badge {
+  display: inline-block;
+  font: 400 9px var(--pixel);
+  padding: 5px 9px;
+  background: var(--mint);
+  border: 2px solid var(--ink);
+  margin-bottom: 12px;
+}
+.anx-title {
+  font: 400 24px var(--display);
+  letter-spacing: .5px;
+  margin: 0 0 10px;
+}
+.anx-desc {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #222;
+  margin: 0 0 14px;
+}
+.anx-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.anx-list li {
+  margin-bottom: 8px;
+  padding-left: 20px;
+  position: relative;
+}
+.anx-list li::before {
+  content: '▶';
+  position: absolute;
+  left: 0;
+  color: var(--violet);
+  font-size: 10px;
+  top: 2px;
+}
+
+/* Panel 1: Filtrado de código filter_mm2.py */
+#anx-p1 {
+  grid-template-columns: 640px 480px;
+  gap: 30px;
+  align-items: start;
+}
+.cf-anx-win {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--ink);
+  overflow: hidden;
+}
+.cf-anx-bar {
+  background: var(--ink);
+  color: #fff;
+  padding: 7px 12px;
+  font: 400 9px var(--pixel);
+  display: flex;
+  justify-content: space-between;
+}
+.code-filter-anx {
+  background: #1e1e24;
+  color: #e6e6e6;
+  font: 500 13px/1.7 'Courier New', monospace;
+  padding: 14px;
+}
+.cf-line-anx {
+  padding: 4px 6px;
+  margin: 3px 0;
+  border-radius: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 3px solid transparent;
+  transition: all .25s;
+}
+.cf-line-anx.active {
+  background: #2d2d38;
+  border-left-color: var(--violet);
+}
+.cf-kw { color: #ff7fc0; font-weight: 700; }
+.cf-str { color: #f6d36b; }
+.cf-num { color: #94ddc6; font-weight: 700; }
+.cf-com { color: #888; font-style: italic; }
+.cf-cnt {
+  font: 700 11.5px 'Courier New', monospace;
+  color: #ffb3da;
+  background: #111;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid #444;
+}
+.anx-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+.anx-stat-box {
+  flex: 1;
+  border: 3px solid var(--ink);
+  background: var(--gold-l);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 10px;
+  text-align: center;
+}
+.anx-stat-box b {
+  display: block;
+  font: 400 24px var(--display);
+  color: var(--ink);
+}
+.anx-stat-box span {
+  font: 400 9px var(--pixel);
+  color: #444;
+}
 </style>
 </head>
 <body>
@@ -1712,34 +1100,6 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
         </div>
       </div>
     </div>
-
-    <!-- Tira de flujo inferior -->
-    <div class="lvl-timeline" id="lvl-flow-strip">
-      <div class="lt-phase">
-        <span class="lt-tag">FASE 1 · CALIBRACIÓN</span>
-        <div class="lt-flow">
-          <span class="lt-box b-F">F (2 niveles)</span>
-          <span class="lt-arrow">──▶</span>
-          <span>Telemetría basal</span>
-          <span class="lt-arrow">──▶</span>
-          <span class="lt-box b-P">Genera P</span>
-        </div>
-      </div>
-      <div class="lt-sep"></div>
-      <div class="lt-phase">
-        <span class="lt-tag">FASE 2 · BLOQUE PRINCIPAL (6 NIVELES)</span>
-        <div class="lt-flow">
-          <span>Orden aleatorio ciego:</span>
-          <span class="lt-box b-P">P</span>
-          <span>+</span>
-          <span class="lt-box b-G">G</span>
-          <span>+</span>
-          <span class="lt-box b-H">H</span>
-          <span class="lt-arrow">──▶</span>
-          <span>Evaluación post-nivel</span>
-        </div>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -1747,230 +1107,247 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-<section class="slide" id="s-flow" data-min="1" data-max="15" data-sec="Metodología">
-  <svg id="fsvg" viewBox="-80 -229 2700 1519" preserveAspectRatio="xMidYMid meet">
-    <defs>
-      <marker id="arw" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2"
-        orient="auto-start-reverse">
-        <path d="M0 0L10 5L0 10z" fill="#1a1a1a" />
-      </marker>
-    </defs>
-    <g id="fworld"></g>
-  </svg>
-  <h1 class="h1">METODOLOGÍA</h1>
-  <div class="fchip" id="fchip" data-p="1"></div>
+  <section class="slide" id="s-flow" data-min="1" data-max="14" data-sec="Metodología">
+    <svg id="fsvg" viewBox="-80 -229 2700 1519" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="arw" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1a1a1a"/></marker>
+      </defs>
+      <g id="fworld"></g>
+    </svg>
+    <h1 class="h1">METODOLOGÍA</h1>
+    <div class="fchip" id="fchip" data-p="1"></div>
 
-  <!-- 1 -->
-  <div class="fp" data-p="1">
-    <div class="ptag">SELECCIÓN DE NIVELES</div>
-    <p class="pp">Partimos del conjunto de niveles de <b>Super Mario Maker 2</b> publicado en <b>Hugging Face</b>: miles
-      de niveles hechos por personas.</p>
-    <div class="docs" id="docs"></div>
-    <label class="shot" data-key="hf" id="shotHf" style="height:140px;cursor:pointer"
-      title="Clic para ampliar captura"><span>CAPTURA · DATASET EN HUGGING FACE<br>(clic para ampliar)</span><img
-        alt=""><input type="file" accept="image/*"></label>
-  </div>
-  <!-- 2: ZOOM IN HUGGING FACE -->
-  <div class="fp" data-p="2" style="display:none"></div>
-  <div class="hf-zoom-overlay" id="hfZoom">
-    <div class="hf-zoom-win">
-      <div class="hf-zoom-bar">
-        <div class="hf-bar-l">
-          <span>HUGGING FACE</span>
-          <span class="hf-tag">DATASET · SUPER MARIO MAKER 2</span>
-        </div>
+    <!-- 1 -->
+    <div class="fp" data-p="1">
+      <div class="ptag">SELECCIÓN DE NIVELES</div>
+      <p class="pp">Partimos del conjunto de niveles de <b>Super Mario Maker 2</b> publicado en <b>Hugging Face</b>: miles de niveles hechos por personas.</p>
+      <div class="docs" id="docs"></div>
+      <label class="shot" data-key="hf" style="height:140px"><span>CAPTURA · DATASET EN HUGGING FACE<br>(clic para cargar imagen)</span><img alt=""><input type="file" accept="image/*"></label>
+    </div>
+    <!-- 2 -->
+    <div class="fp" data-p="2">
+      <div class="ptag">FILTRACIÓN POR CRITERIO</div>
+      <p class="pp">Cada nivel pasa por tres filtros. Entre los que sobreviven, <b>se seleccionan los más populares</b>.</p>
+      <div class="funwrap" id="funwrap">
+        <svg class="funnel" id="funnel" width="504" height="290" viewBox="0 0 504 290">
+          <polygon points="20,10 484,10 392,100 112,100" fill="#ffd0ea" stroke="#1a1a1a" stroke-width="4"/>
+          <polygon points="112,104 392,104 340,194 164,194" fill="#d7f4e8" stroke="#1a1a1a" stroke-width="4"/>
+          <polygon points="164,198 340,198 300,282 204,282" fill="#fbeab8" stroke="#1a1a1a" stroke-width="4"/>
+          <g font-family="Bebas Neue, Impact, sans-serif" font-size="30" text-anchor="middle" fill="#1a1a1a" letter-spacing="1">
+            <text x="252" y="64">ESTILO</text><text x="252" y="157">DIFICULTAD</text><text x="252" y="249" font-size="26">CONFIABILIDAD</text></g>
+        </svg>
+        <div id="fundots" style="position:absolute;left:0;top:0;width:504px;height:350px;pointer-events:none"></div>
+        <div class="fout">★ Los más populares <b id="funN">0</b></div>
       </div>
-      <div class="hf-zoom-body" id="hfZoomBody" title="Clic para continuar">
+    </div>
+    <!-- 3 -->
+    <div class="fp" data-p="3">
+      <div class="ptag">VERIFICACIÓN CON A*</div>
+      <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y se almacena en el banco de <b>niveles humanos (H)</b>.</p>
+      <svg class="astar" id="astar" viewBox="0 0 560 200" height="214"></svg>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE → NIVELES H</span></div>
+      <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Menta: ruta encontrada. Esta validación se hace de antemano, solo para los niveles humanos.</small></p>
+    </div>
+    <!-- 4 -->
+    <div class="fp" data-p="4">
+      <div class="ptag">PARTE 2 · 1 · BIENVENIDA</div>
+      <p class="pp">La persona llega al laboratorio y se le explica cómo será la sesión.</p>
+      <div class="win-mock"><div class="bar"><span>BIENVENIDA</span><span>▢ ✕</span></div>
+        <div class="bd2"><b>En esta sesión vas a:</b><ol><li>Jugar niveles de práctica.</li><li>Jugar 6 niveles y evaluar cada uno.</li><li>Ordenarlos y dejar comentarios.</li><li>Opcionalmente, seguir jugando libremente.</li></ol></div></div>
+      <p class="pp" style="margin-top:8px"><small>Maqueta ilustrativa: reemplázala con la captura real.</small></p>
+      <label class="shot" data-key="welcome" style="height:150px"><span>CAPTURA · PANTALLA DE BIENVENIDA<br>(clic para cargar imagen)</span><img alt=""><input type="file" accept="image/*"></label>
+    </div>
+    <!-- 5 -->
+    <div class="fp" data-p="5">
+      <div class="ptag">2 · NIVELES DE FAMILIARIZACIÓN (F)</div>
+      <p class="pp">La persona juega <b>2 niveles de práctica</b>. Mientras juega, capturamos su <b>telemetría</b>.</p>
+      <div class="tele" id="tele"></div>
+      <p class="pp" style="margin-top:8px"><small>Ejemplo ilustrativo: ajusta los campos a las métricas que realmente registras.</small></p>
+      <label class="shot" data-key="fam" style="height:96px"><span>CAPTURA · NIVEL DE FAMILIARIZACIÓN</span><img alt=""><input type="file" accept="image/*"></label>
+    </div>
+    <!-- 6 -->
+    <div class="fp" data-p="6">
+      <div class="ptag">3 · CONSENTIMIENTO INFORMADO</div>
+      <p class="pp">Antes de seguir, la persona decide. Prueba las dos ramas:</p>
+      <div class="win-mock"><div class="bar"><span>CONSENTIMIENTO INFORMADO</span><span>▢ ✕</span></div>
+        <div class="bd2"><div class="skel" style="width:96%"></div><div class="skel" style="width:88%"></div><div class="skel" style="width:92%"></div><div class="skel" style="width:60%"></div>
+          <div style="display:flex;gap:12px;margin-top:14px"><button class="pbtn no" id="cNo">NO ACEPTO</button><button class="pbtn yes" id="cYes">ACEPTO</button></div></div></div>
+      <div class="res" id="cres">Elige una opción.</div>
+    </div>
+    <!-- 7 -->
+    <div class="fp" data-p="7">
+      <div class="ptag">4 · ENCUESTA INICIAL</div>
+      <p class="pp">Preguntas iniciales antes de comenzar el bloque principal.</p>
+      <div class="win-mock"><div class="bar"><span>ENCUESTA INICIAL</span><span>▢ ✕</span></div>
+        <div class="bd2"><div class="skel" style="width:70%"></div><div class="skel" style="height:26px;width:100%;border:3px solid var(--ink);background:#fff"></div><div class="skel" style="width:55%"></div><div class="skel" style="height:26px;width:100%;border:3px solid var(--ink);background:#fff"></div><div class="skel" style="width:80%"></div><div class="skel" style="height:26px;width:100%;border:3px solid var(--ink);background:#fff"></div></div></div>
+      <p class="pp" style="margin-top:8px"><small>Maqueta ilustrativa.</small></p>
+      <label class="shot" data-key="survey" style="height:110px"><span>CAPTURA · ENCUESTA INICIAL</span><img alt=""><input type="file" accept="image/*"></label>
+    </div>
+    <!-- 8 -->
+    <div class="fp" data-p="8">
+      <div class="ptag">EN SEGUNDO PLANO · GENERACIÓN</div>
+      <p class="pp">Al terminar la familiarización, la telemetría pasa por el LLM, que produce un <b>prompt para MarioGPT</b>. MarioGPT genera los niveles personalizados <b>mientras el participante sigue jugando</b>.</p>
+      <div class="chain"><span>Telemetría</span><i>▶</i><span>Ollama</span><i>▶</i><span>MarioGPT</span><i>▶</i><span style="background:var(--pink)">Nivel P</span></div>
+      <div class="prompt" id="prompt"></div>
+      <p class="pp" style="margin-top:10px"><small>Prompt de ejemplo, ilustrativo. Los niveles generados no se validan con A* durante el experimento.</small></p>
+    </div>
+    <!-- 9 -->
+    <div class="fp" data-p="9">
+      <div class="ptag">5 · BLOQUE PRINCIPAL</div>
+      <p class="pp">Cada participante juega <b>6 niveles de tres tipos</b>, <b>asignados en orden aleatorio desde un servidor</b>.</p>
+      <div class="cards6" id="cards6"></div>
+      <div class="leg3">
+        <p><span class="k t-P">P</span><span><b>Personalizados:</b> generados con IA a partir de la telemetría del participante.</span></p>
+        <p><span class="k t-N">N</span><span><b>Genéricos:</b> prediseñados, no dependen del participante.</span></p>
+        <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, banco «Nivel 0», validados con A* de antemano.</span></p>
+      </div>
+      <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
+    </div>
+    <!-- 10 -->
+    <div class="fp" data-p="10">
+      <div class="ptag">CUESTIONARIO TRAS CADA NIVEL</div>
+      <p class="pp">6 preguntas en escala de 7 puntos, de <b>−3 a +3</b>. Prueba el cuestionario:</p>
+      <div id="lik"></div>
+      <label class="shot" data-key="quest" style="height:100px;margin-top:8px"><span>CAPTURA · CUESTIONARIO REAL</span><img alt=""><input type="file" accept="image/*"></label>
+    </div>
+    <!-- 11 -->
+    <div class="fp" data-p="11">
+      <div class="ptag">6 · RANKING Y COMENTARIOS</div>
+      <p class="pp">La persona <b>ordena los 6 niveles</b> que jugó y deja comentarios. Prueba reordenarlos:</p>
+      <div id="rank"></div>
+      <div class="cmt">Comentarios libres…</div>
+    </div>
+    <!-- 12 -->
+    <div class="fp" data-p="12">
+      <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
+      <p class="pp">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>. Es opcional.</p>
+      <div class="cond">Condición: <button data-c="P">P</button><button data-c="G">G</button><button data-c="H">H</button></div>
+      <div class="timer" id="timer">20:00<small>(demo acelerada)</small></div>
+      <div class="metrics"><div>Tiempo jugado<b id="mT">0 min</b></div><div>Niveles jugados<b id="mL">0</b></div></div>
+      <p class="pp"><small>Ambos valores se registran como medida de compromiso.</small></p>
+    </div>
+    <!-- 13 -->
+    <div class="fp" data-p="13">
+      <div class="ptag">8 · FINAL</div>
+      <div class="thanks">¡GRACIAS<br>POR JUGAR!</div>
+      <p class="pp">Fin de la sesión. Los datos del participante quedan registrados para el análisis.</p>
+      <img class="spr" data-spr="hero:happy" data-s="9" alt="" style="margin:14px auto 0" id="endhero">
+    </div>
+    <!-- 14 -->
+    <div class="fp" data-p="14" style="display:none"></div>
+
+    <div class="flegend"><i style="background:var(--mint)"></i>Parte 1<br><i style="background:#fff"></i>Parte 2<br><i style="background:#ffb3da"></i>Segundo plano<br><i style="background:var(--gold-l)"></i>Decisión</div>
+    <div class="fhint blink">CLIC EN UNA CAJA PARA VOLVER A SU EXPLICACIÓN</div>
+  </section>
+
+<!-- ============ FILMINA: RESULTADOS · MEDIAS DEL LMM ============ -->
+<!-- Datos: Data_Analysis_Code/LMM-Modelo_Lineal_de_Efectos_Mixtos/Analisis_Respuestas_Experimento.ipynb
+     (medias estimadas por el LMM con IC 95 % y p-valores ajustados por Holm, Etapa 5).
+     Si el análisis cambia, actualiza el objeto RES del bloque de script. -->
+
+
+
+  <section class="slide" id="s-res" data-min="0" data-max="6" data-despues-de="s-flow:10" data-sec="Metodología">
+    <h1 class="h1">RESULTADOS</h1>
+    <div class="rleg">
+      <span><i style="background:var(--mint-d)"></i>Humano (H)</span>
+      <span><i style="background:var(--gold)"></i>LLM genérico (G)</span>
+      <span><i style="background:var(--pink-d)"></i>LLM con telemetría (P)</span>
+      <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6"/></svg>p &lt; 0.05</span>
+      <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6" stroke-dasharray="5 3"/></svg>p &lt; 0.05, frágil</span>
+      <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#9a948f" stroke-width="1.4"/></svg>no significativa</span>
+    </div>
+    <div class="rmeta"><b>PRELIMINAR</b>MEDIAS DEL LMM E IC 95% · 72 PARTICIPANTES · 396 EVALUACIONES · p AJUSTADOS POR HOLM</div>
+    <div id="rcards"></div>
+    <div class="rside" id="rside">
+      <div class="rchips" id="rchips"></div>
+      <div class="ptag2" id="rtag"></div>
+      <div class="rmeans" id="rmeans"></div>
+      <div class="rread" id="rread"></div>
+    </div>
+    <div class="rhint blink">CLIC EN UN GRÁFICO PARA AMPLIARLO</div>
+  </section>
+
+<!-- ============ FILMINA: ANEXOS · DETALLES DEL DATASET Y FILTRADO ============ -->
+
+
+
+<section class="slide" id="s-anexos" data-min="0" data-max="1" data-sec="Anexos">
+  <h1 class="h1">ANEXOS</h1>
+  <div class="anx-tabs">
+    <button class="anx-tab" data-tab="0" id="btnTab0">1 · DATASET HUGGING FACE</button>
+    <button class="anx-tab" data-tab="1" id="btnTab1">2 · FILTRADO ESPECÍFICO (FILTER_MM2)</button>
+  </div>
+
+  <!-- Panel 0: Dataset HF -->
+  <div class="anx-panel" id="anx-p0">
+    <div class="anx-img-win">
+      <div class="anx-img-bar">
+        <span>HUGGING FACE · REPOSITORIO SUPER MARIO MAKER 2</span>
+        <span>1920 × 1034 ▢ ✕</span>
+      </div>
+      <div class="anx-img-body">
         <img src="img/ImagenHuggingFacePrincipal.png" alt="Dataset Super Mario Maker 2 en Hugging Face">
       </div>
-      <div class="hf-zoom-foot">
-        <span><b>Repositorio público:</b> Miles de niveles creados por jugadores humanos, con metadatos y
-          telemetría.</span>
-        <small class="blink">PRESIONA ▶ PARA CONTINUAR</small>
-      </div>
+    </div>
+    <div class="anx-card">
+      <span class="anx-badge">REPOSITORIO DE DATOS</span>
+      <h3 class="anx-title">SUPER MARIO MAKER 2 (HF)</h3>
+      <p class="anx-desc">
+        Repositorio masivo con <b>~26.6 millones de registros</b> de niveles creados por la comunidad mundial de Nintendo Switch, incluyendo telemetría de juego y metadatos de diseño.
+      </p>
+      <ul class="anx-list">
+        <li><b>Metadatos extraídos:</b> <code>gamestyle</code>, <code>tag</code>, <code>clearrate</code>, <code>plays</code>, <code>likes</code> y tiempo de creación.</li>
+        <li><b>Propósito en el proyecto:</b> Banco base del que se extraen los niveles humanos reales (<b>Condición H</b>) y niveles de prueba previa (<b>Condición F</b>).</li>
+        <li><b>Garantía de calidad:</b> Filtrado algorítmico estricto y verificación de transitabilidad mediante el agente <b>A* (Baumgarten)</b>.</li>
+      </ul>
     </div>
   </div>
-  <!-- 3 -->
-  <div class="fp" data-p="3">
-    <div class="ptag">FILTRACIÓN POR CRITERIO (filter_mm2.py)</div>
-    <p class="pp">Streaming en memoria sobre <b>~26.6M</b> de niveles de Hugging Face mediante filtros sucesivos:</p>
 
-    <div class="code-filter" id="codeFilter">
-      <div class="cf-line" data-cf="0"><span><span class="cf-kw">for</span> rec <span class="cf-kw">in</span>
-          ds:</span><span class="cf-cnt">26.6M (100%)</span></div>
-      <div class="cf-line" data-cf="1"><span><span class="cf-kw"> if</span> rec[<span class="cf-str">"gamestyle"</span>]
-          != <span class="cf-num">0</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~5.3M
-          (SMB1)</span></div>
-      <div class="cf-line" data-cf="2"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> (<span
-            class="cf-num">30</span> &lt;= cr &lt;= <span class="cf-num">50</span>): <span
-            class="cf-kw">continue</span></span><span class="cf-cnt">→ ~580K (Flujo)</span></div>
-      <div class="cf-line" data-cf="3"><span><span class="cf-kw"> if</span> attempts &lt; <span
-            class="cf-num">150</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~140K
-          (Fiable)</span></div>
-      <div class="cf-line" data-cf="4"><span><span class="cf-kw"> if</span> likes &lt; <span class="cf-num">30</span>
-          <span class="cf-kw">or</span> timer &lt; <span class="cf-num">250</span>: <span
-            class="cf-kw">continue</span></span><span class="cf-cnt">→ ~25K (Calidad)</span></div>
-      <div class="cf-line" data-cf="5"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span>
-          convert_maf(rec): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~12K (Geom)</span></div>
-      <div class="cf-line" data-cf="6"><span><span class="cf-com"> heapq.heappush(top_likes, rec)</span></span><span
-          class="cf-cnt" style="color:var(--mint-d)">★ Top candidatos</span></div>
-    </div>
-
-    <div class="filter-stats">
-      <div class="fs-card"><span class="fs-title">HF STREAM</span><b>26.6M</b><small>Total crudo</small></div>
-      <div class="fs-arrow">▶</div>
-      <div class="fs-card"><span class="fs-title">FILTRADOS</span><b>~25K</b><small>SMB1 y flujo</small></div>
-      <div class="fs-arrow">▶</div>
-      <div class="fs-card hl"><span class="fs-title">NIVELES H</span><b id="funN">14</b><small>A* verificados</small>
+  <!-- Panel 1: Filtrado filter_mm2.py -->
+  <div class="anx-panel" id="anx-p1">
+    <div>
+      <div class="cf-anx-win">
+        <div class="cf-anx-bar">
+          <span>src/dataset/filter_mm2.py · PIPELINE DE STREAMING</span>
+          <span>PYTHON 3</span>
+        </div>
+        <div class="code-filter-anx" id="anxCodeFilter">
+          <div class="cf-line-anx" data-cf="0"><span><span class="cf-kw">for</span> rec <span class="cf-kw">in</span> ds:</span><span class="cf-cnt">26.6M (100%)</span></div>
+          <div class="cf-line-anx" data-cf="1"><span><span class="cf-kw"> if</span> rec[<span class="cf-str">"gamestyle"</span>] != <span class="cf-num">0</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~5.3M (SMB1)</span></div>
+          <div class="cf-line-anx" data-cf="2"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> (<span class="cf-num">30</span> &lt;= cr &lt;= <span class="cf-num">50</span>): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~580K (Flujo)</span></div>
+          <div class="cf-line-anx" data-cf="3"><span><span class="cf-kw"> if</span> attempts &lt; <span class="cf-num">150</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~140K (Fiable)</span></div>
+          <div class="cf-line-anx" data-cf="4"><span><span class="cf-kw"> if</span> likes &lt; <span class="cf-num">30</span> <span class="cf-kw">or</span> timer &lt; <span class="cf-num">250</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~25K (Calidad)</span></div>
+          <div class="cf-line-anx" data-cf="5"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> convert_maf(rec): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~12K (Geometría)</span></div>
+          <div class="cf-line-anx" data-cf="6"><span><span class="cf-com"> heapq.heappush(top_likes, rec)</span></span><span class="cf-cnt" style="color:var(--mint-d)">★ Top candidatos</span></div>
+        </div>
+      </div>
+      <div class="anx-stats">
+        <div class="anx-stat-box"><span>HF CRUDA</span><b>26.6M</b></div>
+        <div class="anx-stat-box" style="background:var(--mint)"><span>SMB1 + FLUJO</span><b>~25K</b></div>
+        <div class="anx-stat-box" style="background:#ffb3da"><span>A* VERIFICADOS</span><b>14</b></div>
       </div>
     </div>
 
-    <p class="pp" style="margin-top:6px;font-size:13px;line-height:1.4"><small><b>Destino:</b> Los mejores se validan
-        con <b>A* (Baumgarten)</b>. Los superables forman el banco de <b>Niveles H (Humanos)</b> del experimento y los 2
-        de <b>Familiarización (F)</b>.</small></p>
-  </div>
-  <!-- 4 -->
-  <div class="fp" data-p="4">
-    <div class="ptag">VERIFICACIÓN CON A*</div>
-    <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y pasa a ser parte de los <b>Niveles H</b>.</p>
-    <svg class="astar" id="astar" viewBox="0 0 560 200" height="214"></svg>
-    <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE
-        → NIVELES H</span></div>
-    <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Menta: ruta encontrada. Esta validación
-        se hace de antemano, solo para los niveles humanos.</small></p>
-  </div>
-  <!-- 5 -->
-  <div class="fp" data-p="5">
-    <div class="ptag">PARTE 2 · 1 · BIENVENIDA</div>
-    <p class="pp">La persona llega al laboratorio y se le explica cómo será la sesión.</p>
-    <div class="win-mock">
-      <div class="bar"><span>BIENVENIDA</span><span>▢ ✕</span></div>
-      <div class="bd2"><b>En esta sesión vas a:</b>
-        <ol>
-          <li>Jugar niveles de práctica.</li>
-          <li>Jugar 6 niveles y evaluar cada uno.</li>
-          <li>Ordenarlos y dejar comentarios.</li>
-          <li>Opcionalmente, seguir jugando libremente.</li>
-        </ol>
-      </div>
+    <div class="anx-card">
+      <span class="anx-badge" style="background:var(--gold)">USO Y DESTINO DE LOS NIVELES</span>
+      <h3 class="anx-title">¿DÓNDE SE USAN LOS 14 NIVELES?</h3>
+      <ul class="anx-list">
+        <li>
+          <b>Niveles de Familiarización (F) · 2 niveles:</b><br>
+          Provenientes de <code>src/levels/nivel0/</code>. Se usan en la Fase 1 para que el jugador se adapte a los controles y se extraiga su telemetría basal (saltos, muertes, velocidad).
+        </li>
+        <li>
+          <b>Niveles Humanos (H) · 2 niveles evaluados:</b><br>
+          Actúan como la línea base humana en el bloque ciego principal (junto a 2 P personalizados y 2 G genéricos).
+        </li>
+        <li>
+          <b>Banco de reserva H (10 niveles):</b><br>
+          Niveles validados que sirven de contingencia y banco extendido para pruebas piloto y experimentación complementaria.
+        </li>
+      </ul>
     </div>
-    <p class="pp" style="margin-top:8px"><small>Maqueta ilustrativa: reemplázala con la captura real.</small></p>
-    <label class="shot" data-key="welcome" style="height:150px"><span>CAPTURA · PANTALLA DE BIENVENIDA<br>(clic para
-        cargar imagen)</span><img alt=""><input type="file" accept="image/*"></label>
   </div>
-  <!-- 6 -->
-  <div class="fp" data-p="6">
-    <div class="ptag">2 · NIVELES DE FAMILIARIZACIÓN (F)</div>
-    <p class="pp">La persona juega <b>2 niveles de práctica</b>. Mientras juega, capturamos su <b>telemetría</b>.</p>
-    <div class="tele" id="tele"></div>
-    <p class="pp" style="margin-top:8px"><small>Ejemplo ilustrativo: ajusta los campos a las métricas que realmente
-        registras.</small></p>
-    <label class="shot" data-key="fam" style="height:96px"><span>CAPTURA · NIVEL DE FAMILIARIZACIÓN</span><img
-        alt=""><input type="file" accept="image/*"></label>
-  </div>
-  <!-- 7 -->
-  <div class="fp" data-p="7">
-    <div class="ptag">3 · CONSENTIMIENTO INFORMADO</div>
-    <p class="pp">Antes de seguir, la persona decide. Prueba las dos ramas:</p>
-    <div class="win-mock">
-      <div class="bar"><span>CONSENTIMIENTO INFORMADO</span><span>▢ ✕</span></div>
-      <div class="bd2">
-        <div class="skel" style="width:96%"></div>
-        <div class="skel" style="width:88%"></div>
-        <div class="skel" style="width:92%"></div>
-        <div class="skel" style="width:60%"></div>
-        <div style="display:flex;gap:12px;margin-top:14px"><button class="pbtn no" id="cNo">NO ACEPTO</button><button
-            class="pbtn yes" id="cYes">ACEPTO</button></div>
-      </div>
-    </div>
-    <div class="res" id="cres">Elige una opción.</div>
-  </div>
-  <!-- 8 -->
-  <div class="fp" data-p="8">
-    <div class="ptag">4 · ENCUESTA INICIAL</div>
-    <p class="pp">Preguntas iniciales antes de comenzar el bloque principal.</p>
-    <div class="win-mock">
-      <div class="bar"><span>ENCUESTA INICIAL</span><span>▢ ✕</span></div>
-      <div class="bd2">
-        <div class="skel" style="width:70%"></div>
-        <div class="skel" style="height:26px;width:100%;border:3px solid var(--ink);background:#fff"></div>
-        <div class="skel" style="width:55%"></div>
-        <div class="skel" style="height:26px;width:100%;border:3px solid var(--ink);background:#fff"></div>
-        <div class="skel" style="width:80%"></div>
-        <div class="skel" style="height:26px;width:100%;border:3px solid var(--ink);background:#fff"></div>
-      </div>
-    </div>
-    <p class="pp" style="margin-top:8px"><small>Maqueta ilustrativa.</small></p>
-    <label class="shot" data-key="survey" style="height:110px"><span>CAPTURA · ENCUESTA INICIAL</span><img alt=""><input
-        type="file" accept="image/*"></label>
-  </div>
-  <!-- 9 -->
-  <div class="fp" data-p="9">
-    <div class="ptag">EN SEGUNDO PLANO · GENERACIÓN</div>
-    <p class="pp">Al terminar la familiarización, la telemetría pasa por el LLM, que produce un <b>prompt para
-        MarioGPT</b>. MarioGPT genera los niveles personalizados <b>mientras el participante sigue jugando</b>.</p>
-    <div class="chain"><span>Telemetría</span><i>▶</i><span>Ollama</span><i>▶</i><span>MarioGPT</span><i>▶</i><span
-        style="background:var(--pink)">Nivel P</span></div>
-    <div class="prompt" id="prompt"></div>
-    <p class="pp" style="margin-top:10px"><small>Prompt de ejemplo, ilustrativo. Los niveles generados no se validan con
-        A* durante el experimento.</small></p>
-  </div>
-  <!-- 10 -->
-  <div class="fp" data-p="10">
-    <div class="ptag">5 · BLOQUE PRINCIPAL</div>
-    <p class="pp">Cada participante juega <b>6 niveles de tres tipos</b>, <b>asignados en orden aleatorio desde un
-        servidor</b>.</p>
-    <div class="cards6" id="cards6"></div>
-    <div class="leg3">
-      <p><span class="k t-P">P</span><span><b>Personalizados (P):</b> generados con IA a partir de la telemetría del
-          participante.</span></p>
-      <p><span class="k t-G">G</span><span><b>Genéricos (G):</b> generados con telemetría que no es del usuario (control).</span></p>
-      <p><span class="k t-H">H</span><span><b>Humanos (H):</b> de Super Mario Maker 2, validados con A* de
-          antemano.</span></p>
-    </div>
-    <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
-  </div>
-  <!-- 11 -->
-  <div class="fp" data-p="11">
-    <div class="ptag">CUESTIONARIO TRAS CADA NIVEL</div>
-    <p class="pp">6 preguntas en escala de 7 puntos, de <b>−3 a +3</b>. Prueba el cuestionario:</p>
-    <div id="lik"></div>
-    <label class="shot" data-key="quest" style="height:100px;margin-top:8px"><span>CAPTURA · CUESTIONARIO
-        REAL</span><img alt=""><input type="file" accept="image/*"></label>
-  </div>
-  <!-- 12 -->
-  <div class="fp" data-p="12">
-    <div class="ptag">6 · RANKING Y COMENTARIOS</div>
-    <p class="pp">La persona <b>ordena los 6 niveles</b> que jugó y deja comentarios. Prueba reordenarlos:</p>
-    <div id="rank"></div>
-    <div class="cmt">Comentarios libres…</div>
-  </div>
-  <!-- 13 -->
-  <div class="fp" data-p="13">
-    <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
-    <p class="pp">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>. Es opcional.</p>
-    <div class="cond">Condición: <button data-c="P">P</button><button data-c="G">G</button><button data-c="H">H</button>
-    </div>
-    <div class="timer" id="timer">20:00<small>(demo acelerada)</small></div>
-    <div class="metrics">
-      <div>Tiempo jugado<b id="mT">0 min</b></div>
-      <div>Niveles jugados<b id="mL">0</b></div>
-    </div>
-    <p class="pp"><small>Ambos valores se registran como medida de compromiso.</small></p>
-  </div>
-  <!-- 14 -->
-  <div class="fp" data-p="14">
-    <div class="ptag">8 · FINAL</div>
-    <div class="thanks">¡GRACIAS<br>POR JUGAR!</div>
-    <p class="pp">Fin de la sesión. Los datos del participante quedan registrados para el análisis.</p>
-    <img class="spr" data-spr="hero:happy" data-s="9" alt="" style="margin:14px auto 0" id="endhero">
-  </div>
-  <!-- 15 -->
-  <div class="fp" data-p="15" style="display:none"></div>
-
-  <div class="flegend"><i style="background:var(--mint)"></i>Parte 1<br><i style="background:#fff"></i>Parte 2<br><i
-      style="background:#ffb3da"></i>Segundo plano<br><i style="background:var(--gold-l)"></i>Decisión</div>
-  <div class="fhint blink">CLIC EN UNA CAJA PARA VOLVER A SU EXPLICACIÓN</div>
 </section>
 
   <div id="fx"></div>
@@ -2075,14 +1452,17 @@ function setStep(n,dir){
   const old=step; step=n; const sl=slides[cur]; sl.dataset.step=n;
   applyAt(sl,n); H[sl.id]?.step?.(n,old,dir); updateNav();
 }
-function next(){ if(busy)return; const s=slides[cur]; if(step<mx(s)) setStep(step+1,'fwd'); else if(cur<slides.length-1) goSlide(cur+1,'fwd'); }
-function prev(){ if(busy)return; const s=slides[cur]; if(step>mn(s)) setStep(step-1,'back'); else if(cur>0) goSlide(cur-1,'back'); }
-async function goSlide(n,dir){
+/* el recorrido sigue la lista de sub-pasos (units), que puede intercalar filminas */
+const unitIdx=()=>units.findIndex(u=>u[0]===cur&&u[1]===step);
+function goUnit(u,dir){ if(u[0]===cur) setStep(u[1],dir); else goSlide(u[0],dir,u[1]); }
+function next(){ if(busy)return; const i=unitIdx(); if(i<units.length-1) goUnit(units[i+1],'fwd'); }
+function prev(){ if(busy)return; const i=unitIdx(); if(i>0) goUnit(units[i-1],'back'); }
+async function goSlide(n,dir,at){
   busy=true;
   await wipe(()=>{
     H[slides[cur].id]?.leave?.();
     slides[cur].classList.remove('active'); cur=n; const sl=slides[cur]; sl.classList.add('active');
-    step=dir==='fwd'?mn(sl):mx(sl); sl.dataset.step=step; applyAt(sl,step);
+    step=at??(dir==='fwd'?mn(sl):mx(sl)); sl.dataset.step=step; applyAt(sl,step);
     H[sl.id]?.enter?.(step,dir); H[sl.id]?.step?.(step,-1,dir); updateNav();
   });
   busy=false;
@@ -2125,6 +1505,15 @@ if(secNav){
 const units=[];
 slides.forEach((s,i)=>{
   for(let k=mn(s);k<=mx(s);k++) units.push([i,k]);
+});
+/* data-despues-de="id-de-otra-section:paso" intercala esta filmina justo después
+   de ese sub-paso de la otra; al terminarla se vuelve al sub-paso siguiente */
+slides.forEach((s,i)=>{
+  const d=s.dataset.despuesDe; if(!d) return;
+  const [id,st]=d.split(':'), mine=units.filter(u=>u[0]===i);
+  const j=units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
+  units.splice(0,units.length,...units.filter(u=>u[0]!==i));
+  units.splice(units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st)+1,0,...mine);
 });
 function updateNav(){
   const isCover = cur === 0;
@@ -2420,354 +1809,461 @@ H['s-prisma']={
       leave() {
         cards.forEach(c => c.classList.remove('active', 'dim'));
       },
-      step() {}
+      step() { }
     };
   })();
 
 /* ===== 07-metodologia.html ===== */
-  /* ============================================================
-     METODOLOGÍA — diagrama de flujo con cámara (zoom) y paneles
-     ============================================================ */
-  (function () {
-    const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-    const NS = 'http://www.w3.org/2000/svg';
-    const E = (t, a = {}, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
-    const svg = $('#fsvg'), world = $('#fworld'), slide = $('#s-flow'), chip = $('#fchip');
-    const COL = { mint: '#94ddc6', white: '#ffffff', pink: '#ffb3da', gold: '#f6d36b', danger: '#ffb3b3', block: '#fbf0cf', end: '#dba93b' };
+/* ============================================================
+   METODOLOGÍA — diagrama de flujo con cámara (zoom) y paneles
+   ============================================================ */
+(function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const NS='http://www.w3.org/2000/svg';
+  const E=(t,a={},p)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e; };
+  const svg=$('#fsvg'), world=$('#fworld'), slide=$('#s-flow'), chip=$('#fchip');
+  const COL={mint:'#94ddc6',white:'#ffffff',pink:'#ffb3da',gold:'#f6d36b',danger:'#ffb3b3',block:'#fbf0cf',end:'#dba93b'};
 
-    /* ---------- miniaturas de niveles (pixel art procedural) ---------- */
-    function lvlThumb(seed, W = 28, Ht = 18, sc = 4) {
-      let s = (seed * 7919 + 13) % 233280; const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
-      const cv = document.createElement('canvas'); cv.width = W * sc; cv.height = Ht * sc; const g = cv.getContext('2d');
-      const R = (x, y, w, h, c) => { g.fillStyle = c; g.fillRect(x * sc, y * sc, w * sc, h * sc); };
-      R(0, 0, W, Ht, '#d9f2ec');
-      for (let i = 0; i < 3; i++) { const hx = Math.floor(rnd() * W), hw = 5 + Math.floor(rnd() * 6); R(hx, Ht - 6, hw, 3, '#bfe6d9'); }
-      let x = 0; while (x < W) { const gap = (x > 3 && x < W - 4 && rnd() < .18) ? 2 + Math.floor(rnd() * 2) : 0; if (gap) { x += gap; continue; } R(x, Ht - 3, 1, 3, '#c98a4b'); R(x, Ht - 3, 1, 1, '#7a4a1f'); x++; }
-      const np = 3 + Math.floor(rnd() * 3);
-      for (let i = 0; i < np; i++) { const pxx = 2 + Math.floor(rnd() * (W - 7)), py = Ht - 6 - Math.floor(rnd() * 5), pw = 3 + Math.floor(rnd() * 4); R(pxx, py, pw, 1, '#8aa24a'); R(pxx, py + 1, pw, 1, '#5f7a2d'); }
-      for (let i = 0; i < 5; i++) { R(2 + Math.floor(rnd() * (W - 4)), 3 + Math.floor(rnd() * (Ht - 9)), 1, 1, '#f6d36b'); }
-      R(1, Ht - 4, 1, 1, '#ff7fc0'); R(W - 2, Ht - 6, 1, 3, '#1a1a1a'); R(W - 1, Ht - 6, 1, 1, '#ff7fc0');
-      return cv.toDataURL();
+  /* ---------- miniaturas de niveles (pixel art procedural) ---------- */
+  function lvlThumb(seed,W=28,Ht=18,sc=4){
+    let s=(seed*7919+13)%233280; const rnd=()=>{ s=(s*9301+49297)%233280; return s/233280; };
+    const cv=document.createElement('canvas'); cv.width=W*sc; cv.height=Ht*sc; const g=cv.getContext('2d');
+    const R=(x,y,w,h,c)=>{ g.fillStyle=c; g.fillRect(x*sc,y*sc,w*sc,h*sc); };
+    R(0,0,W,Ht,'#d9f2ec');
+    for(let i=0;i<3;i++){ const hx=Math.floor(rnd()*W), hw=5+Math.floor(rnd()*6); R(hx,Ht-6,hw,3,'#bfe6d9'); }
+    let x=0; while(x<W){ const gap=(x>3&&x<W-4&&rnd()<.18)?2+Math.floor(rnd()*2):0; if(gap){ x+=gap; continue; } R(x,Ht-3,1,3,'#c98a4b'); R(x,Ht-3,1,1,'#7a4a1f'); x++; }
+    const np=3+Math.floor(rnd()*3);
+    for(let i=0;i<np;i++){ const pxx=2+Math.floor(rnd()*(W-7)), py=Ht-6-Math.floor(rnd()*5), pw=3+Math.floor(rnd()*4); R(pxx,py,pw,1,'#8aa24a'); R(pxx,py+1,pw,1,'#5f7a2d'); }
+    for(let i=0;i<5;i++){ R(2+Math.floor(rnd()*(W-4)),3+Math.floor(rnd()*(Ht-9)),1,1,'#f6d36b'); }
+    R(1,Ht-4,1,1,'#ff7fc0'); R(W-2,Ht-6,1,3,'#1a1a1a'); R(W-1,Ht-6,1,1,'#ff7fc0');
+    return cv.toDataURL();
+  }
+
+  /* ---------- nodos y aristas ---------- */
+  const NODES={
+    hf:   {x:310, y:170,w:340,h:100,l:['Selección de niveles','Hugging Face'],c:'mint',at:1},
+    fil:  {x:730, y:170,w:340,h:100,l:['Filtración','por criterio'],c:'mint',at:2},
+    astar:{x:1150,y:170,w:340,h:100,l:['Verificación','con A*'],c:'mint',at:3},
+    bank: {x:1560,y:170,w:300,h:100,l:['Niveles H'],c:'gold',at:3,go:3,db:1},
+    welcome:{x:160,y:640,w:250,h:100,l:['Bienvenida','Explicación de sesión'],c:'white',n:1,at:4},
+    fam:  {x:480, y:640,w:280,h:100,l:['Niveles de','familiarización (F)'],c:'white',n:2,at:5},
+    cons: {x:790, y:640,w:240,h:170,l:['Consentimiento','informado'],c:'gold',n:3,at:6,dia:1},
+    exit: {x:790, y:450,w:300,h:80, l:['Se borran los datos','y se sale'],c:'danger',at:6,go:6},
+    survey:{x:1100,y:640,w:250,h:100,l:['Encuesta','inicial'],c:'white',n:4,at:7},
+    tele: {x:480, y:940,w:220,h:100,l:['Telemetría'],c:'pink',at:8},
+    ollama:{x:800,y:940,w:220,h:100,l:['Ollama','(LLM)'],c:'pink',at:8},
+    mgpt: {x:1120,y:940,w:220,h:100,l:['MarioGPT'],c:'pink',at:8},
+    pers: {x:1480,y:940,w:270,h:100,l:['Nivel','personalizado (P)'],c:'pink',at:8},
+    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles genéricos','no personalizados (G)'],c:'gold',at:9,go:9},
+    block:{x:1450,y:640,w:300,h:130,l:['Bloque principal','6 niveles: P · G · H','orden aleatorio'],c:'block',n:5,at:9},
+    quest:{x:1430,y:470,w:210,h:80, l:['Cuestionario','6 preguntas'],c:'white',at:10},
+    rank: {x:1830,y:640,w:260,h:100,l:['Ranking y','comentarios'],c:'white',n:6,at:11},
+    free: {x:2160,y:640,w:270,h:100,l:['Juego libre','voluntario ≤ 20 min'],c:'white',n:7,at:12},
+    end:  {x:2460,y:640,w:170,h:100,l:['Final'],c:'end',n:8,at:13}
+  };
+  const FOCUS={1:['hf'],2:['fil'],3:['astar'],4:['welcome'],5:['fam'],6:['cons'],7:['survey'],8:['tele','ollama','mgpt','pers'],9:['block'],10:['quest'],11:['rank'],12:['free'],13:['end'],14:[]};
+  const EDGES=[
+    {d:'M480 170H560',at:2},{d:'M900 170H980',at:3},{d:'M1320 170H1390',at:3},
+    {d:'M1560 220V575',at:9,lbl:['H',1590,420]},
+    {d:'M285 640H340',at:5},{d:'M620 640H670',at:6},
+    {d:'M910 640H975',at:7,lbl:['Sí',924,690],id:'eYes'},
+    {d:'M790 555V490',at:6,lbl:['No',814,532],id:'eNo'},
+    {d:'M1225 640H1300',at:9},{d:'M1600 640H1700',at:11},{d:'M1960 640H2025',at:12},{d:'M2295 640H2375',at:13},
+    {d:'M480 690V890',at:8,dash:1},{d:'M590 940H690',at:8,dash:1},{d:'M910 940H1010',at:8,dash:1},{d:'M1230 940H1345',at:8,dash:1},
+    {d:'M1480 890V705',at:9,lbl:['P',1448,806]},
+    {d:'M1850 890V790H1560V705',at:9,lbl:['G',1700,772]},
+    {d:'M1450 575V510',at:10,both:1}
+  ];
+  const nodeEls={}, edgeEls=[], extra=[];
+  // carril de generación + banners (debajo de los nodos)
+  const lane=E('rect',{class:'lane',x:330,y:830,width:1335,height:215,rx:0},world); extra.push([lane,8]);
+  const laneL=E('text',{class:'lanelbl',x:350,y:866},world); laneL.textContent='GENERACIÓN EN SEGUNDO PLANO'; extra.push([laneL,8]);
+  function banner(txt,x,y,w,c,at){ const g=E('g',{class:'banner'},world); E('rect',{x:x+6,y:y+6,width:w,height:54,fill:'#1a1a1a'},g); E('rect',{x,y,width:w,height:54,fill:c,stroke:'#1a1a1a','stroke-width':5},g); const t=E('text',{x:x+20,y:y+39},g); t.textContent=txt; extra.push([g,at]); }
+  banner('PARTE 1 · SELECCIÓN DE NIVELES HUMANOS',110,34,590,COLS_M(),14);
+  banner('PARTE 2 · APLICACIÓN DEL EXPERIMENTO',110,330,560,'#f6d36b',14);
+  function COLS_M(){ return COL.mint; }
+  EDGES.forEach(ed=>{
+    const g=E('g',{class:'fedge'+(ed.dash?' dash':'')},world);
+    const p=E('path',{d:ed.d,pathLength:1,'marker-end':'url(#arw)'},g); if(ed.both) p.setAttribute('marker-start','url(#arw)');
+    if(ed.lbl){ const t=E('text',{x:ed.lbl[1],y:ed.lbl[2]},g); t.textContent=ed.lbl[0]; }
+    edgeEls.push({g,at:ed.at,id:ed.id});
+  });
+  Object.entries(NODES).forEach(([id,n])=>{
+    const g=E('g',{class:'fnode','data-id':id},world); nodeEls[id]=g;
+    const x0=n.x-n.w/2,y0=n.y-n.h/2;
+    if(n.dia){
+      const pts=`${n.x},${y0} ${n.x+n.w/2},${n.y} ${n.x},${y0+n.h} ${n.x-n.w/2},${n.y}`;
+      E('polygon',{class:'sh',points:pts,transform:'translate(9 9)'},g); E('polygon',{class:'bx',points:pts,fill:COL[n.c]},g);
+    } else if(n.db){
+      const rh=16, x1=n.x+n.w/2, y1=n.y+n.h/2;
+      const shPath=`M ${x0} ${y0+rh} A ${n.w/2} ${rh} 0 0 1 ${x1} ${y0+rh} L ${x1} ${y1-rh} A ${n.w/2} ${rh} 0 0 1 ${x0} ${y1-rh} Z`;
+      E('path',{class:'sh',d:shPath,transform:'translate(9 9)'},g);
+      E('path',{class:'bx',d:shPath,fill:COL[n.c]},g);
+      E('ellipse',{cx:n.x,cy:y0+rh,rx:n.w/2,ry:rh,fill:'#fff2a8',stroke:'#1a1a1a','stroke-width':5},g);
+      const ym=y0+rh+(n.h-2*rh)*0.48;
+      E('path',{d:`M ${x0} ${ym} A ${n.w/2} ${rh} 0 0 0 ${x1} ${ym}`,fill:'none',stroke:'#1a1a1a','stroke-width':3,'stroke-dasharray':'8 5'},g);
+    } else {
+      E('rect',{class:'sh',x:x0+9,y:y0+9,width:n.w,height:n.h},g); E('rect',{class:'bx',x:x0,y:y0,width:n.w,height:n.h,fill:COL[n.c]},g);
     }
+    const k=n.l.length, f1=n.dia?22:(n.db?32:(k===1?32:25)), start=n.db?(n.y+16):(n.y-((k-1)*29)/2+9);
+    n.l.forEach((txt,i)=>{ const t=E('text',{class:i?'l2':'l1',x:n.x,y:start+i*29,'font-size':i?(k===3?20:21):f1},g); t.textContent=txt; });
+    if(n.n){ const bx=n.dia?n.x-n.w/2+34:x0, by=n.dia?n.y-n.h/2+34:y0; E('circle',{class:'bd',cx:bx+2,cy:by+2,r:25,stroke:'#1a1a1a','stroke-width':4},g); const t=E('text',{class:'bn',x:bx+2,y:by+12},g); t.textContent=n.n; }
+    g.addEventListener('click',()=>{ if(!slide.classList.contains('full')||busy) return; const to=n.go||n.at; setStep(to,'back'); });
+  });
 
-    /* ---------- nodos y aristas ---------- */
-    const NODES = {
-      hf: { x: 310, y: 170, w: 340, h: 100, l: ['Selección de niveles', 'Hugging Face'], c: 'mint', at: 1 },
-      fil: { x: 730, y: 170, w: 340, h: 100, l: ['Filtración', 'por criterio'], c: 'mint', at: 3 },
-      astar: { x: 1150, y: 170, w: 340, h: 100, l: ['Verificación', 'con A*'], c: 'mint', at: 4 },
-      bank: { x: 1560, y: 170, w: 340, h: 100, l: ['Niveles H'], c: 'gold', at: 4, go: 4, db: 1 },
-      welcome: { x: 160, y: 640, w: 250, h: 100, l: ['Bienvenida', 'Explicación de sesión'], c: 'white', n: 1, at: 5 },
-      fam: { x: 480, y: 640, w: 280, h: 100, l: ['Niveles de', 'familiarización (F)'], c: 'white', n: 2, at: 6 },
-      cons: { x: 790, y: 640, w: 240, h: 170, l: ['Consentimiento', 'informado'], c: 'gold', n: 3, at: 7, dia: 1 },
-      exit: { x: 790, y: 450, w: 300, h: 80, l: ['Se borran los datos', 'y se sale'], c: 'danger', at: 7, go: 7 },
-      survey: { x: 1100, y: 640, w: 250, h: 100, l: ['Encuesta', 'inicial'], c: 'white', n: 4, at: 8 },
-      tele: { x: 480, y: 940, w: 220, h: 100, l: ['Telemetría'], c: 'pink', at: 9 },
-      ollama: { x: 800, y: 940, w: 220, h: 100, l: ['Ollama', '(LLM)'], c: 'pink', at: 9 },
-      mgpt: { x: 1120, y: 940, w: 220, h: 100, l: ['MarioGPT'], c: 'pink', at: 9 },
-      pers: { x: 1480, y: 940, w: 270, h: 100, l: ['Nivel', 'personalizado (P)'], c: 'pink', at: 9 },
-      gen: { x: 1850, y: 940, w: 280, h: 100, l: ['Niveles genéricos', 'no personalizados (G)'], c: 'gold', at: 10, go: 10 },
-      block: { x: 1450, y: 640, w: 300, h: 130, l: ['Bloque principal', '6 niveles: P · G · H', 'orden aleatorio'], c: 'block', n: 5, at: 10 },
-      quest: { x: 1430, y: 470, w: 210, h: 80, l: ['Cuestionario', '6 preguntas'], c: 'white', at: 11 },
-      rank: { x: 1830, y: 640, w: 260, h: 100, l: ['Ranking y', 'comentarios'], c: 'white', n: 6, at: 12 },
-      free: { x: 2160, y: 640, w: 270, h: 100, l: ['Juego libre', 'voluntario ≤ 20 min'], c: 'white', n: 7, at: 13 },
-      end: { x: 2460, y: 640, w: 170, h: 100, l: ['Final'], c: 'end', n: 8, at: 14 }
+  /* ---------- cámara ---------- */
+  let cvw={cx:1270,cy:530.5,lk:Math.log(.474)}, camRaf=0;
+  const setVB=c=>{ const k=Math.exp(c.lk),w=1280/k,h=720/k; svg.setAttribute('viewBox',`${c.cx-w/2} ${c.cy-h/2} ${w} ${h}`); };
+  const camFor=(cx,cy,k,sx,sy)=>({cx:cx+(640-sx)/k,cy:cy+(360-sy)/k,lk:Math.log(k)});
+  function camTo(t,ms){
+    cancelAnimationFrame(camRaf);
+    if(reduce||!ms){ cvw={...t}; setVB(cvw); return; }
+    const s={...cvw},t0=performance.now();
+    (function f(now){ const k=Math.min(1,(now-t0)/ms), e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+      cvw={cx:s.cx+(t.cx-s.cx)*e,cy:s.cy+(t.cy-s.cy)*e,lk:s.lk+(t.lk-s.lk)*e}; setVB(cvw); if(k<1) camRaf=requestAnimationFrame(f); })(t0);
+  }
+  const CAMS={1:camFor(310,170,1,330,300),2:camFor(730,170,1,330,300),3:camFor(1235,170,.75,250,300),4:camFor(160,640,1,300,330),
+    5:camFor(480,640,1,330,330),6:camFor(790,560,.85,300,340),7:camFor(1100,640,1,330,330),8:camFor(975,940,.48,340,330),
+    9:camFor(1500,560,.66,330,380),10:camFor(1450,560,.9,330,360),11:camFor(1830,640,1,330,330),12:camFor(2160,640,1,330,330),
+    13:camFor(2460,640,1,300,330),14:{cx:1270,cy:530.5,lk:Math.log(.474)}};
+
+  /* ---------- temporizadores / limpieza ---------- */
+  let timers=[],ints=[],rafs=[],peek=new Set(),extraEls=[];
+  const T=(f,ms)=>{ timers.push(setTimeout(f,ms)); }, I=(f,ms)=>{ ints.push(setInterval(f,ms)); };
+  function clearAnim(){ timers.forEach(clearTimeout); ints.forEach(clearInterval); rafs.forEach(cancelAnimationFrame); timers=[];ints=[];rafs=[]; extraEls.forEach(e=>e.remove()); extraEls=[]; }
+  const rAF=f=>{ const id=requestAnimationFrame(f); rafs.push(id); return id; };
+
+  /* paquete que viaja por el diagrama */
+  function packet(pts,speed=420,img){
+    let el;
+    if(img){ el=E('image',{href:img,width:70,height:82,class:'fhero',style:'image-rendering:pixelated'},world); }
+    else el=E('circle',{r:16,class:'pdot',stroke:'#1a1a1a','stroke-width':5},world);
+    extraEls.push(el);
+    const seg=[]; let tot=0; for(let i=1;i<pts.length;i++){ const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]); seg.push(l); tot+=l; }
+    const dur=tot/speed*1000; let t0=performance.now();
+    (function f(now){ let k=((now-t0)%(dur+900))/dur; if(k>1)k=1; let d=k*tot,i=0; while(i<seg.length-1&&d>seg[i]){ d-=seg[i]; i++; }
+      const a=pts[i],b=pts[i+1],u=seg[i]?d/seg[i]:0, x=a[0]+(b[0]-a[0])*u, y=a[1]+(b[1]-a[1])*u;
+      if(img) el.setAttribute('transform',`translate(${x-35} ${y-82-Math.abs(Math.sin(k*tot/90))*26})`); else { el.setAttribute('cx',x); el.setAttribute('cy',y); }
+      rAF(f); })(t0);
+  }
+
+  /* ---------- paneles ---------- */
+  const panels=$$('.fp'); const PA={};
+  // capturas (imagen de usuario)
+  $$('.shot').forEach(s=>{ const img=s.querySelector('img'), src=(CONFIG.shots||{})[s.dataset.key];
+    if(src){ img.src=src; s.classList.add('has'); }
+    s.querySelector('input').onchange=e=>{ const f=e.target.files[0]; if(!f)return; img.src=URL.createObjectURL(f); s.classList.add('has'); }; });
+
+  // 1 · documentos
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#docs'), likes=['2.4k','1.9k','1.2k','890','640'];
+    for(let i=0;i<5;i++){ const d=document.createElement('div'); d.className='doc'; d.style.left=(6+i*98)+'px'; d.style.setProperty('--dy',Math.abs(i-2)*8); d.style.setProperty('--r',(i-2)*5); d.style.transitionDelay=(i*90)+'ms';
+      d.innerHTML=`<img src="${lvlThumb(i+3)}" alt=""><b>nivel_${100+i*37}</b><i>♥ ${likes[i]}</i><div style="margin-top:3px;color:#666">.json</div>`; box.appendChild(d); } })();
+
+  // 2 · embudo
+  PA[2]={on(){
+    const box=$('#fundots'),N=$('#funN'); let n=0,alive=0; N.textContent='0'; box.innerHTML='';
+    const cl=['#ff7fc0','#94ddc6','#f6d36b','#8aa24a'], cx=252;
+    const fx=[.85,.5,.22];
+    const spawn=()=>{ if(alive>26||reduce) return; alive++;
+      const x0=50+Math.random()*404, r=Math.random(), fail=r<.3?0:r<.55?1:r<.75?2:-1, ys=[55,150,240];
+      const d=document.createElement('div'); d.className='fdot'; d.style.background=cl[Math.floor(Math.random()*4)]; d.style.left='-6px'; d.style.top='-6px'; box.appendChild(d);
+      const P=(x,y,o={})=>({transform:`translate(${x}px,${y}px)`,...o}); let kf,dur;
+      if(fail>=0){ const xm=cx+(x0-cx)*fx[fail], side=(Math.random()<.5?-1:1)*(150+Math.random()*60);
+        kf=[P(x0,0),P(xm,ys[fail],{opacity:1,offset:.7}),P(xm+side,ys[fail]+30,{opacity:0})]; dur=900+fail*600; }
+      else { kf=[P(x0,0),P(cx+(x0-cx)*fx[0],55,{offset:.2}),P(cx+(x0-cx)*fx[1],150,{offset:.45}),P(cx+(x0-cx)*fx[2],240,{offset:.7}),P(cx+(x0-cx)*.1,318,{opacity:1,offset:.95}),P(cx,322,{opacity:0})]; dur=2400; }
+      d.animate(kf,{duration:dur,easing:'ease-in'}).finished.then(()=>{ d.remove(); alive--; if(fail<0){ n++; N.textContent=n; } }).catch(()=>{});
     };
-    const FOCUS = { 1: ['hf'], 2: ['hf'], 3: ['fil'], 4: ['astar'], 5: ['welcome'], 6: ['fam'], 7: ['cons'], 8: ['survey'], 9: ['tele', 'ollama', 'mgpt', 'pers'], 10: ['block'], 11: ['quest'], 12: ['rank'], 13: ['free'], 14: ['end'], 15: [] };
-    const EDGES = [
-      { d: 'M480 170H560', at: 3 }, { d: 'M900 170H980', at: 4 }, { d: 'M1320 170H1390', at: 4 },
-      { d: 'M1560 220V575', at: 10, lbl: ['H', 1590, 420] },
-      { d: 'M285 640H340', at: 6 }, { d: 'M620 640H670', at: 7 },
-      { d: 'M910 640H975', at: 8, lbl: ['Sí', 924, 690], id: 'eYes' },
-      { d: 'M790 555V490', at: 7, lbl: ['No', 814, 532], id: 'eNo' },
-      { d: 'M1225 640H1300', at: 10 }, { d: 'M1600 640H1700', at: 12 }, { d: 'M1960 640H2025', at: 13 }, { d: 'M2295 640H2375', at: 14 },
-      { d: 'M480 690V890', at: 9, dash: 1 }, { d: 'M590 940H690', at: 9, dash: 1 }, { d: 'M910 940H1010', at: 9, dash: 1 }, { d: 'M1230 940H1345', at: 9, dash: 1 },
-      { d: 'M1480 890V705', at: 10, lbl: ['P', 1448, 806] },
-      { d: 'M1850 890V790H1560V705', at: 10, lbl: ['G', 1700, 772] },
-      { d: 'M1450 575V510', at: 11, both: 1 }
-    ];
-    const nodeEls = {}, edgeEls = [], extra = [];
-    // carril de generación + banners (debajo de los nodos)
-    const lane = E('rect', { class: 'lane', x: 330, y: 830, width: 1335, height: 215, rx: 0 }, world); extra.push([lane, 9]);
-    const laneL = E('text', { class: 'lanelbl', x: 350, y: 866 }, world); laneL.textContent = 'GENERACIÓN EN SEGUNDO PLANO'; extra.push([laneL, 9]);
-    function banner(txt, x, y, w, c, at) { const g = E('g', { class: 'banner' }, world); E('rect', { x: x + 6, y: y + 6, width: w, height: 54, fill: '#1a1a1a' }, g); E('rect', { x, y, width: w, height: 54, fill: c, stroke: '#1a1a1a', 'stroke-width': 5 }, g); const t = E('text', { x: x + 20, y: y + 39 }, g); t.textContent = txt; extra.push([g, at]); }
-    banner('PARTE 1 · SELECCIÓN DE NIVELES HUMANOS', 110, 34, 590, COLS_M(), 15);
-    banner('PARTE 2 · APLICACIÓN DEL EXPERIMENTO', 110, 330, 560, '#f6d36b', 15);
-    function COLS_M() { return COL.mint; }
-    EDGES.forEach(ed => {
-      const g = E('g', { class: 'fedge' + (ed.dash ? ' dash' : '') }, world);
-      const p = E('path', { d: ed.d, pathLength: 1, 'marker-end': 'url(#arw)' }, g); if (ed.both) p.setAttribute('marker-start', 'url(#arw)');
-      if (ed.lbl) { const t = E('text', { x: ed.lbl[1], y: ed.lbl[2] }, g); t.textContent = ed.lbl[0]; }
-      edgeEls.push({ g, at: ed.at, id: ed.id });
-    });
-    Object.entries(NODES).forEach(([id, n]) => {
-      const g = E('g', { class: 'fnode', 'data-id': id }, world); nodeEls[id] = g;
-      const x0 = n.x - n.w / 2, y0 = n.y - n.h / 2;
-      if (n.dia) {
-        const pts = `${n.x},${y0} ${n.x + n.w / 2},${n.y} ${n.x},${y0 + n.h} ${n.x - n.w / 2},${n.y}`;
-        E('polygon', { class: 'sh', points: pts, transform: 'translate(9 9)' }, g); E('polygon', { class: 'bx', points: pts, fill: COL[n.c] }, g);
-      } else if (n.db) {
-        const rh = 18, x1 = n.x + n.w / 2, y1 = n.y + n.h / 2;
-        const body = `M ${x0} ${y0 + rh} A ${n.w / 2} ${rh} 0 0 1 ${x1} ${y0 + rh} L ${x1} ${y1 - rh} A ${n.w / 2} ${rh} 0 0 1 ${x0} ${y1 - rh} Z`;
-        const topRim = `M ${x0} ${y0 + rh} A ${n.w / 2} ${rh} 0 0 0 ${x1} ${y0 + rh}`;
-        // Sombra retro del cilindro
-        E('path', { class: 'sh', d: body, transform: 'translate(9 9)' }, g);
-        // Cuerpo del cilindro con borde grueso ink
-        E('path', { class: 'bx', d: body, fill: COL[n.c] }, g);
-        // Tapa superior del cilindro de base de datos
-        E('path', { d: topRim, fill: 'none', stroke: '#1a1a1a', 'stroke-width': 5 }, g);
-      } else {
-        E('rect', { class: 'sh', x: x0 + 9, y: y0 + 9, width: n.w, height: n.h }, g); E('rect', { class: 'bx', x: x0, y: y0, width: n.w, height: n.h, fill: COL[n.c] }, g);
-      }
-      const k = n.l.length;
-      const f1 = n.dia ? 22 : (n.db ? 34 : (k === 1 ? 32 : 25));
-      const start = n.db ? (n.y + 16) : (n.y - ((k - 1) * 29) / 2 + 9);
-      n.l.forEach((txt, i) => { const t = E('text', { class: (i || n.db) ? 'l1' : 'l1', x: n.x, y: start + i * 29, 'font-size': i ? (k === 3 ? 20 : 21) : f1 }, g); t.textContent = txt; });
-      if (n.n) { const bx = n.dia ? n.x - n.w / 2 + 34 : x0, by = n.dia ? n.y - n.h / 2 + 34 : y0; E('circle', { class: 'bd', cx: bx + 2, cy: by + 2, r: 25, stroke: '#1a1a1a', 'stroke-width': 4 }, g); const t = E('text', { class: 'bn', x: bx + 2, y: by + 12 }, g); t.textContent = n.n; }
-      g.addEventListener('click', () => { if (!slide.classList.contains('full') || busy) return; const to = n.go || n.at; setStep(to, 'back'); });
-    });
+    if(reduce){ N.textContent='★'; return; }
+    I(spawn,300); spawn();
+  }};
 
-    /* ---------- cámara ---------- */
-    let cvw = { cx: 1270, cy: 530.5, lk: Math.log(.474) }, camRaf = 0;
-    const setVB = c => { const k = Math.exp(c.lk), w = 1280 / k, h = 720 / k; svg.setAttribute('viewBox', `${c.cx - w / 2} ${c.cy - h / 2} ${w} ${h}`); };
-    const camFor = (cx, cy, k, sx, sy) => ({ cx: cx + (640 - sx) / k, cy: cy + (360 - sy) / k, lk: Math.log(k) });
-    function camTo(t, ms) {
-      cancelAnimationFrame(camRaf);
-      if (reduce || !ms) { cvw = { ...t }; setVB(cvw); return; }
-      const s = { ...cvw }, t0 = performance.now();
-      (function f(now) {
-        const k = Math.min(1, (now - t0) / ms), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-        cvw = { cx: s.cx + (t.cx - s.cx) * e, cy: s.cy + (t.cy - s.cy) * e, lk: s.lk + (t.lk - s.lk) * e }; setVB(cvw); if (k < 1) camRaf = requestAnimationFrame(f);
-      })(t0);
-    }
-    const CAMS = {
-      1: camFor(310, 170, 1, 330, 300), 2: camFor(310, 170, 1, 330, 300), 3: camFor(730, 170, 1, 330, 300), 4: camFor(1235, 170, .75, 250, 300),
-      5: camFor(160, 640, 1, 300, 330), 6: camFor(480, 640, 1, 330, 330), 7: camFor(790, 560, .85, 300, 340), 8: camFor(1100, 640, 1, 330, 330),
-      9: camFor(975, 940, .48, 340, 330), 10: camFor(1500, 560, .66, 330, 380), 11: camFor(1450, 560, .9, 330, 360), 12: camFor(1830, 640, 1, 330, 330),
-      13: camFor(2160, 640, 1, 330, 330), 14: camFor(2460, 640, 1, 300, 330), 15: { cx: 1270, cy: 530.5, lk: Math.log(.474) }
-    };
+  // 3 · A* (animación pausada, ocurre solo una vez sin bucle)
+  PA[3]={on(){
+    const sv=$('#astar'), C=20, badge=$('#abadge'); sv.innerHTML=''; badge.classList.remove('show');
+    const gaps=new Set([10,11,12,20,21]), plat=new Set([9,10,11,12,13]);
+    for(let c=0;c<28;c++){ if(!gaps.has(c)){ E('rect',{x:c*C,y:8*C,width:C,height:2*C,fill:'#c98a4b'},sv); E('rect',{x:c*C,y:8*C,width:C,height:5,fill:'#7a4a1f'},sv); }
+      if(plat.has(c)){ E('rect',{x:c*C,y:6*C,width:C,height:C,fill:'#5f7a2d'},sv); E('rect',{x:c*C,y:6*C,width:C,height:6,fill:'#8aa24a'},sv); } }
+    const path=[]; for(let c=1;c<=7;c++) path.push([c,7]); path.push([8,6],[9,5]); for(let c=10;c<=13;c++) path.push([c,5]); path.push([14,6],[15,7]); for(let c=16;c<=19;c++) path.push([c,7]); path.push([20,6],[21,6],[22,7]); for(let c=23;c<=26;c++) path.push([c,7]);
+    const gx=E('text',{x:27*C+10,y:7*C+16,'font-size':20,'text-anchor':'middle',fill:'#dba93b',stroke:'#1a1a1a','stroke-width':1},sv); gx.textContent='★';
+    const exp=E('g',{},sv), cells=[];
+    for(let c=0;c<28;c++)for(let r=3;r<8;r++){ const onP=path.some(p=>p[0]===c&&p[1]===r), near=path.some(p=>Math.abs(p[0]-c)<=1&&Math.abs(p[1]-r)<=1);
+      const solid=(r===6&&plat.has(c)); if(!solid&&(onP||(near&&Math.random()<.5))) cells.push([c,r]); }
+    cells.sort((a,b)=>a[0]-b[0]);
+    const pg=E('g',{},sv); let i=0;
+    const hero=E('image',{href:px(heroRows('happy'),1),width:15,height:18,style:'image-rendering:pixelated',opacity:0},sv);
+    // 1. Exploración pausada de celdas A*
+    I(()=>{ for(let k=0;k<2&&i<cells.length;k++,i++){ const [c,r]=cells[i]; E('rect',{x:c*C+2,y:r*C+2,width:C-4,height:C-4,fill:'#ff7fc0','fill-opacity':.5},exp); } },80);
+    // 2. Ruta encontrada (puntos verdes)
+    T(()=>{ path.forEach(([c,r],j)=>setTimeout(()=>{ E('circle',{cx:c*C+10,cy:r*C+10,r:4.5,fill:'#4fbf98',stroke:'#1a1a1a','stroke-width':1},pg); },j*55)); },2200);
+    // 3. Avance de Mario paso a paso
+    T(()=>{ hero.setAttribute('opacity',1); let j=0; I(()=>{ if(j<path.length){ const [c,r]=path[j++]; hero.setAttribute('x',c*C+2); hero.setAttribute('y',(r+1)*C-18); } },130); },3900);
+    // 4. Medalla al llegar a la meta (ocurre una vez, sin reset ni loop)
+    T(()=>badge.classList.add('show'),7600);
+  },off(){}};
 
-    /* ---------- temporizadores / limpieza ---------- */
-    let timers = [], ints = [], rafs = [], peek = new Set(), extraEls = [];
-    const T = (f, ms) => { timers.push(setTimeout(f, ms)); }, I = (f, ms) => { ints.push(setInterval(f, ms)); };
-    function clearAnim() { timers.forEach(clearTimeout); ints.forEach(clearInterval); rafs.forEach(cancelAnimationFrame); timers = []; ints = []; rafs = []; extraEls.forEach(e => e.remove()); extraEls = []; }
-    const rAF = f => { const id = requestAnimationFrame(f); rafs.push(id); return id; };
+  // 5 · telemetría
+  PA[5]={on(){
+    const box=$('#tele'); let t=0,sal=0,mue=0,mon=0,ene=0,last={},now=0;
+    const render=()=>{ const f=(k,v)=>(now-(last[k]||-1e9)<260?`<span class="fl">${v}</span>`:`<em>${v}</em>`);
+      box.innerHTML=`{\n  "participante": <em>"P07"</em>,\n  "nivel": <em>"F1"</em>,\n  "tiempo_s": ${f('t',t.toFixed(1))},\n  "saltos": ${f('s',sal)},\n  "muertes": ${f('m',mue)},\n  "monedas": ${f('c',mon)},\n  "enemigos_derrotados": ${f('e',ene)}\n}`; };
+    render();
+    I(()=>{ now+=100; t+=.1; if(Math.random()<.22){ sal++; last.s=now; } if(Math.random()<.04){ mue++; last.m=now; } if(Math.random()<.1){ mon++; last.c=now; } if(Math.random()<.05){ ene++; last.e=now; } last.t=now; render(); },100);
+  }};
 
-    /* paquete que viaja por el diagrama */
-    function packet(pts, speed = 420, img) {
-      let el;
-      if (img) { el = E('image', { href: img, width: 70, height: 82, class: 'fhero', style: 'image-rendering:pixelated' }, world); }
-      else el = E('circle', { r: 16, class: 'pdot', stroke: '#1a1a1a', 'stroke-width': 5 }, world);
-      extraEls.push(el);
-      const seg = []; let tot = 0; for (let i = 1; i < pts.length; i++) { const l = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(l); tot += l; }
-      const dur = tot / speed * 1000; let t0 = performance.now();
-      (function f(now) {
-        let k = ((now - t0) % (dur + 900)) / dur; if (k > 1) k = 1; let d = k * tot, i = 0; while (i < seg.length - 1 && d > seg[i]) { d -= seg[i]; i++; }
-        const a = pts[i], b = pts[i + 1], u = seg[i] ? d / seg[i] : 0, x = a[0] + (b[0] - a[0]) * u, y = a[1] + (b[1] - a[1]) * u;
-        if (img) el.setAttribute('transform', `translate(${x - 35} ${y - 82 - Math.abs(Math.sin(k * tot / 90)) * 26})`); else { el.setAttribute('cx', x); el.setAttribute('cy', y); }
-        rAF(f);
-      })(t0);
-    }
+  // 6 · consentimiento
+  const cres=$('#cres');
+  function choose(b){
+    const exit=nodeEls.exit,eNo=edgeEls.find(e=>e.id==='eNo').g,eYes=edgeEls.find(e=>e.id==='eYes').g,sv=nodeEls.survey;
+    exit.classList.toggle('hl',b==='no'); eNo.classList.toggle('hl',b==='no');
+    ['exit'].forEach(()=>{}); if(b==='no'){ peek.delete('survey'); peek.delete('eYes'); eYes.classList.remove('run'); }
+    if(b==='yes'){ peek.add('survey'); peek.add('eYes'); }
+    paint(6);
+    if(b==='yes'){ eYes.classList.add('run'); sv.classList.add('focus'); } else sv.classList.remove('focus');
+    cres.className='res '+b; cres.textContent=b==='no'?'No acepta → se borran sus datos y se sale de la sesión.':'Acepta → continuamos con la encuesta inicial.';
+  }
+  $('#cNo').onclick=e=>{ e.currentTarget.blur(); choose('no'); }; $('#cYes').onclick=e=>{ e.currentTarget.blur(); choose('yes'); };
+  PA[6]={on(){ cres.className='res'; cres.textContent='Elige una opción.'; T(()=>choose('no'),1100); T(()=>choose('yes'),3600); },
+         off(){ peek.clear(); nodeEls.exit.classList.remove('hl'); edgeEls.forEach(e=>e.g.classList.remove('hl','run')); }};
 
-    /* ---------- paneles ---------- */
-    const panels = $$('.fp'); const PA = {};
-    // capturas (imagen de usuario)
-    $$('.shot').forEach(s => {
-      const img = s.querySelector('img'), src = (CONFIG.shots || {})[s.dataset.key];
-      if (src) { img.src = src; s.classList.add('has'); }
-      s.querySelector('input').onchange = e => { const f = e.target.files[0]; if (!f) return; img.src = URL.createObjectURL(f); s.classList.add('has'); };
-    });
+  // 8 · generación
+  PA[8]={on(){
+    const out=$('#prompt'), txt='Prompt → MarioGPT: «Nivel con saltos exigentes sobre vacíos, pocos enemigos y plataformas elevadas.»'; let i=0; out.textContent='';
+    if(reduce) out.textContent=txt; else I(()=>{ if(i<txt.length) out.textContent=txt.slice(0,++i); },32);
+    packet([[480,700],[480,940],[1120,940],[1480,940],[1480,720]],520);
+  }};
 
-    const shotHf = $('#shotHf');
-    if (shotHf) {
-      shotHf.addEventListener('click', e => {
-        if (e.target.tagName !== 'INPUT') { e.preventDefault(); setStep(2, 'fwd'); }
-      });
-    }
-    const hfZoomBody = $('#hfZoomBody');
-    if (hfZoomBody) {
-      hfZoomBody.addEventListener('click', () => next());
-    }
+  // 9 · bloque principal
+  const c6=$('#cards6'); let order=['P','H','G','P','H','G'].map((t,i)=>({t,id:i})); const c6els={};
+  order.forEach(o=>{ const d=document.createElement('div'); d.className='c6'; d.innerHTML=`<img src="${lvlThumb(40+o.id*11+(o.t==='P'?5:0),28,16,3)}" alt=""><b class="t-${o.t}">${o.t}</b>`; c6els[o.id]=d; c6.appendChild(d); });
+  function shuffle(){
+    const first=Object.fromEntries(order.map(o=>[o.id,c6els[o.id].getBoundingClientRect()]));
+    for(let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
+    order.forEach(o=>c6.appendChild(c6els[o.id]));
+    if(reduce) return; const sc=stage.getBoundingClientRect().width/1280;
+    order.forEach(o=>{ const a=first[o.id],b=c6els[o.id].getBoundingClientRect(); c6els[o.id].animate([{transform:`translate(${(a.left-b.left)/sc}px,${(a.top-b.top)/sc}px)`},{transform:'none'}],{duration:550,easing:'cubic-bezier(.3,1.3,.5,1)'}); });
+  }
+  $('#shuf').onclick=e=>{ e.currentTarget.blur(); shuffle(); };
+  PA[9]={on(){ T(shuffle,700); }};
 
-    // 1 · documentos
-    (function () {
-      const box = $('#docs'), likes = ['2.4k', '1.9k', '1.2k', '890', '640'];
-      for (let i = 0; i < 5; i++) {
-        const d = document.createElement('div'); d.className = 'doc'; d.style.left = (6 + i * 98) + 'px'; d.style.setProperty('--dy', Math.abs(i - 2) * 8); d.style.setProperty('--r', (i - 2) * 5); d.style.transitionDelay = (i * 90) + 'ms';
-        d.innerHTML = `<img src="${lvlThumb(i + 3)}" alt=""><b>nivel_${100 + i * 37}</b><i>♥ ${likes[i]}</i><div style="margin-top:3px;color:#666">.json</div>`; box.appendChild(d);
-      }
-    })();
-
-    // 3 · embudo y código de filtrado animado
-    PA[3] = {
-      on() {
-        const lines = $$('#codeFilter .cf-line');
-        lines.forEach(l => l.classList.remove('active'));
-        lines.forEach((l, idx) => {
-          T(() => {
-            lines.forEach(x => x.classList.remove('active'));
-            l.classList.add('active');
-          }, 250 + idx * 400);
-        });
-        T(() => {
-          lines.forEach(x => x.classList.add('active'));
-        }, 250 + lines.length * 400 + 250);
-      }, off() {
-        $$('#codeFilter .cf-line').forEach(l => l.classList.remove('active'));
-      }
-    };
-
-    // 4 · A*
-    PA[4] = {
-      on() {
-        const sv = $('#astar'), C = 20, badge = $('#abadge'); sv.innerHTML = ''; badge.classList.remove('show');
-        const gaps = new Set([10, 11, 12, 20, 21]), plat = new Set([9, 10, 11, 12, 13]);
-        for (let c = 0; c < 28; c++) {
-          if (!gaps.has(c)) { E('rect', { x: c * C, y: 8 * C, width: C, height: 2 * C, fill: '#c98a4b' }, sv); E('rect', { x: c * C, y: 8 * C, width: C, height: 5, fill: '#7a4a1f' }, sv); }
-          if (plat.has(c)) { E('rect', { x: c * C, y: 6 * C, width: C, height: C, fill: '#5f7a2d' }, sv); E('rect', { x: c * C, y: 6 * C, width: C, height: 6, fill: '#8aa24a' }, sv); }
-        }
-        const path = []; for (let c = 1; c <= 7; c++) path.push([c, 7]); path.push([8, 6], [9, 5]); for (let c = 10; c <= 13; c++) path.push([c, 5]); path.push([14, 6], [15, 7]); for (let c = 16; c <= 19; c++) path.push([c, 7]); path.push([20, 6], [21, 6], [22, 7]); for (let c = 23; c <= 26; c++) path.push([c, 7]);
-        const gx = E('text', { x: 27 * C + 10, y: 7 * C + 16, 'font-size': 20, 'text-anchor': 'middle', fill: '#dba93b', stroke: '#1a1a1a', 'stroke-width': 1 }, sv); gx.textContent = '★';
-        const exp = E('g', {}, sv), cells = [];
-        for (let c = 0; c < 28; c++)for (let r = 3; r < 8; r++) {
-          const onP = path.some(p => p[0] === c && p[1] === r), near = path.some(p => Math.abs(p[0] - c) <= 1 && Math.abs(p[1] - r) <= 1);
-          const solid = (r === 6 && plat.has(c)); if (!solid && (onP || (near && Math.random() < .5))) cells.push([c, r]);
-        }
-        cells.sort((a, b) => a[0] - b[0]);
-        const pg = E('g', {}, sv); let i = 0;
-        const hero = E('image', { href: px(heroRows('happy'), 1), width: 15, height: 18, style: 'image-rendering:pixelated', opacity: 0 }, sv);
-        // 1. Exploración pausada de celdas A* (2 celdas cada 80ms)
-        I(() => { for (let k = 0; k < 2 && i < cells.length; k++, i++) { const [c, r] = cells[i]; E('rect', { x: c * C + 2, y: r * C + 2, width: C - 4, height: C - 4, fill: '#ff7fc0', 'fill-opacity': .5 }, exp); } }, 80);
-        // 2. Trazado de la ruta encontrada (puntos verdes cada 55ms)
-        T(() => { path.forEach(([c, r], j) => T(() => { E('circle', { cx: c * C + 10, cy: r * C + 10, r: 4.5, fill: '#4fbf98', stroke: '#1a1a1a', 'stroke-width': 1 }, pg); }, j * 55)); }, 2200);
-        // 3. Movimiento de Mario paso a paso (130ms por celda)
-        T(() => { hero.setAttribute('opacity', 1); let j = 0; I(() => { if (j < path.length) { const [c, r] = path[j++]; hero.setAttribute('x', c * C + 2); hero.setAttribute('y', (r + 1) * C - 18); } }, 130); }, 3900);
-        // 4. Medalla al llegar a la meta (ocurre una sola vez, sin reinicio ni loop)
-        T(() => badge.classList.add('show'), 7600);
-      }, off() { }
-    };
-
-    // 6 · telemetría
-    PA[6] = {
-      on() {
-        const box = $('#tele'); let t = 0, sal = 0, mue = 0, mon = 0, ene = 0, last = {}, now = 0;
-        const render = () => {
-          const f = (k, v) => (now - (last[k] || -1e9) < 260 ? `<span class="fl">${v}</span>` : `<em>${v}</em>`);
-          box.innerHTML = `{\n  "participante": <em>"P07"</em>,\n  "nivel": <em>"F1"</em>,\n  "tiempo_s": ${f('t', t.toFixed(1))},\n  "saltos": ${f('s', sal)},\n  "muertes": ${f('m', mue)},\n  "monedas": ${f('c', mon)},\n  "enemigos_derrotados": ${f('e', ene)}\n}`;
-        };
-        render();
-        I(() => { now += 100; t += .1; if (Math.random() < .22) { sal++; last.s = now; } if (Math.random() < .04) { mue++; last.m = now; } if (Math.random() < .1) { mon++; last.c = now; } if (Math.random() < .05) { ene++; last.e = now; } last.t = now; render(); }, 100);
-      }
-    };
-
-    // 7 · consentimiento
-    const cres = $('#cres');
-    function choose(b) {
-      const exit = nodeEls.exit, eNo = edgeEls.find(e => e.id === 'eNo').g, eYes = edgeEls.find(e => e.id === 'eYes').g, sv = nodeEls.survey;
-      exit.classList.toggle('hl', b === 'no'); eNo.classList.toggle('hl', b === 'no');
-      ['exit'].forEach(() => { }); if (b === 'no') { peek.delete('survey'); peek.delete('eYes'); eYes.classList.remove('run'); }
-      if (b === 'yes') { peek.add('survey'); peek.add('eYes'); }
-      paint(7);
-      if (b === 'yes') { eYes.classList.add('run'); sv.classList.add('focus'); } else sv.classList.remove('focus');
-      cres.className = 'res ' + b; cres.textContent = b === 'no' ? 'No acepta → se borran sus datos y se sale de la sesión.' : 'Acepta → continuamos con la encuesta inicial.';
-    }
-    $('#cNo').onclick = e => { e.currentTarget.blur(); choose('no'); }; $('#cYes').onclick = e => { e.currentTarget.blur(); choose('yes'); };
-    PA[7] = {
-      on() { cres.className = 'res'; cres.textContent = 'Elige una opción.'; T(() => choose('no'), 1100); T(() => choose('yes'), 3600); },
-      off() { peek.clear(); nodeEls.exit.classList.remove('hl'); edgeEls.forEach(e => e.g.classList.remove('hl', 'run')); }
-    };
-
-    // 9 · generación
-    PA[9] = {
-      on() {
-        const out = $('#prompt'), txt = 'Prompt → MarioGPT: «Nivel con saltos exigentes sobre vacíos, pocos enemigos y plataformas elevadas.»'; let i = 0; out.textContent = '';
-        if (reduce) out.textContent = txt; else I(() => { if (i < txt.length) out.textContent = txt.slice(0, ++i); }, 32);
-        packet([[480, 700], [480, 940], [1120, 940], [1480, 940], [1480, 720]], 520);
-      }
-    };
-
-    // 10 · bloque principal
-    const c6 = $('#cards6'); let order = ['P', 'H', 'G', 'P', 'H', 'G'].map((t, i) => ({ t, id: i })); const c6els = {};
-    order.forEach(o => { const d = document.createElement('div'); d.className = 'c6'; d.innerHTML = `<img src="${lvlThumb(40 + o.id * 11 + (o.t === 'P' ? 5 : 0), 28, 16, 3)}" alt=""><b class="t-${o.t}">${o.t}</b>`; c6els[o.id] = d; c6.appendChild(d); });
-    function shuffle() {
-      const first = Object.fromEntries(order.map(o => [o.id, c6els[o.id].getBoundingClientRect()]));
-      for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[order[i], order[j]] = [order[j], order[i]]; }
-      order.forEach(o => c6.appendChild(c6els[o.id]));
-      if (reduce) return; const sc = stage.getBoundingClientRect().width / 1280;
-      order.forEach(o => { const a = first[o.id], b = c6els[o.id].getBoundingClientRect(); c6els[o.id].animate([{ transform: `translate(${(a.left - b.left) / sc}px,${(a.top - b.top) / sc}px)` }, { transform: 'none' }], { duration: 550, easing: 'cubic-bezier(.3,1.3,.5,1)' }); });
-    }
-    $('#shuf').onclick = e => { e.currentTarget.blur(); shuffle(); };
-    PA[10] = { on() { T(shuffle, 700); } };
-
-    // 11 · cuestionario
-    (function () {
-      const box = $('#lik'), names = ['Disfrute', 'Competencia', 'Dificultad percibida', 'Ajuste del reto', 'Variedad', 'Deseo de rejugar'], rows = [];
-      let h = '<div class="lik"><span></span>' + [-3, -2, -1, 0, 1, 2, 3].map(v => `<span class="hd">${v > 0 ? '+' + v : v}</span>`).join('') + '</div>'; box.innerHTML = h;
-      names.forEach(nm => {
-        const r = document.createElement('div'); r.className = 'lik'; r.innerHTML = `<span>${nm}</span>` + [-3, -2, -1, 0, 1, 2, 3].map(v => `<button data-v="${v}" aria-label="${nm} ${v}"></button>`).join('');
-        r.querySelectorAll('button').forEach(b => b.onclick = () => { b.blur(); sel(r, +b.dataset.v); }); box.appendChild(r); rows.push(r);
-      });
-      window.__likSel = sel; function sel(r, v) { r.querySelectorAll('button').forEach(b => { const x = +b.dataset.v; b.className = x === v ? 'on ' + (v < 0 ? 'neg' : v > 0 ? 'pos' : 'zero') : ''; }); }
-      PA[11] = { on() { rows.forEach(r => sel(r, 99)); rows.forEach((r, i) => T(() => sel(r, Math.floor(Math.random() * 7) - 3), 500 + i * 350)); } };
-    })();
-
-    // 12 · ranking
-    (function () {
-      const box = $('#rank'); let list = ['P1', 'H1', 'G1', 'H2', 'P2', 'G2'];
-      const draw = () => {
-        box.innerHTML = ''; list.forEach((id, i) => {
-          const t = id[0], d = document.createElement('div'); d.className = 'rk';
-          d.innerHTML = `<span class="n">${i + 1}</span><img src="${lvlThumb(60 + id.charCodeAt(0) + (+id[1]) * 17, 28, 16, 3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t === 'P' ? 'Personalizado' : t === 'G' ? 'Genérico' : 'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
-          const [up, dn] = d.querySelectorAll('button'); up.onclick = () => { if (i > 0) { [list[i - 1], list[i]] = [list[i], list[i - 1]]; draw(); } }; dn.onclick = () => { if (i < 5) { [list[i + 1], list[i]] = [list[i], list[i + 1]]; draw(); } }; box.appendChild(d);
-        });
-      };
-      draw();
-    })();
-
-    // 13 · juego libre
-    (function () {
-      let cond = 'P', sim = 0, lv = 0, nextLv = 150; const tm = $('#timer'), mT = $('#mT'), mL = $('#mL');
-      const paintC = () => $$('.cond button').forEach(b => b.className = b.dataset.c === cond ? 'on ' + cond : '');
-      $$('.cond button').forEach(b => b.onclick = () => { b.blur(); cond = b.dataset.c; sim = 0; lv = 0; nextLv = 150; paintC(); });
-      const fmt = s => { const r = Math.max(0, 1200 - s); return String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(Math.floor(r % 60)).padStart(2, '0'); };
-      PA[13] = {
-        on() {
-          sim = 0; lv = 0; nextLv = 150; paintC(); I(() => {
-            sim += reduce ? 0 : 5; if (sim >= 1200) { sim = 0; lv = 0; nextLv = 150; } if (sim >= nextLv) { lv++; nextLv += 110 + Math.random() * 90; }
-            tm.firstChild.nodeValue = fmt(sim); mT.textContent = Math.floor(sim / 60) + ' min'; mL.textContent = lv;
-          }, 100);
-        }
-      };
-    })();
-
-    // 14 · final
-    PA[14] = { on() { T(() => { if (step === 14) burst(300, 330, 22); }, 600); } };
-    // 15 · vista completa: el participante recorre la Parte 2
-    PA[15] = { on() { packet([[160, 640], [480, 640], [790, 640], [1100, 640], [1450, 640], [1830, 640], [2160, 640], [2460, 640]], 330, px(heroRows('happy'), 1)); T(() => { }, 0); } };
-
-    /* ---------- visibilidad ---------- */
-    function paint(n) {
-      Object.entries(NODES).forEach(([id, nd]) => nodeEls[id].classList.toggle('vis', nd.at <= n || peek.has(id)));
-      edgeEls.forEach(e => e.g.classList.toggle('vis', !!(e.at <= n || (e.id && peek.has(e.id)))));
-      extra.forEach(([g, at]) => g.classList.toggle('vis', at <= n));
-    }
-    const CHIP = { 1: [1, 'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'], 2: [1, 'PARTE 1 · DATASET EN HUGGING FACE (ZOOM)'], 3: [1, 'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'], 4: [1, 'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'], 9: [2, 'PARTE 2 · GENERACIÓN EN SEGUNDO PLANO'], 15: [3, 'DIAGRAMA COMPLETO'] };
-
-    H['s-flow'] = {
-      enter() { camTo(CAMS[1], 0); },
-      leave() { clearAnim(); panels.forEach(p => p.classList.remove('on')); $('#hfZoom')?.classList.remove('on'); },
-      step(n, old) {
-        clearAnim(); peek.clear(); slide.classList.toggle('full', n === 15);
-        edgeEls.forEach(e => e.g.classList.remove('hl', 'run')); nodeEls.exit.classList.remove('hl');
-        Object.values(nodeEls).forEach(g => g.classList.remove('focus')); (FOCUS[n] || []).forEach(id => nodeEls[id].classList.add('focus'));
-        paint(n);
-        const c = CHIP[n] || [2, 'PARTE 2 · APLICACIÓN DEL EXPERIMENTO']; chip.dataset.p = c[0]; chip.textContent = c[1];
-        camTo(CAMS[n], old < 1 ? 0 : 1100);
-        panels.forEach(p => p.classList.toggle('on', +p.dataset.p === n));
-        $('#hfZoom')?.classList.toggle('on', n === 2);
-        PA[n]?.on?.();
-      }
-    };
+  // 10 · cuestionario
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#lik'), names=['Disfrute','Competencia','Dificultad percibida','Ajuste del reto','Variedad','Deseo de rejugar'], rows=[];
+    let h='<div class="lik"><span></span>'+[-3,-2,-1,0,1,2,3].map(v=>`<span class="hd">${v>0?'+'+v:v}</span>`).join('')+'</div>'; box.innerHTML=h;
+    names.forEach(nm=>{ const r=document.createElement('div'); r.className='lik'; r.innerHTML=`<span>${nm}</span>`+[-3,-2,-1,0,1,2,3].map(v=>`<button data-v="${v}" aria-label="${nm} ${v}"></button>`).join('');
+      r.querySelectorAll('button').forEach(b=>b.onclick=()=>{ b.blur(); sel(r,+b.dataset.v); }); box.appendChild(r); rows.push(r); });
+    window.__likSel=sel; function sel(r,v){ r.querySelectorAll('button').forEach(b=>{ const x=+b.dataset.v; b.className=x===v?'on '+(v<0?'neg':v>0?'pos':'zero'):''; }); }
+    PA[10]={on(){ rows.forEach(r=>sel(r,99)); rows.forEach((r,i)=>T(()=>sel(r,Math.floor(Math.random()*7)-3),500+i*350)); }};
   })();
+
+  // 11 · ranking
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#rank'); let list=['P1','H1','G1','H2','P2','G2'];
+    const draw=()=>{ box.innerHTML=''; list.forEach((id,i)=>{ const t=id[0],d=document.createElement('div'); d.className='rk';
+      d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'Genérico':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
+      const [up,dn]=d.querySelectorAll('button'); up.onclick=()=>{ if(i>0){ [list[i-1],list[i]]=[list[i],list[i-1]]; draw(); } }; dn.onclick=()=>{ if(i<5){ [list[i+1],list[i]]=[list[i],list[i+1]]; draw(); } }; box.appendChild(d); }); };
+    draw(); })();
+
+  // 12 · juego libre
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; let cond='P',sim=0,lv=0,nextLv=150; const tm=$('#timer'),mT=$('#mT'),mL=$('#mL');
+    const paintC=()=>$$('.cond button').forEach(b=>b.className=b.dataset.c===cond?'on '+cond:'');
+    $$('.cond button').forEach(b=>b.onclick=()=>{ b.blur(); cond=b.dataset.c; sim=0;lv=0;nextLv=150; paintC(); });
+    const fmt=s=>{ const r=Math.max(0,1200-s); return String(Math.floor(r/60)).padStart(2,'0')+':'+String(Math.floor(r%60)).padStart(2,'0'); };
+    PA[12]={on(){ sim=0;lv=0;nextLv=150; paintC(); I(()=>{ sim+=reduce?0:5; if(sim>=1200){ sim=0;lv=0;nextLv=150; } if(sim>=nextLv){ lv++; nextLv+=110+Math.random()*90; }
+      tm.firstChild.nodeValue=fmt(sim); mT.textContent=Math.floor(sim/60)+' min'; mL.textContent=lv; },100); }}; })();
+
+  // 13 · final
+  PA[13]={on(){ T(()=>{ if(step===13) burst(300,330,22); },600); }};
+  // 14 · vista completa: el participante recorre la Parte 2
+  PA[14]={on(){ packet([[160,640],[480,640],[790,640],[1100,640],[1450,640],[1830,640],[2160,640],[2460,640]],330,px(heroRows('happy'),1)); T(()=>{},0); }};
+
+  /* ---------- visibilidad ---------- */
+  function paint(n){
+    Object.entries(NODES).forEach(([id,nd])=>nodeEls[id].classList.toggle('vis',nd.at<=n||peek.has(id)));
+    edgeEls.forEach(e=>e.g.classList.toggle('vis',!!(e.at<=n||(e.id&&peek.has(e.id)))));
+    extra.forEach(([g,at])=>g.classList.toggle('vis',at<=n));
+  }
+  const CHIP={1:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],2:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],3:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],8:[2,'PARTE 2 · GENERACIÓN EN SEGUNDO PLANO'],14:[3,'DIAGRAMA COMPLETO']};
+
+  H['s-flow']={
+    enter(n){ const at = n || 1; camTo(CAMS[at] || CAMS[1], 0); },
+    leave(){ clearAnim(); panels.forEach(p=>p.classList.remove('on')); },
+    step(n,old){
+      clearAnim(); peek.clear(); slide.classList.toggle('full',n===14);
+      edgeEls.forEach(e=>e.g.classList.remove('hl','run')); nodeEls.exit.classList.remove('hl');
+      Object.values(nodeEls).forEach(g=>g.classList.remove('focus')); (FOCUS[n]||[]).forEach(id=>nodeEls[id]?.classList.add('focus'));
+      paint(n);
+      const c=CHIP[n]||[2,'PARTE 2 · APLICACIÓN DEL EXPERIMENTO']; chip.dataset.p=c[0]; chip.textContent=c[1];
+      camTo(CAMS[n] || CAMS[14], old<1?0:1100);
+      panels.forEach(p=>p.classList.toggle('on',+p.dataset.p===n));
+      PA[n]?.on?.();
+    }
+  };
+})();
+
+/* ===== 08-resultados.html ===== */
+/* ============================================================
+   RESULTADOS — 6 gráficos (medias LMM ± IC 95 %) con zoom por variable
+   ============================================================ */
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const E=(t,a={},p)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e; };
+  const slide=document.getElementById('s-res'), box=document.getElementById('rcards'), side=document.getElementById('rside');
+
+  /* condiciones: mismos colores que en la metodología (H menta, G dorado, P rosa) */
+  const COND=[
+    {k:'H',name:'Humano (H)',short:'Humano (H)',col:'#4fbf98'},
+    {k:'G',name:'LLM genérico (G)',short:'Genérico (G)',col:'#dba93b'},
+    {k:'P',name:'LLM con telemetría (P)',short:'Personalizado (P)',col:'#e0559f'}
+  ];
+  /* m: [media, IC inf, IC sup] por condición (H, G, P)
+     c: comparaciones [i, j, diferencia (i − j), p Holm, frágil] */
+  const RES=[
+    {name:'Disfrute', m:[[1.277,.909,1.644],[.258,-.110,.625],[.376,-.016,.767]],
+     c:[[0,1,1.019,.00004],[0,2,.901,.0003],[1,2,-.118,.6207]],
+     read:['Los niveles <b>humanos se disfrutan más</b> que los generados: <span class="k">+1.02</span> puntos frente a G y <span class="k">+0.90</span> frente a P.',
+           'Entre G y P <b>no se detecta diferencia</b>: no hay evidencia de que la telemetría mejore el disfrute.']},
+    {name:'Competencia percibida', m:[[1.037,.656,1.418],[.247,-.134,.627],[-.078,-.482,.327]],
+     c:[[0,1,.790,.0014],[0,2,1.114,.00004],[1,2,.324,.1818]],
+     read:['Las personas se sintieron <b>más competentes en los niveles humanos</b>: <span class="k">+0.79</span> frente a G y <span class="k">+1.11</span> frente a P.',
+           'G y P no se distinguen entre sí.']},
+    {name:'Dificultad percibida', m:[[-.084,-.451,.282],[.131,-.235,.497],[.761,.371,1.151]],
+     c:[[0,1,-.215,.3367],[0,2,-.845,.0009],[1,2,-.630,.0142]],
+     read:['Los niveles <b>personalizados (P) se perciben como los más difíciles</b>: <span class="k">+0.84</span> frente a H y <span class="k">+0.63</span> frente a G.',
+           'H y G no se distinguen. Es el <b>efecto más claro de la telemetría</b>, y se mantiene con o sin exclusiones.']},
+    {name:'Ajuste del reto', m:[[.167,-.205,.538],[-.264,-.634,.107],[.189,-.204,.582]],
+     c:[[0,1,.430,.1358],[0,2,-.022,.9212],[1,2,-.453,.1358]],
+     read:['<b>Ninguna comparación es significativa</b> tras la corrección de Holm.',
+           'Las tres condiciones quedan cerca del punto neutro de la escala.']},
+    {name:'Variedad', m:[[1.046,.672,1.420],[.178,-.195,.552],[.678,.284,1.072]],
+     c:[[0,1,.868,.0001],[0,2,.368,.0854],[1,2,-.499,.0389,1]],
+     read:['Los niveles humanos son <b>más variados que G</b> (<span class="k">+0.87</span>).',
+           'P se percibe <b>más variado que G</b> (<span class="k">+0.50</span>) y no se distingue de H: la telemetría acerca a P a los humanos en esta variable.'],
+     warn:'La ventaja de P sobre G es frágil: deja de ser significativa si no se aplican las exclusiones.'},
+    {name:'Intención de rejugar', m:[[.718,.335,1.101],[-.110,-.492,.273],[.197,-.208,.602]],
+     c:[[0,1,.828,.0006],[0,2,.521,.0499,1],[1,2,-.307,.1855]],
+     read:['Hay <b>más intención de rejugar los niveles humanos</b> que los G (<span class="k">+0.83</span>).',
+           'Frente a P la diferencia es <span class="k">+0.52</span>, justo en el límite. G y P no se distinguen.'],
+     warn:'H vs. P (p = 0.0499) es frágil: deja de ser significativa si no se aplican las exclusiones.'}
+  ];
+
+  const fmtP=p=>{ if(p<.001) return 'p < 0.001'; let t=p.toFixed(3); if((p<.05)!==(+t<.05)) t=p.toFixed(4); return 'p = '+t; };
+  const fmtN=v=>(v<0?'−':'')+Math.abs(v).toFixed(2);
+
+  /* ---------- un gráfico (viewBox 376×262, se escala con la tarjeta) ---------- */
+  const W=376,Hh=262, X0=44,X1=366, Y0=40,Y1=222, LO=-3.4,HI=4.3;
+  const xs=[0,1,2].map(i=>X0+(X1-X0)*(2*i+1)/6);
+  const Y=v=>Y1-(v-LO)/(HI-LO)*(Y1-Y0);
+  function chart(d){
+    const sv=E('svg',{viewBox:`0 0 ${W} ${Hh}`,preserveAspectRatio:'xMidYMid meet'});
+    E('text',{class:'rt',x:W/2,y:28},sv).textContent=d.name.toUpperCase();
+    for(let v=-3;v<=3;v++){ E('line',{class:v?'gl':'z',x1:X0,x2:X1,y1:Y(v),y2:Y(v)},sv); E('text',{class:'ax',x:X0-8,y:Y(v)+3.5},sv).textContent=v>0?'+'+v:v<0?'−'+(-v):'0'; }
+    COND.forEach((c,i)=>{ E('text',{class:'xl',x:xs[i],y:244},sv).textContent=c.short; });
+    // barras de error y puntos
+    d.m.forEach(([mu,lo,hi],i)=>{
+      const x=xs[i], col=COND[i].col;
+      const g=E('g',{class:'eb',style:`transition-delay:${120+i*110}ms`},sv);
+      E('line',{x1:x,x2:x,y1:Y(lo),y2:Y(hi),stroke:col,'stroke-width':3.5},g);
+      [lo,hi].forEach(v=>E('line',{x1:x-8,x2:x+8,y1:Y(v),y2:Y(v),stroke:col,'stroke-width':3.5},g));
+      const p=E('g',{class:'pt',style:`transition-delay:${300+i*110}ms`},sv);
+      E('rect',{x:x-4.5,y:Y(mu)-4.5,width:9,height:9,fill:col,stroke:'#1a1a1a','stroke-width':2},p);
+      E('text',{class:'mv',x:x+15,y:Y(mu)+3.5},p).textContent=fmtN(mu);
+    });
+    // corchetes de comparación: H–N abajo, H–P en medio, N–P arriba
+    const base=Math.max(...d.m.map(r=>r[2]))+.45;
+    d.c.forEach(([a,b,,p,frag],k)=>{
+      const lvl=[0,1,2][k], yv=Y(base+lvl*.82), sig=p<.05;
+      const g=E('g',{class:'br '+(sig?'sig':'ns')+(frag?' frag':'')},sv);
+      const pa=E('path',{d:`M${xs[a]+2} ${yv+6}V${yv}H${xs[b]-2}V${yv+6}`,pathLength:1,style:`transition-delay:${650+k*160}ms`},g);
+      if(frag) pa.style.strokeDasharray='.035 .02';
+      E('text',{x:(xs[a]+xs[b])/2,y:yv-4,style:`transition-delay:${750+k*160}ms`},g).textContent=fmtP(p)+(frag?' ⚠':'');
+    });
+    return sv;
+  }
+
+  /* ---------- tarjetas ---------- */
+  const GRID=i=>{ const cw=376,ch=262,gx=16,gy=14; return {l:60+(i%3)*(cw+gx),t:124+Math.floor(i/3)*(ch+gy),w:cw,h:ch}; };
+  const BIG={l:50,t:118,w:790,h:551};
+  const cards=RES.map((d,i)=>{ const c=document.createElement('div'); c.className='rcard'; c.appendChild(chart(d));
+    c.addEventListener('click',()=>{ if(busy) return; setStep(step===i+1?0:i+1, step===i+1?'back':'fwd'); });
+    box.appendChild(c); return c; });
+  const place=(c,r)=>{ c.style.left=r.l+'px'; c.style.top=r.t+'px'; c.style.width=r.w+'px'; c.style.height=r.h+'px'; };
+
+  /* ---------- panel lateral ---------- */
+  const chips=document.getElementById('rchips');
+  RES.forEach((d,i)=>{ const b=document.createElement('button'); b.textContent=i+1; b.title=d.name; b.onclick=()=>{ b.blur(); setStep(i+1,'fwd'); }; chips.appendChild(b); });
+  const all=document.createElement('button'); all.className='all'; all.textContent='◀ LOS 6'; all.onclick=()=>{ all.blur(); setStep(0,'back'); }; chips.appendChild(all);
+  function fillSide(i){
+    const d=RES[i];
+    [...chips.children].forEach((b,k)=>b.classList.toggle('on',k===i));
+    document.getElementById('rtag').textContent=`${i+1}/6 · ${d.name.toUpperCase()}`;
+    document.getElementById('rmeans').innerHTML=d.m.map(([mu,lo,hi],k)=>
+      `<p><i style="background:${COND[k].col}"></i><span>${COND[k].name}</span><b>${fmtN(mu)}</b><small>[${fmtN(lo)}, ${fmtN(hi)}]</small></p>`).join('');
+    document.getElementById('rread').innerHTML=d.read.map(t=>`<p>${t}</p>`).join('')+(d.warn?`<div class="rwarn">⚠ ${d.warn}</div>`:'');
+  }
+
+  let timers=[];
+  function intro(){
+    timers.forEach(clearTimeout); timers=[];
+    cards.forEach(c=>c.classList.remove('in'));
+    cards.forEach((c,i)=>timers.push(setTimeout(()=>c.classList.add('in'),reduce?0:80+i*130)));
+  }
+  function layout(n){
+    cards.forEach((c,i)=>{
+      const focus=n===i+1;
+      c.classList.toggle('big',focus);
+      c.classList.toggle('gone',n>0&&!focus);
+      place(c,focus?BIG:GRID(i));
+    });
+    side.classList.toggle('on',n>0);
+    if(n>0) fillSide(n-1);
+  }
+  RES.forEach((_,i)=>place(cards[i],GRID(i)));
+
+  H['s-res']={
+    enter(n){ layout(n); intro(); },
+    leave(){ timers.forEach(clearTimeout); timers=[]; },
+    step(n){ layout(n); }
+  };
+})();
+
+/* ===== 09-anexo.html ===== */
+(function(){
+  const slide = document.getElementById('s-anexos');
+  if(!slide) return;
+  const tabs = document.querySelectorAll('.anx-tab');
+  const panels = [document.getElementById('anx-p0'), document.getElementById('anx-p1')];
+  const lines = document.querySelectorAll('#anxCodeFilter .cf-line-anx');
+
+  function setTab(idx){
+    tabs.forEach((t, i) => t.classList.toggle('on', i === idx));
+    panels.forEach((p, i) => p.classList.toggle('on', i === idx));
+    if(idx === 1){
+      lines.forEach(l => l.classList.remove('active'));
+      lines.forEach((l, i) => {
+        setTimeout(() => {
+          lines.forEach(x => x.classList.remove('active'));
+          l.classList.add('active');
+        }, 150 + i * 350);
+      });
+      setTimeout(() => lines.forEach(x => x.classList.add('active')), 150 + lines.length * 350 + 200);
+    }
+  }
+
+  tabs.forEach((t, idx) => {
+    t.addEventListener('click', () => {
+      t.blur();
+      setStep(idx, idx > step ? 'fwd' : 'back');
+    });
+  });
+
+  H['s-anexos'] = {
+    enter(n){ setTab(n || 0); },
+    leave(){ },
+    step(n){ setTab(n || 0); }
+  };
+})();
 
 /* arranque */
 updateNav();

@@ -67,14 +67,17 @@ function setStep(n,dir){
   const old=step; step=n; const sl=slides[cur]; sl.dataset.step=n;
   applyAt(sl,n); H[sl.id]?.step?.(n,old,dir); updateNav();
 }
-function next(){ if(busy)return; const s=slides[cur]; if(step<mx(s)) setStep(step+1,'fwd'); else if(cur<slides.length-1) goSlide(cur+1,'fwd'); }
-function prev(){ if(busy)return; const s=slides[cur]; if(step>mn(s)) setStep(step-1,'back'); else if(cur>0) goSlide(cur-1,'back'); }
-async function goSlide(n,dir){
+/* el recorrido sigue la lista de sub-pasos (units), que puede intercalar filminas */
+const unitIdx=()=>units.findIndex(u=>u[0]===cur&&u[1]===step);
+function goUnit(u,dir){ if(u[0]===cur) setStep(u[1],dir); else goSlide(u[0],dir,u[1]); }
+function next(){ if(busy)return; const i=unitIdx(); if(i<units.length-1) goUnit(units[i+1],'fwd'); }
+function prev(){ if(busy)return; const i=unitIdx(); if(i>0) goUnit(units[i-1],'back'); }
+async function goSlide(n,dir,at){
   busy=true;
   await wipe(()=>{
     H[slides[cur].id]?.leave?.();
     slides[cur].classList.remove('active'); cur=n; const sl=slides[cur]; sl.classList.add('active');
-    step=dir==='fwd'?mn(sl):mx(sl); sl.dataset.step=step; applyAt(sl,step);
+    step=at??(dir==='fwd'?mn(sl):mx(sl)); sl.dataset.step=step; applyAt(sl,step);
     H[sl.id]?.enter?.(step,dir); H[sl.id]?.step?.(step,-1,dir); updateNav();
   });
   busy=false;
@@ -117,6 +120,15 @@ if(secNav){
 const units=[];
 slides.forEach((s,i)=>{
   for(let k=mn(s);k<=mx(s);k++) units.push([i,k]);
+});
+/* data-despues-de="id-de-otra-section:paso" intercala esta filmina justo después
+   de ese sub-paso de la otra; al terminarla se vuelve al sub-paso siguiente */
+slides.forEach((s,i)=>{
+  const d=s.dataset.despuesDe; if(!d) return;
+  const [id,st]=d.split(':'), mine=units.filter(u=>u[0]===i);
+  const j=units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
+  units.splice(0,units.length,...units.filter(u=>u[0]!==i));
+  units.splice(units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st)+1,0,...mine);
 });
 function updateNav(){
   const isCover = cur === 0;
