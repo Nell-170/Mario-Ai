@@ -380,6 +380,7 @@
 
 <script>
   (function () {
+    const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
     const slide = $('#s-levels');
     if (!slide) return;
     const cards = $$('#s-levels .lvl-card');
@@ -402,7 +403,7 @@
       leave() {
         cards.forEach(c => c.classList.remove('active', 'dim'));
       },
-      step() {}
+      step() { }
     };
   })();
 </script>
