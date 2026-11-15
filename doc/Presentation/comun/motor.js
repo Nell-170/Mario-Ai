@@ -77,44 +77,51 @@ async function goSlide(n,dir){
   });
   busy=false;
 }
-/* barra de progreso: una monedita por sub-paso */
-const prog=document.getElementById('prog');
-const units=[]; slides.forEach((s,i)=>{ for(let k=mn(s);k<=mx(s);k++) units.push([i,k]); });
-units.forEach((u)=>{
-  const d=document.createElement('i');
-  d.className='pc';
-  d.title=`Filmina ${u[0]+1}${mx(slides[u[0]])>mn(slides[u[0]])?' (paso '+u[1]+')':''}`;
-  d.style.cursor='pointer';
-  d.onclick=()=>{
-    if(cur!==u[0]){
-      goSlide(u[0], u[0]>cur?'fwd':'back').then(()=>{
-        if(step!==u[1]) setStep(u[1], u[1]>step?'fwd':'back');
-      });
-    } else if(step!==u[1]){
-      setStep(u[1], u[1]>step?'fwd':'back');
-    }
-  };
-  prog.appendChild(d);
+/* barra de navegación: secciones */
+const secNav=document.getElementById('sec-nav');
+const SECTIONS=[];
+slides.forEach((s,idx)=>{
+  const name=s.dataset.sec;
+  if(!name) return;
+  const existing=SECTIONS.find(sec=>sec.name===name);
+  if(!existing) SECTIONS.push({name,firstSlide:idx,lastSlide:idx});
+  else existing.lastSlide=idx;
 });
+if(secNav){
+  secNav.innerHTML='';
+  SECTIONS.forEach((sec,i)=>{
+    if(i>0){
+      const sep=document.createElement('span');
+      sep.className='ssep';
+      sep.textContent='|';
+      secNav.appendChild(sep);
+    }
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='sitem';
+    btn.dataset.sec=sec.name;
+    btn.textContent=sec.name;
+    btn.title=`Ir a ${sec.name} (filmina ${sec.firstSlide+1})`;
+    btn.onclick=(e)=>{
+      e.currentTarget.blur();
+      if(cur<sec.firstSlide||cur>sec.lastSlide){
+        goSlide(sec.firstSlide, sec.firstSlide>cur?'fwd':'back');
+      }
+    };
+    secNav.appendChild(btn);
+  });
+}
 function updateNav(){
-  const idx=units.findIndex(u=>u[0]===cur&&u[1]===step);
-  [...prog.children].forEach((d,i)=>{ d.className='pc'+(i<idx?' done':'')+(i===idx?' cur':''); });
+  const currentSecName=slides[cur]?.dataset.sec||'';
+  if(secNav){
+    secNav.querySelectorAll('.sitem').forEach(btn=>{
+      btn.classList.toggle('on', btn.dataset.sec===currentSecName);
+    });
+  }
   const snCur=document.getElementById('sn-cur');
   const snTot=document.getElementById('sn-tot');
-  const snStep=document.getElementById('sn-step');
-  if(snCur) snCur.textContent=String(cur+1).padStart(2,'0');
-  if(snTot) snTot.textContent=String(slides.length).padStart(2,'0');
-  if(snStep){
-    const s=slides[cur];
-    const totalSteps=mx(s)-mn(s)+1;
-    if(totalSteps>1){
-      const currentStep=step-mn(s)+1;
-      snStep.textContent=`· ${currentStep}/${totalSteps}`;
-      snStep.style.display='inline';
-    } else {
-      snStep.style.display='none';
-    }
-  }
+  if(snCur) snCur.textContent=String(cur+1);
+  if(snTot) snTot.textContent=String(slides.length);
 }
 const snEl=document.getElementById('slide-num');
 if(snEl){

@@ -27,17 +27,16 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 .nbtn{font:400 12px var(--pixel);width:34px;height:28px;border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);cursor:pointer;color:var(--ink);padding:0}
 .nbtn:hover{background:var(--gold-l)}
 .nbtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
-#prog{display:flex;gap:6px;align-items:center}
-.pc{width:12px;height:12px;background:#ddd7d2;border:2px solid var(--ink);transition:transform .2s,background .2s}
-.pc.done{background:var(--gold-l)}
-.pc.cur{background:var(--pink);transform:scale(1.4)}
-#slide-num{position:absolute;right:20px;bottom:9px;height:28px;padding:0 10px;border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);color:var(--ink);font:400 11px/28px var(--pixel);display:flex;align-items:center;gap:5px;z-index:55;user-select:none;cursor:pointer;transition:background .15s,transform .15s}
+.sec-nav{display:flex;align-items:center;gap:8px;background:#fff;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);height:28px;padding:0 10px}
+.ssep{color:#888;font:600 12px var(--body);user-select:none}
+.sitem{background:none;border:none;padding:2px 8px;font:600 12px var(--body);color:#555;cursor:pointer;border-radius:2px;letter-spacing:.2px;transition:all .15s}
+.sitem:hover{color:var(--ink);background:var(--gold-l)}
+.sitem.on{color:var(--ink);font-weight:700;background:var(--pink);border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);padding:1px 7px}
+#slide-num{position:absolute;right:20px;bottom:9px;height:28px;padding:0 12px;border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);color:var(--ink);font:400 13px/28px var(--pixel);display:flex;align-items:center;gap:6px;z-index:55;user-select:none;cursor:pointer;transition:background .15s,transform .15s}
 #slide-num:hover{background:var(--gold-l);transform:translateY(-2px)}
-#slide-num .sn-lbl{font-size:9px;color:#666;letter-spacing:.5px}
 #slide-num .sn-cur{color:var(--pink-d);font-weight:400}
 #slide-num .sn-sep{color:#888}
 #slide-num .sn-tot{color:var(--ink)}
-#slide-num .sn-step{font-size:9px;color:#666;margin-left:3px}
 #fx{position:absolute;inset:0;pointer-events:none;z-index:40}
 #wipe{position:absolute;inset:0;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(9,1fr);pointer-events:none;z-index:60}
 #wipe i{display:block;transform:scale(0)}
