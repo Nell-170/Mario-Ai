@@ -251,13 +251,13 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     background: #fff;
     border: 4px solid var(--ink);
     box-shadow: 6px 6px 0 var(--ink);
-    padding: 14px 14px 16px;
+    padding: 16px 14px 18px;
     display: flex;
     flex-direction: column;
     cursor: pointer;
     user-select: none;
     transition: transform .25s cubic-bezier(.2, .9, .3, 1.2), box-shadow .25s ease, opacity .25s ease, filter .25s ease;
-    min-height: 382px;
+    min-height: 290px;
   }
 
   .lvl-card:hover {
@@ -303,10 +303,21 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     flex-shrink: 0;
   }
 
-  .b-F { background: #ffffff; }
-  .b-G { background: var(--gold-l); }
-  .b-P { background: var(--pink); }
-  .b-H { background: var(--mint); }
+  .b-F {
+    background: #ffffff;
+  }
+
+  .b-G {
+    background: var(--gold-l);
+  }
+
+  .b-P {
+    background: var(--pink);
+  }
+
+  .b-H {
+    background: var(--mint);
+  }
 
   .lvl-head-info {
     display: flex;
@@ -323,10 +334,21 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     color: var(--ink);
   }
 
-  .p-F { background: #e8eaed; }
-  .p-G { background: var(--gold-l); }
-  .p-P { background: var(--pink); }
-  .p-H { background: var(--mint); }
+  .p-F {
+    background: #e8eaed;
+  }
+
+  .p-G {
+    background: var(--gold-l);
+  }
+
+  .p-P {
+    background: var(--pink);
+  }
+
+  .p-H {
+    background: var(--mint);
+  }
 
   .lvl-title {
     font: 700 15px/1.15 var(--body);
@@ -1592,13 +1614,13 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-<section class="slide" id="s-levels" data-min="0" data-max="4" data-sec="Metodología">
+<section class="slide" id="s-levels" data-min="0" data-max="0" data-sec="Metodología">
   <h1 class="h1">METODOLOGÍA</h1>
 
   <div class="levels-wrap">
     <div class="lvl-subtitle">
       <span class="tag">CONDICIONES EXPERIMENTALES</span>
-      <span class="desc">Clasificación y origen de los 4 tipos de niveles utilizados en el estudio:</span>
+      <span class="desc">Definición de los 4 tipos de niveles empleados en el estudio:</span>
     </div>
 
     <div class="lvl-grid">
@@ -1614,15 +1636,11 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
         <div class="lvl-body">
           <div class="lvl-row">
             <b>ORIGEN</b>
-            <span>2 niveles reales de Super Mario Maker 2 con mayor aprobación comunitaria.</span>
+            <span>2 niveles reales de Super Mario Maker 2 con alta aprobación comunitaria.</span>
           </div>
           <div class="lvl-row">
             <b>TELEMETRÍA</b>
             <span>Captura la <b>telemetría basal</b> del jugador (velocidad, saltos, muertes).</span>
-          </div>
-          <div class="lvl-row">
-            <b>PROPÓSITO</b>
-            <span>Permite adaptarse a los controles. Alimenta al modelo IA para generar los niveles P.</span>
           </div>
           <div class="lvl-footer-tag">Fase inicial de práctica</div>
         </div>
@@ -1646,10 +1664,6 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
             <b>TELEMETRÍA</b>
             <span>Utilizan telemetría de un <b>perfil ajeno</b> (no del participante en curso).</span>
           </div>
-          <div class="lvl-row">
-            <b>PROPÓSITO</b>
-            <span>Aísla el efecto de la personalización frente a la simple novedad de jugar con IA.</span>
-          </div>
           <div class="lvl-footer-tag">Control experimental fijo</div>
         </div>
       </div>
@@ -1672,10 +1686,6 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
             <b>TELEMETRÍA</b>
             <span>Sintetizados a partir de la <b>telemetría real registrada en F</b>.</span>
           </div>
-          <div class="lvl-row">
-            <b>PROPÓSITO</b>
-            <span>Evalúa si el ajuste adaptativo al estilo del jugador incrementa disfrute y flujo.</span>
-          </div>
           <div class="lvl-footer-tag">Condición adaptativa principal</div>
         </div>
       </div>
@@ -1697,10 +1707,6 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
           <div class="lvl-row">
             <b>VALIDACIÓN</b>
             <span>Filtrados por zona de flujo (clear rate 30–50%) y 100% superables con <b>A*</b>.</span>
-          </div>
-          <div class="lvl-row">
-            <b>PROPÓSITO</b>
-            <span>Línea base representativa de diseño humano para comparar contra la IA.</span>
           </div>
           <div class="lvl-footer-tag">Referente de diseño humano</div>
         </div>
@@ -1730,7 +1736,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
           <span>+</span>
           <span class="lt-box b-H">H</span>
           <span class="lt-arrow">──▶</span>
-          <span>Evaluación y Ranking</span>
+          <span>Evaluación post-nivel</span>
         </div>
       </div>
     </div>
@@ -1977,7 +1983,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <div id="slide-num" class="slide-num" aria-live="polite" title="Ir a paso" style="display:none">
     <b class="sn-cur" id="sn-cur">1</b>
     <span class="sn-sep">/</span>
-    <span class="sn-tot" id="sn-tot">36</span>
+    <span class="sn-tot" id="sn-tot">32</span>
   </div>
 </div>
 
@@ -2392,40 +2398,26 @@ H['s-prisma']={
     const slide = $('#s-levels');
     if (!slide) return;
     const cards = $$('#s-levels .lvl-card');
-    const strip = $('#lvl-flow-strip');
 
     cards.forEach(c => {
       c.addEventListener('click', () => {
-        if (busy) return;
-        const target = +c.dataset.card;
-        setStep(step === target ? 0 : target, target > step ? 'fwd' : 'back');
+        const isAct = c.classList.contains('active');
+        cards.forEach(other => other.classList.remove('active', 'dim'));
+        if (!isAct) {
+          c.classList.add('active');
+          cards.forEach(other => { if (other !== c) other.classList.add('dim'); });
+        }
       });
     });
 
     H['s-levels'] = {
-      enter(n) {
-        this.step(n || 0);
+      enter() {
+        cards.forEach(c => c.classList.remove('active', 'dim'));
       },
       leave() {
         cards.forEach(c => c.classList.remove('active', 'dim'));
       },
-      step(n) {
-        cards.forEach((c, idx) => {
-          const cardNum = idx + 1;
-          if (n === 0) {
-            c.classList.remove('active', 'dim');
-          } else if (n === cardNum) {
-            c.classList.add('active');
-            c.classList.remove('dim');
-          } else {
-            c.classList.add('dim');
-            c.classList.remove('active');
-          }
-        });
-        if (strip) {
-          strip.classList.toggle('hl-flow', n === 0 || n === 4);
-        }
-      }
+      step() {}
     };
   })();
 
