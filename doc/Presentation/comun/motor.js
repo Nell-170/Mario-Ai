@@ -80,10 +80,51 @@ async function goSlide(n,dir){
 /* barra de progreso: una monedita por sub-paso */
 const prog=document.getElementById('prog');
 const units=[]; slides.forEach((s,i)=>{ for(let k=mn(s);k<=mx(s);k++) units.push([i,k]); });
-units.forEach(()=>{ const d=document.createElement('i'); d.className='pc'; prog.appendChild(d); });
+units.forEach((u)=>{
+  const d=document.createElement('i');
+  d.className='pc';
+  d.title=`Filmina ${u[0]+1}${mx(slides[u[0]])>mn(slides[u[0]])?' (paso '+u[1]+')':''}`;
+  d.style.cursor='pointer';
+  d.onclick=()=>{
+    if(cur!==u[0]){
+      goSlide(u[0], u[0]>cur?'fwd':'back').then(()=>{
+        if(step!==u[1]) setStep(u[1], u[1]>step?'fwd':'back');
+      });
+    } else if(step!==u[1]){
+      setStep(u[1], u[1]>step?'fwd':'back');
+    }
+  };
+  prog.appendChild(d);
+});
 function updateNav(){
   const idx=units.findIndex(u=>u[0]===cur&&u[1]===step);
   [...prog.children].forEach((d,i)=>{ d.className='pc'+(i<idx?' done':'')+(i===idx?' cur':''); });
+  const snCur=document.getElementById('sn-cur');
+  const snTot=document.getElementById('sn-tot');
+  const snStep=document.getElementById('sn-step');
+  if(snCur) snCur.textContent=String(cur+1).padStart(2,'0');
+  if(snTot) snTot.textContent=String(slides.length).padStart(2,'0');
+  if(snStep){
+    const s=slides[cur];
+    const totalSteps=mx(s)-mn(s)+1;
+    if(totalSteps>1){
+      const currentStep=step-mn(s)+1;
+      snStep.textContent=`· ${currentStep}/${totalSteps}`;
+      snStep.style.display='inline';
+    } else {
+      snStep.style.display='none';
+    }
+  }
+}
+const snEl=document.getElementById('slide-num');
+if(snEl){
+  snEl.onclick=()=>{
+    const val=prompt(`Ir a filmina (1 a ${slides.length}):`, cur+1);
+    const n=parseInt(val,10);
+    if(!isNaN(n)&&n>=1&&n<=slides.length&&n-1!==cur){
+      goSlide(n-1, n-1>cur?'fwd':'back');
+    }
+  };
 }
 /* transición pixelada */
 const wipeEl=document.getElementById('wipe'); const cells=[];
@@ -101,6 +142,10 @@ addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='PageDown'||(!inCtl&&(e.key===' '||e.key==='Enter'))){ e.preventDefault(); next(); }
   else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prev(); }
   else if(e.key==='f'||e.key==='F'){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.(); }
+  else if(!inCtl && e.key>='1' && e.key<=String(slides.length)){
+    const targetIdx=parseInt(e.key,10)-1;
+    if(targetIdx!==cur){ e.preventDefault(); goSlide(targetIdx, targetIdx>cur?'fwd':'back'); }
+  }
 });
 let tx=null; addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
 addEventListener('touchend',e=>{ if(tx==null)return; const d=e.changedTouches[0].clientX-tx; if(Math.abs(d)>60){ d<0?next():prev(); } tx=null; });
