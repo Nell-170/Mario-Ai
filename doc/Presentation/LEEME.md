@@ -12,7 +12,8 @@ presentacion/
 │   ├── 03-pregunta.html
 │   ├── 04-antecedentes-prisma.html
 │   ├── 05-antecedentes-tabla.html
-│   └── 06-metodologia.html
+│   ├── 06-metodologia.html
+│   └── 07-resultados.html
 └── comun/
     ├── config.js            ← rutas de videos, sprites y capturas (edítalo aquí)
     ├── base.css             ← colores, escenario, navegación, animaciones compartidas
@@ -32,6 +33,6 @@ Cada archivo de `filminas/` tiene tres bloques: `<style>` (su CSS), `<section>` 
 ## Notas
 
 - `data-min` y `data-max` de cada `<section>` definen sus sub-pasos; la barra de progreso se ajusta sola.
-- Para agregar una filmina, crea p. ej. `filminas/07-resultados.html` con los mismos tres bloques. El orden lo da el número del nombre.
+- Para agregar una filmina, crea p. ej. `filminas/08-conclusiones.html` con los mismos tres bloques. El orden lo da el número del nombre.
 - Lo que va en `<script>` de una filmina puede usar lo de `motor.js`: `H['id-de-la-section'] = { enter, leave, step }`, `setStep`, `step`, `burst`, `countTo`, `px`, `heroURL`, etc.
 - Si una filmina usa una clase de otra (por ejemplo `.ground` o `.cloud`), esa clase va en `comun/base.css`.

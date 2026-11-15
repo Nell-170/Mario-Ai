@@ -288,7 +288,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .t-P{background:var(--pink)} .t-N{background:var(--gold-l)} .t-H{background:var(--mint)}
 .leg3{font-size:13px;line-height:1.5} .leg3 p{margin:0 0 6px;display:flex;gap:8px;align-items:flex-start}
 .leg3 .k{flex:none;font:400 9px var(--pixel);border:3px solid var(--ink);padding:5px 6px}
-.lik{display:grid;grid-template-columns:150px repeat(7,1fr);gap:5px;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:7px}
+.lik{display:grid;grid-template-columns:172px repeat(7,1fr);gap:5px;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:7px}
 .lik .hd{font:400 8px var(--pixel);text-align:center;color:#555}
 .lik button{height:26px;border:3px solid var(--ink);background:#fff;cursor:pointer;padding:0}
 .lik button:hover{background:var(--gold-l)} .lik button.on{background:var(--ink)}
@@ -315,6 +315,64 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .flegend{position:absolute;right:30px;top:112px;z-index:5;border:3px solid var(--ink);background:#fff;padding:8px 10px;font-size:11px;line-height:1.8;opacity:0;transition:opacity .4s;pointer-events:none}
 .full .flegend{opacity:1}
 .flegend i{display:inline-block;width:12px;height:12px;border:2px solid var(--ink);margin-right:6px;vertical-align:-2px}
+
+/* ===== 07-resultados.html ===== */
+/* ---------- resultados: 6 gráficos con zoom ---------- */
+.rleg{position:absolute;left:330px;right:60px;top:40px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px 16px;font:600 12.5px var(--body);z-index:3}
+.rleg span{display:flex;align-items:center;gap:6px}
+.rleg i{display:inline-block;width:13px;height:13px;border:2.5px solid var(--ink)}
+.rleg svg{display:block}
+.rmeta{position:absolute;right:60px;top:74px;font:400 8px/1.6 var(--pixel);color:#555;z-index:3}
+.rmeta b{font-weight:400;background:var(--gold-l);color:var(--ink);border:2px solid var(--ink);padding:3px 6px;margin-right:6px}
+.rcard{position:absolute;background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);cursor:pointer;
+  transition:left .6s cubic-bezier(.5,0,.2,1),top .6s cubic-bezier(.5,0,.2,1),width .6s cubic-bezier(.5,0,.2,1),height .6s cubic-bezier(.5,0,.2,1),opacity .4s,box-shadow .2s;
+  opacity:0}
+.rcard.in{opacity:1}
+.rcard.gone{opacity:0;pointer-events:none}
+.rcard:hover{box-shadow:7px 7px 0 var(--violet)}
+.rcard.big{cursor:zoom-out;z-index:2}
+.rcard svg{display:block;width:100%;height:100%}
+.rcard text{font-family:var(--body);fill:var(--ink)}
+.rcard .rt{font:400 23px var(--display);letter-spacing:1px;text-anchor:middle}
+.rcard .ax{font-size:10px;fill:#666;text-anchor:end}
+.rcard .xl{font-size:10px;font-weight:700;text-anchor:middle}
+.rcard .mv{font-size:9.5px;font-weight:700}
+.rcard .gl{stroke:#e8e3df;stroke-width:1}
+.rcard .z{stroke:#9a948f;stroke-width:1.2;stroke-dasharray:4 3}
+.rcard .eb{transform-box:fill-box;transform-origin:center;transform:scaleY(0);transition:transform .55s cubic-bezier(.3,1.4,.5,1)}
+.rcard .pt{opacity:0;transition:opacity .3s}
+.rcard.in .eb{transform:none}
+.rcard.in .pt{opacity:1}
+.rcard .br path{fill:none;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .5s ease}
+.rcard .br text{font-size:9.5px;font-weight:700;text-anchor:middle;opacity:0;transition:opacity .3s}
+.rcard.in .br path{stroke-dashoffset:0}
+.rcard.in .br text{opacity:1}
+.rcard .br.sig path{stroke:var(--violet);stroke-width:2.6}
+.rcard .br.sig text{fill:var(--violet)}
+.rcard .br.frag path{stroke-dasharray:.035 .02;stroke-dashoffset:0}
+.rcard .br.ns path{stroke:#9a948f;stroke-width:1.4}
+.rcard .br.ns text{fill:#8a847f;font-weight:600}
+.rside{position:absolute;left:868px;top:118px;width:352px;height:552px;background:#fff;border:4px solid var(--ink);box-shadow:7px 7px 0 var(--ink);padding:16px 18px;
+  opacity:0;transform:translateX(34px);pointer-events:none;transition:opacity .4s .2s,transform .45s .2s;z-index:3}
+.rside.on{opacity:1;transform:none;pointer-events:auto}
+.rchips{display:flex;gap:6px;margin-bottom:14px}
+.rchips button{font:400 9px var(--pixel);border:3px solid var(--ink);background:#fff;height:30px;min-width:30px;padding:0 6px;cursor:pointer;color:var(--ink)}
+.rchips button:hover{background:var(--gold-l)}
+.rchips button.on{background:var(--ink);color:#fff}
+.rchips .all{margin-left:auto}
+.rside .ptag2{display:inline-block;font:400 10px var(--pixel);padding:7px 10px;background:var(--ink);color:#fff;margin-bottom:12px}
+.rmeans{margin:0 0 12px;font-size:13px}
+.rmeans p{display:flex;align-items:center;gap:8px;margin:0 0 5px}
+.rmeans i{flex:none;width:12px;height:12px;border:2.5px solid var(--ink)}
+.rmeans span{flex:1;font-weight:600}
+.rmeans b{font:400 22px/1 var(--display);letter-spacing:.5px}
+.rmeans small{font-size:11px;color:#777;width:92px;text-align:right}
+.rread{font-size:14px;line-height:1.5;margin:0}
+.rread p{margin:0 0 8px}
+.rread .k{color:var(--violet);font-weight:700}
+.rwarn{margin-top:10px;padding:8px 10px;border:3px solid var(--ink);background:var(--gold-l);font:600 12.5px/1.45 var(--body)}
+.rhint{position:absolute;left:62px;top:104px;font:400 9px var(--pixel);z-index:3;opacity:0;transition:opacity .4s}
+#s-res[data-step="0"] .rhint{opacity:1}
 </style>
 </head>
 <body>
@@ -618,6 +676,34 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
     <div class="flegend"><i style="background:var(--mint)"></i>Parte 1<br><i style="background:#fff"></i>Parte 2<br><i style="background:#ffb3da"></i>Segundo plano<br><i style="background:var(--gold-l)"></i>Decisión</div>
     <div class="fhint blink">CLIC EN UNA CAJA PARA VOLVER A SU EXPLICACIÓN</div>
+  </section>
+
+<!-- ============ FILMINA: RESULTADOS · MEDIAS DEL LMM ============ -->
+<!-- Datos: Data_Analysis_Code/LMM-Modelo_Lineal_de_Efectos_Mixtos/Analisis_Respuestas_Experimento.ipynb
+     (medias estimadas por el LMM con IC 95 % y p-valores ajustados por Holm, Etapa 5).
+     Si el análisis cambia, actualiza el objeto RES del bloque de script. -->
+
+
+
+  <section class="slide" id="s-res" data-min="0" data-max="6">
+    <h1 class="h1">RESULTADOS</h1>
+    <div class="rleg">
+      <span><i style="background:var(--mint-d)"></i>Humano (H)</span>
+      <span><i style="background:var(--gold)"></i>LLM sin telemetría (N)</span>
+      <span><i style="background:var(--pink-d)"></i>LLM con telemetría (P)</span>
+      <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6"/></svg>p &lt; 0.05</span>
+      <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6" stroke-dasharray="5 3"/></svg>p &lt; 0.05, frágil</span>
+      <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#9a948f" stroke-width="1.4"/></svg>no significativa</span>
+    </div>
+    <div class="rmeta"><b>PRELIMINAR</b>MEDIAS DEL LMM E IC 95% · 72 PARTICIPANTES · 396 EVALUACIONES · p AJUSTADOS POR HOLM</div>
+    <div id="rcards"></div>
+    <div class="rside" id="rside">
+      <div class="rchips" id="rchips"></div>
+      <div class="ptag2" id="rtag"></div>
+      <div class="rmeans" id="rmeans"></div>
+      <div class="rread" id="rread"></div>
+    </div>
+    <div class="rhint blink">CLIC EN UN GRÁFICO PARA AMPLIARLO</div>
   </section>
 
   <div id="fx"></div>
@@ -1180,7 +1266,7 @@ H['s-prisma']={
   PA[9]={on(){ T(shuffle,700); }};
 
   // 10 · cuestionario
-  (function(){ const box=$('#lik'), names=['Disfrute','Competencia','Dificultad percibida','Ajuste del reto','Variedad','Deseo de rejugar'], rows=[];
+  (function(){ const box=$('#lik'), names=['Disfrute','Competencia percibida','Dificultad percibida','Ajuste del reto','Variedad','Intención de rejugar'], rows=[];
     let h='<div class="lik"><span></span>'+[-3,-2,-1,0,1,2,3].map(v=>`<span class="hd">${v>0?'+'+v:v}</span>`).join('')+'</div>'; box.innerHTML=h;
     names.forEach(nm=>{ const r=document.createElement('div'); r.className='lik'; r.innerHTML=`<span>${nm}</span>`+[-3,-2,-1,0,1,2,3].map(v=>`<button data-v="${v}" aria-label="${nm} ${v}"></button>`).join('');
       r.querySelectorAll('button').forEach(b=>b.onclick=()=>{ b.blur(); sel(r,+b.dataset.v); }); box.appendChild(r); rows.push(r); });
@@ -1229,6 +1315,132 @@ H['s-prisma']={
       panels.forEach(p=>p.classList.toggle('on',+p.dataset.p===n));
       PA[n]?.on?.();
     }
+  };
+})();
+
+/* ===== 07-resultados.html ===== */
+/* ============================================================
+   RESULTADOS — 6 gráficos (medias LMM ± IC 95 %) con zoom por variable
+   ============================================================ */
+(function(){
+  const NS='http://www.w3.org/2000/svg';
+  const E=(t,a={},p)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e; };
+  const slide=document.getElementById('s-res'), box=document.getElementById('rcards'), side=document.getElementById('rside');
+
+  /* condiciones: mismos colores que en la metodología (H menta, N dorado, P rosa) */
+  const COND=[
+    {k:'H',name:'Humano',short:'Humano',col:'#4fbf98'},
+    {k:'N',name:'LLM sin telemetría',short:'LLM sin tel.',col:'#dba93b'},
+    {k:'P',name:'LLM con telemetría',short:'LLM con tel.',col:'#e0559f'}
+  ];
+  /* m: [media, IC inf, IC sup] por condición (H, N, P)
+     c: comparaciones [i, j, diferencia (i − j), p Holm, frágil] */
+  const RES=[
+    {name:'Disfrute', m:[[1.277,.909,1.644],[.258,-.110,.625],[.376,-.016,.767]],
+     c:[[0,1,1.019,.00004],[0,2,.901,.0003],[1,2,-.118,.6207]],
+     read:['Los niveles <b>humanos se disfrutan más</b> que los generados: <span class="k">+1.02</span> puntos frente a N y <span class="k">+0.90</span> frente a P.',
+           'Entre N y P <b>no se detecta diferencia</b>: no hay evidencia de que la telemetría mejore el disfrute (lo que no demuestra que no influya).']},
+    {name:'Competencia percibida', m:[[1.037,.656,1.418],[.247,-.134,.627],[-.078,-.482,.327]],
+     c:[[0,1,.790,.0014],[0,2,1.114,.00004],[1,2,.324,.1818]],
+     read:['Las personas se sintieron <b>más competentes en los niveles humanos</b>: <span class="k">+0.79</span> frente a N y <span class="k">+1.11</span> frente a P.',
+           'N y P no se distinguen entre sí.']},
+    {name:'Dificultad percibida', m:[[-.084,-.451,.282],[.131,-.235,.497],[.761,.371,1.151]],
+     c:[[0,1,-.215,.3367],[0,2,-.845,.0009],[1,2,-.630,.0142]],
+     read:['Los niveles <b>personalizados (P) se perciben como los más difíciles</b>: <span class="k">+0.84</span> frente a H y <span class="k">+0.63</span> frente a N.',
+           'H y N no se distinguen. Es el <b>efecto más claro de la telemetría</b>, y se mantiene con o sin exclusiones.']},
+    {name:'Ajuste del reto', m:[[.167,-.205,.538],[-.264,-.634,.107],[.189,-.204,.582]],
+     c:[[0,1,.430,.1358],[0,2,-.022,.9212],[1,2,-.453,.1358]],
+     read:['<b>Ninguna comparación es significativa</b> tras la corrección de Holm.',
+           'Las tres condiciones quedan cerca del punto neutro de la escala.']},
+    {name:'Variedad', m:[[1.046,.672,1.420],[.178,-.195,.552],[.678,.284,1.072]],
+     c:[[0,1,.868,.0001],[0,2,.368,.0854],[1,2,-.499,.0389,1]],
+     read:['Los niveles humanos son <b>más variados que N</b> (<span class="k">+0.87</span>).',
+           'P se percibe <b>más variado que N</b> (<span class="k">+0.50</span>) y no se distingue de H: la telemetría acerca a P a los humanos en esta variable.'],
+     warn:'La ventaja de P sobre N es frágil: deja de ser significativa si no se aplican las exclusiones.'},
+    {name:'Intención de rejugar', m:[[.718,.335,1.101],[-.110,-.492,.273],[.197,-.208,.602]],
+     c:[[0,1,.828,.0006],[0,2,.521,.0499,1],[1,2,-.307,.1855]],
+     read:['Hay <b>más intención de rejugar los niveles humanos</b> que los N (<span class="k">+0.83</span>).',
+           'Frente a P la diferencia es <span class="k">+0.52</span>, justo en el límite. N y P no se distinguen.'],
+     warn:'H vs. P (p = 0.0499) es frágil: deja de ser significativa si no se aplican las exclusiones.'}
+  ];
+
+  const fmtP=p=>{ if(p<.001) return 'p < 0.001'; let t=p.toFixed(3); if((p<.05)!==(+t<.05)) t=p.toFixed(4); return 'p = '+t; };
+  const fmtN=v=>(v<0?'−':'')+Math.abs(v).toFixed(2);
+
+  /* ---------- un gráfico (viewBox 376×262, se escala con la tarjeta) ---------- */
+  const W=376,Hh=262, X0=44,X1=366, Y0=40,Y1=222, LO=-3.4,HI=4.3;
+  const xs=[0,1,2].map(i=>X0+(X1-X0)*(2*i+1)/6);
+  const Y=v=>Y1-(v-LO)/(HI-LO)*(Y1-Y0);
+  function chart(d){
+    const sv=E('svg',{viewBox:`0 0 ${W} ${Hh}`,preserveAspectRatio:'xMidYMid meet'});
+    E('text',{class:'rt',x:W/2,y:28},sv).textContent=d.name.toUpperCase();
+    for(let v=-3;v<=3;v++){ E('line',{class:v?'gl':'z',x1:X0,x2:X1,y1:Y(v),y2:Y(v)},sv); E('text',{class:'ax',x:X0-8,y:Y(v)+3.5},sv).textContent=v>0?'+'+v:v<0?'−'+(-v):'0'; }
+    COND.forEach((c,i)=>{ E('text',{class:'xl',x:xs[i],y:244},sv).textContent=c.short; });
+    // barras de error y puntos
+    d.m.forEach(([mu,lo,hi],i)=>{
+      const x=xs[i], col=COND[i].col;
+      const g=E('g',{class:'eb',style:`transition-delay:${120+i*110}ms`},sv);
+      E('line',{x1:x,x2:x,y1:Y(lo),y2:Y(hi),stroke:col,'stroke-width':3.5},g);
+      [lo,hi].forEach(v=>E('line',{x1:x-8,x2:x+8,y1:Y(v),y2:Y(v),stroke:col,'stroke-width':3.5},g));
+      const p=E('g',{class:'pt',style:`transition-delay:${300+i*110}ms`},sv);
+      E('rect',{x:x-4.5,y:Y(mu)-4.5,width:9,height:9,fill:col,stroke:'#1a1a1a','stroke-width':2},p);
+      E('text',{class:'mv',x:x+15,y:Y(mu)+3.5},p).textContent=fmtN(mu);
+    });
+    // corchetes de comparación: H–N abajo, H–P en medio, N–P arriba
+    const base=Math.max(...d.m.map(r=>r[2]))+.45;
+    d.c.forEach(([a,b,,p,frag],k)=>{
+      const lvl=[0,1,2][k], yv=Y(base+lvl*.82), sig=p<.05;
+      const g=E('g',{class:'br '+(sig?'sig':'ns')+(frag?' frag':'')},sv);
+      const pa=E('path',{d:`M${xs[a]+2} ${yv+6}V${yv}H${xs[b]-2}V${yv+6}`,pathLength:1,style:`transition-delay:${650+k*160}ms`},g);
+      if(frag) pa.style.strokeDasharray='.035 .02';
+      E('text',{x:(xs[a]+xs[b])/2,y:yv-4,style:`transition-delay:${750+k*160}ms`},g).textContent=fmtP(p)+(frag?' ⚠':'');
+    });
+    return sv;
+  }
+
+  /* ---------- tarjetas ---------- */
+  const GRID=i=>{ const cw=376,ch=262,gx=16,gy=14; return {l:60+(i%3)*(cw+gx),t:124+Math.floor(i/3)*(ch+gy),w:cw,h:ch}; };
+  const BIG={l:50,t:118,w:790,h:551};
+  const cards=RES.map((d,i)=>{ const c=document.createElement('div'); c.className='rcard'; c.appendChild(chart(d));
+    c.addEventListener('click',()=>{ if(busy) return; setStep(step===i+1?0:i+1, step===i+1?'back':'fwd'); });
+    box.appendChild(c); return c; });
+  const place=(c,r)=>{ c.style.left=r.l+'px'; c.style.top=r.t+'px'; c.style.width=r.w+'px'; c.style.height=r.h+'px'; };
+
+  /* ---------- panel lateral ---------- */
+  const chips=document.getElementById('rchips');
+  RES.forEach((d,i)=>{ const b=document.createElement('button'); b.textContent=i+1; b.title=d.name; b.onclick=()=>{ b.blur(); setStep(i+1,'fwd'); }; chips.appendChild(b); });
+  const all=document.createElement('button'); all.className='all'; all.textContent='◀ LOS 6'; all.onclick=()=>{ all.blur(); setStep(0,'back'); }; chips.appendChild(all);
+  function fillSide(i){
+    const d=RES[i];
+    [...chips.children].forEach((b,k)=>b.classList.toggle('on',k===i));
+    document.getElementById('rtag').textContent=`${i+1}/6 · ${d.name.toUpperCase()}`;
+    document.getElementById('rmeans').innerHTML=d.m.map(([mu,lo,hi],k)=>
+      `<p><i style="background:${COND[k].col}"></i><span>${COND[k].name}</span><b>${fmtN(mu)}</b><small>[${fmtN(lo)}, ${fmtN(hi)}]</small></p>`).join('');
+    document.getElementById('rread').innerHTML=d.read.map(t=>`<p>${t}</p>`).join('')+(d.warn?`<div class="rwarn">⚠ ${d.warn}</div>`:'');
+  }
+
+  let timers=[];
+  function intro(){
+    timers.forEach(clearTimeout); timers=[];
+    cards.forEach(c=>c.classList.remove('in'));
+    cards.forEach((c,i)=>timers.push(setTimeout(()=>c.classList.add('in'),reduce?0:80+i*130)));
+  }
+  function layout(n){
+    cards.forEach((c,i)=>{
+      const focus=n===i+1;
+      c.classList.toggle('big',focus);
+      c.classList.toggle('gone',n>0&&!focus);
+      place(c,focus?BIG:GRID(i));
+    });
+    side.classList.toggle('on',n>0);
+    if(n>0) fillSide(n-1);
+  }
+  RES.forEach((_,i)=>place(cards[i],GRID(i)));
+
+  H['s-res']={
+    enter(n){ layout(n); intro(); },
+    leave(){ timers.forEach(clearTimeout); timers=[]; },
+    step(n){ layout(n); }
   };
 })();
 
