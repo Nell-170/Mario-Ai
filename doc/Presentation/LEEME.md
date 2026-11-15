@@ -33,6 +33,7 @@ Cada archivo de `filminas/` tiene tres bloques: `<style>` (su CSS), `<section>` 
 ## Notas
 
 - `data-min` y `data-max` de cada `<section>` definen sus sub-pasos; la barra de progreso se ajusta sola.
+- `data-despues-de="id-de-section:paso"` intercala una filmina en medio de otra. Por ejemplo, `07-resultados.html` lleva `data-despues-de="s-flow:10"`: aparece justo después del paso del cuestionario de la metodología y, al terminarla, la presentación vuelve al diagrama en el paso 11.
 - Para agregar una filmina, crea p. ej. `filminas/08-conclusiones.html` con los mismos tres bloques. El orden lo da el número del nombre.
 - Lo que va en `<script>` de una filmina puede usar lo de `motor.js`: `H['id-de-la-section'] = { enter, leave, step }`, `setStep`, `step`, `burst`, `countTo`, `px`, `heroURL`, etc.
 - Si una filmina usa una clase de otra (por ejemplo `.ground` o `.cloud`), esa clase va en `comun/base.css`.
