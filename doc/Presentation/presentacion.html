@@ -631,10 +631,10 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <div id="sec-nav" class="sec-nav" style="display:none"></div>
     <button class="nbtn" id="bnext" aria-label="Siguiente">▶</button>
   </div>
-  <div id="slide-num" class="slide-num" aria-live="polite" title="Ir a filmina" style="display:none">
+  <div id="slide-num" class="slide-num" aria-live="polite" title="Ir a paso" style="display:none">
     <b class="sn-cur" id="sn-cur">1</b>
     <span class="sn-sep">/</span>
-    <span class="sn-tot" id="sn-tot">6</span>
+    <span class="sn-tot" id="sn-tot">30</span>
   </div>
 </div>
 
@@ -770,6 +770,11 @@ if(secNav){
     secNav.appendChild(btn);
   });
 }
+/* lista de transiciones totales (una unidad por cada paso de cada filmina) */
+const units=[];
+slides.forEach((s,i)=>{
+  for(let k=mn(s);k<=mx(s);k++) units.push([i,k]);
+});
 function updateNav(){
   const isCover = cur === 0;
   if(secNav){
@@ -787,18 +792,29 @@ function updateNav(){
   if(bprev){
     bprev.style.display = isCover ? 'none' : '';
   }
+  const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
   const snCur = document.getElementById('sn-cur');
   const snTot = document.getElementById('sn-tot');
-  if(snCur) snCur.textContent = String(cur + 1);
-  if(snTot) snTot.textContent = String(slides.length);
+  if(snCur) snCur.textContent = String(currentUnitIndex >= 0 ? currentUnitIndex + 1 : cur + 1);
+  if(snTot) snTot.textContent = String(units.length);
 }
 const snEl=document.getElementById('slide-num');
 if(snEl){
   snEl.onclick=()=>{
-    const val=prompt(`Ir a filmina (1 a ${slides.length}):`, cur+1);
+    const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
+    const val=prompt(`Ir a transición (1 a ${units.length}):`, (currentUnitIndex >= 0 ? currentUnitIndex : cur) + 1);
     const n=parseInt(val,10);
-    if(!isNaN(n)&&n>=1&&n<=slides.length&&n-1!==cur){
-      goSlide(n-1, n-1>cur?'fwd':'back');
+    if(!isNaN(n)&&n>=1&&n<=units.length){
+      const targetUnit=units[n-1];
+      const targetSlide=targetUnit[0];
+      const targetStep=targetUnit[1];
+      if(targetSlide!==cur){
+        goSlide(targetSlide, targetSlide>cur?'fwd':'back').then(()=>{
+          if(step!==targetStep) setStep(targetStep, targetStep>step?'fwd':'back');
+        });
+      } else if(step!==targetStep){
+        setStep(targetStep, targetStep>step?'fwd':'back');
+      }
     }
   };
 }
