@@ -1,0 +1,51 @@
+<!-- ============ FILMINA: PREGUNTA DE INVESTIGACIÓN ============ -->
+
+<style>
+/* ---------- question ---------- */
+.q{position:absolute;left:110px;right:110px;top:200px;text-align:center;font:500 46px/1.35 var(--body);min-height:190px}
+.q .a{background:linear-gradient(transparent 58%,var(--olive) 58% 92%,transparent 92%)}
+.q .b{background:linear-gradient(transparent 58%,var(--mint) 58% 92%,transparent 92%)}
+.q .c{background:linear-gradient(transparent 58%,var(--pink) 58% 92%,transparent 92%)}
+.q .d{background:linear-gradient(transparent 58%,var(--gold-l) 58% 92%,transparent 92%)}
+.caret{display:inline-block;width:.45ch;height:1em;background:var(--ink);vertical-align:-.12em;margin-left:3px;animation:blink .8s steps(2) infinite}
+.bridge{position:absolute;left:0;right:0;top:432px;text-align:center;font:400 14px/1.9 var(--pixel)}
+#runner{position:absolute;bottom:80px;left:140px;transition:none}
+#runner.go{transition:left 1.9s linear;left:1330px}
+</style>
+
+  <section class="slide gray" id="s-q" data-min="1" data-max="2">
+    <h1 class="h1">PREGUNTA DE INVESTIGACIÓN</h1>
+    <img class="spr cloud" data-spr="cloud" data-s="5" style="top:150px;animation-duration:90s;animation-delay:-20s" alt="">
+    <img class="spr cloud" data-spr="cloud" data-s="6" style="top:520px;animation-duration:75s;animation-delay:-50s" alt="">
+    <div class="q" id="qtext"></div>
+    <div class="bridge reveal" data-at="2">¿Qué se ha hecho ya? ▶▶</div>
+    <img class="spr" id="runner" data-spr="hero:neutral" data-s="8" alt="">
+    <div class="ground"></div>
+  </section>
+
+<script>
+/* ============================================================
+   PREGUNTA DE INVESTIGACIÓN
+   ============================================================ */
+(function(){
+  const el=document.getElementById('qtext'), runner=document.getElementById('runner');
+  const SEGS=[['¿Pueden los juegos ',''],['personalizados','a'],[' superar en ',''],['satisfacción','b'],[' y ',''],['dificultad','c'],[' a los juegos ',''],['diseñados por humanos','d'],['?','']];
+  const FLAT=[]; SEGS.forEach(([t,c])=>[...t].forEach(ch=>FLAT.push([ch,c])));
+  const html=(n,caret)=>{ let o='',pc=null; FLAT.slice(0,n).forEach(([ch,c])=>{ if(c!==pc){ if(pc!==null&&pc) o+='</span>'; if(c) o+=`<span class="${c}">`; pc=c; } o+=ch; }); if(pc) o+='</span>'; return o+(caret?'<i class="caret"></i>':''); };
+  let timer=0, run=0;
+  function type(){ clearInterval(timer); if(reduce){ el.innerHTML=html(FLAT.length); return; }
+    let n=0; el.innerHTML=''; timer=setInterval(()=>{ n++; el.innerHTML=html(n,n<FLAT.length); if(n>=FLAT.length) clearInterval(timer); },34); }
+  function stopRun(){ clearInterval(run); run=0; }
+  function resetRunner(){ stopRun(); runner.classList.remove('go'); runner.style.transition='none'; runner.src=heroURL('neutral',8,0); void runner.offsetWidth; runner.style.transition=''; }
+  H['s-q']={
+    enter(n,dir){ resetRunner(); if(dir==='back'){ clearInterval(timer); el.innerHTML=html(FLAT.length); } else type(); },
+    leave(){ clearInterval(timer); stopRun(); },
+    step(n,old){
+      if(n===1){ resetRunner(); if(old===2){ el.innerHTML=html(FLAT.length); } }
+      if(n===2){ clearInterval(timer); el.innerHTML=html(FLAT.length);
+        runner.src=heroURL('happy',8,0); let f=0; run=setInterval(()=>{ f^=1; runner.src=heroURL('happy',8,f); },130);
+        runner.classList.add('go'); setTimeout(stopRun,2000); }
+    }
+  };
+})();
+</script>
