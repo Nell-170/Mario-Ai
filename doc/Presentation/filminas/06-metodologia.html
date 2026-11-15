@@ -83,7 +83,7 @@
 .t-P{background:var(--pink)} .t-N{background:var(--gold-l)} .t-H{background:var(--mint)}
 .leg3{font-size:13px;line-height:1.5} .leg3 p{margin:0 0 6px;display:flex;gap:8px;align-items:flex-start}
 .leg3 .k{flex:none;font:400 9px var(--pixel);border:3px solid var(--ink);padding:5px 6px}
-.lik{display:grid;grid-template-columns:150px repeat(7,1fr);gap:5px;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:7px}
+.lik{display:grid;grid-template-columns:172px repeat(7,1fr);gap:5px;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:7px}
 .lik .hd{font:400 8px var(--pixel);text-align:center;color:#555}
 .lik button{height:26px;border:3px solid var(--ink);background:#fff;cursor:pointer;padding:0}
 .lik button:hover{background:var(--gold-l)} .lik button.on{background:var(--ink)}
@@ -468,7 +468,7 @@
   PA[9]={on(){ T(shuffle,700); }};
 
   // 10 · cuestionario
-  (function(){ const box=$('#lik'), names=['Disfrute','Competencia','Dificultad percibida','Ajuste del reto','Variedad','Deseo de rejugar'], rows=[];
+  (function(){ const box=$('#lik'), names=['Disfrute','Competencia percibida','Dificultad percibida','Ajuste del reto','Variedad','Intención de rejugar'], rows=[];
     let h='<div class="lik"><span></span>'+[-3,-2,-1,0,1,2,3].map(v=>`<span class="hd">${v>0?'+'+v:v}</span>`).join('')+'</div>'; box.innerHTML=h;
     names.forEach(nm=>{ const r=document.createElement('div'); r.className='lik'; r.innerHTML=`<span>${nm}</span>`+[-3,-2,-1,0,1,2,3].map(v=>`<button data-v="${v}" aria-label="${nm} ${v}"></button>`).join('');
       r.querySelectorAll('button').forEach(b=>b.onclick=()=>{ b.blur(); sel(r,+b.dataset.v); }); box.appendChild(r); rows.push(r); });
