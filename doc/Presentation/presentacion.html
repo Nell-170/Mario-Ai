@@ -920,15 +920,26 @@ async function wipe(mid){
 }
 document.getElementById('bnext').onclick=e=>{e.currentTarget.blur();next();};
 document.getElementById('bprev').onclick=e=>{e.currentTarget.blur();prev();};
+/* teclas numéricas: van al número del contador (n / total). Se pueden teclear
+   varios dígitos seguidos (2, 7 → 27); salta tras una pausa corta o con Enter. */
+let numBuf='', numTimer=0;
+function jumpBuf(){
+  clearTimeout(numTimer); const n=parseInt(numBuf,10); numBuf=''; updateNav();
+  if(busy||isNaN(n)) return;
+  const k=Math.min(Math.max(n,1),units.length)-1, i=units.findIndex(u=>u[0]===cur&&u[1]===step);
+  if(k!==i) goUnit(units[k], k>i?'fwd':'back');
+}
 addEventListener('keydown',e=>{
   const t=e.target; const inCtl=t.closest&&t.closest('button,input,label');
-  if(e.key==='ArrowRight'||e.key==='PageDown'||(!inCtl&&(e.key===' '||e.key==='Enter'))){ e.preventDefault(); next(); }
+  if(!inCtl && /^[0-9]$/.test(e.key)){
+    e.preventDefault(); numBuf=(numBuf+e.key).slice(-String(units.length).length);
+    const sc=document.getElementById('sn-cur'); if(sc) sc.textContent=numBuf;   // muestra lo que se va tecleando
+    clearTimeout(numTimer); numTimer=setTimeout(jumpBuf,650);
+  }
+  else if(numBuf && e.key==='Enter'){ e.preventDefault(); jumpBuf(); }
+  else if(e.key==='ArrowRight'||e.key==='PageDown'||(!inCtl&&(e.key===' '||e.key==='Enter'))){ e.preventDefault(); next(); }
   else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prev(); }
   else if(e.key==='f'||e.key==='F'){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.(); }
-  else if(!inCtl && e.key>='1' && e.key<=String(slides.length)){
-    const targetIdx=parseInt(e.key,10)-1;
-    if(targetIdx!==cur){ e.preventDefault(); goSlide(targetIdx, targetIdx>cur?'fwd':'back'); }
-  }
 });
 let tx=null; addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
 addEventListener('touchend',e=>{ if(tx==null)return; const d=e.changedTouches[0].clientX-tx; if(Math.abs(d)>60){ d<0?next():prev(); } tx=null; });
