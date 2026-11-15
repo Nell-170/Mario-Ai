@@ -123,6 +123,24 @@
 .hf-zoom-foot{background:#f7f4f2;border-top:3px solid var(--ink);padding:9px 16px;display:flex;justify-content:space-between;align-items:center;font:500 13px var(--body);color:var(--ink);flex-shrink:0}
 .hf-zoom-foot b{color:var(--violet)}
 .hf-zoom-foot small{font:400 9px var(--pixel);color:var(--pink-d)}
+
+/* ---------- código y embudo interactivo ---------- */
+.code-filter{background:#23232b;color:#e4e4e7;border:3px solid var(--ink);padding:9px 11px;font:500 11px/1.6 'Courier New',monospace;margin:6px 0 10px;box-shadow:4px 4px 0 var(--ink)}
+.code-filter .cf-kw{color:#ff7fc0;font-weight:700}
+.code-filter .cf-str{color:#94ddc6}
+.code-filter .cf-num{color:#f6d36b}
+.code-filter .cf-com{color:#a1a1aa;font-style:italic}
+.code-filter .cf-line{display:flex;justify-content:space-between;padding:1px 4px;border-radius:2px;transition:background .25s,color .25s}
+.code-filter .cf-line.active{background:rgba(255,127,192,.35);color:#fff}
+.code-filter .cf-cnt{font:400 8.5px/1.6 var(--pixel);color:#ffd77a;margin-left:8px;white-space:nowrap}
+
+.filter-stats{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:8px 0 6px}
+.fs-card{flex:1;border:3px solid var(--ink);background:#f7f4f2;padding:6px 8px;text-align:center;box-shadow:3px 3px 0 var(--ink)}
+.fs-card.hl{background:var(--gold-l);border-color:var(--ink)}
+.fs-card .fs-title{display:block;font:400 8px var(--pixel);color:#555;margin-bottom:2px}
+.fs-card b{display:block;font:400 24px/1 var(--display);color:var(--violet)}
+.fs-card small{display:block;font-size:10px;color:#666;line-height:1.2;margin-top:2px}
+.fs-arrow{font-size:14px;color:var(--ink);font-weight:700;user-select:none}
 </style>
 
   <section class="slide" id="s-flow" data-min="1" data-max="15" data-sec="Metodología">
@@ -164,19 +182,28 @@
     </div>
     <!-- 3 -->
     <div class="fp" data-p="3">
-      <div class="ptag">2 · FILTRACIÓN POR CRITERIO</div>
-      <p class="pp">Cada nivel pasa por tres filtros. Entre los que sobreviven, <b>se seleccionan los más populares</b>.</p>
-      <div class="funwrap" id="funwrap">
-        <svg class="funnel" id="funnel" width="504" height="290" viewBox="0 0 504 290">
-          <polygon points="20,10 484,10 392,100 112,100" fill="#ffd0ea" stroke="#1a1a1a" stroke-width="4"/>
-          <polygon points="112,104 392,104 340,194 164,194" fill="#d7f4e8" stroke="#1a1a1a" stroke-width="4"/>
-          <polygon points="164,198 340,198 300,282 204,282" fill="#fbeab8" stroke="#1a1a1a" stroke-width="4"/>
-          <g font-family="Bebas Neue, Impact, sans-serif" font-size="30" text-anchor="middle" fill="#1a1a1a" letter-spacing="1">
-            <text x="252" y="64">ESTILO</text><text x="252" y="157">DIFICULTAD</text><text x="252" y="249" font-size="26">CONFIABILIDAD</text></g>
-        </svg>
-        <div id="fundots" style="position:absolute;left:0;top:0;width:504px;height:350px;pointer-events:none"></div>
-        <div class="fout">★ Los más populares <b id="funN">0</b></div>
+      <div class="ptag">2 · FILTRACIÓN POR CRITERIO (filter_mm2.py)</div>
+      <p class="pp">Streaming en memoria sobre <b>~26.6M</b> de niveles de Hugging Face mediante filtros sucesivos:</p>
+
+      <div class="code-filter" id="codeFilter">
+        <div class="cf-line" data-cf="0"><span><span class="cf-kw">for</span> rec <span class="cf-kw">in</span> ds:</span><span class="cf-cnt">26.6M (100%)</span></div>
+        <div class="cf-line" data-cf="1"><span><span class="cf-kw">  if</span> rec[<span class="cf-str">"gamestyle"</span>] != <span class="cf-num">0</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~5.3M (SMB1)</span></div>
+        <div class="cf-line" data-cf="2"><span><span class="cf-kw">  if</span> <span class="cf-kw">not</span> (<span class="cf-num">30</span> &lt;= cr &lt;= <span class="cf-num">50</span>): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~580K (Flujo)</span></div>
+        <div class="cf-line" data-cf="3"><span><span class="cf-kw">  if</span> attempts &lt; <span class="cf-num">150</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~140K (Fiable)</span></div>
+        <div class="cf-line" data-cf="4"><span><span class="cf-kw">  if</span> likes &lt; <span class="cf-num">30</span> <span class="cf-kw">or</span> timer &lt; <span class="cf-num">250</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~25K (Calidad)</span></div>
+        <div class="cf-line" data-cf="5"><span><span class="cf-kw">  if</span> <span class="cf-kw">not</span> convert_maf(rec): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~12K (Geom)</span></div>
+        <div class="cf-line" data-cf="6"><span><span class="cf-com">  heapq.heappush(top_likes, rec)</span></span><span class="cf-cnt" style="color:var(--mint-d)">★ Top candidatos</span></div>
       </div>
+
+      <div class="filter-stats">
+        <div class="fs-card"><span class="fs-title">HF STREAM</span><b>26.6M</b><small>Total crudo</small></div>
+        <div class="fs-arrow">▶</div>
+        <div class="fs-card"><span class="fs-title">FILTRADOS</span><b>~25K</b><small>SMB1 y flujo</small></div>
+        <div class="fs-arrow">▶</div>
+        <div class="fs-card hl"><span class="fs-title">NIVEL 0</span><b id="funN">14</b><small>A* verificados</small></div>
+      </div>
+
+      <p class="pp" style="margin-top:6px;font-size:13px;line-height:1.4"><small><b>Destino:</b> Los mejores se validan con <b>A* (Baumgarten)</b>. Los superables forman el banco de <b>Niveles Humanos (H)</b> del experimento y los 2 de <b>Familiarización (F)</b>.</small></p>
     </div>
     <!-- 4 -->
     <div class="fp" data-p="4">
@@ -428,22 +455,21 @@
     for(let i=0;i<5;i++){ const d=document.createElement('div'); d.className='doc'; d.style.left=(6+i*98)+'px'; d.style.setProperty('--dy',Math.abs(i-2)*8); d.style.setProperty('--r',(i-2)*5); d.style.transitionDelay=(i*90)+'ms';
       d.innerHTML=`<img src="${lvlThumb(i+3)}" alt=""><b>nivel_${100+i*37}</b><i>♥ ${likes[i]}</i><div style="margin-top:3px;color:#666">.json</div>`; box.appendChild(d); } })();
 
-  // 3 · embudo
+  // 3 · embudo y código de filtrado animado
   PA[3]={on(){
-    const box=$('#fundots'),N=$('#funN'); let n=0,alive=0; N.textContent='0'; box.innerHTML='';
-    const cl=['#ff7fc0','#94ddc6','#f6d36b','#8aa24a'], cx=252;
-    const fx=[.85,.5,.22];
-    const spawn=()=>{ if(alive>26||reduce) return; alive++;
-      const x0=50+Math.random()*404, r=Math.random(), fail=r<.3?0:r<.55?1:r<.75?2:-1, ys=[55,150,240];
-      const d=document.createElement('div'); d.className='fdot'; d.style.background=cl[Math.floor(Math.random()*4)]; d.style.left='-6px'; d.style.top='-6px'; box.appendChild(d);
-      const P=(x,y,o={})=>({transform:`translate(${x}px,${y}px)`,...o}); let kf,dur;
-      if(fail>=0){ const xm=cx+(x0-cx)*fx[fail], side=(Math.random()<.5?-1:1)*(150+Math.random()*60);
-        kf=[P(x0,0),P(xm,ys[fail],{opacity:1,offset:.7}),P(xm+side,ys[fail]+30,{opacity:0})]; dur=900+fail*600; }
-      else { kf=[P(x0,0),P(cx+(x0-cx)*fx[0],55,{offset:.2}),P(cx+(x0-cx)*fx[1],150,{offset:.45}),P(cx+(x0-cx)*fx[2],240,{offset:.7}),P(cx+(x0-cx)*.1,318,{opacity:1,offset:.95}),P(cx,322,{opacity:0})]; dur=2400; }
-      d.animate(kf,{duration:dur,easing:'ease-in'}).finished.then(()=>{ d.remove(); alive--; if(fail<0){ n++; N.textContent=n; } }).catch(()=>{});
-    };
-    if(reduce){ N.textContent='★'; return; }
-    I(spawn,300); spawn();
+    const lines=$$('#codeFilter .cf-line');
+    lines.forEach(l=>l.classList.remove('active'));
+    lines.forEach((l,idx)=>{
+      T(()=>{
+        lines.forEach(x=>x.classList.remove('active'));
+        l.classList.add('active');
+      },250+idx*400);
+    });
+    T(()=>{
+      lines.forEach(x=>x.classList.add('active'));
+    },250+lines.length*400+250);
+  },off(){
+    $$('#codeFilter .cf-line').forEach(l=>l.classList.remove('active'));
   }};
 
   // 4 · A*
