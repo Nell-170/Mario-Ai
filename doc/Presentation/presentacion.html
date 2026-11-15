@@ -1379,7 +1379,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   <!-- 1 -->
   <div class="fp" data-p="1">
-    <div class="ptag">1 · SELECCIÓN DE NIVELES</div>
+    <div class="ptag">SELECCIÓN DE NIVELES</div>
     <p class="pp">Partimos del conjunto de niveles de <b>Super Mario Maker 2</b> publicado en <b>Hugging Face</b>: miles
       de niveles hechos por personas.</p>
     <div class="docs" id="docs"></div>
@@ -1409,7 +1409,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   </div>
   <!-- 3 -->
   <div class="fp" data-p="3">
-    <div class="ptag">2 · FILTRACIÓN POR CRITERIO (filter_mm2.py)</div>
+    <div class="ptag">FILTRACIÓN POR CRITERIO (filter_mm2.py)</div>
     <p class="pp">Streaming en memoria sobre <b>~26.6M</b> de niveles de Hugging Face mediante filtros sucesivos:</p>
 
     <div class="code-filter" id="codeFilter">
@@ -1448,7 +1448,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   </div>
   <!-- 4 -->
   <div class="fp" data-p="4">
-    <div class="ptag">3 · VERIFICACIÓN CON A*</div>
+    <div class="ptag">VERIFICACIÓN CON A*</div>
     <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y pasa a ser parte de los <b>Niveles H</b>.</p>
     <svg class="astar" id="astar" viewBox="0 0 560 200" height="214"></svg>
     <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE
@@ -2038,9 +2038,9 @@ H['s-prisma']={
 
     /* ---------- nodos y aristas ---------- */
     const NODES = {
-      hf: { x: 310, y: 170, w: 340, h: 100, l: ['Selección de niveles', 'Hugging Face'], c: 'mint', n: 1, at: 1 },
-      fil: { x: 730, y: 170, w: 340, h: 100, l: ['Filtración', 'por criterio'], c: 'mint', n: 2, at: 3 },
-      astar: { x: 1150, y: 170, w: 340, h: 100, l: ['Verificación', 'con A*'], c: 'mint', n: 3, at: 4 },
+      hf: { x: 310, y: 170, w: 340, h: 100, l: ['Selección de niveles', 'Hugging Face'], c: 'mint', at: 1 },
+      fil: { x: 730, y: 170, w: 340, h: 100, l: ['Filtración', 'por criterio'], c: 'mint', at: 3 },
+      astar: { x: 1150, y: 170, w: 340, h: 100, l: ['Verificación', 'con A*'], c: 'mint', at: 4 },
       bank: { x: 1560, y: 170, w: 340, h: 100, l: ['Niveles H'], c: 'gold', at: 4, go: 4, db: 1 },
       welcome: { x: 160, y: 640, w: 250, h: 100, l: ['Bienvenida', 'Explicación de sesión'], c: 'white', n: 1, at: 5 },
       fam: { x: 480, y: 640, w: 280, h: 100, l: ['Niveles de', 'familiarización (F)'], c: 'white', n: 2, at: 6 },
