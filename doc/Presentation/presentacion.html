@@ -1844,7 +1844,7 @@ H['s-prisma']={
     hf:   {x:310, y:170,w:340,h:100,l:['Selección de niveles','Hugging Face'],c:'mint',at:1},
     fil:  {x:730, y:170,w:340,h:100,l:['Filtración','por criterio'],c:'mint',at:2},
     astar:{x:1150,y:170,w:340,h:100,l:['Verificación','con A*'],c:'mint',at:3},
-    bank: {x:1560,y:170,w:300,h:100,l:['Niveles H'],c:'gold',at:3,go:3,db:1},
+    bank: {x:1560,y:170,w:300,h:124,l:['Niveles H'],c:'gold',at:3,go:3,db:1},
     welcome:{x:160,y:640,w:250,h:100,l:['Bienvenida','Explicación de sesión'],c:'white',n:1,at:4},
     fam:  {x:480, y:640,w:280,h:100,l:['Niveles de','familiarización (F)'],c:'white',n:2,at:5},
     cons: {x:790, y:640,w:240,h:170,l:['Consentimiento','informado'],c:'gold',n:3,at:6,dia:1},
@@ -1863,8 +1863,8 @@ H['s-prisma']={
   };
   const FOCUS={1:['hf'],2:['fil'],3:['astar'],4:['welcome'],5:['fam'],6:['cons'],7:['survey'],8:['tele','ollama','mgpt','pers'],9:['block'],10:['quest'],11:['rank'],12:['free'],13:['end'],14:[]};
   const EDGES=[
-    {d:'M480 170H560',at:2},{d:'M900 170H980',at:3},{d:'M1320 170H1390',at:3},
-    {d:'M1560 220V575',at:9,lbl:['H',1590,420]},
+    {d:'M480 170H560',at:2},{d:'M900 170H980',at:3},{d:'M1320 170H1410',at:3},
+    {d:'M1560 232V575',at:9,lbl:['H',1590,420]},
     {d:'M285 640H340',at:5},{d:'M620 640H670',at:6},
     {d:'M910 640H975',at:7,lbl:['Sí',924,690],id:'eYes'},
     {d:'M790 555V490',at:6,lbl:['No',814,532],id:'eNo'},
@@ -1900,12 +1900,10 @@ H['s-prisma']={
       E('path',{class:'sh',d:shPath,transform:'translate(9 9)'},g);
       E('path',{class:'bx',d:shPath,fill:COL[n.c]},g);
       E('ellipse',{cx:n.x,cy:y0+rh,rx:n.w/2,ry:rh,fill:'#fff2a8',stroke:'#1a1a1a','stroke-width':5},g);
-      const ym=y0+rh+(n.h-2*rh)*0.48;
-      E('path',{d:`M ${x0} ${ym} A ${n.w/2} ${rh} 0 0 0 ${x1} ${ym}`,fill:'none',stroke:'#1a1a1a','stroke-width':3,'stroke-dasharray':'8 5'},g);
     } else {
       E('rect',{class:'sh',x:x0+9,y:y0+9,width:n.w,height:n.h},g); E('rect',{class:'bx',x:x0,y:y0,width:n.w,height:n.h,fill:COL[n.c]},g);
     }
-    const k=n.l.length, f1=n.dia?22:(n.db?32:(k===1?32:25)), start=n.db?(n.y+16):(n.y-((k-1)*29)/2+9);
+    const k=n.l.length, f1=n.dia?22:(n.db?32:(k===1?32:25)), start=n.db?(n.y+11):(n.y-((k-1)*29)/2+9);
     n.l.forEach((txt,i)=>{ const t=E('text',{class:i?'l2':'l1',x:n.x,y:start+i*29,'font-size':i?(k===3?20:21):f1},g); t.textContent=txt; });
     if(n.n){ const bx=n.dia?n.x-n.w/2+34:x0, by=n.dia?n.y-n.h/2+34:y0; E('circle',{class:'bd',cx:bx+2,cy:by+2,r:25,stroke:'#1a1a1a','stroke-width':4},g); const t=E('text',{class:'bn',x:bx+2,y:by+12},g); t.textContent=n.n; }
     g.addEventListener('click',()=>{ if(!slide.classList.contains('full')||busy) return; const to=n.go||n.at; setStep(to,'back'); });
