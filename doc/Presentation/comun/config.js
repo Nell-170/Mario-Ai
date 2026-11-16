@@ -19,6 +19,9 @@ const CONFIG = {
     fam: "img/03_familiarizacion_controles.png",
     consent: "img/01_consentimiento_informado.png",
     survey: "",
-    quest: "img/04_evaluacion_post_nivel_likert.png"
+    quest: "img/04_evaluacion_post_nivel_likert.png",
+    rank: "img/05_clasificacion_preferencia_ranking.png",
+    free_invite: "img/07_invitacion_juego_voluntario.png",
+    free_play: "img/08_modo_juego_libre.png"
   }
 };

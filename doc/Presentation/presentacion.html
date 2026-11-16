@@ -1081,12 +1081,12 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .lik {
     display: grid;
-    grid-template-columns: 172px repeat(7, 1fr);
-    gap: 5px;
+    grid-template-columns: 180px repeat(7, 1fr);
+    gap: 4px;
     align-items: center;
-    font-size: 12.5px;
+    font-size: 11px;
     font-weight: 600;
-    margin-bottom: 7px
+    margin-bottom: 4px
   }
 
   .lik .hd {
@@ -1096,8 +1096,8 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
   .lik button {
-    height: 26px;
-    border: 3px solid var(--ink);
+    height: 22px;
+    border: 2px solid var(--ink);
     background: #fff;
     cursor: pointer;
     padding: 0
@@ -1126,28 +1126,30 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   .rk {
     display: flex;
     align-items: center;
-    gap: 8px;
-    border: 3px solid var(--ink);
-    padding: 4px 8px 4px 4px;
-    margin-bottom: 6px;
+    gap: 6px;
+    border: 2.5px solid var(--ink);
+    padding: 2px 6px 2px 4px;
+    margin-bottom: 4px;
     background: #fff;
-    font: 700 13px var(--body)
+    font: 700 12px var(--body)
   }
 
   .rk img {
-    width: 56px;
+    width: 44px;
+    height: 25px;
     image-rendering: pixelated;
-    border: 2px solid var(--ink)
+    border: 2px solid var(--ink);
+    display: block
   }
 
   .rk .n {
-    font: 400 22px var(--display);
-    width: 22px
+    font: 400 18px var(--display);
+    width: 18px
   }
 
   .rk .tg2 {
-    font: 400 8px var(--pixel);
-    padding: 4px 5px;
+    font: 400 7.5px var(--pixel);
+    padding: 3px 4px;
     border: 2px solid var(--ink)
   }
 
@@ -1158,10 +1160,10 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   .rk button {
     border: 2px solid var(--ink);
     background: #fff;
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 10px;
     padding: 0
   }
 
@@ -2318,33 +2320,44 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
   </div>
   <!-- 10 -->
-  <div class="fp" data-p="10">
+  <div class="fp" data-p="10" style="overflow-y:auto">
     <div class="ptag">CUESTIONARIO TRAS CADA NIVEL</div>
-    <p class="pp" style="margin-bottom:8px">Evaluación de la experiencia de juego en escala Likert (−3 a +3):</p>
-    <div class="shot has" style="height:170px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
+    <p class="pp" style="margin-bottom:6px">Evaluación de la experiencia de juego en escala Likert (−3 a +3):</p>
+    <div class="shot has" style="height:135px;border:3px solid var(--ink);background:#111;margin-bottom:8px">
       <img src="img/04_evaluacion_post_nivel_likert.png" alt="Cuestionario post-nivel Likert" style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
     <div id="lik"></div>
   </div>
   <!-- 11 -->
-  <div class="fp" data-p="11">
+  <div class="fp" data-p="11" style="overflow-y:auto">
     <div class="ptag">6 · RANKING Y COMENTARIOS</div>
-    <p class="pp">La persona <b>ordena los 6 niveles</b> que jugó y deja comentarios. Prueba reordenarlos:</p>
+    <p class="pp" style="margin-bottom:6px">La persona <b>ordena los 6 niveles</b> que jugó y deja comentarios:</p>
+    <div class="shot has" style="height:155px;border:3px solid var(--ink);background:#111;margin-bottom:8px">
+      <img src="img/05_clasificacion_preferencia_ranking.png" alt="Clasificación de preferencia y ranking" style="display:block;width:100%;height:100%;object-fit:contain">
+    </div>
     <div id="rank"></div>
-    <div class="cmt">Comentarios libres…</div>
+    <div class="cmt" style="margin-top:6px;padding:6px 10px;font-size:12px">Comentarios finales y observaciones cualitativas…</div>
   </div>
   <!-- 12 -->
-  <div class="fp" data-p="12">
+  <div class="fp" data-p="12" style="overflow-y:auto">
     <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
-    <p class="pp">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>. Es opcional.</p>
-    <div class="cond">Condición: <button data-c="P">P</button><button data-c="N">N</button><button data-c="H">H</button>
+    <p class="pp" style="margin-bottom:6px">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b> (opcional):</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div class="shot has" style="height:125px;border:3px solid var(--ink);background:#111">
+        <img src="img/07_invitacion_juego_voluntario.png" alt="Invitación al juego voluntario" style="display:block;width:100%;height:100%;object-fit:contain">
+      </div>
+      <div class="shot has" style="height:125px;border:3px solid var(--ink);background:#111">
+        <img src="img/08_modo_juego_libre.png" alt="Modo de juego libre voluntario" style="display:block;width:100%;height:100%;object-fit:contain">
+      </div>
+    </div>
+    <div class="cond" style="margin:4px 0 8px">Condición asignada: <button data-c="P">P</button><button data-c="N">N</button><button data-c="H">H</button>
     </div>
     <div class="timer" id="timer">20:00<small>(demo acelerada)</small></div>
     <div class="metrics">
       <div>Tiempo jugado<b id="mT">0 min</b></div>
       <div>Niveles jugados<b id="mL">0</b></div>
     </div>
-    <p class="pp"><small>Ambos valores se registran como medida de compromiso.</small></p>
+    <p class="pp" style="margin-top:6px"><small>Ambos valores se registran como medida de compromiso (tiempo en tarea voluntaria).</small></p>
   </div>
   <!-- 13 -->
   <div class="fp" data-p="13">
@@ -2717,7 +2730,10 @@ const CONFIG = {
     fam: "img/03_familiarizacion_controles.png",
     consent: "img/01_consentimiento_informado.png",
     survey: "",
-    quest: "img/04_evaluacion_post_nivel_likert.png"
+    quest: "img/04_evaluacion_post_nivel_likert.png",
+    rank: "img/05_clasificacion_preferencia_ranking.png",
+    free_invite: "img/07_invitacion_juego_voluntario.png",
+    free_play: "img/08_modo_juego_libre.png"
   }
 };
 
@@ -3442,14 +3458,24 @@ H['s-prisma']={
 
     // 10 · cuestionario
     (function () {
-      const box = $('#lik'), names = ['1. Diversión / Disfrute', '2. Autoeficacia / Habilidad', '3. Dificultad percibida'], rows = [];
+      const box = $('#lik'), questions = [
+        { label: '1. Disfrute', prompt: 'La pasé bien jugando este nivel.' },
+        { label: '2. Competencia', prompt: 'Sentí que era bueno jugando este nivel.' },
+        { label: '3. Dificultad', prompt: '¿Cómo percibiste la dificultad de este nivel para ti?' },
+        { label: '4. Ajuste del reto', prompt: 'El nivel ofreció un reto adecuado para mi nivel de habilidad.' },
+        { label: '5. Variedad', prompt: 'El nivel presentó elementos, obstáculos y situaciones variadas.' },
+        { label: '6. Deseo de rejugar', prompt: 'Me gustaría jugar más niveles con este estilo y diseño.' }
+      ], rows = [];
       let h = '<div class="lik"><span></span>' + [-3, -2, -1, 0, 1, 2, 3].map(v => `<span class="hd">${v > 0 ? '+' + v : v}</span>`).join('') + '</div>'; box.innerHTML = h;
-      names.forEach(nm => {
-        const r = document.createElement('div'); r.className = 'lik'; r.innerHTML = `<span>${nm}</span>` + [-3, -2, -1, 0, 1, 2, 3].map(v => `<button data-v="${v}" aria-label="${nm} ${v}"></button>`).join('');
-        r.querySelectorAll('button').forEach(b => b.onclick = () => { b.blur(); sel(r, +b.dataset.v); }); box.appendChild(r); rows.push(r);
+      questions.forEach(q => {
+        const r = document.createElement('div'); r.className = 'lik';
+        r.innerHTML = `<span title="${q.prompt}">${q.label}</span>` + [-3, -2, -1, 0, 1, 2, 3].map(v => `<button data-v="${v}" aria-label="${q.label} ${v}"></button>`).join('');
+        r.querySelectorAll('button').forEach(b => b.onclick = () => { b.blur(); sel(r, +b.dataset.v); });
+        box.appendChild(r);
+        rows.push(r);
       });
       window.__likSel = sel; function sel(r, v) { r.querySelectorAll('button').forEach(b => { const x = +b.dataset.v; b.className = x === v ? 'on ' + (v < 0 ? 'neg' : v > 0 ? 'pos' : 'zero') : ''; }); }
-      PA[10] = { on() { rows.forEach(r => sel(r, 99)); rows.forEach((r, i) => T(() => sel(r, Math.floor(Math.random() * 7) - 3), 500 + i * 350)); } };
+      PA[10] = { on() { rows.forEach(r => sel(r, 99)); rows.forEach((r, i) => T(() => sel(r, Math.floor(Math.random() * 7) - 3), 350 + i * 180)); } };
     })();
 
     // 11 · ranking
