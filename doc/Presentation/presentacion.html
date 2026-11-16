@@ -146,7 +146,7 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 
 /* ===== 04-antecedentes-prisma.html ===== */
 /* ---------- prisma ---------- */
-.qblock{position:absolute;left:60px;top:132px;width:440px;font:500 12.5px/1.65 'Courier New',monospace}
+.qblock{position:absolute;left:60px;top:132px;width:440px;font:500 18px/1.65 'Courier New',monospace}
 .qblock .grp{display:block;padding:8px 10px;margin-bottom:4px;border:3px solid var(--ink);background:#fff}
 .qblock .tag{display:block;font:400 8px var(--pixel);margin-bottom:5px}
 .qblock .g1{background:#ffe2f1;box-shadow:4px 4px 0 var(--pink)}
@@ -991,7 +991,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <div class="hud pop-in" id="hud"><img class="spr" data-spr="coin" data-s="3" alt=""> × <span id="coinN">00</span></div>
       <div class="marker nt" id="marker"><span class="bubble" id="bubble"></span><img class="spr" id="mimg" alt="jugador"></div>
     </div>
-    <div class="hint reveal" data-at="3" id="hint">Arrastra al jugador por el gráfico y mira cómo cambia su estado</div>
+    <div class="hint reveal" data-at="3" id="hint">Canal de flujo de Csikszentmihalyi, que en videojuegos se dibuja como reto vs. habilidad. Chen (2006)</div>
   </section>
 
 <!-- ============ FILMINA: PREGUNTA DE INVESTIGACIÓN ============ -->
@@ -1016,11 +1016,11 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <h1 class="h1">ANTECEDENTES</h1>
 
     <div class="qblock reveal" data-at="1">
-      <span class="grp g1"><span class="tag">GRUPO 1 · PCG</span>("procedural content generation" OR "procedural content generation via machine learning" OR … )</span>
-      <span class="and">AND</span>
-      <span class="grp g2"><span class="tag">GRUPO 2 · MODELADO DEL JUGADOR</span>( "player modeling" OR "player behavior" OR "player telemetry" OR … )</span>
-      <span class="and">AND</span>
-      <span class="grp g3"><span class="tag">GRUPO 3 · VIDEOJUEGOS</span>( "video game" OR "gaming" OR "platformers" OR "Super Mario" OR … )</span>
+      <span class="grp g1"><span class="tag">String de búsqueda</span>
+        ("procedural content generation" OR "procedural content generation via machine learning" OR … )
+        <br><br>AND ( "player modeling" OR "player behavior" OR "player telemetry" OR … )
+        <br><br>AND ( "video game" OR "gaming" OR "platformers" OR "Super Mario" OR … )
+      </span>
     </div>
     <div class="acm-note reveal" data-at="1"><img class="spr" data-spr="warn" data-s="4" alt=""><span>Nota: ACM no está por problemas técnicos</span></div>
 
@@ -1040,21 +1040,21 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <polygon data-at="4" points="727,592 735,604 743,592"/>
     </svg>
 
-    <div class="circ pop-in" data-at="2" style="left:735px;top:250px"><span>Identified</span><b id="n-ident">126</b></div>
+    <div class="circ pop-in" data-at="2" style="left:735px;top:250px"><span>Identificados</span><b id="n-ident">126</b></div>
     <div class="pbox reveal" data-at="3" style="left:800px;top:312px;width:260px">
-      <h4>Removed: <b id="n-rem">29</b></h4>
-      <div class="exrow" data-pct="72%"><span>Duplicates</span><b>21</b><i style="--w:100%"></i></div>
-      <div class="exrow" data-pct="28%"><span>No full papers</span><b>8</b><i style="--w:38%"></i></div>
+      <h4>Removidos: <b id="n-rem">29</b></h4>
+      <div class="exrow" data-pct="72%"><span>Duplicados</span><b>21</b><i style="--w:100%"></i></div>
+      <div class="exrow" data-pct="28%"><span>No eran articulos completos</span><b>8</b><i style="--w:38%"></i></div>
     </div>
-    <div class="circ pop-in" data-at="3" style="left:735px;top:440px"><span>Screened</span><b id="n-scr">97</b></div>
+    <div class="circ pop-in" data-at="3" style="left:735px;top:440px"><span>Examinados</span><b id="n-scr">97</b></div>
     <div class="pbox reveal" data-at="4" style="left:800px;top:476px;width:320px">
-      <h4>Excluded: <b id="n-exc">85</b></h4>
-      <div class="exrow" data-pct="60%"><span>Not 2D platformer</span><b>51</b><i style="--w:100%"></i></div>
-      <div class="exrow" data-pct="24%"><span>Off-topic/reviews</span><b>20</b><i style="--w:39%"></i></div>
-      <div class="exrow" data-pct="9%"><span>Not player-driven</span><b>8</b><i style="--w:16%"></i></div>
-      <div class="exrow" data-pct="7%"><span>No adaptive PCG</span><b>6</b><i style="--w:12%"></i></div>
+      <h4>Excluidos: <b id="n-exc">85</b></h4>
+      <div class="exrow" data-pct="60%"><span>No eran 2D platformer</span><b>51</b><i style="--w:100%"></i></div>
+      <div class="exrow" data-pct="24%"><span>Fuera de tema</span><b>20</b><i style="--w:39%"></i></div>
+      <div class="exrow" data-pct="9%"><span>No se centran en jugadores</span><b>8</b><i style="--w:16%"></i></div>
+      <div class="exrow" data-pct="7%"><span>No se centran en PCG</span><b>6</b><i style="--w:12%"></i></div>
     </div>
-    <div class="incl pop-in" data-at="5" id="incl" style="left:635px;top:606px">Included <b id="n-inc">12</b><img class="spr" data-spr="check" data-s="4" alt=""></div>
+    <div class="incl pop-in" data-at="5" id="incl" style="left:635px;top:606px">Incluidos<b id="n-inc">12</b><img class="spr" data-spr="check" data-s="4" alt=""></div>
   </section>
 
 <!-- ============ FILMINA: ANTECEDENTES · TABLA ============ -->
@@ -1070,8 +1070,8 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <button class="fbtn" data-col="2"><span class="bx"></span>Telemetría</button>
       <button class="fbtn" data-col="3"><span class="bx"></span>Niveles humanos</button>
       <div class="counter"><div class="n"><span id="cnt">13</span><small>/13</small></div><div class="l">ESTUDIOS<br>QUE CUMPLEN</div></div>
-      <div class="win pop-in" id="win">¡Solo este estudio cumple los cuatro criterios!</div>
-      <div class="legend">Solo <b>Yes</b> cuenta como «cumple».<br>Clic en los botones o en las columnas.</div>
+      <div class="win pop-in" id="win">Nuestro estudio cumple los cuatro criterios!</div>
+      <div class="legend">Solo <b>Sí</b> cuenta como «cumple».<br>Clic en los botones o en las columnas.</div>
     </div>
     <table class="cmp" id="cmp"><thead></thead><tbody></tbody></table>
   </section>
@@ -1905,31 +1905,31 @@ H['s-prisma']={
 (function(){
   const COLS=['Artículo','Fecha','Telemetría','Niveles Humanos','Satisfacción','Dificultad'];
   const ROWS=[
-    ["Teoi et al.",2026,"No","No","Yes","Yes"],
-    ["Elshamy et al.",2026,"Yes","No","No","No"],
-    ["Baharvand et al.",2026,"Yes","No","No","No"],
+    ["Teoi et al.",2026,"No","No","Sí","Sí"],
+    ["Elshamy et al.",2026,"Sí","No","No","No"],
+    ["Baharvand et al.",2026,"Sí","No","No","No"],
     ["Sanjaya & Djunaidy",2025,"Parcial","No","No","No"],
-    ["Esteves et al.",2022,"Parcial","No","Yes","No"],
+    ["Esteves et al.",2022,"Parcial","No","Sí","No"],
     ["Wang & Liu",2022,"Parcial","No","No","No"],
-    ["Bicho & Martinho",2018,"Yes","No","No","No"],
+    ["Bicho & Martinho",2018,"Sí","No","No","No"],
     ["Shi & Chen",2018,"Parcial","No","No","No"],
-    ["Fernández et al.",2017,"Yes","No","Parcial","No"],
-    ["Summerville et al.",2016,"Yes","Yes","No","No"],
-    ["Wheat et al.",2015,"Yes","No","Yes","No"],
-    ["Stammer et al.",2015,"Yes","No","Yes","Yes"],
-    ["Este Estudio",2026,"Yes","Yes","Yes","Yes"]
+    ["Fernández et al.",2017,"Sí","No","Parcial","No"],
+    ["Summerville et al.",2016,"Sí","Sí","No","No"],
+    ["Wheat et al.",2015,"Sí","No","Sí","No"],
+    ["Stammer et al.",2015,"Sí","No","Sí","Sí"],
+    ["Este Estudio",2026,"Sí","Sí","Sí","Sí"]
   ];
   const ORDER=[4,5,2,3];            // orden en que los pasos activan filtros
   const tb=document.querySelector('#cmp tbody'), th=document.querySelector('#cmp thead');
   th.innerHTML='<tr>'+COLS.map((c,i)=>`<th data-col="${i}">${c}</th>`).join('')+'</tr>';
-  const cls={Yes:'y',No:'n',Parcial:'p'};
+  const cls={Sí:'y',No:'n',Parcial:'p'};
   tb.innerHTML=ROWS.map((r,ri)=>`<tr class="${ri===ROWS.length-1?'me':''}">`+r.map((c,i)=>
     i<2?`<td>${c}</td>`:`<td data-col="${i}"><span class="tg ${cls[c]}">${c}</span></td>`).join('')+'</tr>').join('');
   const trs=[...tb.rows], active=new Set(), cnt=document.getElementById('cnt'), win=document.getElementById('win');
   let wasWin=false;
   function apply(){
     let n=0;
-    trs.forEach((tr,i)=>{ const ok=[...active].every(c=>ROWS[i][c]==='Yes'); tr.classList.toggle('dim',!ok); if(ok)n++; });
+    trs.forEach((tr,i)=>{ const ok=[...active].every(c=>ROWS[i][c]==='Sí'); tr.classList.toggle('dim',!ok); if(ok)n++; });
     document.querySelectorAll('#s-table [data-col]').forEach(e=>{ const c=+e.dataset.col; const on=active.has(c);
       if(e.tagName==='TD') e.classList.toggle('colon',on); else e.classList.toggle('on',on); });
     cnt.textContent=n;
