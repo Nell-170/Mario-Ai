@@ -94,3 +94,22 @@ El flujo de creación de estos niveles es el siguiente:
 2. **`levels/familiarization/` (Niveles de familiarización)**:
    - Contiene los dos niveles con mayor aprobación de la comunidad del dataset: `mm2_3000330.txt` (1,312 likes) y `mm2_3001683.txt` (653 likes).
    - **¿Para qué sirven?**: Se juegan en la fase inicial de práctica para que el participante se acostumbre a los controles (teclado o mando), mientras el sistema registra silenciosamente su **telemetría basal** (velocidad de avance, frecuencia de saltos, muertes), la cual luego alimenta a Ollama + MarioGPT para generar los niveles personalizados.
+
+---
+
+### 4. Preparación de defensa: ¿Qué responder ante el jurado? (Niveles de Hugging Face)
+
+- **¿Por qué gamestyle == 0 (SMB1)?**
+  MarioGPT y el simulador Mario-AI se basan exclusivamente en las mecánicas y el conjunto de tiles de *Super Mario Bros 1*. Los otros estilos de SMM2 añaden mecánicas como agarrar y lanzar objetos, giros en el aire o potenciadores ajenos (Mario ardilla, gato, etc.) que romperían la comparabilidad experimental con los niveles generados por la IA.
+
+- **¿Por qué clear_rate entre 30% y 50%?**
+  Garantiza niveles en la **zona de flujo** (Flow): no son niveles triviales o automáticos donde basta dejar presionado correr sin peligro (>50%), ni niveles 'kaizo' frustrantes de ensayo-error y trampa milimétrica (<30%). Buscamos desafío disfrutable y justo.
+
+- **¿Por qué exigir ≥ 150 intentos?**
+  Por la **Ley de los Grandes Números**: un nivel subido recientemente con 1 intento y 1 victoria arrojaría un 100% artificial de clear rate. Exigir al menos 150 intentos asegura que la tasa de superación sea estadísticamente representativa y confiable.
+
+- **¿Cómo se garantiza que sean completables?**
+  Se aplica un **doble filtro de garantía**:
+  1. Para subir un nivel a Nintendo Network, el creador humano debe obligatoriamente completarlo de principio a fin (*Clear Check* de Nintendo).
+  2. Tras la conversión a formato MAF/ASCII, nuestro agente inteligente **A* (Robin Baumgarten)** simula la partida y recorre físicamente el nivel hasta tocar la meta. Si el agente A* no lo supera en tiempo límite, el nivel se descarta.
+

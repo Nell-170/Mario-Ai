@@ -978,15 +978,15 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   gap: 6px;
 }
 .anx-q::before {
-  content: '?';
+  content: '✔';
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 15px;
   height: 15px;
-  background: var(--pink);
+  background: var(--mint);
   border: 1.5px solid var(--ink);
-  font: 700 9px var(--pixel);
+  font: 700 8.5px var(--pixel);
   color: var(--ink);
   flex-shrink: 0;
 }
@@ -1742,29 +1742,29 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       </div>
     </div>
 
-    <!-- Tarjeta lateral: Respuestas al jurado -->
+    <!-- Tarjeta lateral: Criterios Metodológicos y Control -->
     <div class="anx-card">
-      <span class="anx-badge" style="background:var(--gold);">PREPARACIÓN DE DEFENSA</span>
-      <h3 class="anx-title">¿QUÉ RESPONDER ANTE EL JURADO?</h3>
+      <span class="anx-badge" style="background:var(--gold);">CRITERIOS METODOLÓGICOS</span>
+      <h3 class="anx-title">VALIDACIÓN Y CONTROL</h3>
 
       <div class="anx-qa-box">
-        <div class="anx-q">¿Por qué gamestyle == 0 (SMB1)?</div>
-        <p class="anx-a">MarioGPT y el simulador Mario-AI se basan en las mecánicas de SMB1. Los otros estilos añaden agarre de objetos, giros o Mario ardilla que rompen la comparación.</p>
+        <div class="anx-q">HOMOGENEIDAD DE FÍSICAS (SMB1)</div>
+        <p class="anx-a">Garantiza total coherencia biomecánica con MarioGPT y Mario-AI, descartando mecánicas no lineales de otros estilos (agarre de ítems, saltos en pared o planeo).</p>
       </div>
 
       <div class="anx-qa-box">
-        <div class="anx-q">¿Por qué clear_rate entre 30% y 50%?</div>
-        <p class="anx-a">Garantiza niveles en la <b>zona de flujo</b>: no son niveles automáticos o triviales (&gt;50%) ni niveles 'kaizo' frustrantes de ensayo-error (&lt;30%).</p>
+        <div class="anx-q">VENTANA DE FLUJO (30% - 50%)</div>
+        <p class="anx-a">Selecciona diseños con desafío balanceado, excluyendo niveles automatizados o pasillos vacíos (&gt;50%) y mapas punitivos de ensayo-error (&lt;30%).</p>
       </div>
 
       <div class="anx-qa-box">
-        <div class="anx-q">¿Por qué exigir &ge; 150 intentos?</div>
-        <p class="anx-a">Por la <b>Ley de los Grandes Números</b>: un nivel con 1 intento y 1 victoria arroja 100% artificial. 150 intentos aseguran que el clear rate sea fiable.</p>
+        <div class="anx-q">CONFIABILIDAD MUESTRAL (&ge; 150 INTENTOS)</div>
+        <p class="anx-a">Asegura representatividad estadística para mitigar artefactos por baja participación comunitaria mediante convergencia asintótica.</p>
       </div>
 
       <div class="anx-qa-box">
-        <div class="anx-q">¿Cómo se garantiza que sean completables?</div>
-        <p class="anx-a">Doble filtro: para subir un nivel a Nintendo el creador debió pasarlo, y luego nuestro agente <b>A* (Baumgarten)</b> verifica que exista una ruta física de meta.</p>
+        <div class="anx-q">SOLUBILIDAD FORMAL CERTIFICADA (A*)</div>
+        <p class="anx-a">Cada mapa convertido a MAF es recorrido y resuelto por el agente inteligente de Baumgarten antes de su inclusión en el banco experimental.</p>
       </div>
     </div>
   </div>
