@@ -1298,8 +1298,11 @@
     // capturas (imagen de usuario)
     $$('.shot').forEach(s => {
       const img = s.querySelector('img'), src = (CONFIG.shots || {})[s.dataset.key];
-      if (src) { img.src = src; s.classList.add('has'); }
-      s.querySelector('input').onchange = e => { const f = e.target.files[0]; if (!f) return; img.src = URL.createObjectURL(f); s.classList.add('has'); };
+      if (img && src) { img.src = src; s.classList.add('has'); }
+      const inp = s.querySelector('input');
+      if (inp) {
+        inp.onchange = e => { const f = e.target.files[0]; if (!f || !img) return; img.src = URL.createObjectURL(f); s.classList.add('has'); };
+      }
     });
 
     // 1 · documentos

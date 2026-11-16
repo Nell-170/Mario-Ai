@@ -2756,6 +2756,7 @@ const ART={
   brick:["kkkkkkkk","NNNjNNNN","NNNjNNNN","NNNjNNNN","jjjjjjjj","NNNNNjNN","NNNNNjNN","NNNNNjNN"].map(r=>r.replace(/k/g,'j'))
 };
 function sprSrc(spec,scale){
+  if(!spec) return '';
   const [n,m]=spec.split(':');
   return n==='hero'?heroURL(m||'neutral',scale):px(ART[n],scale);
 }
@@ -3316,8 +3317,11 @@ H['s-prisma']={
     // capturas (imagen de usuario)
     $$('.shot').forEach(s => {
       const img = s.querySelector('img'), src = (CONFIG.shots || {})[s.dataset.key];
-      if (src) { img.src = src; s.classList.add('has'); }
-      s.querySelector('input').onchange = e => { const f = e.target.files[0]; if (!f) return; img.src = URL.createObjectURL(f); s.classList.add('has'); };
+      if (img && src) { img.src = src; s.classList.add('has'); }
+      const inp = s.querySelector('input');
+      if (inp) {
+        inp.onchange = e => { const f = e.target.files[0]; if (!f || !img) return; img.src = URL.createObjectURL(f); s.classList.add('has'); };
+      }
     });
 
     // 1 · documentos

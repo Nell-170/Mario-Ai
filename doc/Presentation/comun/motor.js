@@ -33,6 +33,7 @@ const ART={
   brick:["kkkkkkkk","NNNjNNNN","NNNjNNNN","NNNjNNNN","jjjjjjjj","NNNNNjNN","NNNNNjNN","NNNNNjNN"].map(r=>r.replace(/k/g,'j'))
 };
 function sprSrc(spec,scale){
+  if(!spec) return '';
   const [n,m]=spec.split(':');
   return n==='hero'?heroURL(m||'neutral',scale):px(ART[n],scale);
 }
