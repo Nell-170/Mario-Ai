@@ -52,6 +52,13 @@
 .doc b{display:block;margin-top:5px;font:600 11px var(--body)} .doc i{font-style:normal;color:var(--pink-d);font-weight:700}
 .doc::after{content:"";position:absolute;right:-3px;top:-3px;border:9px solid;border-color:#fff var(--bg) var(--bg) #fff;border-width:9px;box-shadow:-1px 1px 0 var(--ink)}
 .fp.on .doc{opacity:1;transform:translateY(calc(var(--dy)*1px)) rotate(calc(var(--r)*1deg))}
+.hf-info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0 10px}
+.hf-card{border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);padding:10px 6px;text-align:center}
+.hf-card.hl{background:var(--gold-l)}
+.hf-card .hlbl{font:400 7.5px var(--pixel);color:#666;display:block;margin-bottom:6px;letter-spacing:.3px}
+.hf-card.hl .hlbl{color:var(--ink)}
+.hf-card b{display:block;font:400 24px/1 var(--display);color:var(--ink);letter-spacing:1px;margin-bottom:4px}
+.hf-card small{display:block;font-size:10.5px;color:#555;line-height:1.3;font-weight:600}
 .funwrap{position:relative;height:350px}
 .funnel{position:absolute;left:0;top:0}
 .fdot{position:absolute;width:13px;height:13px;border:2px solid var(--ink)}
@@ -125,9 +132,28 @@
     <!-- 1 -->
     <div class="fp" data-p="1">
       <div class="ptag">SELECCIÓN DE NIVELES</div>
-      <p class="pp">Partimos del conjunto de niveles de <b>Super Mario Maker 2</b> publicado en <b>Hugging Face</b>: miles de niveles hechos por personas.</p>
+      <p class="pp">Partimos del conjunto de niveles de <b>Super Mario Maker 2</b> en <b>Hugging Face</b>: miles de niveles creados por jugadores humanos.</p>
       <div class="docs" id="docs"></div>
-      <label class="shot" data-key="hf" style="height:140px"><span>CAPTURA · DATASET EN HUGGING FACE<br>(clic para cargar imagen)</span><img alt=""><input type="file" accept="image/*"></label>
+      <div class="hf-info-grid">
+        <div class="hf-card">
+          <span class="hlbl">VOLUMEN</span>
+          <b>~26.6M</b>
+          <small>Niveles en repositorio</small>
+        </div>
+        <div class="hf-card">
+          <span class="hlbl">FORMATO</span>
+          <b>.JSON</b>
+          <small>Geometría y telemetría</small>
+        </div>
+        <div class="hf-card hl">
+          <span class="hlbl">DESTINO</span>
+          <b>NIVELES H</b>
+          <small>Línea base humana</small>
+        </div>
+      </div>
+      <p class="pp note" style="margin-top:14px;line-height:1.45">
+        <small>Cada registro incluye la tasa de superación comunitaria (<i>clear rate</i>), etiquetas de estilo, intentos y valoraciones.</small>
+      </p>
     </div>
     <!-- 2 -->
     <div class="fp" data-p="2">
