@@ -627,7 +627,30 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .rhint{position:absolute;left:62px;top:104px;font:400 9px var(--pixel);z-index:3;opacity:0;transition:opacity .4s}
 #s-res[data-step="0"] .rhint{opacity:1}
 
-/* ===== 09-agradecimiento.html ===== */
+/* ===== 09-conclusiones.html ===== */
+#s-conc .ccol{position:absolute;top:122px;width:362px;height:532px}
+#s-conc .ccol.c1{left:60px} #s-conc .ccol.c2{left:459px} #s-conc .ccol.c3{left:858px}
+#s-conc .cdiv{position:absolute;top:130px;height:510px;border-left:3px dashed var(--ink);opacity:.35}
+#s-conc .chead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+#s-conc .cico{flex:none;width:40px;height:40px;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);display:flex;align-items:center;justify-content:center;font:400 30px/1 var(--display)}
+#s-conc .chead b{font:400 10px/1.5 var(--pixel)}
+#s-conc .cq{background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:12px 14px;font:600 15px/1.45 var(--body)}
+#s-conc .cq .a{color:var(--pink-d)} #s-conc .cq .b{color:var(--violet)} #s-conc .cq .c{color:var(--gold)} #s-conc .cq .d{color:var(--mint-d)}
+#s-conc .cans{margin-top:16px}
+#s-conc .cbig{font:400 46px/1 var(--display);letter-spacing:1px;margin:0 0 4px}
+#s-conc ul{list-style:none;margin:0;padding:0}
+#s-conc li{position:relative;padding:0 0 0 22px;margin:0 0 10px;font-size:14px;line-height:1.45}
+#s-conc li::before{content:"";position:absolute;left:2px;top:6px;width:9px;height:9px;border:2px solid var(--ink);background:var(--k,var(--gold-l))}
+#s-conc li b.n{color:var(--violet)}
+#s-conc .c2 li{--k:var(--pink)} #s-conc .c3 li{--k:var(--mint)}
+#s-conc .stag{display:inline-block;font:400 8px var(--pixel);padding:3px 5px;border:2px solid var(--ink);background:var(--gold-l);vertical-align:1px}
+/* aparición escalonada de las viñetas */
+#s-conc .reveal li{opacity:0;transform:translateX(-10px);transition:opacity .35s,transform .35s}
+#s-conc .reveal.show li{opacity:1;transform:none}
+#s-conc .reveal.show li:nth-child(2){transition-delay:.12s} #s-conc .reveal.show li:nth-child(3){transition-delay:.24s}
+#s-conc .reveal.show li:nth-child(4){transition-delay:.36s} #s-conc .reveal.show li:nth-child(5){transition-delay:.48s}
+
+/* ===== 10-agradecimiento.html ===== */
 #s-thanks .t {
   position: absolute;
   left: 0;
@@ -682,7 +705,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   color: var(--ink);
 }
 
-/* ===== 10-anexos.html ===== */
+/* ===== 11-anexos.html ===== */
 /* ---------- estilos para anexos ---------- */
 #s-anexos {
   position: relative;
@@ -1320,6 +1343,57 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <div class="rread" id="rread"></div>
     </div>
     <div class="rhint blink">CLIC EN UN GRÁFICO PARA AMPLIARLO</div>
+  </section>
+
+<!-- ============ FILMINA: CONCLUSIONES PRELIMINARES ============ -->
+<!-- Tres columnas: pregunta y respuesta | limitaciones | trabajo futuro.
+     Las cifras salen de la filmina de resultados (LMM, p ajustados por Holm). -->
+
+
+
+  <section class="slide" id="s-conc" data-min="1" data-max="4" data-sec="Conclusiones">
+    <h1 class="h1">CONCLUSIONES PRELIMINARES</h1>
+    <div class="cdiv" style="left:440px"></div>
+    <div class="cdiv" style="left:839px"></div>
+
+    <!-- 1 · pregunta y respuesta -->
+    <div class="ccol c1">
+      <div class="reveal" data-at="1">
+        <div class="chead"><span class="cico" style="background:var(--gold-l)">?</span><b>PREGUNTA</b></div>
+        <div class="cq">¿Pueden los juegos <span class="a">personalizados</span> superar en <span class="b">satisfacción</span> y <span class="c">dificultad</span> a los juegos <span class="d">diseñados por humanos</span>?</div>
+      </div>
+      <div class="cans reveal" data-at="2">
+        <p class="cbig">NO, POR AHORA</p>
+        <ul>
+          <li><b>Satisfacción:</b> los niveles humanos siguen por encima de los personalizados en disfrute (<b class="n">+0.90</b>) y competencia percibida (<b class="n">+1.11</b>).</li>
+          <li><b>Dificultad:</b> los personalizados se perciben <b>más difíciles</b> (<b class="n">+0.84</b> frente a H), pero el ajuste del reto no mejora.</li>
+          <li><b>La telemetría sí cambia algo:</b> frente a N, P es más difícil (<b class="n">+0.63</b>) y algo más variado <span class="stag">FRÁGIL</span>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2 · limitaciones -->
+    <div class="ccol c2 reveal" data-at="3">
+      <div class="chead"><span class="cico" style="background:var(--pink)">!</span><b>LIMITACIONES</b></div>
+      <ul>
+        <li><b>MarioGPT se basa en GPT-2</b>, un modelo de lenguaje de 2019, relativamente antiguo.</li>
+        <li><b>Se entrenó solo con niveles de <i>Super Mario Bros.</i> y <i>The Lost Levels</i>:</b> tiene menos variedad de elementos que los niveles humanos de Mario Maker 2, lo que puede dejar a P y N en desventaja frente a H.</li>
+        <li>En <b>120 de 122</b> niveles P, el prompt lo armó una <b>regla de umbrales</b> (respaldo cuando Ollama no respondió), no el LLM. Solo hubo <b>28 prompts distintos</b>.</li>
+        <li>La condición P tiene <b>menos datos</b>: se excluyeron 18 niveles de respaldo.</li>
+        <li>Análisis <b>preliminar</b>: los supuestos del modelo se cumplen solo de forma aproximada.</li>
+      </ul>
+    </div>
+
+    <!-- 3 · trabajo futuro -->
+    <div class="ccol c3 reveal" data-at="4">
+      <div class="chead"><span class="cico" style="background:var(--mint)">▶</span><b>TRABAJO FUTURO</b></div>
+      <ul>
+        <li>Probar <b>generadores más recientes</b> o entrenados con niveles de Mario Maker 2.</li>
+        <li>Usar el <b>razonador LLM</b> en todas las personalizaciones.</li>
+        <li>Incluir en el análisis el <b>ranking</b>, la <b>telemetría</b> y el <b>juego libre</b> (compromiso).</li>
+        <li>Revisión estadística: <b>modelo ordinal</b> y efecto de cada nivel concreto.</li>
+      </ul>
+    </div>
   </section>
 
 <!-- ============ FILMINA: AGRADECIMIENTO ============ -->
@@ -2311,7 +2385,10 @@ H['s-prisma']={
   };
 })();
 
-/* ===== 09-agradecimiento.html ===== */
+/* ===== 09-conclusiones.html ===== */
+/* CONCLUSIONES — todo lo controlan data-at y las clases .reveal del motor */
+
+/* ===== 10-agradecimiento.html ===== */
 /* ============================================================
    AGRADECIMIENTO
    ============================================================ */
@@ -2321,7 +2398,7 @@ H['s-thanks'] = {
   }
 };
 
-/* ===== 10-anexos.html ===== */
+/* ===== 11-anexos.html ===== */
 (function(){
   const slide = document.getElementById('s-anexos');
   if(!slide) return;
