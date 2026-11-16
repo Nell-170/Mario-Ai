@@ -46,7 +46,7 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 .sitem{background:none;border:none;padding:2px 8px;font:600 12px var(--body);color:#555;cursor:pointer;border-radius:2px;letter-spacing:.2px;transition:all .15s}
 .sitem:hover{color:var(--ink);background:var(--gold-l)}
 .sitem.on{color:var(--ink);font-weight:700;background:var(--pink);border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);padding:1px 7px}
-#slide-num{position:absolute;right:20px;bottom:9px;height:28px;padding:0 12px;border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);color:var(--ink);font:400 13px/28px var(--pixel);display:flex;align-items:center;gap:6px;z-index:55;user-select:none;cursor:pointer;transition:background .15s,transform .15s}
+#slide-num{position:absolute;right:24px;top:20px;height:28px;padding:0 12px;border:3px solid var(--ink);background:#fff;box-shadow:3px 3px 0 var(--ink);color:var(--ink);font:400 13px/28px var(--pixel);display:flex;align-items:center;gap:6px;z-index:55;user-select:none;cursor:pointer;transition:background .15s,transform .15s}
 #slide-num:hover{background:var(--gold-l);transform:translateY(-2px)}
 #slide-num .sn-cur{color:var(--pink-d);font-weight:400}
 #slide-num .sn-sep{color:#888}
@@ -571,11 +571,11 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 /* ===== 08-resultados.html ===== */
 /* ---------- resultados: 6 gráficos con zoom ---------- */
-.rleg{position:absolute;left:330px;right:60px;top:40px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px 16px;font:600 12.5px var(--body);z-index:3}
+.rleg{position:absolute;left:330px;right:150px;top:40px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px 16px;font:600 12.5px var(--body);z-index:3}
 .rleg span{display:flex;align-items:center;gap:6px}
 .rleg i{display:inline-block;width:13px;height:13px;border:2.5px solid var(--ink)}
 .rleg svg{display:block}
-.rmeta{position:absolute;right:60px;top:74px;font:400 8px/1.6 var(--pixel);color:#555;z-index:3}
+.rmeta{position:absolute;right:150px;top:74px;font:400 8px/1.6 var(--pixel);color:#555;z-index:3}
 .rmeta b{font-weight:400;background:var(--gold-l);color:var(--ink);border:2px solid var(--ink);padding:3px 6px;margin-right:6px}
 .rcard{position:absolute;background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);cursor:pointer;
   transition:left .6s cubic-bezier(.5,0,.2,1),top .6s cubic-bezier(.5,0,.2,1),width .6s cubic-bezier(.5,0,.2,1),height .6s cubic-bezier(.5,0,.2,1),opacity .4s,box-shadow .2s;
