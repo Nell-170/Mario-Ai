@@ -1,0 +1,324 @@
+<!-- ============ FILMINA: ANEXOS · DETALLES DEL DATASET Y FILTRADO ============ -->
+
+<style>
+/* ---------- estilos para anexos ---------- */
+#s-anexos {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+}
+.anx-tabs {
+  position: absolute;
+  left: 360px;
+  top: 42px;
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+.anx-tab {
+  font: 400 10px var(--pixel);
+  padding: 8px 14px;
+  border: 3px solid var(--ink);
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  transition: all .2s;
+}
+.anx-tab:hover {
+  background: var(--gold-l);
+}
+.anx-tab.on {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+.anx-panel {
+  position: absolute;
+  left: 60px;
+  top: 110px;
+  width: 1160px;
+  height: 560px;
+  display: none;
+  opacity: 0;
+  transition: opacity .35s;
+}
+.anx-panel.on {
+  display: grid;
+  opacity: 1;
+}
+
+/* Panel 0: Vista Dataset Hugging Face */
+#anx-p0 {
+  grid-template-columns: 710px 420px;
+  gap: 30px;
+  align-items: start;
+}
+.anx-img-win {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--ink);
+  overflow: hidden;
+}
+.anx-img-bar {
+  background: var(--ink);
+  color: #fff;
+  padding: 7px 12px;
+  font: 400 9px var(--pixel);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.anx-img-body {
+  padding: 8px;
+  background: #111;
+  max-height: 480px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.anx-img-body img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 2px solid #333;
+}
+.anx-card {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--ink);
+  padding: 20px;
+}
+.anx-badge {
+  display: inline-block;
+  font: 400 9px var(--pixel);
+  padding: 5px 9px;
+  background: var(--mint);
+  border: 2px solid var(--ink);
+  margin-bottom: 12px;
+}
+.anx-title {
+  font: 400 24px var(--display);
+  letter-spacing: .5px;
+  margin: 0 0 10px;
+}
+.anx-desc {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #222;
+  margin: 0 0 14px;
+}
+.anx-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.anx-list li {
+  margin-bottom: 8px;
+  padding-left: 20px;
+  position: relative;
+}
+.anx-list li::before {
+  content: '▶';
+  position: absolute;
+  left: 0;
+  color: var(--violet);
+  font-size: 10px;
+  top: 2px;
+}
+
+/* Panel 1: Filtrado de código filter_mm2.py */
+#anx-p1 {
+  grid-template-columns: 640px 480px;
+  gap: 30px;
+  align-items: start;
+}
+.cf-anx-win {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--ink);
+  overflow: hidden;
+}
+.cf-anx-bar {
+  background: var(--ink);
+  color: #fff;
+  padding: 7px 12px;
+  font: 400 9px var(--pixel);
+  display: flex;
+  justify-content: space-between;
+}
+.code-filter-anx {
+  background: #1e1e24;
+  color: #e6e6e6;
+  font: 500 13px/1.7 'Courier New', monospace;
+  padding: 14px;
+}
+.cf-line-anx {
+  padding: 4px 6px;
+  margin: 3px 0;
+  border-radius: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 3px solid transparent;
+  transition: all .25s;
+}
+.cf-line-anx.active {
+  background: #2d2d38;
+  border-left-color: var(--violet);
+}
+.cf-kw { color: #ff7fc0; font-weight: 700; }
+.cf-str { color: #f6d36b; }
+.cf-num { color: #94ddc6; font-weight: 700; }
+.cf-com { color: #888; font-style: italic; }
+.cf-cnt {
+  font: 700 11.5px 'Courier New', monospace;
+  color: #ffb3da;
+  background: #111;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid #444;
+}
+.anx-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+.anx-stat-box {
+  flex: 1;
+  border: 3px solid var(--ink);
+  background: var(--gold-l);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 10px;
+  text-align: center;
+}
+.anx-stat-box b {
+  display: block;
+  font: 400 24px var(--display);
+  color: var(--ink);
+}
+.anx-stat-box span {
+  font: 400 9px var(--pixel);
+  color: #444;
+}
+</style>
+
+<section class="slide" id="s-anexos" data-min="0" data-max="1" data-sec="Anexos">
+  <h1 class="h1">ANEXOS</h1>
+  <div class="anx-tabs">
+    <button class="anx-tab" data-tab="0" id="btnTab0">1 · DATASET HUGGING FACE</button>
+    <button class="anx-tab" data-tab="1" id="btnTab1">2 · FILTRADO ESPECÍFICO (FILTER_MM2)</button>
+  </div>
+
+  <!-- Panel 0: Dataset HF -->
+  <div class="anx-panel" id="anx-p0">
+    <div class="anx-img-win">
+      <div class="anx-img-bar">
+        <span>HUGGING FACE · REPOSITORIO SUPER MARIO MAKER 2</span>
+        <span>1920 × 1034 ▢ ✕</span>
+      </div>
+      <div class="anx-img-body">
+        <img src="img/ImagenHuggingFacePrincipal.png" alt="Dataset Super Mario Maker 2 en Hugging Face">
+      </div>
+    </div>
+    <div class="anx-card">
+      <span class="anx-badge">REPOSITORIO DE DATOS</span>
+      <h3 class="anx-title">SUPER MARIO MAKER 2 (HF)</h3>
+      <p class="anx-desc">
+        Repositorio masivo con <b>~26.6 millones de registros</b> de niveles creados por la comunidad mundial de Nintendo Switch, incluyendo telemetría de juego y metadatos de diseño.
+      </p>
+      <ul class="anx-list">
+        <li><b>Metadatos extraídos:</b> <code>gamestyle</code>, <code>tag</code>, <code>clearrate</code>, <code>plays</code>, <code>likes</code> y tiempo de creación.</li>
+        <li><b>Propósito en el proyecto:</b> Banco base del que se extraen los niveles humanos reales (<b>Condición H</b>) y niveles de prueba previa (<b>Condición F</b>).</li>
+        <li><b>Garantía de calidad:</b> Filtrado algorítmico estricto y verificación de transitabilidad mediante el agente <b>A* (Baumgarten)</b>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Panel 1: Filtrado filter_mm2.py -->
+  <div class="anx-panel" id="anx-p1">
+    <div>
+      <div class="cf-anx-win">
+        <div class="cf-anx-bar">
+          <span>src/dataset/filter_mm2.py · PIPELINE DE STREAMING</span>
+          <span>PYTHON 3</span>
+        </div>
+        <div class="code-filter-anx" id="anxCodeFilter">
+          <div class="cf-line-anx" data-cf="0"><span><span class="cf-kw">for</span> rec <span class="cf-kw">in</span> ds:</span><span class="cf-cnt">26.6M (100%)</span></div>
+          <div class="cf-line-anx" data-cf="1"><span><span class="cf-kw"> if</span> rec[<span class="cf-str">"gamestyle"</span>] != <span class="cf-num">0</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~5.3M (SMB1)</span></div>
+          <div class="cf-line-anx" data-cf="2"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> (<span class="cf-num">30</span> &lt;= cr &lt;= <span class="cf-num">50</span>): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~580K (Flujo)</span></div>
+          <div class="cf-line-anx" data-cf="3"><span><span class="cf-kw"> if</span> attempts &lt; <span class="cf-num">150</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~140K (Fiable)</span></div>
+          <div class="cf-line-anx" data-cf="4"><span><span class="cf-kw"> if</span> likes &lt; <span class="cf-num">30</span> <span class="cf-kw">or</span> timer &lt; <span class="cf-num">250</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~25K (Calidad)</span></div>
+          <div class="cf-line-anx" data-cf="5"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> convert_maf(rec): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~12K (Geometría)</span></div>
+          <div class="cf-line-anx" data-cf="6"><span><span class="cf-com"> heapq.heappush(top_likes, rec)</span></span><span class="cf-cnt" style="color:var(--mint-d)">★ Top candidatos</span></div>
+        </div>
+      </div>
+      <div class="anx-stats">
+        <div class="anx-stat-box"><span>HF CRUDA</span><b>26.6M</b></div>
+        <div class="anx-stat-box" style="background:var(--mint)"><span>SMB1 + FLUJO</span><b>~25K</b></div>
+        <div class="anx-stat-box" style="background:#ffb3da"><span>A* VERIFICADOS</span><b>14</b></div>
+      </div>
+    </div>
+
+    <div class="anx-card">
+      <span class="anx-badge" style="background:var(--gold)">USO Y DESTINO DE LOS NIVELES</span>
+      <h3 class="anx-title">¿DÓNDE SE USAN LOS 14 NIVELES?</h3>
+      <ul class="anx-list">
+        <li>
+          <b>Niveles de Familiarización (F) · 2 niveles:</b><br>
+          Provenientes de <code>src/levels/nivel0/</code>. Se usan en la Fase 1 para que el jugador se adapte a los controles y se extraiga su telemetría basal (saltos, muertes, velocidad).
+        </li>
+        <li>
+          <b>Niveles Humanos (H) · 2 niveles evaluados:</b><br>
+          Actúan como la línea base humana en el bloque ciego principal (junto a 2 P personalizados y 2 N no personalizados).
+        </li>
+        <li>
+          <b>Banco de reserva H (10 niveles):</b><br>
+          Niveles validados que sirven de contingencia y banco extendido para pruebas piloto y experimentación complementaria.
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  const slide = document.getElementById('s-anexos');
+  if(!slide) return;
+  const tabs = document.querySelectorAll('.anx-tab');
+  const panels = [document.getElementById('anx-p0'), document.getElementById('anx-p1')];
+  const lines = document.querySelectorAll('#anxCodeFilter .cf-line-anx');
+
+  function setTab(idx){
+    tabs.forEach((t, i) => t.classList.toggle('on', i === idx));
+    panels.forEach((p, i) => p.classList.toggle('on', i === idx));
+    if(idx === 1){
+      lines.forEach(l => l.classList.remove('active'));
+      lines.forEach((l, i) => {
+        setTimeout(() => {
+          lines.forEach(x => x.classList.remove('active'));
+          l.classList.add('active');
+        }, 150 + i * 350);
+      });
+      setTimeout(() => lines.forEach(x => x.classList.add('active')), 150 + lines.length * 350 + 200);
+    }
+  }
+
+  tabs.forEach((t, idx) => {
+    t.addEventListener('click', () => {
+      t.blur();
+      setStep(idx, idx > step ? 'fwd' : 'back');
+    });
+  });
+
+  H['s-anexos'] = {
+    enter(n){ setTab(n || 0); },
+    leave(){ },
+    step(n){ setTab(n || 0); }
+  };
+})();
+</script>
+

@@ -210,7 +210,255 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .tg{display:inline-block;min-width:68px;padding:3px 8px;font:700 12px var(--body);border:2px solid var(--ink)}
 .tg.y{background:var(--mint)} .tg.n{background:var(--pink)} .tg.p{background:var(--gold-l)}
 
-/* ===== 06-metodologia.html ===== */
+/* ===== 06-niveles.html ===== */
+  /* ---------- Taxonomía de niveles (F, G, P, H) ---------- */
+  .levels-wrap {
+    position: absolute;
+    left: 60px;
+    top: 110px;
+    width: 1160px;
+  }
+
+  .lvl-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .lvl-subtitle .tag {
+    font: 400 10px var(--pixel);
+    background: var(--ink);
+    color: #fff;
+    padding: 6px 12px;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, .2);
+  }
+
+  .lvl-subtitle .desc {
+    font: 500 14px var(--body);
+    color: #444;
+  }
+
+  /* Grid de 4 tarjetas */
+  .lvl-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  .lvl-card {
+    background: #fff;
+    border: 4px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 16px 14px 18px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    user-select: none;
+    transition: transform .25s cubic-bezier(.2, .9, .3, 1.2), box-shadow .25s ease, opacity .25s ease, filter .25s ease;
+    min-height: 290px;
+  }
+
+  .lvl-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 8px 8px 0 var(--ink);
+  }
+
+  .lvl-card.active {
+    transform: translateY(-8px);
+    box-shadow: 10px 10px 0 var(--ink);
+    border-color: var(--ink);
+    filter: none;
+    opacity: 1;
+  }
+
+  .lvl-card.dim {
+    opacity: .42;
+    filter: grayscale(.65);
+    transform: none;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, .4);
+  }
+
+  /* Encabezado de la tarjeta */
+  .lvl-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--ink);
+  }
+
+  .lvl-badge {
+    width: 52px;
+    height: 52px;
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 400 38px/1 var(--display);
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+
+  .b-F {
+    background: #ffffff;
+  }
+
+  .b-N {
+    background: var(--gold-l);
+  }
+
+  .b-P {
+    background: var(--pink);
+  }
+
+  .b-H {
+    background: var(--mint);
+  }
+
+  .lvl-head-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .lvl-pill {
+    font: 400 8px var(--pixel);
+    padding: 3px 6px;
+    border: 2px solid var(--ink);
+    display: inline-block;
+    align-self: flex-start;
+    color: var(--ink);
+  }
+
+  .p-F {
+    background: #e8eaed;
+  }
+
+  .p-N {
+    background: var(--gold-l);
+  }
+
+  .p-P {
+    background: var(--pink);
+  }
+
+  .p-H {
+    background: var(--mint);
+  }
+
+  .lvl-title {
+    font: 700 15px/1.15 var(--body);
+    margin: 0;
+    color: var(--ink);
+  }
+
+  /* Detalles y cuerpo */
+  .lvl-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    flex: 1;
+  }
+
+  .lvl-row {
+    background: #f8f7f5;
+    border: 2px solid var(--ink);
+    padding: 7px 9px;
+  }
+
+  .lvl-row > b {
+    display: block;
+    font: 400 8px var(--pixel);
+    color: var(--ink);
+    margin-bottom: 4px;
+    letter-spacing: .5px;
+  }
+
+  .lvl-row span {
+    color: #2b2b2b;
+    font-weight: 500;
+  }
+
+  .lvl-footer-tag {
+    margin-top: auto;
+    padding-top: 8px;
+    font: 600 11.5px var(--body);
+    color: var(--violet);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .lvl-footer-tag::before {
+    content: "▶";
+    font: 400 8px var(--pixel);
+    color: var(--pink-d);
+  }
+
+  /* Tira de flujo al fondo (Timeline experimental) */
+  .lvl-timeline {
+    margin-top: 16px;
+    border: 3px solid var(--ink);
+    background: #fff;
+    box-shadow: 5px 5px 0 var(--ink);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .lt-phase {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .lt-tag {
+    font: 400 8.5px var(--pixel);
+    background: var(--ink);
+    color: #fff;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
+
+  .lt-flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 600 13px var(--body);
+  }
+
+  .lt-box {
+    padding: 3px 8px;
+    border: 2px solid var(--ink);
+    font: 400 12px var(--display);
+    letter-spacing: .5px;
+  }
+
+  .lt-arrow {
+    font-size: 11px;
+    color: var(--ink);
+  }
+
+  .lt-sep {
+    height: 32px;
+    width: 2px;
+    background: var(--ink);
+  }
+
+  .lvl-timeline.hl-flow {
+    background: #fffaf0;
+    border-color: var(--ink);
+  }
+
+/* ===== 07-metodologia.html ===== */
 /* ---------- metodología: diagrama con zoom ---------- */
 #s-flow .h1{z-index:5}
 .fchip{position:absolute;left:470px;top:50px;z-index:5;font:400 10px/1.5 var(--pixel);padding:8px 12px;border:3px solid var(--ink);background:var(--mint);transition:background .3s;max-width:640px}
@@ -321,7 +569,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .full .flegend{opacity:1}
 .flegend i{display:inline-block;width:12px;height:12px;border:2px solid var(--ink);margin-right:6px;vertical-align:-2px}
 
-/* ===== 07-resultados.html ===== */
+/* ===== 08-resultados.html ===== */
 /* ---------- resultados: 6 gráficos con zoom ---------- */
 .rleg{position:absolute;left:330px;right:60px;top:40px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px 16px;font:600 12.5px var(--body);z-index:3}
 .rleg span{display:flex;align-items:center;gap:6px}
@@ -369,15 +617,275 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .rmeans{margin:0 0 12px;font-size:13px}
 .rmeans p{display:flex;align-items:center;gap:8px;margin:0 0 5px}
 .rmeans i{flex:none;width:12px;height:12px;border:2.5px solid var(--ink)}
-.rmeans span{flex:1;font-weight:600}
+.rmeans span{flex:1;font-weight:600;white-space:nowrap;font-size:12.5px}
 .rmeans b{font:400 22px/1 var(--display);letter-spacing:.5px}
-.rmeans small{font-size:11px;color:#777;width:92px;text-align:right}
+.rmeans small{font-size:10.5px;color:#777;width:84px;text-align:right}
 .rread{font-size:14px;line-height:1.5;margin:0}
 .rread p{margin:0 0 8px}
 .rread .k{color:var(--violet);font-weight:700}
 .rwarn{margin-top:10px;padding:8px 10px;border:3px solid var(--ink);background:var(--gold-l);font:600 12.5px/1.45 var(--body)}
 .rhint{position:absolute;left:62px;top:104px;font:400 9px var(--pixel);z-index:3;opacity:0;transition:opacity .4s}
 #s-res[data-step="0"] .rhint{opacity:1}
+
+/* ===== 09-agradecimiento.html ===== */
+#s-thanks .t {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 76px;
+  text-align: center;
+  font: 400 96px/.95 var(--display);
+  letter-spacing: 2px;
+  color: var(--ink);
+}
+#s-thanks .sub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 172px;
+  text-align: center;
+  font: 400 24px/1.3 var(--display);
+  color: var(--violet);
+  letter-spacing: 1px;
+}
+#s-thanks .authors {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 245px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.85;
+}
+#s-thanks .authors small {
+  color: #555;
+}
+#s-thanks .uni {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 420px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+#s-thanks .q-pill {
+  position: absolute;
+  left: 50%;
+  top: 470px;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 8px 18px;
+  font: 400 11px var(--pixel);
+  color: var(--ink);
+}
+
+/* ===== 10-anexos.html ===== */
+/* ---------- estilos para anexos ---------- */
+#s-anexos {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+}
+.anx-tabs {
+  position: absolute;
+  left: 360px;
+  top: 42px;
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+.anx-tab {
+  font: 400 10px var(--pixel);
+  padding: 8px 14px;
+  border: 3px solid var(--ink);
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  transition: all .2s;
+}
+.anx-tab:hover {
+  background: var(--gold-l);
+}
+.anx-tab.on {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+.anx-panel {
+  position: absolute;
+  left: 60px;
+  top: 110px;
+  width: 1160px;
+  height: 560px;
+  display: none;
+  opacity: 0;
+  transition: opacity .35s;
+}
+.anx-panel.on {
+  display: grid;
+  opacity: 1;
+}
+
+/* Panel 0: Vista Dataset Hugging Face */
+#anx-p0 {
+  grid-template-columns: 710px 420px;
+  gap: 30px;
+  align-items: start;
+}
+.anx-img-win {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--ink);
+  overflow: hidden;
+}
+.anx-img-bar {
+  background: var(--ink);
+  color: #fff;
+  padding: 7px 12px;
+  font: 400 9px var(--pixel);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.anx-img-body {
+  padding: 8px;
+  background: #111;
+  max-height: 480px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.anx-img-body img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 2px solid #333;
+}
+.anx-card {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--ink);
+  padding: 20px;
+}
+.anx-badge {
+  display: inline-block;
+  font: 400 9px var(--pixel);
+  padding: 5px 9px;
+  background: var(--mint);
+  border: 2px solid var(--ink);
+  margin-bottom: 12px;
+}
+.anx-title {
+  font: 400 24px var(--display);
+  letter-spacing: .5px;
+  margin: 0 0 10px;
+}
+.anx-desc {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: #222;
+  margin: 0 0 14px;
+}
+.anx-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.anx-list li {
+  margin-bottom: 8px;
+  padding-left: 20px;
+  position: relative;
+}
+.anx-list li::before {
+  content: '▶';
+  position: absolute;
+  left: 0;
+  color: var(--violet);
+  font-size: 10px;
+  top: 2px;
+}
+
+/* Panel 1: Filtrado de código filter_mm2.py */
+#anx-p1 {
+  grid-template-columns: 640px 480px;
+  gap: 30px;
+  align-items: start;
+}
+.cf-anx-win {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 7px 7px 0 var(--ink);
+  overflow: hidden;
+}
+.cf-anx-bar {
+  background: var(--ink);
+  color: #fff;
+  padding: 7px 12px;
+  font: 400 9px var(--pixel);
+  display: flex;
+  justify-content: space-between;
+}
+.code-filter-anx {
+  background: #1e1e24;
+  color: #e6e6e6;
+  font: 500 13px/1.7 'Courier New', monospace;
+  padding: 14px;
+}
+.cf-line-anx {
+  padding: 4px 6px;
+  margin: 3px 0;
+  border-radius: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 3px solid transparent;
+  transition: all .25s;
+}
+.cf-line-anx.active {
+  background: #2d2d38;
+  border-left-color: var(--violet);
+}
+.cf-kw { color: #ff7fc0; font-weight: 700; }
+.cf-str { color: #f6d36b; }
+.cf-num { color: #94ddc6; font-weight: 700; }
+.cf-com { color: #888; font-style: italic; }
+.cf-cnt {
+  font: 700 11.5px 'Courier New', monospace;
+  color: #ffb3da;
+  background: #111;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid #444;
+}
+.anx-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+.anx-stat-box {
+  flex: 1;
+  border: 3px solid var(--ink);
+  background: var(--gold-l);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 10px;
+  text-align: center;
+}
+.anx-stat-box b {
+  display: block;
+  font: 400 24px var(--display);
+  color: var(--ink);
+}
+.anx-stat-box span {
+  font: 400 9px var(--pixel);
+  color: #444;
+}
 </style>
 </head>
 <body>
@@ -545,6 +1053,110 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <table class="cmp" id="cmp"><thead></thead><tbody></tbody></table>
   </section>
 
+<!-- ============ FILMINA: TAXONOMÍA DE NIVELES ============ -->
+
+
+
+<section class="slide" id="s-levels" data-min="0" data-max="0" data-sec="Metodología">
+  <h1 class="h1">METODOLOGÍA</h1>
+
+  <div class="levels-wrap">
+    <div class="lvl-subtitle">
+      <span class="desc">Definición de los 4 tipos de niveles empleados en el estudio:</span>
+    </div>
+
+    <div class="lvl-grid">
+      <!-- 1. NIVEL F -->
+      <div class="lvl-card" data-card="1">
+        <div class="lvl-card-head">
+          <div class="lvl-badge b-F">F</div>
+          <div class="lvl-head-info">
+            <span class="lvl-pill p-F">CALIBRACIÓN</span>
+            <h3 class="lvl-title">Familiarización</h3>
+          </div>
+        </div>
+        <div class="lvl-body">
+          <div class="lvl-row">
+            <b>ORIGEN</b>
+            <span>2 niveles reales de Super Mario Maker 2 con alta aprobación comunitaria.</span>
+          </div>
+          <div class="lvl-row">
+            <b>TELEMETRÍA</b>
+            <span>Captura la <b>telemetría basal</b> del jugador (velocidad, saltos, muertes).</span>
+          </div>
+          <div class="lvl-footer-tag">Fase inicial de práctica</div>
+        </div>
+      </div>
+
+      <!-- 2. NIVEL N -->
+      <div class="lvl-card" data-card="2">
+        <div class="lvl-card-head">
+          <div class="lvl-badge b-N">N</div>
+          <div class="lvl-head-info">
+            <span class="lvl-pill p-N">CONTROL</span>
+            <h3 class="lvl-title">No personalizados</h3>
+          </div>
+        </div>
+        <div class="lvl-body">
+          <div class="lvl-row">
+            <b>ORIGEN</b>
+            <span>Generados con MarioGPT en el clúster HPC, con parámetros aleatorios.</span>
+          </div>
+          <div class="lvl-row">
+            <b>TELEMETRÍA</b>
+            <span><strong>No usan telemetría:</strong> son iguales para todos los participantes.</span>
+          </div>
+          <div class="lvl-footer-tag">Control experimental fijo</div>
+        </div>
+      </div>
+
+      <!-- 3. NIVEL P -->
+      <div class="lvl-card" data-card="3">
+        <div class="lvl-card-head">
+          <div class="lvl-badge b-P">P</div>
+          <div class="lvl-head-info">
+            <span class="lvl-pill p-P">PROPUESTA</span>
+            <h3 class="lvl-title">Personalizados</h3>
+          </div>
+        </div>
+        <div class="lvl-body">
+          <div class="lvl-row">
+            <b>ORIGEN</b>
+            <span>Generados por IA procedural en segundo plano tras jugar la fase F.</span>
+          </div>
+          <div class="lvl-row">
+            <b>TELEMETRÍA</b>
+            <span>Sintetizados a partir de la <b>telemetría real registrada en F</b>.</span>
+          </div>
+          <div class="lvl-footer-tag">Condición adaptativa principal</div>
+        </div>
+      </div>
+
+      <!-- 4. NIVEL H -->
+      <div class="lvl-card" data-card="4">
+        <div class="lvl-card-head">
+          <div class="lvl-badge b-H">H</div>
+          <div class="lvl-head-info">
+            <span class="lvl-pill p-H">BASELINE</span>
+            <h3 class="lvl-title">Humanos</h3>
+          </div>
+        </div>
+        <div class="lvl-body">
+          <div class="lvl-row">
+            <b>ORIGEN</b>
+            <span>Dataset público Hugging Face (~26.6M niveles SMM2 humanos).</span>
+          </div>
+          <div class="lvl-row">
+            <b>VALIDACIÓN</b>
+            <span>Filtrados por zona de flujo (clear rate 30–50%) y 100% superables con <b>A*</b>.</span>
+          </div>
+          <div class="lvl-footer-tag">Referente de diseño humano</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FILMINA: METODOLOGÍA · DIAGRAMA DE FLUJO ============ -->
 
 
@@ -561,14 +1173,14 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
     <!-- 1 -->
     <div class="fp" data-p="1">
-      <div class="ptag">1 · SELECCIÓN DE NIVELES</div>
+      <div class="ptag">SELECCIÓN DE NIVELES</div>
       <p class="pp">Partimos del conjunto de niveles de <b>Super Mario Maker 2</b> publicado en <b>Hugging Face</b>: miles de niveles hechos por personas.</p>
       <div class="docs" id="docs"></div>
       <label class="shot" data-key="hf" style="height:140px"><span>CAPTURA · DATASET EN HUGGING FACE<br>(clic para cargar imagen)</span><img alt=""><input type="file" accept="image/*"></label>
     </div>
     <!-- 2 -->
     <div class="fp" data-p="2">
-      <div class="ptag">2 · FILTRACIÓN POR CRITERIO</div>
+      <div class="ptag">FILTRACIÓN POR CRITERIO</div>
       <p class="pp">Cada nivel pasa por tres filtros. Entre los que sobreviven, <b>se seleccionan los más populares</b>.</p>
       <div class="funwrap" id="funwrap">
         <svg class="funnel" id="funnel" width="504" height="290" viewBox="0 0 504 290">
@@ -584,10 +1196,10 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     </div>
     <!-- 3 -->
     <div class="fp" data-p="3">
-      <div class="ptag">3 · VERIFICACIÓN CON A*</div>
-      <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y entra al banco <b>«Nivel 0»</b>.</p>
+      <div class="ptag">VERIFICACIÓN CON A*</div>
+      <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y se almacena en el banco de <b>niveles humanos (H)</b>.</p>
       <svg class="astar" id="astar" viewBox="0 0 560 200" height="214"></svg>
-      <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE → NIVEL 0</span></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE → NIVELES H</span></div>
       <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Menta: ruta encontrada. Esta validación se hace de antemano, solo para los niveles humanos.</small></p>
     </div>
     <!-- 4 -->
@@ -640,8 +1252,8 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <div class="cards6" id="cards6"></div>
       <div class="leg3">
         <p><span class="k t-P">P</span><span><b>Personalizados:</b> generados con IA a partir de la telemetría del participante.</span></p>
-        <p><span class="k t-N">N</span><span><b>Genéricos:</b> prediseñados, no dependen del participante.</span></p>
-        <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, banco «Nivel 0», validados con A* de antemano.</span></p>
+        <p><span class="k t-N">N</span><span><b>No personalizados:</b> generados con MarioGPT en el clúster HPC con parámetros aleatorios, sin la telemetría del participante.</span></p>
+        <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, validados con A* de antemano.</span></p>
       </div>
       <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
     </div>
@@ -689,7 +1301,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-  <section class="slide" id="s-res" data-min="0" data-max="6" data-despues-de="s-flow:10" data-sec="Resultados">
+  <section class="slide" id="s-res" data-min="0" data-max="6" data-despues-de="s-flow:10" data-sec="Metodología">
     <h1 class="h1">RESULTADOS</h1>
     <div class="rleg">
       <span><i style="background:var(--mint-d)"></i>Humano (H)</span>
@@ -710,6 +1322,116 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <div class="rhint blink">CLIC EN UN GRÁFICO PARA AMPLIARLO</div>
   </section>
 
+<!-- ============ FILMINA: AGRADECIMIENTO ============ -->
+
+
+
+<section class="slide gray" id="s-thanks" data-min="0" data-max="0" data-sec="Agradecimiento">
+  <img class="spr cloud" data-spr="cloud" data-s="6" style="top:50px;animation-duration:70s;animation-delay:-5s" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="5" style="top:220px;animation-duration:90s;animation-delay:-40s" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="7" style="top:410px;animation-duration:80s;animation-delay:-20s" alt="">
+
+  <div class="t">¡MUCHAS GRACIAS!</div>
+  <div class="sub">TELEMETRY-BASED ADAPTIVE LEVEL GENERATION IN 2D PLATFORMERS</div>
+
+  <div class="authors">
+    1) Emmanuel González-Sandoval <small>antonio.gonzalezsandoval@ucr.ac.cr</small><br>
+    2) Mario Cordero-Aguilar <small>mariogabriel.cordero@ucr.ac.cr</small><br>
+    3) Anabelle Porras-Carrillo <small>anabelle.porras@ucr.ac.cr</small>
+  </div>
+
+  <div class="uni">Universidad de Costa Rica · 2026</div>
+
+  <div class="q-pill blink">¿PREGUNTAS O COMENTARIOS?</div>
+
+  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:380px;top:540px;animation-delay:-.3s" alt="">
+  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:880px;top:540px;animation-delay:-.8s" alt="">
+  <img class="spr abs bob" data-spr="hero:happy" data-s="6" style="left:604px;top:526px" alt="">
+  <div class="ground"></div>
+</section>
+
+<!-- ============ FILMINA: ANEXOS · DETALLES DEL DATASET Y FILTRADO ============ -->
+
+
+
+<section class="slide" id="s-anexos" data-min="0" data-max="1" data-sec="Anexos">
+  <h1 class="h1">ANEXOS</h1>
+  <div class="anx-tabs">
+    <button class="anx-tab" data-tab="0" id="btnTab0">1 · DATASET HUGGING FACE</button>
+    <button class="anx-tab" data-tab="1" id="btnTab1">2 · FILTRADO ESPECÍFICO (FILTER_MM2)</button>
+  </div>
+
+  <!-- Panel 0: Dataset HF -->
+  <div class="anx-panel" id="anx-p0">
+    <div class="anx-img-win">
+      <div class="anx-img-bar">
+        <span>HUGGING FACE · REPOSITORIO SUPER MARIO MAKER 2</span>
+        <span>1920 × 1034 ▢ ✕</span>
+      </div>
+      <div class="anx-img-body">
+        <img src="img/ImagenHuggingFacePrincipal.png" alt="Dataset Super Mario Maker 2 en Hugging Face">
+      </div>
+    </div>
+    <div class="anx-card">
+      <span class="anx-badge">REPOSITORIO DE DATOS</span>
+      <h3 class="anx-title">SUPER MARIO MAKER 2 (HF)</h3>
+      <p class="anx-desc">
+        Repositorio masivo con <b>~26.6 millones de registros</b> de niveles creados por la comunidad mundial de Nintendo Switch, incluyendo telemetría de juego y metadatos de diseño.
+      </p>
+      <ul class="anx-list">
+        <li><b>Metadatos extraídos:</b> <code>gamestyle</code>, <code>tag</code>, <code>clearrate</code>, <code>plays</code>, <code>likes</code> y tiempo de creación.</li>
+        <li><b>Propósito en el proyecto:</b> Banco base del que se extraen los niveles humanos reales (<b>Condición H</b>) y niveles de prueba previa (<b>Condición F</b>).</li>
+        <li><b>Garantía de calidad:</b> Filtrado algorítmico estricto y verificación de transitabilidad mediante el agente <b>A* (Baumgarten)</b>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Panel 1: Filtrado filter_mm2.py -->
+  <div class="anx-panel" id="anx-p1">
+    <div>
+      <div class="cf-anx-win">
+        <div class="cf-anx-bar">
+          <span>src/dataset/filter_mm2.py · PIPELINE DE STREAMING</span>
+          <span>PYTHON 3</span>
+        </div>
+        <div class="code-filter-anx" id="anxCodeFilter">
+          <div class="cf-line-anx" data-cf="0"><span><span class="cf-kw">for</span> rec <span class="cf-kw">in</span> ds:</span><span class="cf-cnt">26.6M (100%)</span></div>
+          <div class="cf-line-anx" data-cf="1"><span><span class="cf-kw"> if</span> rec[<span class="cf-str">"gamestyle"</span>] != <span class="cf-num">0</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~5.3M (SMB1)</span></div>
+          <div class="cf-line-anx" data-cf="2"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> (<span class="cf-num">30</span> &lt;= cr &lt;= <span class="cf-num">50</span>): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~580K (Flujo)</span></div>
+          <div class="cf-line-anx" data-cf="3"><span><span class="cf-kw"> if</span> attempts &lt; <span class="cf-num">150</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~140K (Fiable)</span></div>
+          <div class="cf-line-anx" data-cf="4"><span><span class="cf-kw"> if</span> likes &lt; <span class="cf-num">30</span> <span class="cf-kw">or</span> timer &lt; <span class="cf-num">250</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~25K (Calidad)</span></div>
+          <div class="cf-line-anx" data-cf="5"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> convert_maf(rec): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~12K (Geometría)</span></div>
+          <div class="cf-line-anx" data-cf="6"><span><span class="cf-com"> heapq.heappush(top_likes, rec)</span></span><span class="cf-cnt" style="color:var(--mint-d)">★ Top candidatos</span></div>
+        </div>
+      </div>
+      <div class="anx-stats">
+        <div class="anx-stat-box"><span>HF CRUDA</span><b>26.6M</b></div>
+        <div class="anx-stat-box" style="background:var(--mint)"><span>SMB1 + FLUJO</span><b>~25K</b></div>
+        <div class="anx-stat-box" style="background:#ffb3da"><span>A* VERIFICADOS</span><b>14</b></div>
+      </div>
+    </div>
+
+    <div class="anx-card">
+      <span class="anx-badge" style="background:var(--gold)">USO Y DESTINO DE LOS NIVELES</span>
+      <h3 class="anx-title">¿DÓNDE SE USAN LOS 14 NIVELES?</h3>
+      <ul class="anx-list">
+        <li>
+          <b>Niveles de Familiarización (F) · 2 niveles:</b><br>
+          Provenientes de <code>src/levels/nivel0/</code>. Se usan en la Fase 1 para que el jugador se adapte a los controles y se extraiga su telemetría basal (saltos, muertes, velocidad).
+        </li>
+        <li>
+          <b>Niveles Humanos (H) · 2 niveles evaluados:</b><br>
+          Actúan como la línea base humana en el bloque ciego principal (junto a 2 P personalizados y 2 N no personalizados).
+        </li>
+        <li>
+          <b>Banco de reserva H (10 niveles):</b><br>
+          Niveles validados que sirven de contingencia y banco extendido para pruebas piloto y experimentación complementaria.
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
   <div id="fx"></div>
   <div id="wipe"></div>
   <div id="nav">
@@ -720,7 +1442,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <div id="slide-num" class="slide-num" aria-live="polite" title="Ir a paso" style="display:none">
     <b class="sn-cur" id="sn-cur">1</b>
     <span class="sn-sep">/</span>
-    <span class="sn-tot" id="sn-tot">30</span>
+    <span class="sn-tot" id="sn-tot">32</span>
   </div>
 </div>
 
@@ -734,13 +1456,13 @@ const CONFIG = {
   videos: {
     angry: "",   // ej: "videos/jugador_enojado.mp4"
     bored: "",   // ej: "videos/jugador_aburrido.mp4"
-    flow:  ""    // ej: "videos/jugador_disfrutando.mp4"
+    flow: ""    // ej: "videos/jugador_disfrutando.mp4"
   },
   // Opcional: tu propio sprite para el "jugador" del gráfico (PNG pixelado).
   // Puede ser un texto o un objeto {angry, bored, happy}. Vacío = héroe original en pixel art.
   sprites: { player: "" },
   // Capturas de pantalla para el diagrama de metodología (rutas a imágenes). Vacío = recuadro para cargar.
-  shots: { hf:"", welcome:"", fam:"", survey:"", quest:"" }
+  shots: { hf: "img/ImagenHuggingFacePrincipal.png", welcome: "", fam: "", survey: "", quest: "" }
 };
 
 /* ============================================================
@@ -793,8 +1515,10 @@ function playerSrc(mood){
 /* ============================================================
    MOTOR DE DIAPOSITIVAS (con sub-pasos)
    ============================================================ */
-const stage=document.getElementById('stage');
-const slides=[...document.querySelectorAll('.slide')];
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const stage = document.getElementById('stage');
+const slides = [...document.querySelectorAll('.slide')];
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const H={};
 let cur=0, step=0, busy=false;
@@ -1146,12 +1870,41 @@ H['s-prisma']={
   apply();
 })();
 
-/* ===== 06-metodologia.html ===== */
+/* ===== 06-niveles.html ===== */
+  (function () {
+    const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+    const slide = $('#s-levels');
+    if (!slide) return;
+    const cards = $$('#s-levels .lvl-card');
+
+    cards.forEach(c => {
+      c.addEventListener('click', () => {
+        const isAct = c.classList.contains('active');
+        cards.forEach(other => other.classList.remove('active', 'dim'));
+        if (!isAct) {
+          c.classList.add('active');
+          cards.forEach(other => { if (other !== c) other.classList.add('dim'); });
+        }
+      });
+    });
+
+    H['s-levels'] = {
+      enter() {
+        cards.forEach(c => c.classList.remove('active', 'dim'));
+      },
+      leave() {
+        cards.forEach(c => c.classList.remove('active', 'dim'));
+      },
+      step() { }
+    };
+  })();
+
+/* ===== 07-metodologia.html ===== */
 /* ============================================================
    METODOLOGÍA — diagrama de flujo con cámara (zoom) y paneles
    ============================================================ */
 (function(){
-  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
   const NS='http://www.w3.org/2000/svg';
   const E=(t,a={},p)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e; };
   const svg=$('#fsvg'), world=$('#fworld'), slide=$('#s-flow'), chip=$('#fchip');
@@ -1174,10 +1927,10 @@ H['s-prisma']={
 
   /* ---------- nodos y aristas ---------- */
   const NODES={
-    hf:   {x:310, y:170,w:340,h:100,l:['Selección de niveles','Hugging Face'],c:'mint',n:1,at:1},
-    fil:  {x:730, y:170,w:340,h:100,l:['Filtración','por criterio'],c:'mint',n:2,at:2},
-    astar:{x:1150,y:170,w:340,h:100,l:['Verificación','con A*'],c:'mint',n:3,at:3},
-    bank: {x:1560,y:170,w:340,h:100,l:['Banco «Nivel 0»','niveles humanos (H)'],c:'gold',at:3,go:3,db:1},
+    hf:   {x:310, y:170,w:340,h:100,l:['Selección de niveles','Hugging Face'],c:'mint',at:1},
+    fil:  {x:730, y:170,w:340,h:100,l:['Filtración','por criterio'],c:'mint',at:2},
+    astar:{x:1150,y:170,w:340,h:100,l:['Verificación','con A*'],c:'mint',at:3},
+    bank: {x:1560,y:170,w:300,h:124,l:['Niveles H'],c:'gold',at:3,go:3,db:1},
     welcome:{x:160,y:640,w:250,h:100,l:['Bienvenida','Explicación de sesión'],c:'white',n:1,at:4},
     fam:  {x:480, y:640,w:280,h:100,l:['Niveles de','familiarización (F)'],c:'white',n:2,at:5},
     cons: {x:790, y:640,w:240,h:170,l:['Consentimiento','informado'],c:'gold',n:3,at:6,dia:1},
@@ -1187,7 +1940,7 @@ H['s-prisma']={
     ollama:{x:800,y:940,w:220,h:100,l:['Ollama','(LLM)'],c:'pink',at:8},
     mgpt: {x:1120,y:940,w:220,h:100,l:['MarioGPT'],c:'pink',at:8},
     pers: {x:1480,y:940,w:270,h:100,l:['Nivel','personalizado (P)'],c:'pink',at:8},
-    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles genéricos','prediseñados (N)'],c:'gold',at:9,go:9},
+    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles no','personalizados (N)'],c:'gold',at:9,go:9},
     block:{x:1450,y:640,w:300,h:130,l:['Bloque principal','6 niveles: P · N · H','orden aleatorio'],c:'block',n:5,at:9},
     quest:{x:1430,y:470,w:210,h:80, l:['Cuestionario','6 preguntas'],c:'white',at:10},
     rank: {x:1830,y:640,w:260,h:100,l:['Ranking y','comentarios'],c:'white',n:6,at:11},
@@ -1196,8 +1949,8 @@ H['s-prisma']={
   };
   const FOCUS={1:['hf'],2:['fil'],3:['astar'],4:['welcome'],5:['fam'],6:['cons'],7:['survey'],8:['tele','ollama','mgpt','pers'],9:['block'],10:['quest'],11:['rank'],12:['free'],13:['end'],14:[]};
   const EDGES=[
-    {d:'M480 170H560',at:2},{d:'M900 170H980',at:3},{d:'M1320 170H1390',at:3},
-    {d:'M1560 220V575',at:9,lbl:['H',1590,420]},
+    {d:'M480 170H560',at:2},{d:'M900 170H980',at:3},{d:'M1320 170H1410',at:3},
+    {d:'M1560 232V575',at:9,lbl:['H',1590,420]},
     {d:'M285 640H340',at:5},{d:'M620 640H670',at:6},
     {d:'M910 640H975',at:7,lbl:['Sí',924,690],id:'eYes'},
     {d:'M790 555V490',at:6,lbl:['No',814,532],id:'eNo'},
@@ -1227,11 +1980,16 @@ H['s-prisma']={
     if(n.dia){
       const pts=`${n.x},${y0} ${n.x+n.w/2},${n.y} ${n.x},${y0+n.h} ${n.x-n.w/2},${n.y}`;
       E('polygon',{class:'sh',points:pts,transform:'translate(9 9)'},g); E('polygon',{class:'bx',points:pts,fill:COL[n.c]},g);
+    } else if(n.db){
+      const rh=16, x1=n.x+n.w/2, y1=n.y+n.h/2;
+      const shPath=`M ${x0} ${y0+rh} A ${n.w/2} ${rh} 0 0 1 ${x1} ${y0+rh} L ${x1} ${y1-rh} A ${n.w/2} ${rh} 0 0 1 ${x0} ${y1-rh} Z`;
+      E('path',{class:'sh',d:shPath,transform:'translate(9 9)'},g);
+      E('path',{class:'bx',d:shPath,fill:COL[n.c]},g);
+      E('ellipse',{cx:n.x,cy:y0+rh,rx:n.w/2,ry:rh,fill:'#fff2a8',stroke:'#1a1a1a','stroke-width':5},g);
     } else {
       E('rect',{class:'sh',x:x0+9,y:y0+9,width:n.w,height:n.h},g); E('rect',{class:'bx',x:x0,y:y0,width:n.w,height:n.h,fill:COL[n.c]},g);
-      if(n.db){ E('rect',{x:x0+10,y:y0+10,width:n.w-20,height:n.h-20,fill:'none',stroke:'#1a1a1a','stroke-width':2.5},g); }
     }
-    const k=n.l.length, f1=n.dia?22:(k===1?32:25), start=n.y-((k-1)*29)/2+9;
+    const k=n.l.length, f1=n.dia?22:(n.db?32:(k===1?32:25)), start=n.db?(n.y+11):(n.y-((k-1)*29)/2+9);
     n.l.forEach((txt,i)=>{ const t=E('text',{class:i?'l2':'l1',x:n.x,y:start+i*29,'font-size':i?(k===3?20:21):f1},g); t.textContent=txt; });
     if(n.n){ const bx=n.dia?n.x-n.w/2+34:x0, by=n.dia?n.y-n.h/2+34:y0; E('circle',{class:'bd',cx:bx+2,cy:by+2,r:25,stroke:'#1a1a1a','stroke-width':4},g); const t=E('text',{class:'bn',x:bx+2,y:by+12},g); t.textContent=n.n; }
     g.addEventListener('click',()=>{ if(!slide.classList.contains('full')||busy) return; const to=n.go||n.at; setStep(to,'back'); });
@@ -1281,7 +2039,8 @@ H['s-prisma']={
     s.querySelector('input').onchange=e=>{ const f=e.target.files[0]; if(!f)return; img.src=URL.createObjectURL(f); s.classList.add('has'); }; });
 
   // 1 · documentos
-  (function(){ const box=$('#docs'), likes=['2.4k','1.9k','1.2k','890','640'];
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#docs'), likes=['2.4k','1.9k','1.2k','890','640'];
     for(let i=0;i<5;i++){ const d=document.createElement('div'); d.className='doc'; d.style.left=(6+i*98)+'px'; d.style.setProperty('--dy',Math.abs(i-2)*8); d.style.setProperty('--r',(i-2)*5); d.style.transitionDelay=(i*90)+'ms';
       d.innerHTML=`<img src="${lvlThumb(i+3)}" alt=""><b>nivel_${100+i*37}</b><i>♥ ${likes[i]}</i><div style="margin-top:3px;color:#666">.json</div>`; box.appendChild(d); } })();
 
@@ -1303,7 +2062,7 @@ H['s-prisma']={
     I(spawn,300); spawn();
   }};
 
-  // 3 · A*
+  // 3 · A* (animación pausada, ocurre solo una vez sin bucle)
   PA[3]={on(){
     const sv=$('#astar'), C=20, badge=$('#abadge'); sv.innerHTML=''; badge.classList.remove('show');
     const gaps=new Set([10,11,12,20,21]), plat=new Set([9,10,11,12,13]);
@@ -1317,11 +2076,14 @@ H['s-prisma']={
     cells.sort((a,b)=>a[0]-b[0]);
     const pg=E('g',{},sv); let i=0;
     const hero=E('image',{href:px(heroRows('happy'),1),width:15,height:18,style:'image-rendering:pixelated',opacity:0},sv);
-    I(()=>{ for(let k=0;k<5&&i<cells.length;k++,i++){ const [c,r]=cells[i]; E('rect',{x:c*C+2,y:r*C+2,width:C-4,height:C-4,fill:'#ff7fc0','fill-opacity':.5},exp); } },55);
-    T(()=>{ path.forEach(([c,r],j)=>setTimeout(()=>{ E('circle',{cx:c*C+10,cy:r*C+10,r:4.5,fill:'#4fbf98',stroke:'#1a1a1a','stroke-width':1},pg); },j*22)); },1900);
-    T(()=>{ hero.setAttribute('opacity',1); let j=0; I(()=>{ if(j<path.length){ const [c,r]=path[j++]; hero.setAttribute('x',c*C+2); hero.setAttribute('y',(r+1)*C-18); } },70); },2700);
-    T(()=>badge.classList.add('show'),4700);
-    T(()=>{ if(slide.classList.contains('active')&&step===3){ PA[3].off(); PA[3].on(); } },8200);
+    // 1. Exploración pausada de celdas A*
+    I(()=>{ for(let k=0;k<2&&i<cells.length;k++,i++){ const [c,r]=cells[i]; E('rect',{x:c*C+2,y:r*C+2,width:C-4,height:C-4,fill:'#ff7fc0','fill-opacity':.5},exp); } },80);
+    // 2. Ruta encontrada (puntos verdes)
+    T(()=>{ path.forEach(([c,r],j)=>setTimeout(()=>{ E('circle',{cx:c*C+10,cy:r*C+10,r:4.5,fill:'#4fbf98',stroke:'#1a1a1a','stroke-width':1},pg); },j*55)); },2200);
+    // 3. Avance de Mario paso a paso
+    T(()=>{ hero.setAttribute('opacity',1); let j=0; I(()=>{ if(j<path.length){ const [c,r]=path[j++]; hero.setAttribute('x',c*C+2); hero.setAttribute('y',(r+1)*C-18); } },130); },3900);
+    // 4. Medalla al llegar a la meta (ocurre una vez, sin reset ni loop)
+    T(()=>badge.classList.add('show'),7600);
   },off(){}};
 
   // 5 · telemetría
@@ -1378,14 +2140,16 @@ H['s-prisma']={
   })();
 
   // 11 · ranking
-  (function(){ const box=$('#rank'); let list=['P1','H1','N1','H2','P2','N2'];
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#rank'); let list=['P1','H1','N1','H2','P2','N2'];
     const draw=()=>{ box.innerHTML=''; list.forEach((id,i)=>{ const t=id[0],d=document.createElement('div'); d.className='rk';
-      d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'Genérico':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
+      d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'No personalizado':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
       const [up,dn]=d.querySelectorAll('button'); up.onclick=()=>{ if(i>0){ [list[i-1],list[i]]=[list[i],list[i-1]]; draw(); } }; dn.onclick=()=>{ if(i<5){ [list[i+1],list[i]]=[list[i],list[i+1]]; draw(); } }; box.appendChild(d); }); };
     draw(); })();
 
   // 12 · juego libre
-  (function(){ let cond='P',sim=0,lv=0,nextLv=150; const tm=$('#timer'),mT=$('#mT'),mL=$('#mL');
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; let cond='P',sim=0,lv=0,nextLv=150; const tm=$('#timer'),mT=$('#mT'),mL=$('#mL');
     const paintC=()=>$$('.cond button').forEach(b=>b.className=b.dataset.c===cond?'on '+cond:'');
     $$('.cond button').forEach(b=>b.onclick=()=>{ b.blur(); cond=b.dataset.c; sim=0;lv=0;nextLv=150; paintC(); });
     const fmt=s=>{ const r=Math.max(0,1200-s); return String(Math.floor(r/60)).padStart(2,'0')+':'+String(Math.floor(r%60)).padStart(2,'0'); };
@@ -1406,22 +2170,22 @@ H['s-prisma']={
   const CHIP={1:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],2:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],3:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],8:[2,'PARTE 2 · GENERACIÓN EN SEGUNDO PLANO'],14:[3,'DIAGRAMA COMPLETO']};
 
   H['s-flow']={
-    enter(){ camTo(CAMS[1],0); },
+    enter(n){ const at = n || 1; camTo(CAMS[at] || CAMS[1], 0); },
     leave(){ clearAnim(); panels.forEach(p=>p.classList.remove('on')); },
     step(n,old){
       clearAnim(); peek.clear(); slide.classList.toggle('full',n===14);
       edgeEls.forEach(e=>e.g.classList.remove('hl','run')); nodeEls.exit.classList.remove('hl');
-      Object.values(nodeEls).forEach(g=>g.classList.remove('focus')); (FOCUS[n]||[]).forEach(id=>nodeEls[id].classList.add('focus'));
+      Object.values(nodeEls).forEach(g=>g.classList.remove('focus')); (FOCUS[n]||[]).forEach(id=>nodeEls[id]?.classList.add('focus'));
       paint(n);
       const c=CHIP[n]||[2,'PARTE 2 · APLICACIÓN DEL EXPERIMENTO']; chip.dataset.p=c[0]; chip.textContent=c[1];
-      camTo(CAMS[n],old<1?0:1100);
+      camTo(CAMS[n] || CAMS[14], old<1?0:1100);
       panels.forEach(p=>p.classList.toggle('on',+p.dataset.p===n));
       PA[n]?.on?.();
     }
   };
 })();
 
-/* ===== 07-resultados.html ===== */
+/* ===== 08-resultados.html ===== */
 /* ============================================================
    RESULTADOS — 6 gráficos (medias LMM ± IC 95 %) con zoom por variable
    ============================================================ */
@@ -1432,9 +2196,9 @@ H['s-prisma']={
 
   /* condiciones: mismos colores que en la metodología (H menta, N dorado, P rosa) */
   const COND=[
-    {k:'H',name:'Humano',short:'Humano',col:'#4fbf98'},
-    {k:'N',name:'LLM sin telemetría',short:'LLM sin tel.',col:'#dba93b'},
-    {k:'P',name:'LLM con telemetría',short:'LLM con tel.',col:'#e0559f'}
+    {k:'H',name:'Humano (H)',short:'Humano (H)',col:'#4fbf98'},
+    {k:'N',name:'LLM sin telemetría (N)',short:'Sin telem. (N)',col:'#dba93b'},
+    {k:'P',name:'LLM con telemetría (P)',short:'Con telem. (P)',col:'#e0559f'}
   ];
   /* m: [media, IC inf, IC sup] por condición (H, N, P)
      c: comparaciones [i, j, diferencia (i − j), p Holm, frágil] */
@@ -1544,6 +2308,53 @@ H['s-prisma']={
     enter(n){ layout(n); intro(); },
     leave(){ timers.forEach(clearTimeout); timers=[]; },
     step(n){ layout(n); }
+  };
+})();
+
+/* ===== 09-agradecimiento.html ===== */
+/* ============================================================
+   AGRADECIMIENTO
+   ============================================================ */
+H['s-thanks'] = {
+  enter() {
+    burst(640, 480, 24);
+  }
+};
+
+/* ===== 10-anexos.html ===== */
+(function(){
+  const slide = document.getElementById('s-anexos');
+  if(!slide) return;
+  const tabs = document.querySelectorAll('.anx-tab');
+  const panels = [document.getElementById('anx-p0'), document.getElementById('anx-p1')];
+  const lines = document.querySelectorAll('#anxCodeFilter .cf-line-anx');
+
+  function setTab(idx){
+    tabs.forEach((t, i) => t.classList.toggle('on', i === idx));
+    panels.forEach((p, i) => p.classList.toggle('on', i === idx));
+    if(idx === 1){
+      lines.forEach(l => l.classList.remove('active'));
+      lines.forEach((l, i) => {
+        setTimeout(() => {
+          lines.forEach(x => x.classList.remove('active'));
+          l.classList.add('active');
+        }, 150 + i * 350);
+      });
+      setTimeout(() => lines.forEach(x => x.classList.add('active')), 150 + lines.length * 350 + 200);
+    }
+  }
+
+  tabs.forEach((t, idx) => {
+    t.addEventListener('click', () => {
+      t.blur();
+      setStep(idx, idx > step ? 'fwd' : 'back');
+    });
+  });
+
+  H['s-anexos'] = {
+    enter(n){ setTab(n || 0); },
+    leave(){ },
+    step(n){ setTab(n || 0); }
   };
 })();
 

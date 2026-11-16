@@ -48,8 +48,10 @@ function playerSrc(mood){
 /* ============================================================
    MOTOR DE DIAPOSITIVAS (con sub-pasos)
    ============================================================ */
-const stage=document.getElementById('stage');
-const slides=[...document.querySelectorAll('.slide')];
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const stage = document.getElementById('stage');
+const slides = [...document.querySelectorAll('.slide')];
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const H={};
 let cur=0, step=0, busy=false;
