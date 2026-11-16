@@ -83,7 +83,7 @@
 .t-P{background:var(--pink)} .t-N{background:var(--gold-l)} .t-H{background:var(--mint)}
 .leg3{font-size:13px;line-height:1.5} .leg3 p{margin:0 0 6px;display:flex;gap:8px;align-items:flex-start}
 .leg3 .k{flex:none;font:400 9px var(--pixel);border:3px solid var(--ink);padding:5px 6px}
-.lik{display:grid;grid-template-columns:150px repeat(7,1fr);gap:5px;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:7px}
+.lik{display:grid;grid-template-columns:172px repeat(7,1fr);gap:5px;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:7px}
 .lik .hd{font:400 8px var(--pixel);text-align:center;color:#555}
 .lik button{height:26px;border:3px solid var(--ink);background:#fff;cursor:pointer;padding:0}
 .lik button:hover{background:var(--gold-l)} .lik button.on{background:var(--ink)}
@@ -203,8 +203,8 @@
       <div class="cards6" id="cards6"></div>
       <div class="leg3">
         <p><span class="k t-P">P</span><span><b>Personalizados:</b> generados con IA a partir de la telemetría del participante.</span></p>
-        <p><span class="k t-N">N</span><span><b>Genéricos:</b> prediseñados, no dependen del participante.</span></p>
-        <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, banco «Nivel 0», validados con A* de antemano.</span></p>
+        <p><span class="k t-N">N</span><span><b>No personalizados:</b> generados con MarioGPT en el clúster HPC con parámetros aleatorios, sin la telemetría del participante.</span></p>
+        <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, validados con A* de antemano.</span></p>
       </div>
       <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
     </div>
@@ -226,7 +226,7 @@
     <div class="fp" data-p="12">
       <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
       <p class="pp">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>. Es opcional.</p>
-      <div class="cond">Condición: <button data-c="P">P</button><button data-c="G">G</button><button data-c="H">H</button></div>
+      <div class="cond">Condición: <button data-c="P">P</button><button data-c="N">N</button><button data-c="H">H</button></div>
       <div class="timer" id="timer">20:00<small>(demo acelerada)</small></div>
       <div class="metrics"><div>Tiempo jugado<b id="mT">0 min</b></div><div>Niveles jugados<b id="mL">0</b></div></div>
       <p class="pp"><small>Ambos valores se registran como medida de compromiso.</small></p>
@@ -286,8 +286,8 @@
     ollama:{x:800,y:940,w:220,h:100,l:['Ollama','(LLM)'],c:'pink',at:8},
     mgpt: {x:1120,y:940,w:220,h:100,l:['MarioGPT'],c:'pink',at:8},
     pers: {x:1480,y:940,w:270,h:100,l:['Nivel','personalizado (P)'],c:'pink',at:8},
-    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles genéricos','no personalizados (G)'],c:'gold',at:9,go:9},
-    block:{x:1450,y:640,w:300,h:130,l:['Bloque principal','6 niveles: P · G · H','orden aleatorio'],c:'block',n:5,at:9},
+    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles no','personalizados (N)'],c:'gold',at:9,go:9},
+    block:{x:1450,y:640,w:300,h:130,l:['Bloque principal','6 niveles: P · N · H','orden aleatorio'],c:'block',n:5,at:9},
     quest:{x:1430,y:470,w:210,h:80, l:['Cuestionario','6 preguntas'],c:'white',at:10},
     rank: {x:1830,y:640,w:260,h:100,l:['Ranking y','comentarios'],c:'white',n:6,at:11},
     free: {x:2160,y:640,w:270,h:100,l:['Juego libre','voluntario ≤ 20 min'],c:'white',n:7,at:12},
@@ -303,7 +303,7 @@
     {d:'M1225 640H1300',at:9},{d:'M1600 640H1700',at:11},{d:'M1960 640H2025',at:12},{d:'M2295 640H2375',at:13},
     {d:'M480 690V890',at:8,dash:1},{d:'M590 940H690',at:8,dash:1},{d:'M910 940H1010',at:8,dash:1},{d:'M1230 940H1345',at:8,dash:1},
     {d:'M1480 890V705',at:9,lbl:['P',1448,806]},
-    {d:'M1850 890V790H1560V705',at:9,lbl:['G',1700,772]},
+    {d:'M1850 890V790H1560V705',at:9,lbl:['N',1700,772]},
     {d:'M1450 575V510',at:10,both:1}
   ];
   const nodeEls={}, edgeEls=[], extra=[];
@@ -464,7 +464,7 @@
   }};
 
   // 9 · bloque principal
-  const c6=$('#cards6'); let order=['P','H','G','P','H','G'].map((t,i)=>({t,id:i})); const c6els={};
+  const c6=$('#cards6'); let order=['P','H','N','P','H','N'].map((t,i)=>({t,id:i})); const c6els={};
   order.forEach(o=>{ const d=document.createElement('div'); d.className='c6'; d.innerHTML=`<img src="${lvlThumb(40+o.id*11+(o.t==='P'?5:0),28,16,3)}" alt=""><b class="t-${o.t}">${o.t}</b>`; c6els[o.id]=d; c6.appendChild(d); });
   function shuffle(){
     const first=Object.fromEntries(order.map(o=>[o.id,c6els[o.id].getBoundingClientRect()]));
@@ -477,8 +477,7 @@
   PA[9]={on(){ T(shuffle,700); }};
 
   // 10 · cuestionario
-  (function(){
-  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#lik'), names=['Disfrute','Competencia','Dificultad percibida','Ajuste del reto','Variedad','Deseo de rejugar'], rows=[];
+  (function(){ const box=$('#lik'), names=['Disfrute','Competencia percibida','Dificultad percibida','Ajuste del reto','Variedad','Intención de rejugar'], rows=[];
     let h='<div class="lik"><span></span>'+[-3,-2,-1,0,1,2,3].map(v=>`<span class="hd">${v>0?'+'+v:v}</span>`).join('')+'</div>'; box.innerHTML=h;
     names.forEach(nm=>{ const r=document.createElement('div'); r.className='lik'; r.innerHTML=`<span>${nm}</span>`+[-3,-2,-1,0,1,2,3].map(v=>`<button data-v="${v}" aria-label="${nm} ${v}"></button>`).join('');
       r.querySelectorAll('button').forEach(b=>b.onclick=()=>{ b.blur(); sel(r,+b.dataset.v); }); box.appendChild(r); rows.push(r); });
@@ -488,9 +487,9 @@
 
   // 11 · ranking
   (function(){
-  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#rank'); let list=['P1','H1','G1','H2','P2','G2'];
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#rank'); let list=['P1','H1','N1','H2','P2','N2'];
     const draw=()=>{ box.innerHTML=''; list.forEach((id,i)=>{ const t=id[0],d=document.createElement('div'); d.className='rk';
-      d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'Genérico':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
+      d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'No personalizado':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
       const [up,dn]=d.querySelectorAll('button'); up.onclick=()=>{ if(i>0){ [list[i-1],list[i]]=[list[i],list[i-1]]; draw(); } }; dn.onclick=()=>{ if(i<5){ [list[i+1],list[i]]=[list[i],list[i+1]]; draw(); } }; box.appendChild(d); }); };
     draw(); })();
 

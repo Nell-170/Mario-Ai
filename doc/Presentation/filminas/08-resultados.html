@@ -51,9 +51,9 @@
 .rmeans{margin:0 0 12px;font-size:13px}
 .rmeans p{display:flex;align-items:center;gap:8px;margin:0 0 5px}
 .rmeans i{flex:none;width:12px;height:12px;border:2.5px solid var(--ink)}
-.rmeans span{flex:1;font-weight:600}
+.rmeans span{flex:1;font-weight:600;white-space:nowrap;font-size:12.5px}
 .rmeans b{font:400 22px/1 var(--display);letter-spacing:.5px}
-.rmeans small{font-size:11px;color:#777;width:92px;text-align:right}
+.rmeans small{font-size:10.5px;color:#777;width:84px;text-align:right}
 .rread{font-size:14px;line-height:1.5;margin:0}
 .rread p{margin:0 0 8px}
 .rread .k{color:var(--violet);font-weight:700}
@@ -66,7 +66,7 @@
     <h1 class="h1">RESULTADOS</h1>
     <div class="rleg">
       <span><i style="background:var(--mint-d)"></i>Humano (H)</span>
-      <span><i style="background:var(--gold)"></i>LLM genérico (G)</span>
+      <span><i style="background:var(--gold)"></i>LLM sin telemetría (N)</span>
       <span><i style="background:var(--pink-d)"></i>LLM con telemetría (P)</span>
       <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6"/></svg>p &lt; 0.05</span>
       <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6" stroke-dasharray="5 3"/></svg>p &lt; 0.05, frágil</span>
@@ -92,40 +92,40 @@
   const E=(t,a={},p)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e; };
   const slide=document.getElementById('s-res'), box=document.getElementById('rcards'), side=document.getElementById('rside');
 
-  /* condiciones: mismos colores que en la metodología (H menta, G dorado, P rosa) */
+  /* condiciones: mismos colores que en la metodología (H menta, N dorado, P rosa) */
   const COND=[
     {k:'H',name:'Humano (H)',short:'Humano (H)',col:'#4fbf98'},
-    {k:'G',name:'LLM genérico (G)',short:'Genérico (G)',col:'#dba93b'},
-    {k:'P',name:'LLM con telemetría (P)',short:'Personalizado (P)',col:'#e0559f'}
+    {k:'N',name:'LLM sin telemetría (N)',short:'Sin telem. (N)',col:'#dba93b'},
+    {k:'P',name:'LLM con telemetría (P)',short:'Con telem. (P)',col:'#e0559f'}
   ];
-  /* m: [media, IC inf, IC sup] por condición (H, G, P)
+  /* m: [media, IC inf, IC sup] por condición (H, N, P)
      c: comparaciones [i, j, diferencia (i − j), p Holm, frágil] */
   const RES=[
     {name:'Disfrute', m:[[1.277,.909,1.644],[.258,-.110,.625],[.376,-.016,.767]],
      c:[[0,1,1.019,.00004],[0,2,.901,.0003],[1,2,-.118,.6207]],
-     read:['Los niveles <b>humanos se disfrutan más</b> que los generados: <span class="k">+1.02</span> puntos frente a G y <span class="k">+0.90</span> frente a P.',
-           'Entre G y P <b>no se detecta diferencia</b>: no hay evidencia de que la telemetría mejore el disfrute.']},
+     read:['Los niveles <b>humanos se disfrutan más</b> que los generados: <span class="k">+1.02</span> puntos frente a N y <span class="k">+0.90</span> frente a P.',
+           'Entre N y P <b>no se detecta diferencia</b>: no hay evidencia de que la telemetría mejore el disfrute (lo que no demuestra que no influya).']},
     {name:'Competencia percibida', m:[[1.037,.656,1.418],[.247,-.134,.627],[-.078,-.482,.327]],
      c:[[0,1,.790,.0014],[0,2,1.114,.00004],[1,2,.324,.1818]],
-     read:['Las personas se sintieron <b>más competentes en los niveles humanos</b>: <span class="k">+0.79</span> frente a G y <span class="k">+1.11</span> frente a P.',
-           'G y P no se distinguen entre sí.']},
+     read:['Las personas se sintieron <b>más competentes en los niveles humanos</b>: <span class="k">+0.79</span> frente a N y <span class="k">+1.11</span> frente a P.',
+           'N y P no se distinguen entre sí.']},
     {name:'Dificultad percibida', m:[[-.084,-.451,.282],[.131,-.235,.497],[.761,.371,1.151]],
      c:[[0,1,-.215,.3367],[0,2,-.845,.0009],[1,2,-.630,.0142]],
-     read:['Los niveles <b>personalizados (P) se perciben como los más difíciles</b>: <span class="k">+0.84</span> frente a H y <span class="k">+0.63</span> frente a G.',
-           'H y G no se distinguen. Es el <b>efecto más claro de la telemetría</b>, y se mantiene con o sin exclusiones.']},
+     read:['Los niveles <b>personalizados (P) se perciben como los más difíciles</b>: <span class="k">+0.84</span> frente a H y <span class="k">+0.63</span> frente a N.',
+           'H y N no se distinguen. Es el <b>efecto más claro de la telemetría</b>, y se mantiene con o sin exclusiones.']},
     {name:'Ajuste del reto', m:[[.167,-.205,.538],[-.264,-.634,.107],[.189,-.204,.582]],
      c:[[0,1,.430,.1358],[0,2,-.022,.9212],[1,2,-.453,.1358]],
      read:['<b>Ninguna comparación es significativa</b> tras la corrección de Holm.',
            'Las tres condiciones quedan cerca del punto neutro de la escala.']},
     {name:'Variedad', m:[[1.046,.672,1.420],[.178,-.195,.552],[.678,.284,1.072]],
      c:[[0,1,.868,.0001],[0,2,.368,.0854],[1,2,-.499,.0389,1]],
-     read:['Los niveles humanos son <b>más variados que G</b> (<span class="k">+0.87</span>).',
-           'P se percibe <b>más variado que G</b> (<span class="k">+0.50</span>) y no se distingue de H: la telemetría acerca a P a los humanos en esta variable.'],
-     warn:'La ventaja de P sobre G es frágil: deja de ser significativa si no se aplican las exclusiones.'},
+     read:['Los niveles humanos son <b>más variados que N</b> (<span class="k">+0.87</span>).',
+           'P se percibe <b>más variado que N</b> (<span class="k">+0.50</span>) y no se distingue de H: la telemetría acerca a P a los humanos en esta variable.'],
+     warn:'La ventaja de P sobre N es frágil: deja de ser significativa si no se aplican las exclusiones.'},
     {name:'Intención de rejugar', m:[[.718,.335,1.101],[-.110,-.492,.273],[.197,-.208,.602]],
      c:[[0,1,.828,.0006],[0,2,.521,.0499,1],[1,2,-.307,.1855]],
-     read:['Hay <b>más intención de rejugar los niveles humanos</b> que los G (<span class="k">+0.83</span>).',
-           'Frente a P la diferencia es <span class="k">+0.52</span>, justo en el límite. G y P no se distinguen.'],
+     read:['Hay <b>más intención de rejugar los niveles humanos</b> que los N (<span class="k">+0.83</span>).',
+           'Frente a P la diferencia es <span class="k">+0.52</span>, justo en el límite. N y P no se distinguen.'],
      warn:'H vs. P (p = 0.0499) es frágil: deja de ser significativa si no se aplican las exclusiones.'}
   ];
 

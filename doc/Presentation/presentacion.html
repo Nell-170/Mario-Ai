@@ -146,7 +146,7 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 
 /* ===== 04-antecedentes-prisma.html ===== */
 /* ---------- prisma ---------- */
-.qblock{position:absolute;left:60px;top:132px;width:440px;font:500 12.5px/1.65 'Courier New',monospace}
+.qblock{position:absolute;left:60px;top:132px;width:440px;font:500 18px/1.65 'Courier New',monospace}
 .qblock .grp{display:block;padding:8px 10px;margin-bottom:4px;border:3px solid var(--ink);background:#fff}
 .qblock .tag{display:block;font:400 8px var(--pixel);margin-bottom:5px}
 .qblock .g1{background:#ffe2f1;box-shadow:4px 4px 0 var(--pink)}
@@ -307,7 +307,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     background: #ffffff;
   }
 
-  .b-G {
+  .b-N {
     background: var(--gold-l);
   }
 
@@ -338,7 +338,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     background: #e8eaed;
   }
 
-  .p-G {
+  .p-N {
     background: var(--gold-l);
   }
 
@@ -372,7 +372,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     padding: 7px 9px;
   }
 
-  .lvl-row b {
+  .lvl-row > b {
     display: block;
     font: 400 8px var(--pixel);
     color: var(--ink);
@@ -541,7 +541,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .t-P{background:var(--pink)} .t-N{background:var(--gold-l)} .t-H{background:var(--mint)}
 .leg3{font-size:13px;line-height:1.5} .leg3 p{margin:0 0 6px;display:flex;gap:8px;align-items:flex-start}
 .leg3 .k{flex:none;font:400 9px var(--pixel);border:3px solid var(--ink);padding:5px 6px}
-.lik{display:grid;grid-template-columns:150px repeat(7,1fr);gap:5px;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:7px}
+.lik{display:grid;grid-template-columns:172px repeat(7,1fr);gap:5px;align-items:center;font-size:12.5px;font-weight:600;margin-bottom:7px}
 .lik .hd{font:400 8px var(--pixel);text-align:center;color:#555}
 .lik button{height:26px;border:3px solid var(--ink);background:#fff;cursor:pointer;padding:0}
 .lik button:hover{background:var(--gold-l)} .lik button.on{background:var(--ink)}
@@ -617,9 +617,9 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .rmeans{margin:0 0 12px;font-size:13px}
 .rmeans p{display:flex;align-items:center;gap:8px;margin:0 0 5px}
 .rmeans i{flex:none;width:12px;height:12px;border:2.5px solid var(--ink)}
-.rmeans span{flex:1;font-weight:600}
+.rmeans span{flex:1;font-weight:600;white-space:nowrap;font-size:12.5px}
 .rmeans b{font:400 22px/1 var(--display);letter-spacing:.5px}
-.rmeans small{font-size:11px;color:#777;width:92px;text-align:right}
+.rmeans small{font-size:10.5px;color:#777;width:84px;text-align:right}
 .rread{font-size:14px;line-height:1.5;margin:0}
 .rread p{margin:0 0 8px}
 .rread .k{color:var(--violet);font-weight:700}
@@ -627,7 +627,65 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .rhint{position:absolute;left:62px;top:104px;font:400 9px var(--pixel);z-index:3;opacity:0;transition:opacity .4s}
 #s-res[data-step="0"] .rhint{opacity:1}
 
-/* ===== 09-agradecimiento.html ===== */
+/* ===== 09-conclusiones.html ===== */
+#s-conc .ccol{position:absolute;top:122px;width:362px;height:532px}
+#s-conc .ccol.c1{left:60px} #s-conc .ccol.c2{left:459px} #s-conc .ccol.c3{left:858px}
+#s-conc .cdiv{position:absolute;top:130px;height:510px;border-left:3px dashed var(--ink);opacity:.35}
+#s-conc .chead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+#s-conc .cico{flex:none;width:40px;height:40px;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);display:flex;align-items:center;justify-content:center;font:400 30px/1 var(--display)}
+#s-conc .chead b{font:400 10px/1.5 var(--pixel)}
+#s-conc .cq{background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:12px 14px;font:600 15px/1.45 var(--body)}
+#s-conc .cq .a{color:var(--pink-d)} #s-conc .cq .b{color:var(--violet)} #s-conc .cq .c{color:var(--gold)} #s-conc .cq .d{color:var(--mint-d)}
+#s-conc .cans{margin-top:16px}
+#s-conc .cbig{font:400 46px/1 var(--display);letter-spacing:1px;margin:0 0 12px}
+#s-conc ul{list-style:none;margin:0;padding:0}
+#s-conc li{position:relative;padding:0 0 0 22px;margin:0 0 14px;font-size:15px;line-height:1.45}
+#s-conc li::before{content:"";position:absolute;left:2px;top:6px;width:9px;height:9px;border:2px solid var(--ink);background:var(--k,var(--gold-l))}
+#s-conc .c2 li{--k:var(--pink)} #s-conc .c3 li{--k:var(--mint)}
+#s-conc .stag{display:inline-block;font:400 7px var(--pixel);padding:3px 4px;border:2px solid var(--ink);background:var(--gold-l);vertical-align:1px;margin-left:4px}
+/* aparición escalonada de las viñetas */
+#s-conc .reveal li{opacity:0;transform:translateX(-10px);transition:opacity .35s,transform .35s}
+#s-conc .reveal.show li{opacity:1;transform:none}
+#s-conc .reveal.show li:nth-child(2){transition-delay:.12s} #s-conc .reveal.show li:nth-child(3){transition-delay:.24s}
+#s-conc .reveal.show li:nth-child(4){transition-delay:.36s} #s-conc .reveal.show li:nth-child(5){transition-delay:.48s}
+
+/* ---------- diagrama: P y sus tres flechas ---------- */
+#s-conc .pmap{position:relative;width:362px;height:290px}
+#s-conc .pnode{position:absolute;left:0;top:88px;width:126px;height:118px;background:var(--pink);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transform:scale(.6);opacity:0;transition:transform .45s cubic-bezier(.3,1.6,.5,1),opacity .3s}
+#s-conc .pnode b{font:400 7px var(--pixel);letter-spacing:.3px}
+#s-conc .pnode .pl{position:absolute;left:-12px;top:-12px;width:30px;height:30px;background:#fff;border:3px solid var(--ink);font:400 22px/24px var(--display);text-align:center}
+#s-conc .parr{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+#s-conc .parr path{fill:none;stroke:var(--ink);stroke-width:3.5;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .45s ease}
+#s-conc .pchip{position:absolute;left:168px;width:194px;height:84px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:7px 10px;
+  opacity:0;transform:translateX(-14px);transition:opacity .35s,transform .35s}
+#s-conc .pchip h5{margin:0 0 3px;font:400 25px/1 var(--display);letter-spacing:.5px}
+#s-conc .pchip p{margin:0;font:500 12px/1.4 var(--body)}
+#s-conc .cans.show .pnode{opacity:1;transform:none}
+#s-conc .cans.show .parr path{stroke-dashoffset:0}
+#s-conc .cans.show .pchip{opacity:1;transform:none}
+#s-conc .cans.show .parr path:nth-of-type(1){transition-delay:.35s} #s-conc .cans.show .pchip.k1{transition-delay:.7s}
+#s-conc .cans.show .parr path:nth-of-type(2){transition-delay:.9s}  #s-conc .cans.show .pchip.k2{transition-delay:1.25s}
+#s-conc .cans.show .parr path:nth-of-type(3){transition-delay:1.45s} #s-conc .cans.show .pchip.k3{transition-delay:1.8s}
+
+/* ---------- limitaciones: MarioGPT arriba, P abajo ---------- */
+#s-conc .lmap{position:relative;width:362px;height:456px}
+#s-conc .larr{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+#s-conc .larr path{fill:none;stroke:var(--ink);stroke-width:3.5;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .45s ease}
+#s-conc .ltag{position:absolute;left:50%;transform:translateX(-50%);height:50px;padding:0 18px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);
+  font:400 27px/44px var(--display);letter-spacing:1px;white-space:nowrap}
+#s-conc .lbox{position:absolute;width:172px;height:92px;background:#fff0f8;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:8px 10px;
+  opacity:0;transform:scale(.85);transition:opacity .3s,transform .35s cubic-bezier(.3,1.5,.5,1)}
+#s-conc .lbox h5{margin:0 0 4px;font:400 22px/1 var(--display);letter-spacing:.5px}
+#s-conc .lbox p{margin:0;font:500 12.5px/1.4 var(--body)}
+#s-conc .c2.show .larr path{stroke-dashoffset:0}
+#s-conc .c2.show .lbox{opacity:1;transform:none}
+#s-conc .c2.show .larr path:nth-of-type(1){transition-delay:.2s}  #s-conc .c2.show .lbox.k1{transition-delay:.55s}
+#s-conc .c2.show .larr path:nth-of-type(2){transition-delay:.35s} #s-conc .c2.show .lbox.k2{transition-delay:.7s}
+#s-conc .c2.show .larr path:nth-of-type(3){transition-delay:1s}   #s-conc .c2.show .lbox.k3{transition-delay:1.35s}
+#s-conc .c2.show .larr path:nth-of-type(4){transition-delay:1.15s} #s-conc .c2.show .lbox.k4{transition-delay:1.5s}
+
+/* ===== 10-agradecimiento.html ===== */
 #s-thanks .t {
   position: absolute;
   left: 0;
@@ -682,7 +740,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   color: var(--ink);
 }
 
-/* ===== 10-anexos.html ===== */
+/* ===== 11-anexos.html ===== */
 /* ---------- estilos para anexos ---------- */
 #s-anexos {
   position: relative;
@@ -968,7 +1026,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <div class="hud pop-in" id="hud"><img class="spr" data-spr="coin" data-s="3" alt=""> × <span id="coinN">00</span></div>
       <div class="marker nt" id="marker"><span class="bubble" id="bubble"></span><img class="spr" id="mimg" alt="jugador"></div>
     </div>
-    <div class="hint reveal" data-at="3" id="hint">Arrastra al jugador por el gráfico y mira cómo cambia su estado</div>
+    <div class="hint reveal" data-at="3" id="hint">Canal de flujo de Csikszentmihalyi, que en videojuegos se dibuja como reto vs. habilidad. Chen (2006)</div>
   </section>
 
 <!-- ============ FILMINA: PREGUNTA DE INVESTIGACIÓN ============ -->
@@ -993,11 +1051,11 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <h1 class="h1">ANTECEDENTES</h1>
 
     <div class="qblock reveal" data-at="1">
-      <span class="grp g1"><span class="tag">GRUPO 1 · PCG</span>("procedural content generation" OR "procedural content generation via machine learning" OR … )</span>
-      <span class="and">AND</span>
-      <span class="grp g2"><span class="tag">GRUPO 2 · MODELADO DEL JUGADOR</span>( "player modeling" OR "player behavior" OR "player telemetry" OR … )</span>
-      <span class="and">AND</span>
-      <span class="grp g3"><span class="tag">GRUPO 3 · VIDEOJUEGOS</span>( "video game" OR "gaming" OR "platformers" OR "Super Mario" OR … )</span>
+      <span class="grp g1"><span class="tag">String de búsqueda</span>
+        ("procedural content generation" OR "procedural content generation via machine learning" OR … )
+        <br><br>AND ( "player modeling" OR "player behavior" OR "player telemetry" OR … )
+        <br><br>AND ( "video game" OR "gaming" OR "platformers" OR "Super Mario" OR … )
+      </span>
     </div>
     <div class="acm-note reveal" data-at="1"><img class="spr" data-spr="warn" data-s="4" alt=""><span>Nota: ACM no está por problemas técnicos</span></div>
 
@@ -1017,21 +1075,21 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <polygon data-at="4" points="727,592 735,604 743,592"/>
     </svg>
 
-    <div class="circ pop-in" data-at="2" style="left:735px;top:250px"><span>Identified</span><b id="n-ident">126</b></div>
+    <div class="circ pop-in" data-at="2" style="left:735px;top:250px"><span>Identificados</span><b id="n-ident">126</b></div>
     <div class="pbox reveal" data-at="3" style="left:800px;top:312px;width:260px">
-      <h4>Removed: <b id="n-rem">29</b></h4>
-      <div class="exrow" data-pct="72%"><span>Duplicates</span><b>21</b><i style="--w:100%"></i></div>
-      <div class="exrow" data-pct="28%"><span>No full papers</span><b>8</b><i style="--w:38%"></i></div>
+      <h4>Removidos: <b id="n-rem">29</b></h4>
+      <div class="exrow" data-pct="72%"><span>Duplicados</span><b>21</b><i style="--w:100%"></i></div>
+      <div class="exrow" data-pct="28%"><span>No eran artículos completos</span><b>8</b><i style="--w:38%"></i></div>
     </div>
-    <div class="circ pop-in" data-at="3" style="left:735px;top:440px"><span>Screened</span><b id="n-scr">97</b></div>
+    <div class="circ pop-in" data-at="3" style="left:735px;top:440px"><span>Examinados</span><b id="n-scr">97</b></div>
     <div class="pbox reveal" data-at="4" style="left:800px;top:476px;width:320px">
-      <h4>Excluded: <b id="n-exc">85</b></h4>
-      <div class="exrow" data-pct="60%"><span>Not 2D platformer</span><b>51</b><i style="--w:100%"></i></div>
-      <div class="exrow" data-pct="24%"><span>Off-topic/reviews</span><b>20</b><i style="--w:39%"></i></div>
-      <div class="exrow" data-pct="9%"><span>Not player-driven</span><b>8</b><i style="--w:16%"></i></div>
-      <div class="exrow" data-pct="7%"><span>No adaptive PCG</span><b>6</b><i style="--w:12%"></i></div>
+      <h4>Excluidos: <b id="n-exc">85</b></h4>
+      <div class="exrow" data-pct="60%"><span>No eran de plataformas 2D</span><b>51</b><i style="--w:100%"></i></div>
+      <div class="exrow" data-pct="24%"><span>Fuera de tema</span><b>20</b><i style="--w:39%"></i></div>
+      <div class="exrow" data-pct="9%"><span>No se centran en jugadores</span><b>8</b><i style="--w:16%"></i></div>
+      <div class="exrow" data-pct="7%"><span>No se centran en PCG</span><b>6</b><i style="--w:12%"></i></div>
     </div>
-    <div class="incl pop-in" data-at="5" id="incl" style="left:635px;top:606px">Included <b id="n-inc">12</b><img class="spr" data-spr="check" data-s="4" alt=""></div>
+    <div class="incl pop-in" data-at="5" id="incl" style="left:635px;top:606px">Incluidos<b id="n-inc">12</b><img class="spr" data-spr="check" data-s="4" alt=""></div>
   </section>
 
 <!-- ============ FILMINA: ANTECEDENTES · TABLA ============ -->
@@ -1047,8 +1105,8 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <button class="fbtn" data-col="2"><span class="bx"></span>Telemetría</button>
       <button class="fbtn" data-col="3"><span class="bx"></span>Niveles humanos</button>
       <div class="counter"><div class="n"><span id="cnt">13</span><small>/13</small></div><div class="l">ESTUDIOS<br>QUE CUMPLEN</div></div>
-      <div class="win pop-in" id="win">¡Solo este estudio cumple los cuatro criterios!</div>
-      <div class="legend">Solo <b>Yes</b> cuenta como «cumple».<br>Clic en los botones o en las columnas.</div>
+      <div class="win pop-in" id="win">¡Nuestro estudio cumple los cuatro criterios!</div>
+      <div class="legend">Solo <b>Sí</b> cuenta como «cumple».<br>Clic en los botones o en las columnas.</div>
     </div>
     <table class="cmp" id="cmp"><thead></thead><tbody></tbody></table>
   </section>
@@ -1088,23 +1146,23 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
         </div>
       </div>
 
-      <!-- 2. NIVEL G -->
+      <!-- 2. NIVEL N -->
       <div class="lvl-card" data-card="2">
         <div class="lvl-card-head">
-          <div class="lvl-badge b-G">G</div>
+          <div class="lvl-badge b-N">N</div>
           <div class="lvl-head-info">
-            <span class="lvl-pill p-G">CONTROL</span>
-            <h3 class="lvl-title">Genéricos</h3>
+            <span class="lvl-pill p-N">CONTROL</span>
+            <h3 class="lvl-title">No personalizados</h3>
           </div>
         </div>
         <div class="lvl-body">
           <div class="lvl-row">
             <b>ORIGEN</b>
-            <span>Generados con el pipeline de IA (Ollama + MarioGPT).</span>
+            <span>Generados con MarioGPT en el clúster HPC, con parámetros aleatorios.</span>
           </div>
           <div class="lvl-row">
             <b>TELEMETRÍA</b>
-            <span>Utilizan telemetría de un <b>perfil ajeno</b> (no del participante en curso).</span>
+            <span><strong>No usan telemetría:</strong> son iguales para todos los participantes.</span>
           </div>
           <div class="lvl-footer-tag">Control experimental fijo</div>
         </div>
@@ -1252,8 +1310,8 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <div class="cards6" id="cards6"></div>
       <div class="leg3">
         <p><span class="k t-P">P</span><span><b>Personalizados:</b> generados con IA a partir de la telemetría del participante.</span></p>
-        <p><span class="k t-N">N</span><span><b>Genéricos:</b> prediseñados, no dependen del participante.</span></p>
-        <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, banco «Nivel 0», validados con A* de antemano.</span></p>
+        <p><span class="k t-N">N</span><span><b>No personalizados:</b> generados con MarioGPT en el clúster HPC con parámetros aleatorios, sin la telemetría del participante.</span></p>
+        <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, validados con A* de antemano.</span></p>
       </div>
       <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
     </div>
@@ -1275,7 +1333,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <div class="fp" data-p="12">
       <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
       <p class="pp">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>. Es opcional.</p>
-      <div class="cond">Condición: <button data-c="P">P</button><button data-c="G">G</button><button data-c="H">H</button></div>
+      <div class="cond">Condición: <button data-c="P">P</button><button data-c="N">N</button><button data-c="H">H</button></div>
       <div class="timer" id="timer">20:00<small>(demo acelerada)</small></div>
       <div class="metrics"><div>Tiempo jugado<b id="mT">0 min</b></div><div>Niveles jugados<b id="mL">0</b></div></div>
       <p class="pp"><small>Ambos valores se registran como medida de compromiso.</small></p>
@@ -1305,7 +1363,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <h1 class="h1">RESULTADOS</h1>
     <div class="rleg">
       <span><i style="background:var(--mint-d)"></i>Humano (H)</span>
-      <span><i style="background:var(--gold)"></i>LLM genérico (G)</span>
+      <span><i style="background:var(--gold)"></i>LLM sin telemetría (N)</span>
       <span><i style="background:var(--pink-d)"></i>LLM con telemetría (P)</span>
       <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6"/></svg>p &lt; 0.05</span>
       <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6" stroke-dasharray="5 3"/></svg>p &lt; 0.05, frágil</span>
@@ -1320,6 +1378,82 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <div class="rread" id="rread"></div>
     </div>
     <div class="rhint blink">CLIC EN UN GRÁFICO PARA AMPLIARLO</div>
+  </section>
+
+<!-- ============ FILMINA: CONCLUSIONES PRELIMINARES ============ -->
+<!-- Tres columnas: pregunta y respuesta | limitaciones | trabajo futuro.
+     Las cifras salen de la filmina de resultados (LMM, p ajustados por Holm). -->
+
+
+
+  <section class="slide" id="s-conc" data-min="1" data-max="4" data-sec="Conclusiones">
+    <h1 class="h1">CONCLUSIONES PRELIMINARES</h1>
+    <div class="cdiv" style="left:440px"></div>
+    <div class="cdiv" style="left:839px"></div>
+
+    <!-- 1 · pregunta y respuesta -->
+    <div class="ccol c1">
+      <div class="reveal" data-at="1">
+        <div class="chead"><span class="cico" style="background:var(--gold-l)">?</span><b>PREGUNTA</b></div>
+        <div class="cq">¿Pueden los juegos <span class="a">personalizados</span> superar en <span class="b">satisfacción</span> y <span class="c">dificultad</span> a los juegos <span class="d">diseñados por humanos</span>?</div>
+      </div>
+      <div class="cans reveal" data-at="2">
+        <p class="cbig">NO, POR AHORA</p>
+        <div class="pmap">
+          <svg class="parr" viewBox="0 0 362 290">
+            <defs><marker id="carw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none"/></marker></defs>
+            <path d="M131 120 C150 120 144 42 162 42" pathLength="1" marker-end="url(#carw)"/>
+            <path d="M131 147 H162" pathLength="1" marker-end="url(#carw)"/>
+            <path d="M131 174 C150 174 144 250 162 250" pathLength="1" marker-end="url(#carw)"/>
+          </svg>
+          <div class="pnode"><span class="pl">P</span><img class="spr" data-spr="hero:neutral" data-s="4" alt=""><b>PERSONALIZADOS</b></div>
+          <div class="pchip k1" style="top:0;background:#ffd0d0">
+            <h5>▼ SATISFACCIÓN</h5>
+            <p>Frente a H: <b>−0.90</b> disfrute, <b>−1.11</b> competencia.</p>
+          </div>
+          <div class="pchip k2" style="top:104px;background:var(--gold-l)">
+            <h5>▲ DIFICULTAD</h5>
+            <p><b>+0.84</b> vs. H y <b>+0.63</b> vs. N, sin mejor ajuste del reto.</p>
+          </div>
+          <div class="pchip k3" style="top:208px;background:#d7f4e8">
+            <h5>≈ N EN DISFRUTE</h5>
+            <p>Pero algo más variados<span class="stag">FRÁGIL</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · limitaciones -->
+    <div class="ccol c2 reveal" data-at="3">
+      <div class="chead"><span class="cico" style="background:var(--pink)">!</span><b>LIMITACIONES</b></div>
+      <!-- arriba: limitaciones del generador · abajo: limitaciones de cómo se aplicó -->
+      <div class="lmap">
+        <svg class="larr" viewBox="0 0 362 456">
+          <defs><marker id="larw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none"/></marker></defs>
+          <path d="M150 50 C150 78 86 70 86 102" pathLength="1" marker-end="url(#larw)"/>
+          <path d="M212 50 C212 78 276 70 276 102" pathLength="1" marker-end="url(#larw)"/>
+          <path d="M150 400 C150 372 86 380 86 350" pathLength="1" marker-end="url(#larw)"/>
+          <path d="M212 400 C212 372 276 380 276 350" pathLength="1" marker-end="url(#larw)"/>
+        </svg>
+        <div class="ltag" style="top:0;background:#fff">MARIOGPT</div>
+        <div class="lbox k1" style="left:0;top:108px"><h5>GPT-2</h5><p>Modelo de 2019, ya antiguo.</p></div>
+        <div class="lbox k2" style="left:190px;top:108px"><h5>NIVELES CLÁSICOS</h5><p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p></div>
+        <div class="lbox k3" style="left:0;top:252px"><h5>REGLA, NO LLM</h5><p><b>120 de 122</b> prompts; solo 28 distintos.</p></div>
+        <div class="lbox k4" style="left:190px;top:252px"><h5>MENOS DATOS</h5><p>18 niveles de respaldo descartados.</p></div>
+        <div class="ltag" style="top:404px;background:var(--pink)">PERSONALIZADOS (P)</div>
+      </div>
+    </div>
+
+    <!-- 3 · trabajo futuro -->
+    <div class="ccol c3 reveal" data-at="4">
+      <div class="chead"><span class="cico" style="background:var(--mint)">▶</span><b>TRABAJO FUTURO</b></div>
+      <ul>
+        <li><b>Generadores más recientes</b> o entrenados con Mario Maker 2.</li>
+        <li><b>Razonador LLM</b> en todas las personalizaciones.</li>
+        <li>Analizar <b>ranking</b>, <b>telemetría</b> y <b>juego libre</b>.</li>
+        <li><b>Modelo ordinal</b> y efecto de cada nivel.</li>
+      </ul>
+    </div>
   </section>
 
 <!-- ============ FILMINA: AGRADECIMIENTO ============ -->
@@ -1421,7 +1555,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
         </li>
         <li>
           <b>Niveles Humanos (H) · 2 niveles evaluados:</b><br>
-          Actúan como la línea base humana en el bloque ciego principal (junto a 2 P personalizados y 2 G genéricos).
+          Actúan como la línea base humana en el bloque ciego principal (junto a 2 P personalizados y 2 N no personalizados).
         </li>
         <li>
           <b>Banco de reserva H (10 niveles):</b><br>
@@ -1577,7 +1711,8 @@ if(secNav){
     btn.onclick=(e)=>{
       e.currentTarget.blur();
       if(cur<sec.firstSlide||cur>sec.lastSlide){
-        goSlide(sec.firstSlide, sec.firstSlide>cur?'fwd':'back');
+        // siempre al primer sub-paso de la sección, se llegue desde adelante o desde atrás
+        goSlide(sec.firstSlide, sec.firstSlide>cur?'fwd':'back', mn(slides[sec.firstSlide]));
       }
     };
     secNav.appendChild(btn);
@@ -1593,9 +1728,9 @@ slides.forEach((s,i)=>{
 slides.forEach((s,i)=>{
   const d=s.dataset.despuesDe; if(!d) return;
   const [id,st]=d.split(':'), mine=units.filter(u=>u[0]===i);
-  const j=units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
-  units.splice(0,units.length,...units.filter(u=>u[0]!==i));
-  units.splice(units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st)+1,0,...mine);
+  const rest=units.filter(u=>u[0]!==i);
+  const j=rest.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
+  rest.splice(j+1,0,...mine); units.splice(0,units.length,...rest);
 });
 function updateNav(){
   const isCover = cur === 0;
@@ -1626,17 +1761,9 @@ if(snEl){
     const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
     const val=prompt(`Ir a transición (1 a ${units.length}):`, (currentUnitIndex >= 0 ? currentUnitIndex : cur) + 1);
     const n=parseInt(val,10);
-    if(!isNaN(n)&&n>=1&&n<=units.length){
-      const targetUnit=units[n-1];
-      const targetSlide=targetUnit[0];
-      const targetStep=targetUnit[1];
-      if(targetSlide!==cur){
-        goSlide(targetSlide, targetSlide>cur?'fwd':'back').then(()=>{
-          if(step!==targetStep) setStep(targetStep, targetStep>step?'fwd':'back');
-        });
-      } else if(step!==targetStep){
-        setStep(targetStep, targetStep>step?'fwd':'back');
-      }
+    if(!isNaN(n)&&n>=1&&n<=units.length&&!busy){
+      const i=units.findIndex(u=>u[0]===cur&&u[1]===step);
+      if(n-1!==i) goUnit(units[n-1], n-1>i?'fwd':'back');
     }
   };
 }
@@ -1651,15 +1778,26 @@ async function wipe(mid){
 }
 document.getElementById('bnext').onclick=e=>{e.currentTarget.blur();next();};
 document.getElementById('bprev').onclick=e=>{e.currentTarget.blur();prev();};
+/* teclas numéricas: van al número del contador (n / total). Se pueden teclear
+   varios dígitos seguidos (2, 7 → 27); salta tras una pausa corta o con Enter. */
+let numBuf='', numTimer=0;
+function jumpBuf(){
+  clearTimeout(numTimer); const n=parseInt(numBuf,10); numBuf=''; updateNav();
+  if(busy||isNaN(n)) return;
+  const k=Math.min(Math.max(n,1),units.length)-1, i=units.findIndex(u=>u[0]===cur&&u[1]===step);
+  if(k!==i) goUnit(units[k], k>i?'fwd':'back');
+}
 addEventListener('keydown',e=>{
   const t=e.target; const inCtl=t.closest&&t.closest('button,input,label');
-  if(e.key==='ArrowRight'||e.key==='PageDown'||(!inCtl&&(e.key===' '||e.key==='Enter'))){ e.preventDefault(); next(); }
+  if(!inCtl && /^[0-9]$/.test(e.key)){
+    e.preventDefault(); numBuf=(numBuf+e.key).slice(-String(units.length).length);
+    const sc=document.getElementById('sn-cur'); if(sc) sc.textContent=numBuf;   // muestra lo que se va tecleando
+    clearTimeout(numTimer); numTimer=setTimeout(jumpBuf,650);
+  }
+  else if(numBuf && e.key==='Enter'){ e.preventDefault(); jumpBuf(); }
+  else if(e.key==='ArrowRight'||e.key==='PageDown'||(!inCtl&&(e.key===' '||e.key==='Enter'))){ e.preventDefault(); next(); }
   else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prev(); }
   else if(e.key==='f'||e.key==='F'){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.(); }
-  else if(!inCtl && e.key>='1' && e.key<=String(slides.length)){
-    const targetIdx=parseInt(e.key,10)-1;
-    if(targetIdx!==cur){ e.preventDefault(); goSlide(targetIdx, targetIdx>cur?'fwd':'back'); }
-  }
 });
 let tx=null; addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
 addEventListener('touchend',e=>{ if(tx==null)return; const d=e.changedTouches[0].clientX-tx; if(Math.abs(d)>60){ d<0?next():prev(); } tx=null; });
@@ -1827,31 +1965,31 @@ H['s-prisma']={
 (function(){
   const COLS=['Artículo','Fecha','Telemetría','Niveles Humanos','Satisfacción','Dificultad'];
   const ROWS=[
-    ["Teoi et al.",2026,"No","No","Yes","Yes"],
-    ["Elshamy et al.",2026,"Yes","No","No","No"],
-    ["Baharvand et al.",2026,"Yes","No","No","No"],
+    ["Teoi et al.",2026,"No","No","Sí","Sí"],
+    ["Elshamy et al.",2026,"Sí","No","No","No"],
+    ["Baharvand et al.",2026,"Sí","No","No","No"],
     ["Sanjaya & Djunaidy",2025,"Parcial","No","No","No"],
-    ["Esteves et al.",2022,"Parcial","No","Yes","No"],
+    ["Esteves et al.",2022,"Parcial","No","Sí","No"],
     ["Wang & Liu",2022,"Parcial","No","No","No"],
-    ["Bicho & Martinho",2018,"Yes","No","No","No"],
+    ["Bicho & Martinho",2018,"Sí","No","No","No"],
     ["Shi & Chen",2018,"Parcial","No","No","No"],
-    ["Fernández et al.",2017,"Yes","No","Parcial","No"],
-    ["Summerville et al.",2016,"Yes","Yes","No","No"],
-    ["Wheat et al.",2015,"Yes","No","Yes","No"],
-    ["Stammer et al.",2015,"Yes","No","Yes","Yes"],
-    ["Este Estudio",2026,"Yes","Yes","Yes","Yes"]
+    ["Fernández et al.",2017,"Sí","No","Parcial","No"],
+    ["Summerville et al.",2016,"Sí","Sí","No","No"],
+    ["Wheat et al.",2015,"Sí","No","Sí","No"],
+    ["Stammer et al.",2015,"Sí","No","Sí","Sí"],
+    ["Este Estudio",2026,"Sí","Sí","Sí","Sí"]
   ];
   const ORDER=[4,5,2,3];            // orden en que los pasos activan filtros
   const tb=document.querySelector('#cmp tbody'), th=document.querySelector('#cmp thead');
   th.innerHTML='<tr>'+COLS.map((c,i)=>`<th data-col="${i}">${c}</th>`).join('')+'</tr>';
-  const cls={Yes:'y',No:'n',Parcial:'p'};
+  const cls={Sí:'y',No:'n',Parcial:'p'};
   tb.innerHTML=ROWS.map((r,ri)=>`<tr class="${ri===ROWS.length-1?'me':''}">`+r.map((c,i)=>
     i<2?`<td>${c}</td>`:`<td data-col="${i}"><span class="tg ${cls[c]}">${c}</span></td>`).join('')+'</tr>').join('');
   const trs=[...tb.rows], active=new Set(), cnt=document.getElementById('cnt'), win=document.getElementById('win');
   let wasWin=false;
   function apply(){
     let n=0;
-    trs.forEach((tr,i)=>{ const ok=[...active].every(c=>ROWS[i][c]==='Yes'); tr.classList.toggle('dim',!ok); if(ok)n++; });
+    trs.forEach((tr,i)=>{ const ok=[...active].every(c=>ROWS[i][c]==='Sí'); tr.classList.toggle('dim',!ok); if(ok)n++; });
     document.querySelectorAll('#s-table [data-col]').forEach(e=>{ const c=+e.dataset.col; const on=active.has(c);
       if(e.tagName==='TD') e.classList.toggle('colon',on); else e.classList.toggle('on',on); });
     cnt.textContent=n;
@@ -1936,8 +2074,8 @@ H['s-prisma']={
     ollama:{x:800,y:940,w:220,h:100,l:['Ollama','(LLM)'],c:'pink',at:8},
     mgpt: {x:1120,y:940,w:220,h:100,l:['MarioGPT'],c:'pink',at:8},
     pers: {x:1480,y:940,w:270,h:100,l:['Nivel','personalizado (P)'],c:'pink',at:8},
-    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles genéricos','no personalizados (G)'],c:'gold',at:9,go:9},
-    block:{x:1450,y:640,w:300,h:130,l:['Bloque principal','6 niveles: P · G · H','orden aleatorio'],c:'block',n:5,at:9},
+    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles no','personalizados (N)'],c:'gold',at:9,go:9},
+    block:{x:1450,y:640,w:300,h:130,l:['Bloque principal','6 niveles: P · N · H','orden aleatorio'],c:'block',n:5,at:9},
     quest:{x:1430,y:470,w:210,h:80, l:['Cuestionario','6 preguntas'],c:'white',at:10},
     rank: {x:1830,y:640,w:260,h:100,l:['Ranking y','comentarios'],c:'white',n:6,at:11},
     free: {x:2160,y:640,w:270,h:100,l:['Juego libre','voluntario ≤ 20 min'],c:'white',n:7,at:12},
@@ -1953,7 +2091,7 @@ H['s-prisma']={
     {d:'M1225 640H1300',at:9},{d:'M1600 640H1700',at:11},{d:'M1960 640H2025',at:12},{d:'M2295 640H2375',at:13},
     {d:'M480 690V890',at:8,dash:1},{d:'M590 940H690',at:8,dash:1},{d:'M910 940H1010',at:8,dash:1},{d:'M1230 940H1345',at:8,dash:1},
     {d:'M1480 890V705',at:9,lbl:['P',1448,806]},
-    {d:'M1850 890V790H1560V705',at:9,lbl:['G',1700,772]},
+    {d:'M1850 890V790H1560V705',at:9,lbl:['N',1700,772]},
     {d:'M1450 575V510',at:10,both:1}
   ];
   const nodeEls={}, edgeEls=[], extra=[];
@@ -2114,7 +2252,7 @@ H['s-prisma']={
   }};
 
   // 9 · bloque principal
-  const c6=$('#cards6'); let order=['P','H','G','P','H','G'].map((t,i)=>({t,id:i})); const c6els={};
+  const c6=$('#cards6'); let order=['P','H','N','P','H','N'].map((t,i)=>({t,id:i})); const c6els={};
   order.forEach(o=>{ const d=document.createElement('div'); d.className='c6'; d.innerHTML=`<img src="${lvlThumb(40+o.id*11+(o.t==='P'?5:0),28,16,3)}" alt=""><b class="t-${o.t}">${o.t}</b>`; c6els[o.id]=d; c6.appendChild(d); });
   function shuffle(){
     const first=Object.fromEntries(order.map(o=>[o.id,c6els[o.id].getBoundingClientRect()]));
@@ -2127,8 +2265,7 @@ H['s-prisma']={
   PA[9]={on(){ T(shuffle,700); }};
 
   // 10 · cuestionario
-  (function(){
-  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#lik'), names=['Disfrute','Competencia','Dificultad percibida','Ajuste del reto','Variedad','Deseo de rejugar'], rows=[];
+  (function(){ const box=$('#lik'), names=['Disfrute','Competencia percibida','Dificultad percibida','Ajuste del reto','Variedad','Intención de rejugar'], rows=[];
     let h='<div class="lik"><span></span>'+[-3,-2,-1,0,1,2,3].map(v=>`<span class="hd">${v>0?'+'+v:v}</span>`).join('')+'</div>'; box.innerHTML=h;
     names.forEach(nm=>{ const r=document.createElement('div'); r.className='lik'; r.innerHTML=`<span>${nm}</span>`+[-3,-2,-1,0,1,2,3].map(v=>`<button data-v="${v}" aria-label="${nm} ${v}"></button>`).join('');
       r.querySelectorAll('button').forEach(b=>b.onclick=()=>{ b.blur(); sel(r,+b.dataset.v); }); box.appendChild(r); rows.push(r); });
@@ -2138,9 +2275,9 @@ H['s-prisma']={
 
   // 11 · ranking
   (function(){
-  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#rank'); let list=['P1','H1','G1','H2','P2','G2'];
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#rank'); let list=['P1','H1','N1','H2','P2','N2'];
     const draw=()=>{ box.innerHTML=''; list.forEach((id,i)=>{ const t=id[0],d=document.createElement('div'); d.className='rk';
-      d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'Genérico':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
+      d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'No personalizado':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
       const [up,dn]=d.querySelectorAll('button'); up.onclick=()=>{ if(i>0){ [list[i-1],list[i]]=[list[i],list[i-1]]; draw(); } }; dn.onclick=()=>{ if(i<5){ [list[i+1],list[i]]=[list[i],list[i+1]]; draw(); } }; box.appendChild(d); }); };
     draw(); })();
 
@@ -2191,40 +2328,40 @@ H['s-prisma']={
   const E=(t,a={},p)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e; };
   const slide=document.getElementById('s-res'), box=document.getElementById('rcards'), side=document.getElementById('rside');
 
-  /* condiciones: mismos colores que en la metodología (H menta, G dorado, P rosa) */
+  /* condiciones: mismos colores que en la metodología (H menta, N dorado, P rosa) */
   const COND=[
     {k:'H',name:'Humano (H)',short:'Humano (H)',col:'#4fbf98'},
-    {k:'G',name:'LLM genérico (G)',short:'Genérico (G)',col:'#dba93b'},
-    {k:'P',name:'LLM con telemetría (P)',short:'Personalizado (P)',col:'#e0559f'}
+    {k:'N',name:'LLM sin telemetría (N)',short:'Sin telem. (N)',col:'#dba93b'},
+    {k:'P',name:'LLM con telemetría (P)',short:'Con telem. (P)',col:'#e0559f'}
   ];
-  /* m: [media, IC inf, IC sup] por condición (H, G, P)
+  /* m: [media, IC inf, IC sup] por condición (H, N, P)
      c: comparaciones [i, j, diferencia (i − j), p Holm, frágil] */
   const RES=[
     {name:'Disfrute', m:[[1.277,.909,1.644],[.258,-.110,.625],[.376,-.016,.767]],
      c:[[0,1,1.019,.00004],[0,2,.901,.0003],[1,2,-.118,.6207]],
-     read:['Los niveles <b>humanos se disfrutan más</b> que los generados: <span class="k">+1.02</span> puntos frente a G y <span class="k">+0.90</span> frente a P.',
-           'Entre G y P <b>no se detecta diferencia</b>: no hay evidencia de que la telemetría mejore el disfrute.']},
+     read:['Los niveles <b>humanos se disfrutan más</b> que los generados: <span class="k">+1.02</span> puntos frente a N y <span class="k">+0.90</span> frente a P.',
+           'Entre N y P <b>no se detecta diferencia</b>: no hay evidencia de que la telemetría mejore el disfrute (lo que no demuestra que no influya).']},
     {name:'Competencia percibida', m:[[1.037,.656,1.418],[.247,-.134,.627],[-.078,-.482,.327]],
      c:[[0,1,.790,.0014],[0,2,1.114,.00004],[1,2,.324,.1818]],
-     read:['Las personas se sintieron <b>más competentes en los niveles humanos</b>: <span class="k">+0.79</span> frente a G y <span class="k">+1.11</span> frente a P.',
-           'G y P no se distinguen entre sí.']},
+     read:['Las personas se sintieron <b>más competentes en los niveles humanos</b>: <span class="k">+0.79</span> frente a N y <span class="k">+1.11</span> frente a P.',
+           'N y P no se distinguen entre sí.']},
     {name:'Dificultad percibida', m:[[-.084,-.451,.282],[.131,-.235,.497],[.761,.371,1.151]],
      c:[[0,1,-.215,.3367],[0,2,-.845,.0009],[1,2,-.630,.0142]],
-     read:['Los niveles <b>personalizados (P) se perciben como los más difíciles</b>: <span class="k">+0.84</span> frente a H y <span class="k">+0.63</span> frente a G.',
-           'H y G no se distinguen. Es el <b>efecto más claro de la telemetría</b>, y se mantiene con o sin exclusiones.']},
+     read:['Los niveles <b>personalizados (P) se perciben como los más difíciles</b>: <span class="k">+0.84</span> frente a H y <span class="k">+0.63</span> frente a N.',
+           'H y N no se distinguen. Es el <b>efecto más claro de la telemetría</b>, y se mantiene con o sin exclusiones.']},
     {name:'Ajuste del reto', m:[[.167,-.205,.538],[-.264,-.634,.107],[.189,-.204,.582]],
      c:[[0,1,.430,.1358],[0,2,-.022,.9212],[1,2,-.453,.1358]],
      read:['<b>Ninguna comparación es significativa</b> tras la corrección de Holm.',
            'Las tres condiciones quedan cerca del punto neutro de la escala.']},
     {name:'Variedad', m:[[1.046,.672,1.420],[.178,-.195,.552],[.678,.284,1.072]],
      c:[[0,1,.868,.0001],[0,2,.368,.0854],[1,2,-.499,.0389,1]],
-     read:['Los niveles humanos son <b>más variados que G</b> (<span class="k">+0.87</span>).',
-           'P se percibe <b>más variado que G</b> (<span class="k">+0.50</span>) y no se distingue de H: la telemetría acerca a P a los humanos en esta variable.'],
-     warn:'La ventaja de P sobre G es frágil: deja de ser significativa si no se aplican las exclusiones.'},
+     read:['Los niveles humanos son <b>más variados que N</b> (<span class="k">+0.87</span>).',
+           'P se percibe <b>más variado que N</b> (<span class="k">+0.50</span>) y no se distingue de H: la telemetría acerca a P a los humanos en esta variable.'],
+     warn:'La ventaja de P sobre N es frágil: deja de ser significativa si no se aplican las exclusiones.'},
     {name:'Intención de rejugar', m:[[.718,.335,1.101],[-.110,-.492,.273],[.197,-.208,.602]],
      c:[[0,1,.828,.0006],[0,2,.521,.0499,1],[1,2,-.307,.1855]],
-     read:['Hay <b>más intención de rejugar los niveles humanos</b> que los G (<span class="k">+0.83</span>).',
-           'Frente a P la diferencia es <span class="k">+0.52</span>, justo en el límite. G y P no se distinguen.'],
+     read:['Hay <b>más intención de rejugar los niveles humanos</b> que los N (<span class="k">+0.83</span>).',
+           'Frente a P la diferencia es <span class="k">+0.52</span>, justo en el límite. N y P no se distinguen.'],
      warn:'H vs. P (p = 0.0499) es frágil: deja de ser significativa si no se aplican las exclusiones.'}
   ];
 
@@ -2308,7 +2445,10 @@ H['s-prisma']={
   };
 })();
 
-/* ===== 09-agradecimiento.html ===== */
+/* ===== 09-conclusiones.html ===== */
+/* CONCLUSIONES — todo lo controlan data-at y las clases .reveal del motor */
+
+/* ===== 10-agradecimiento.html ===== */
 /* ============================================================
    AGRADECIMIENTO
    ============================================================ */
@@ -2318,7 +2458,7 @@ H['s-thanks'] = {
   }
 };
 
-/* ===== 10-anexos.html ===== */
+/* ===== 11-anexos.html ===== */
 (function(){
   const slide = document.getElementById('s-anexos');
   if(!slide) return;

@@ -89,7 +89,7 @@ El flujo de creación de estos niveles es el siguiente:
 
 1. **`levels/nivel0/` (14 niveles finales)**:
    - Son niveles de Mario Maker 2 convertidos a texto plano que fueron testeados por el agente inteligente **A* de Robin Baumgarten**.
-   - Solamente si el agente A* logra llegar a la meta dentro del tiempo límite, el nivel se guarda en [nivel0](file:///home/marioc/Desktop/UCR/Mario-Ai/src/levels/nivel0).
+   - Solamente si el agente A* logra llegar a la meta dentro del tiempo límite, el nivel se guarda en `src/levels/nivel0/`.
    - **¿Para qué sirven?**: Representan la **Condición H (Humanos)** en el bloque principal del experimento. Cuando el participante juega los 6 niveles en orden aleatorio balanceado (ej: `P1, H1, N1, P2, H2, N2`), los niveles `H` se toman aleatoriamente de esta carpeta para comparar objetivamente contra los niveles generados por IA (`P`).
 2. **`levels/familiarization/` (Niveles de familiarización)**:
    - Contiene los dos niveles con mayor aprobación de la comunidad del dataset: `mm2_3000330.txt` (1,312 likes) y `mm2_3001683.txt` (653 likes).

@@ -110,7 +110,8 @@ if(secNav){
     btn.onclick=(e)=>{
       e.currentTarget.blur();
       if(cur<sec.firstSlide||cur>sec.lastSlide){
-        goSlide(sec.firstSlide, sec.firstSlide>cur?'fwd':'back');
+        // siempre al primer sub-paso de la sección, se llegue desde adelante o desde atrás
+        goSlide(sec.firstSlide, sec.firstSlide>cur?'fwd':'back', mn(slides[sec.firstSlide]));
       }
     };
     secNav.appendChild(btn);
@@ -126,9 +127,9 @@ slides.forEach((s,i)=>{
 slides.forEach((s,i)=>{
   const d=s.dataset.despuesDe; if(!d) return;
   const [id,st]=d.split(':'), mine=units.filter(u=>u[0]===i);
-  const j=units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
-  units.splice(0,units.length,...units.filter(u=>u[0]!==i));
-  units.splice(units.findIndex(u=>slides[u[0]].id===id&&u[1]===+st)+1,0,...mine);
+  const rest=units.filter(u=>u[0]!==i);
+  const j=rest.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
+  rest.splice(j+1,0,...mine); units.splice(0,units.length,...rest);
 });
 function updateNav(){
   const isCover = cur === 0;
@@ -159,17 +160,9 @@ if(snEl){
     const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
     const val=prompt(`Ir a transición (1 a ${units.length}):`, (currentUnitIndex >= 0 ? currentUnitIndex : cur) + 1);
     const n=parseInt(val,10);
-    if(!isNaN(n)&&n>=1&&n<=units.length){
-      const targetUnit=units[n-1];
-      const targetSlide=targetUnit[0];
-      const targetStep=targetUnit[1];
-      if(targetSlide!==cur){
-        goSlide(targetSlide, targetSlide>cur?'fwd':'back').then(()=>{
-          if(step!==targetStep) setStep(targetStep, targetStep>step?'fwd':'back');
-        });
-      } else if(step!==targetStep){
-        setStep(targetStep, targetStep>step?'fwd':'back');
-      }
+    if(!isNaN(n)&&n>=1&&n<=units.length&&!busy){
+      const i=units.findIndex(u=>u[0]===cur&&u[1]===step);
+      if(n-1!==i) goUnit(units[n-1], n-1>i?'fwd':'back');
     }
   };
 }
@@ -184,15 +177,26 @@ async function wipe(mid){
 }
 document.getElementById('bnext').onclick=e=>{e.currentTarget.blur();next();};
 document.getElementById('bprev').onclick=e=>{e.currentTarget.blur();prev();};
+/* teclas numéricas: van al número del contador (n / total). Se pueden teclear
+   varios dígitos seguidos (2, 7 → 27); salta tras una pausa corta o con Enter. */
+let numBuf='', numTimer=0;
+function jumpBuf(){
+  clearTimeout(numTimer); const n=parseInt(numBuf,10); numBuf=''; updateNav();
+  if(busy||isNaN(n)) return;
+  const k=Math.min(Math.max(n,1),units.length)-1, i=units.findIndex(u=>u[0]===cur&&u[1]===step);
+  if(k!==i) goUnit(units[k], k>i?'fwd':'back');
+}
 addEventListener('keydown',e=>{
   const t=e.target; const inCtl=t.closest&&t.closest('button,input,label');
-  if(e.key==='ArrowRight'||e.key==='PageDown'||(!inCtl&&(e.key===' '||e.key==='Enter'))){ e.preventDefault(); next(); }
+  if(!inCtl && /^[0-9]$/.test(e.key)){
+    e.preventDefault(); numBuf=(numBuf+e.key).slice(-String(units.length).length);
+    const sc=document.getElementById('sn-cur'); if(sc) sc.textContent=numBuf;   // muestra lo que se va tecleando
+    clearTimeout(numTimer); numTimer=setTimeout(jumpBuf,650);
+  }
+  else if(numBuf && e.key==='Enter'){ e.preventDefault(); jumpBuf(); }
+  else if(e.key==='ArrowRight'||e.key==='PageDown'||(!inCtl&&(e.key===' '||e.key==='Enter'))){ e.preventDefault(); next(); }
   else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prev(); }
   else if(e.key==='f'||e.key==='F'){ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.(); }
-  else if(!inCtl && e.key>='1' && e.key<=String(slides.length)){
-    const targetIdx=parseInt(e.key,10)-1;
-    if(targetIdx!==cur){ e.preventDefault(); goSlide(targetIdx, targetIdx>cur?'fwd':'back'); }
-  }
 });
 let tx=null; addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
 addEventListener('touchend',e=>{ if(tx==null)return; const d=e.changedTouches[0].clientX-tx; if(Math.abs(d)>60){ d<0?next():prev(); } tx=null; });
