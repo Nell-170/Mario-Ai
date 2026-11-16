@@ -2,7 +2,7 @@
 
 <style>
 /* ---------- prisma ---------- */
-.qblock{position:absolute;left:60px;top:132px;width:440px;font:500 12.5px/1.65 'Courier New',monospace}
+.qblock{position:absolute;left:60px;top:132px;width:440px;font:500 18px/1.65 'Courier New',monospace}
 .qblock .grp{display:block;padding:8px 10px;margin-bottom:4px;border:3px solid var(--ink);background:#fff}
 .qblock .tag{display:block;font:400 8px var(--pixel);margin-bottom:5px}
 .qblock .g1{background:#ffe2f1;box-shadow:4px 4px 0 var(--pink)}
@@ -39,11 +39,11 @@
     <h1 class="h1">ANTECEDENTES</h1>
 
     <div class="qblock reveal" data-at="1">
-      <span class="grp g1"><span class="tag">GRUPO 1 · PCG</span>("procedural content generation" OR "procedural content generation via machine learning" OR … )</span>
-      <span class="and">AND</span>
-      <span class="grp g2"><span class="tag">GRUPO 2 · MODELADO DEL JUGADOR</span>( "player modeling" OR "player behavior" OR "player telemetry" OR … )</span>
-      <span class="and">AND</span>
-      <span class="grp g3"><span class="tag">GRUPO 3 · VIDEOJUEGOS</span>( "video game" OR "gaming" OR "platformers" OR "Super Mario" OR … )</span>
+      <span class="grp g1"><span class="tag">String de búsqueda</span>
+        ("procedural content generation" OR "procedural content generation via machine learning" OR … )
+        <br><br>AND ( "player modeling" OR "player behavior" OR "player telemetry" OR … )
+        <br><br>AND ( "video game" OR "gaming" OR "platformers" OR "Super Mario" OR … )
+      </span>
     </div>
     <div class="acm-note reveal" data-at="1"><img class="spr" data-spr="warn" data-s="4" alt=""><span>Nota: ACM no está por problemas técnicos</span></div>
 
@@ -63,21 +63,21 @@
       <polygon data-at="4" points="727,592 735,604 743,592"/>
     </svg>
 
-    <div class="circ pop-in" data-at="2" style="left:735px;top:250px"><span>Identified</span><b id="n-ident">126</b></div>
+    <div class="circ pop-in" data-at="2" style="left:735px;top:250px"><span>Identificados</span><b id="n-ident">126</b></div>
     <div class="pbox reveal" data-at="3" style="left:800px;top:312px;width:260px">
-      <h4>Removed: <b id="n-rem">29</b></h4>
-      <div class="exrow" data-pct="72%"><span>Duplicates</span><b>21</b><i style="--w:100%"></i></div>
-      <div class="exrow" data-pct="28%"><span>No full papers</span><b>8</b><i style="--w:38%"></i></div>
+      <h4>Removidos: <b id="n-rem">29</b></h4>
+      <div class="exrow" data-pct="72%"><span>Duplicados</span><b>21</b><i style="--w:100%"></i></div>
+      <div class="exrow" data-pct="28%"><span>No eran artículos completos</span><b>8</b><i style="--w:38%"></i></div>
     </div>
-    <div class="circ pop-in" data-at="3" style="left:735px;top:440px"><span>Screened</span><b id="n-scr">97</b></div>
+    <div class="circ pop-in" data-at="3" style="left:735px;top:440px"><span>Examinados</span><b id="n-scr">97</b></div>
     <div class="pbox reveal" data-at="4" style="left:800px;top:476px;width:320px">
-      <h4>Excluded: <b id="n-exc">85</b></h4>
-      <div class="exrow" data-pct="60%"><span>Not 2D platformer</span><b>51</b><i style="--w:100%"></i></div>
-      <div class="exrow" data-pct="24%"><span>Off-topic/reviews</span><b>20</b><i style="--w:39%"></i></div>
-      <div class="exrow" data-pct="9%"><span>Not player-driven</span><b>8</b><i style="--w:16%"></i></div>
-      <div class="exrow" data-pct="7%"><span>No adaptive PCG</span><b>6</b><i style="--w:12%"></i></div>
+      <h4>Excluidos: <b id="n-exc">85</b></h4>
+      <div class="exrow" data-pct="60%"><span>No eran de plataformas 2D</span><b>51</b><i style="--w:100%"></i></div>
+      <div class="exrow" data-pct="24%"><span>Fuera de tema</span><b>20</b><i style="--w:39%"></i></div>
+      <div class="exrow" data-pct="9%"><span>No se centran en jugadores</span><b>8</b><i style="--w:16%"></i></div>
+      <div class="exrow" data-pct="7%"><span>No se centran en PCG</span><b>6</b><i style="--w:12%"></i></div>
     </div>
-    <div class="incl pop-in" data-at="5" id="incl" style="left:635px;top:606px">Included <b id="n-inc">12</b><img class="spr" data-spr="check" data-s="4" alt=""></div>
+    <div class="incl pop-in" data-at="5" id="incl" style="left:635px;top:606px">Incluidos<b id="n-inc">12</b><img class="spr" data-spr="check" data-s="4" alt=""></div>
   </section>
 
 <script>

@@ -124,14 +124,14 @@
 
     <!-- 1 -->
     <div class="fp" data-p="1">
-      <div class="ptag">1 · SELECCIÓN DE NIVELES</div>
+      <div class="ptag">SELECCIÓN DE NIVELES</div>
       <p class="pp">Partimos del conjunto de niveles de <b>Super Mario Maker 2</b> publicado en <b>Hugging Face</b>: miles de niveles hechos por personas.</p>
       <div class="docs" id="docs"></div>
       <label class="shot" data-key="hf" style="height:140px"><span>CAPTURA · DATASET EN HUGGING FACE<br>(clic para cargar imagen)</span><img alt=""><input type="file" accept="image/*"></label>
     </div>
     <!-- 2 -->
     <div class="fp" data-p="2">
-      <div class="ptag">2 · FILTRACIÓN POR CRITERIO</div>
+      <div class="ptag">FILTRACIÓN POR CRITERIO</div>
       <p class="pp">Cada nivel pasa por tres filtros. Entre los que sobreviven, <b>se seleccionan los más populares</b>.</p>
       <div class="funwrap" id="funwrap">
         <svg class="funnel" id="funnel" width="504" height="290" viewBox="0 0 504 290">
@@ -147,10 +147,10 @@
     </div>
     <!-- 3 -->
     <div class="fp" data-p="3">
-      <div class="ptag">3 · VERIFICACIÓN CON A*</div>
-      <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y entra al banco <b>«Nivel 0»</b>.</p>
+      <div class="ptag">VERIFICACIÓN CON A*</div>
+      <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y se almacena en el banco de <b>niveles humanos (H)</b>.</p>
       <svg class="astar" id="astar" viewBox="0 0 560 200" height="214"></svg>
-      <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE → NIVEL 0</span></div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE → NIVELES H</span></div>
       <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Menta: ruta encontrada. Esta validación se hace de antemano, solo para los niveles humanos.</small></p>
     </div>
     <!-- 4 -->
@@ -203,8 +203,8 @@
       <div class="cards6" id="cards6"></div>
       <div class="leg3">
         <p><span class="k t-P">P</span><span><b>Personalizados:</b> generados con IA a partir de la telemetría del participante.</span></p>
-        <p><span class="k t-N">N</span><span><b>Genéricos:</b> prediseñados, no dependen del participante.</span></p>
-        <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, banco «Nivel 0», validados con A* de antemano.</span></p>
+        <p><span class="k t-N">N</span><span><b>No personalizados:</b> generados con MarioGPT en el clúster HPC con parámetros aleatorios, sin la telemetría del participante.</span></p>
+        <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, validados con A* de antemano.</span></p>
       </div>
       <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
     </div>
@@ -250,7 +250,7 @@
    METODOLOGÍA — diagrama de flujo con cámara (zoom) y paneles
    ============================================================ */
 (function(){
-  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
   const NS='http://www.w3.org/2000/svg';
   const E=(t,a={},p)=>{ const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); if(p) p.appendChild(e); return e; };
   const svg=$('#fsvg'), world=$('#fworld'), slide=$('#s-flow'), chip=$('#fchip');
@@ -273,10 +273,10 @@
 
   /* ---------- nodos y aristas ---------- */
   const NODES={
-    hf:   {x:310, y:170,w:340,h:100,l:['Selección de niveles','Hugging Face'],c:'mint',n:1,at:1},
-    fil:  {x:730, y:170,w:340,h:100,l:['Filtración','por criterio'],c:'mint',n:2,at:2},
-    astar:{x:1150,y:170,w:340,h:100,l:['Verificación','con A*'],c:'mint',n:3,at:3},
-    bank: {x:1560,y:170,w:340,h:100,l:['Banco «Nivel 0»','niveles humanos (H)'],c:'gold',at:3,go:3,db:1},
+    hf:   {x:310, y:170,w:340,h:100,l:['Selección de niveles','Hugging Face'],c:'mint',at:1},
+    fil:  {x:730, y:170,w:340,h:100,l:['Filtración','por criterio'],c:'mint',at:2},
+    astar:{x:1150,y:170,w:340,h:100,l:['Verificación','con A*'],c:'mint',at:3},
+    bank: {x:1560,y:170,w:300,h:124,l:['Niveles H'],c:'gold',at:3,go:3,db:1},
     welcome:{x:160,y:640,w:250,h:100,l:['Bienvenida','Explicación de sesión'],c:'white',n:1,at:4},
     fam:  {x:480, y:640,w:280,h:100,l:['Niveles de','familiarización (F)'],c:'white',n:2,at:5},
     cons: {x:790, y:640,w:240,h:170,l:['Consentimiento','informado'],c:'gold',n:3,at:6,dia:1},
@@ -286,7 +286,7 @@
     ollama:{x:800,y:940,w:220,h:100,l:['Ollama','(LLM)'],c:'pink',at:8},
     mgpt: {x:1120,y:940,w:220,h:100,l:['MarioGPT'],c:'pink',at:8},
     pers: {x:1480,y:940,w:270,h:100,l:['Nivel','personalizado (P)'],c:'pink',at:8},
-    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles genéricos','prediseñados (N)'],c:'gold',at:9,go:9},
+    gen:  {x:1850,y:940,w:280,h:100,l:['Niveles no','personalizados (N)'],c:'gold',at:9,go:9},
     block:{x:1450,y:640,w:300,h:130,l:['Bloque principal','6 niveles: P · N · H','orden aleatorio'],c:'block',n:5,at:9},
     quest:{x:1430,y:470,w:210,h:80, l:['Cuestionario','6 preguntas'],c:'white',at:10},
     rank: {x:1830,y:640,w:260,h:100,l:['Ranking y','comentarios'],c:'white',n:6,at:11},
@@ -295,8 +295,8 @@
   };
   const FOCUS={1:['hf'],2:['fil'],3:['astar'],4:['welcome'],5:['fam'],6:['cons'],7:['survey'],8:['tele','ollama','mgpt','pers'],9:['block'],10:['quest'],11:['rank'],12:['free'],13:['end'],14:[]};
   const EDGES=[
-    {d:'M480 170H560',at:2},{d:'M900 170H980',at:3},{d:'M1320 170H1390',at:3},
-    {d:'M1560 220V575',at:9,lbl:['H',1590,420]},
+    {d:'M480 170H560',at:2},{d:'M900 170H980',at:3},{d:'M1320 170H1410',at:3},
+    {d:'M1560 232V575',at:9,lbl:['H',1590,420]},
     {d:'M285 640H340',at:5},{d:'M620 640H670',at:6},
     {d:'M910 640H975',at:7,lbl:['Sí',924,690],id:'eYes'},
     {d:'M790 555V490',at:6,lbl:['No',814,532],id:'eNo'},
@@ -326,11 +326,16 @@
     if(n.dia){
       const pts=`${n.x},${y0} ${n.x+n.w/2},${n.y} ${n.x},${y0+n.h} ${n.x-n.w/2},${n.y}`;
       E('polygon',{class:'sh',points:pts,transform:'translate(9 9)'},g); E('polygon',{class:'bx',points:pts,fill:COL[n.c]},g);
+    } else if(n.db){
+      const rh=16, x1=n.x+n.w/2, y1=n.y+n.h/2;
+      const shPath=`M ${x0} ${y0+rh} A ${n.w/2} ${rh} 0 0 1 ${x1} ${y0+rh} L ${x1} ${y1-rh} A ${n.w/2} ${rh} 0 0 1 ${x0} ${y1-rh} Z`;
+      E('path',{class:'sh',d:shPath,transform:'translate(9 9)'},g);
+      E('path',{class:'bx',d:shPath,fill:COL[n.c]},g);
+      E('ellipse',{cx:n.x,cy:y0+rh,rx:n.w/2,ry:rh,fill:'#fff2a8',stroke:'#1a1a1a','stroke-width':5},g);
     } else {
       E('rect',{class:'sh',x:x0+9,y:y0+9,width:n.w,height:n.h},g); E('rect',{class:'bx',x:x0,y:y0,width:n.w,height:n.h,fill:COL[n.c]},g);
-      if(n.db){ E('rect',{x:x0+10,y:y0+10,width:n.w-20,height:n.h-20,fill:'none',stroke:'#1a1a1a','stroke-width':2.5},g); }
     }
-    const k=n.l.length, f1=n.dia?22:(k===1?32:25), start=n.y-((k-1)*29)/2+9;
+    const k=n.l.length, f1=n.dia?22:(n.db?32:(k===1?32:25)), start=n.db?(n.y+11):(n.y-((k-1)*29)/2+9);
     n.l.forEach((txt,i)=>{ const t=E('text',{class:i?'l2':'l1',x:n.x,y:start+i*29,'font-size':i?(k===3?20:21):f1},g); t.textContent=txt; });
     if(n.n){ const bx=n.dia?n.x-n.w/2+34:x0, by=n.dia?n.y-n.h/2+34:y0; E('circle',{class:'bd',cx:bx+2,cy:by+2,r:25,stroke:'#1a1a1a','stroke-width':4},g); const t=E('text',{class:'bn',x:bx+2,y:by+12},g); t.textContent=n.n; }
     g.addEventListener('click',()=>{ if(!slide.classList.contains('full')||busy) return; const to=n.go||n.at; setStep(to,'back'); });
@@ -380,7 +385,8 @@
     s.querySelector('input').onchange=e=>{ const f=e.target.files[0]; if(!f)return; img.src=URL.createObjectURL(f); s.classList.add('has'); }; });
 
   // 1 · documentos
-  (function(){ const box=$('#docs'), likes=['2.4k','1.9k','1.2k','890','640'];
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#docs'), likes=['2.4k','1.9k','1.2k','890','640'];
     for(let i=0;i<5;i++){ const d=document.createElement('div'); d.className='doc'; d.style.left=(6+i*98)+'px'; d.style.setProperty('--dy',Math.abs(i-2)*8); d.style.setProperty('--r',(i-2)*5); d.style.transitionDelay=(i*90)+'ms';
       d.innerHTML=`<img src="${lvlThumb(i+3)}" alt=""><b>nivel_${100+i*37}</b><i>♥ ${likes[i]}</i><div style="margin-top:3px;color:#666">.json</div>`; box.appendChild(d); } })();
 
@@ -402,7 +408,7 @@
     I(spawn,300); spawn();
   }};
 
-  // 3 · A*
+  // 3 · A* (animación pausada, ocurre solo una vez sin bucle)
   PA[3]={on(){
     const sv=$('#astar'), C=20, badge=$('#abadge'); sv.innerHTML=''; badge.classList.remove('show');
     const gaps=new Set([10,11,12,20,21]), plat=new Set([9,10,11,12,13]);
@@ -416,11 +422,14 @@
     cells.sort((a,b)=>a[0]-b[0]);
     const pg=E('g',{},sv); let i=0;
     const hero=E('image',{href:px(heroRows('happy'),1),width:15,height:18,style:'image-rendering:pixelated',opacity:0},sv);
-    I(()=>{ for(let k=0;k<5&&i<cells.length;k++,i++){ const [c,r]=cells[i]; E('rect',{x:c*C+2,y:r*C+2,width:C-4,height:C-4,fill:'#ff7fc0','fill-opacity':.5},exp); } },55);
-    T(()=>{ path.forEach(([c,r],j)=>setTimeout(()=>{ E('circle',{cx:c*C+10,cy:r*C+10,r:4.5,fill:'#4fbf98',stroke:'#1a1a1a','stroke-width':1},pg); },j*22)); },1900);
-    T(()=>{ hero.setAttribute('opacity',1); let j=0; I(()=>{ if(j<path.length){ const [c,r]=path[j++]; hero.setAttribute('x',c*C+2); hero.setAttribute('y',(r+1)*C-18); } },70); },2700);
-    T(()=>badge.classList.add('show'),4700);
-    T(()=>{ if(slide.classList.contains('active')&&step===3){ PA[3].off(); PA[3].on(); } },8200);
+    // 1. Exploración pausada de celdas A*
+    I(()=>{ for(let k=0;k<2&&i<cells.length;k++,i++){ const [c,r]=cells[i]; E('rect',{x:c*C+2,y:r*C+2,width:C-4,height:C-4,fill:'#ff7fc0','fill-opacity':.5},exp); } },80);
+    // 2. Ruta encontrada (puntos verdes)
+    T(()=>{ path.forEach(([c,r],j)=>setTimeout(()=>{ E('circle',{cx:c*C+10,cy:r*C+10,r:4.5,fill:'#4fbf98',stroke:'#1a1a1a','stroke-width':1},pg); },j*55)); },2200);
+    // 3. Avance de Mario paso a paso
+    T(()=>{ hero.setAttribute('opacity',1); let j=0; I(()=>{ if(j<path.length){ const [c,r]=path[j++]; hero.setAttribute('x',c*C+2); hero.setAttribute('y',(r+1)*C-18); } },130); },3900);
+    // 4. Medalla al llegar a la meta (ocurre una vez, sin reset ni loop)
+    T(()=>badge.classList.add('show'),7600);
   },off(){}};
 
   // 5 · telemetría
@@ -477,14 +486,16 @@
   })();
 
   // 11 · ranking
-  (function(){ const box=$('#rank'); let list=['P1','H1','N1','H2','P2','N2'];
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box=$('#rank'); let list=['P1','H1','N1','H2','P2','N2'];
     const draw=()=>{ box.innerHTML=''; list.forEach((id,i)=>{ const t=id[0],d=document.createElement('div'); d.className='rk';
-      d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'Genérico':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
+      d.innerHTML=`<span class="n">${i+1}</span><img src="${lvlThumb(60+id.charCodeAt(0)+(+id[1])*17,28,16,3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t==='P'?'Personalizado':t==='N'?'No personalizado':'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
       const [up,dn]=d.querySelectorAll('button'); up.onclick=()=>{ if(i>0){ [list[i-1],list[i]]=[list[i],list[i-1]]; draw(); } }; dn.onclick=()=>{ if(i<5){ [list[i+1],list[i]]=[list[i],list[i+1]]; draw(); } }; box.appendChild(d); }); };
     draw(); })();
 
   // 12 · juego libre
-  (function(){ let cond='P',sim=0,lv=0,nextLv=150; const tm=$('#timer'),mT=$('#mT'),mL=$('#mL');
+  (function(){
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; let cond='P',sim=0,lv=0,nextLv=150; const tm=$('#timer'),mT=$('#mT'),mL=$('#mL');
     const paintC=()=>$$('.cond button').forEach(b=>b.className=b.dataset.c===cond?'on '+cond:'');
     $$('.cond button').forEach(b=>b.onclick=()=>{ b.blur(); cond=b.dataset.c; sim=0;lv=0;nextLv=150; paintC(); });
     const fmt=s=>{ const r=Math.max(0,1200-s); return String(Math.floor(r/60)).padStart(2,'0')+':'+String(Math.floor(r%60)).padStart(2,'0'); };
@@ -505,15 +516,15 @@
   const CHIP={1:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],2:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],3:[1,'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'],8:[2,'PARTE 2 · GENERACIÓN EN SEGUNDO PLANO'],14:[3,'DIAGRAMA COMPLETO']};
 
   H['s-flow']={
-    enter(){ camTo(CAMS[1],0); },
+    enter(n){ const at = n || 1; camTo(CAMS[at] || CAMS[1], 0); },
     leave(){ clearAnim(); panels.forEach(p=>p.classList.remove('on')); },
     step(n,old){
       clearAnim(); peek.clear(); slide.classList.toggle('full',n===14);
       edgeEls.forEach(e=>e.g.classList.remove('hl','run')); nodeEls.exit.classList.remove('hl');
-      Object.values(nodeEls).forEach(g=>g.classList.remove('focus')); (FOCUS[n]||[]).forEach(id=>nodeEls[id].classList.add('focus'));
+      Object.values(nodeEls).forEach(g=>g.classList.remove('focus')); (FOCUS[n]||[]).forEach(id=>nodeEls[id]?.classList.add('focus'));
       paint(n);
       const c=CHIP[n]||[2,'PARTE 2 · APLICACIÓN DEL EXPERIMENTO']; chip.dataset.p=c[0]; chip.textContent=c[1];
-      camTo(CAMS[n],old<1?0:1100);
+      camTo(CAMS[n] || CAMS[14], old<1?0:1100);
       panels.forEach(p=>p.classList.toggle('on',+p.dataset.p===n));
       PA[n]?.on?.();
     }

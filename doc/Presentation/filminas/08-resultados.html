@@ -51,9 +51,9 @@
 .rmeans{margin:0 0 12px;font-size:13px}
 .rmeans p{display:flex;align-items:center;gap:8px;margin:0 0 5px}
 .rmeans i{flex:none;width:12px;height:12px;border:2.5px solid var(--ink)}
-.rmeans span{flex:1;font-weight:600}
+.rmeans span{flex:1;font-weight:600;white-space:nowrap;font-size:12.5px}
 .rmeans b{font:400 22px/1 var(--display);letter-spacing:.5px}
-.rmeans small{font-size:11px;color:#777;width:92px;text-align:right}
+.rmeans small{font-size:10.5px;color:#777;width:84px;text-align:right}
 .rread{font-size:14px;line-height:1.5;margin:0}
 .rread p{margin:0 0 8px}
 .rread .k{color:var(--violet);font-weight:700}
@@ -62,7 +62,7 @@
 #s-res[data-step="0"] .rhint{opacity:1}
 </style>
 
-  <section class="slide" id="s-res" data-min="0" data-max="6" data-despues-de="s-flow:10" data-sec="Resultados">
+  <section class="slide" id="s-res" data-min="0" data-max="6" data-despues-de="s-flow:10" data-sec="Metodología">
     <h1 class="h1">RESULTADOS</h1>
     <div class="rleg">
       <span><i style="background:var(--mint-d)"></i>Humano (H)</span>
@@ -94,9 +94,9 @@
 
   /* condiciones: mismos colores que en la metodología (H menta, N dorado, P rosa) */
   const COND=[
-    {k:'H',name:'Humano',short:'Humano',col:'#4fbf98'},
-    {k:'N',name:'LLM sin telemetría',short:'LLM sin tel.',col:'#dba93b'},
-    {k:'P',name:'LLM con telemetría',short:'LLM con tel.',col:'#e0559f'}
+    {k:'H',name:'Humano (H)',short:'Humano (H)',col:'#4fbf98'},
+    {k:'N',name:'LLM sin telemetría (N)',short:'Sin telem. (N)',col:'#dba93b'},
+    {k:'P',name:'LLM con telemetría (P)',short:'Con telem. (P)',col:'#e0559f'}
   ];
   /* m: [media, IC inf, IC sup] por condición (H, N, P)
      c: comparaciones [i, j, diferencia (i − j), p Holm, frágil] */
