@@ -1291,6 +1291,68 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     vertical-align: -2px
   }
 
+  /* Preguntas iniciales encuesta */
+  .q-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 4px;
+  }
+  .q-item {
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    padding: 7px 9px;
+    background: #fff;
+    border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .q-num {
+    font: 400 9px var(--pixel);
+    background: var(--mint);
+    border: 2px solid var(--ink);
+    padding: 3px 6px;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .q-body {
+    flex: 1;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+  .q-body b {
+    color: var(--ink);
+    font-size: 12.5px;
+  }
+  .q-type {
+    display: inline-block;
+    font: 400 7.5px var(--pixel);
+    background: var(--gold-l);
+    border: 1px solid var(--ink);
+    padding: 1px 4px;
+    margin-left: 6px;
+    color: var(--ink);
+  }
+  .q-desc {
+    color: #444;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+  .q-opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .q-opts span {
+    font-size: 10px;
+    background: #f0ede8;
+    border: 1px solid #ccc;
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: #333;
+  }
+
 /* ===== 08-resultados.html ===== */
 /* ---------- resultados: 6 gráficos con zoom ---------- */
 .rleg{position:absolute;left:330px;right:150px;top:40px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px 16px;font:600 12.5px var(--body);z-index:3}
@@ -2134,66 +2196,99 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <div class="fp" data-p="4">
     <div class="ptag">1 · BIENVENIDA</div>
     <p class="pp">La persona llega al laboratorio y se le explica cómo será la sesión.</p>
+    <div class="shot has" style="height:210px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
+      <img src="img/02_bienvenida_sesion.png" alt="Pantalla de bienvenida" style="display:block;width:100%;height:100%;object-fit:contain">
+    </div>
     <div class="win-mock">
-      <div class="bar"><span>BIENVENIDA</span><span>▢ ✕</span></div>
+      <div class="bar"><span>INSTRUCCIONES DE LA SESIÓN</span><span>▢ ✕</span></div>
       <div class="bd2"><b>En esta sesión vas a:</b>
         <ol>
-          <li>Jugar niveles de práctica.</li>
-          <li>Jugar 6 niveles y evaluar cada uno.</li>
-          <li>Ordenarlos y dejar comentarios.</li>
+          <li>Jugar niveles de práctica y calibración inicial.</li>
+          <li>Jugar 6 niveles y evaluar cada uno (bloque ciego P, N, H).</li>
+          <li>Ordenarlos por preferencia y dejar comentarios.</li>
           <li>Opcionalmente, seguir jugando libremente.</li>
         </ol>
       </div>
     </div>
-    <p class="pp" style="margin-top:8px"><small>Maqueta ilustrativa: reemplázala con la captura real.</small></p>
-    <label class="shot" data-key="welcome" style="height:150px"><span>CAPTURA · PANTALLA DE BIENVENIDA<br>(clic para
-        cargar imagen)</span><img alt=""><input type="file" accept="image/*"></label>
   </div>
   <!-- 5 -->
   <div class="fp" data-p="5">
     <div class="ptag">2 · NIVELES DE FAMILIARIZACIÓN (F)</div>
-    <p class="pp">La persona juega <b>2 niveles de práctica</b>. Mientras juega, capturamos su <b>telemetría</b>.</p>
-    <div class="tele" id="tele"></div>
-    <p class="pp" style="margin-top:8px"><small>Ejemplo ilustrativo: ajusta los campos a las métricas que realmente
-        registras.</small></p>
-    <label class="shot" data-key="fam" style="height:96px"><span>CAPTURA · NIVEL DE FAMILIARIZACIÓN</span><img
-        alt=""><input type="file" accept="image/*"></label>
+    <p class="pp">La persona juega <b>2 niveles de práctica</b>. Mientras juega, capturamos su <b>telemetría</b>:</p>
+    <div class="shot has" style="height:175px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
+      <img src="img/03_familiarizacion_controles.png" alt="Nivel de familiarización y controles" style="display:block;width:100%;height:100%;object-fit:contain">
+    </div>
+    <div class="tele" id="tele" style="padding:10px 14px;font-size:12px;line-height:1.6"></div>
   </div>
   <!-- 6 -->
   <div class="fp" data-p="6">
     <div class="ptag">3 · CONSENTIMIENTO INFORMADO</div>
     <p class="pp">Antes de seguir, la persona decide. Prueba las dos ramas:</p>
+    <div class="shot has" style="height:210px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
+      <img src="img/01_consentimiento_informado.png" alt="Consentimiento informado" style="display:block;width:100%;height:100%;object-fit:contain">
+    </div>
     <div class="win-mock">
-      <div class="bar"><span>CONSENTIMIENTO INFORMADO</span><span>▢ ✕</span></div>
-      <div class="bd2">
-        <div class="skel" style="width:96%"></div>
-        <div class="skel" style="width:88%"></div>
-        <div class="skel" style="width:92%"></div>
-        <div class="skel" style="width:60%"></div>
-        <div style="display:flex;gap:12px;margin-top:14px"><button class="pbtn no" id="cNo">NO ACEPTO</button><button
+      <div class="bar"><span>RAMA DE DECISIÓN</span><span>▢ ✕</span></div>
+      <div class="bd2" style="padding:10px 14px">
+        <div style="display:flex;gap:12px"><button class="pbtn no" id="cNo">NO ACEPTO</button><button
             class="pbtn yes" id="cYes">ACEPTO</button></div>
       </div>
     </div>
-    <div class="res" id="cres">Elige una opción.</div>
+    <div class="res" id="cres" style="margin-top:8px">Elige una opción.</div>
   </div>
   <!-- 7 -->
-  <div class="fp" data-p="7">
+  <div class="fp" data-p="7" style="overflow-y:auto">
     <div class="ptag">4 · ENCUESTA INICIAL</div>
-    <p class="pp">Preguntas iniciales antes de comenzar el bloque principal.</p>
-    <div class="win-mock">
-      <div class="bar"><span>ENCUESTA INICIAL</span><span>▢ ✕</span></div>
-      <div class="bd2">
-        <div class="skel" style="width:70%"></div>
-        <div class="skel" style="height:26px;width:100%;border:3px solid var(--ink);background:#fff"></div>
-        <div class="skel" style="width:55%"></div>
-        <div class="skel" style="height:26px;width:100%;border:3px solid var(--ink);background:#fff"></div>
-        <div class="skel" style="width:80%"></div>
-        <div class="skel" style="height:26px;width:100%;border:3px solid var(--ink);background:#fff"></div>
+    <p class="pp" style="margin-bottom:8px">Preguntas iniciales antes de comenzar el bloque principal:</p>
+    <div class="q-list">
+      <div class="q-item">
+        <span class="q-num">1</span>
+        <div class="q-body">
+          <b>Edad (en años)</b> <span class="q-type">Numérica</span>
+          <div class="q-desc">Edad cronológica del participante.</div>
+        </div>
+      </div>
+      <div class="q-item">
+        <span class="q-num">2</span>
+        <div class="q-body">
+          <b>Horas de juego semanales</b> <span class="q-type">Selección</span>
+          <div class="q-desc">¿Cuántas horas a la semana juegas videojuegos, de cualquier tipo?</div>
+          <div class="q-opts">
+            <span>&lt; 1 h</span><span>1 a 5 h</span><span>6 a 10 h</span><span>11 a 20 h</span><span>&gt; 20 h</span>
+          </div>
+        </div>
+      </div>
+      <div class="q-item">
+        <span class="q-num">3</span>
+        <div class="q-body">
+          <b>Plataformas 2D</b> <span class="q-type">Selección</span>
+          <div class="q-desc">De esas horas, ¿cuántas dedicas a plataformas 2D (Mario, Celeste, etc.)?</div>
+          <div class="q-opts">
+            <span>Ninguna</span><span>&lt; 1 h</span><span>1 a 3 h</span><span>4 a 7 h</span><span>&gt; 7 h</span>
+          </div>
+        </div>
+      </div>
+      <div class="q-item">
+        <span class="q-num">4</span>
+        <div class="q-body">
+          <b>Experiencia con Mario 2D</b> <span class="q-type">Selección</span>
+          <div class="q-desc">¿Cuál de estas frases describe mejor tu experiencia con Mario?</div>
+          <div class="q-opts">
+            <span>Creador SMM</span><span>Jugador SMM</span><span>Jugador SMB</span><span>Nunca</span>
+          </div>
+        </div>
+      </div>
+      <div class="q-item">
+        <span class="q-num">5</span>
+        <div class="q-body">
+          <b>Dispositivo habitual</b> <span class="q-type">Múltiple</span>
+          <div class="q-desc">¿Con qué sueles jugar normalmente? (Sí/No por opción)</div>
+          <div class="q-opts">
+            <span>Mando / Control</span><span>Teclado / Ratón</span><span>Pantalla táctil</span><span>Otro</span>
+          </div>
+        </div>
       </div>
     </div>
-    <p class="pp" style="margin-top:8px"><small>Maqueta ilustrativa.</small></p>
-    <label class="shot" data-key="survey" style="height:110px"><span>CAPTURA · ENCUESTA INICIAL</span><img alt=""><input
-        type="file" accept="image/*"></label>
   </div>
   <!-- 8 -->
   <div class="fp" data-p="8">
@@ -2225,10 +2320,11 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <!-- 10 -->
   <div class="fp" data-p="10">
     <div class="ptag">CUESTIONARIO TRAS CADA NIVEL</div>
-    <p class="pp">6 preguntas en escala de 7 puntos, de <b>−3 a +3</b>. Prueba el cuestionario:</p>
+    <p class="pp" style="margin-bottom:8px">Evaluación de la experiencia de juego en escala Likert (−3 a +3):</p>
+    <div class="shot has" style="height:170px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
+      <img src="img/04_evaluacion_post_nivel_likert.png" alt="Cuestionario post-nivel Likert" style="display:block;width:100%;height:100%;object-fit:contain">
+    </div>
     <div id="lik"></div>
-    <label class="shot" data-key="quest" style="height:100px;margin-top:8px"><span>CAPTURA · CUESTIONARIO
-        REAL</span><img alt=""><input type="file" accept="image/*"></label>
   </div>
   <!-- 11 -->
   <div class="fp" data-p="11">
@@ -2615,7 +2711,14 @@ const CONFIG = {
   // Puede ser un texto o un objeto {angry, bored, happy}. Vacío = héroe original en pixel art.
   sprites: { player: "" },
   // Capturas de pantalla para el diagrama de metodología (rutas a imágenes). Vacío = recuadro para cargar.
-  shots: { hf: "img/ImagenHuggingFacePrincipal.png", welcome: "", fam: "", survey: "", quest: "" }
+  shots: {
+    hf: "img/ImagenHuggingFacePrincipal.png",
+    welcome: "img/02_bienvenida_sesion.png",
+    fam: "img/03_familiarizacion_controles.png",
+    consent: "img/01_consentimiento_informado.png",
+    survey: "",
+    quest: "img/04_evaluacion_post_nivel_likert.png"
+  }
 };
 
 /* ============================================================
@@ -3175,15 +3278,33 @@ H['s-prisma']={
     const rAF = f => { const id = requestAnimationFrame(f); rafs.push(id); return id; };
 
     /* paquete que viaja por el diagrama */
-    function packet(pts, speed = 420, img) {
+    function packet(pts, speed = 420, img, loop = true) {
       let el;
-      if (img) { el = E('image', { href: img, width: 70, height: 82, class: 'fhero', style: 'image-rendering:pixelated' }, world); }
-      else el = E('circle', { r: 16, class: 'pdot', stroke: '#1a1a1a', 'stroke-width': 5 }, world);
+      if (img) {
+        el = E('image', { href: img, width: 70, height: 82, class: 'fhero', style: 'image-rendering:pixelated', transform: `translate(${pts[0][0] - 35} ${pts[0][1] - 82})` }, world);
+      } else {
+        el = E('circle', { r: 16, cx: pts[0][0], cy: pts[0][1], class: 'pdot', stroke: '#1a1a1a', 'stroke-width': 5 }, world);
+      }
       extraEls.push(el);
       const seg = []; let tot = 0; for (let i = 1; i < pts.length; i++) { const l = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(l); tot += l; }
       const dur = tot / speed * 1000; let t0 = performance.now();
       (function f(now) {
-        let k = ((now - t0) % (dur + 900)) / dur; if (k > 1) k = 1; let d = k * tot, i = 0; while (i < seg.length - 1 && d > seg[i]) { d -= seg[i]; i++; }
+        let elapsed = now - t0;
+        let k;
+        if (loop) {
+          k = ((elapsed) % (dur + 900)) / dur;
+          if (k > 1) k = 1;
+        } else {
+          k = elapsed / dur;
+          if (k >= 1) {
+            k = 1;
+            const last = pts[pts.length - 1];
+            if (img) el.setAttribute('transform', `translate(${last[0] - 35} ${last[1] - 82})`);
+            else { el.setAttribute('cx', last[0]); el.setAttribute('cy', last[1]); }
+            return;
+          }
+        }
+        let d = k * tot, i = 0; while (i < seg.length - 1 && d > seg[i]) { d -= seg[i]; i++; }
         const a = pts[i], b = pts[i + 1], u = seg[i] ? d / seg[i] : 0, x = a[0] + (b[0] - a[0]) * u, y = a[1] + (b[1] - a[1]) * u;
         if (img) el.setAttribute('transform', `translate(${x - 35} ${y - 82 - Math.abs(Math.sin(k * tot / 90)) * 26})`); else { el.setAttribute('cx', x); el.setAttribute('cy', y); }
         rAF(f);
@@ -3296,7 +3417,9 @@ H['s-prisma']={
       on() {
         const out = $('#prompt'), txt = 'Prompt → MarioGPT: «Nivel con saltos exigentes sobre vacíos, pocos enemigos y plataformas elevadas.»'; let i = 0; out.textContent = '';
         if (reduce) out.textContent = txt; else I(() => { if (i < txt.length) out.textContent = txt.slice(0, ++i); }, 32);
-        packet([[480, 700], [480, 940], [1120, 940], [1480, 940], [1480, 720]], 520);
+        T(() => {
+          packet([[480, 700], [480, 940], [1120, 940], [1480, 940], [1480, 720]], 220, null, false);
+        }, 2000);
       }
     };
 
@@ -3315,7 +3438,7 @@ H['s-prisma']={
 
     // 10 · cuestionario
     (function () {
-      const box = $('#lik'), names = ['Disfrute', 'Competencia percibida', 'Dificultad percibida', 'Ajuste del reto', 'Variedad', 'Intención de rejugar'], rows = [];
+      const box = $('#lik'), names = ['1. Diversión / Disfrute', '2. Autoeficacia / Habilidad', '3. Dificultad percibida'], rows = [];
       let h = '<div class="lik"><span></span>' + [-3, -2, -1, 0, 1, 2, 3].map(v => `<span class="hd">${v > 0 ? '+' + v : v}</span>`).join('') + '</div>'; box.innerHTML = h;
       names.forEach(nm => {
         const r = document.createElement('div'); r.className = 'lik'; r.innerHTML = `<span>${nm}</span>` + [-3, -2, -1, 0, 1, 2, 3].map(v => `<button data-v="${v}" aria-label="${nm} ${v}"></button>`).join('');
@@ -3357,7 +3480,13 @@ H['s-prisma']={
     // 13 · final
     PA[13] = { on() { T(() => { if (step === 13) burst(300, 330, 22); }, 600); } };
     // 14 · vista completa: el participante recorre la Parte 2
-    PA[14] = { on() { packet([[160, 640], [480, 640], [790, 640], [1100, 640], [1450, 640], [1830, 640], [2160, 640], [2460, 640]], 330, px(heroRows('happy'), 1)); T(() => { }, 0); } };
+    PA[14] = {
+      on() {
+        T(() => {
+          packet([[160, 640], [480, 640], [790, 640], [1100, 640], [1450, 640], [1830, 640], [2160, 640], [2460, 640]], 330, px(heroRows('happy'), 1), false);
+        }, 1500);
+      }
+    };
 
     /* ---------- visibilidad ---------- */
     function paint(n) {
