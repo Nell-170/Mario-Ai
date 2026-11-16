@@ -680,6 +680,11 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     pointer-events: auto
   }
 
+  .fp[data-p="11"] {
+    left: 528px;
+    width: 702px;
+  }
+
   .ptag {
     display: inline-block;
     font: 400 10px var(--pixel);
@@ -2501,14 +2506,12 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <div id="lik"></div>
   </div>
   <!-- 11 -->
-  <div class="fp" data-p="11" style="overflow-y:auto">
+  <div class="fp" data-p="11">
     <div class="ptag">6 · RANKING Y COMENTARIOS</div>
-    <p class="pp" style="margin-bottom:6px">La persona <b>ordena los 6 niveles</b> que jugó y deja comentarios:</p>
-    <div class="shot has" style="height:155px;border:3px solid var(--ink);background:#111;margin-bottom:8px">
-      <img src="img/05_clasificacion_preferencia_ranking.png" alt="Clasificación de preferencia y ranking" style="display:block;width:100%;height:100%;object-fit:contain">
+    <p class="pp" style="margin-bottom:12px">La persona <b>ordena los 6 niveles</b> jugados (arrastrando las filas) y registra sus comentarios finales:</p>
+    <div class="shot has" style="height:420px;border:3px solid var(--ink);background:#111">
+      <img src="img/05_clasificacion_preferencia_ranking.png" alt="Clasificación de preferencia y ranking de niveles en el experimento" style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
-    <div id="rank"></div>
-    <div class="cmt" style="margin-top:6px;padding:6px 10px;font-size:12px">Comentarios finales y observaciones cualitativas…</div>
   </div>
   <!-- 12 -->
   <div class="fp" data-p="12" style="overflow-y:auto">
@@ -3834,7 +3837,9 @@ H['s-prisma']={
 
     // 11 · ranking
     (function () {
-      const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; const box = $('#rank'); let list = ['P1', 'H1', 'N1', 'H2', 'P2', 'N2'];
+      const $ = s => document.querySelector(s), box = $('#rank');
+      if (!box) return;
+      let list = ['P1', 'H1', 'N1', 'H2', 'P2', 'N2'];
       const draw = () => {
         box.innerHTML = ''; list.forEach((id, i) => {
           const t = id[0], d = document.createElement('div'); d.className = 'rk';
