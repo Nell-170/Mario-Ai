@@ -1851,6 +1851,178 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   font: 400 9px var(--pixel);
   color: #444;
 }
+
+/* ===== 12-anexos-preguntas.html ===== */
+/* ---------- estilos para anexo de preguntas ---------- */
+#s-preguntas {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+}
+.prg-tabs {
+  position: absolute;
+  left: 280px;
+  top: 42px;
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+.prg-tab {
+  font: 400 9.5px var(--pixel);
+  padding: 8px 12px;
+  border: 3px solid var(--ink);
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  transition: all .2s;
+}
+.prg-tab:hover {
+  background: var(--gold-l);
+}
+.prg-tab.on {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+.prg-grid {
+  position: absolute;
+  left: 60px;
+  top: 104px;
+  width: 1160px;
+  height: 575px;
+  display: grid;
+  grid-template-columns: 560px 570px;
+  gap: 30px;
+  align-items: start;
+}
+.prg-win {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 6px 6px 0 var(--ink);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.prg-win-bar {
+  background: var(--ink);
+  color: #fff;
+  padding: 7px 12px;
+  font: 400 9px var(--pixel);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.prg-win-body {
+  padding: 12px 14px;
+}
+.prg-desc {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #222;
+  margin: 0 0 10px;
+}
+.prg-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.prg-item {
+  border: 2px solid var(--ink);
+  background: #faf8f5;
+  padding: 6px 9px;
+  font-size: 12px;
+  line-height: 1.35;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.prg-item-hd {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.prg-id {
+  font: 700 11.5px monospace;
+  color: var(--ink);
+  background: #ece7de;
+  padding: 1px 5px;
+  border: 1px solid #d0c9bc;
+}
+.prg-badge {
+  font: 400 7.5px var(--pixel);
+  padding: 2px 5px;
+  border: 1.5px solid var(--ink);
+  background: var(--gold-l);
+  color: var(--ink);
+}
+.prg-item-txt {
+  font-weight: 700;
+  color: #111;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+.prg-item-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 3px;
+}
+.prg-item-opts span {
+  font-size: 10px;
+  background: #fff;
+  border: 1px solid #bbb;
+  padding: 1px 5px;
+  color: #444;
+  border-radius: 2px;
+}
+.prg-dim {
+  font-size: 11px;
+  color: var(--violet);
+  font-weight: 600;
+  margin-top: 1px;
+}
+.prg-scale-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid var(--ink);
+  background: #1e1e24;
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+.prg-scale-nums {
+  display: flex;
+  gap: 6px;
+  font: 700 11px monospace;
+}
+.prg-scale-nums span {
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+.prg-scale-nums .s-neg { background: var(--pink-d); color: #fff; }
+.prg-scale-nums .s-zero { background: var(--gold); color: var(--ink); }
+.prg-scale-nums .s-pos { background: var(--mint-d); color: var(--ink); }
+
+.prg-foot {
+  border-top: 2px dashed #ccc;
+  padding-top: 8px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: #444;
+}
+.prg-foot b {
+  color: var(--ink);
+}
+.prg-foot code {
+  background: #eee;
+  padding: 1px 4px;
+  font: 700 10.5px monospace;
+  border: 1px solid #ccc;
+}
 </style>
 </head>
 <body>
@@ -2516,6 +2688,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <button class="anx-tab" data-tab="0" id="btnTab0">1 · DATASET HUGGING FACE</button>
     <button class="anx-tab" data-tab="1" id="btnTab1">2 · ATRIBUTOS DE CADA NIVEL</button>
     <button class="anx-tab" data-tab="2" id="btnTab2">3 · PIPELINE DE FILTRADO (FILTER_MM2)</button>
+    <button class="anx-tab" id="btnTabGoPreguntas" type="button" style="border-style:dashed;background:#fff8db">4 · INSTRUMENTO (PREGUNTAS) ➔</button>
   </div>
 
   <!-- Panel 0: Vista Dataset HF y Muestra de Registro Crudo -->
@@ -2690,6 +2863,187 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
           Niveles validados que sirven de contingencia y banco extendido para pruebas piloto y experimentación complementaria.
         </li>
       </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FILMINA: ANEXOS · INSTRUMENTO DE EVALUACIÓN (PREGUNTAS) ============ -->
+
+
+
+<section class="slide" id="s-preguntas" data-min="0" data-max="0" data-sec="Anexos">
+  <h1 class="h1">ANEXOS</h1>
+  <div class="prg-tabs">
+    <button class="prg-tab" id="btnGoBackAnx" type="button">◀ 1-3 · DATASET &amp; FILTRADO</button>
+    <button class="prg-tab on" type="button">4 · INSTRUMENTO DE EVALUACIÓN (PREGUNTAS)</button>
+  </div>
+
+  <div class="prg-grid">
+    <!-- Columna 1: Encuesta Inicial -->
+    <div class="prg-win">
+      <div class="prg-win-bar">
+        <span>BLOQUE INICIAL · PERFIL DEL PARTICIPANTE</span>
+        <span>initial.tsv ▢ ✕</span>
+      </div>
+      <div class="prg-win-body">
+        <p class="prg-desc">
+          Aplicado tras el consentimiento informado para caracterizar al jugador y controlar covariables de habilidad motriz, plataforma y experiencia previa:
+        </p>
+        <div class="prg-items">
+          <!-- 1: edad -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">edad</span>
+              <span class="prg-badge">NUMÉRICA</span>
+            </div>
+            <div class="prg-item-txt">Edad (en años)</div>
+            <div class="prg-dim">Control demográfico y cohorte generacional de jugadores.</div>
+          </div>
+
+          <!-- 2: horas_juego -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">horas_juego</span>
+              <span class="prg-badge" style="background:var(--mint);">SELECCIÓN</span>
+            </div>
+            <div class="prg-item-txt">¿Cuántas horas a la semana juegas videojuegos, de cualquier tipo?</div>
+            <div class="prg-item-opts">
+              <span>&lt; 1 hora</span><span>1 a 5 h</span><span>6 a 10 h</span><span>11 a 20 h</span><span>&gt; 20 h</span>
+            </div>
+          </div>
+
+          <!-- 3: horas_plataformas -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">horas_plataformas</span>
+              <span class="prg-badge" style="background:var(--mint);">SELECCIÓN</span>
+            </div>
+            <div class="prg-item-txt">De esas horas, ¿cuántas dedicas a plataformas 2D (Mario, Celeste, Hollow Knight...)?</div>
+            <div class="prg-item-opts">
+              <span>Ninguna</span><span>&lt; 1 h</span><span>1 a 3 h</span><span>4 a 7 h</span><span>&gt; 7 h</span>
+            </div>
+          </div>
+
+          <!-- 4: experiencia_mario -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">experiencia_mario</span>
+              <span class="prg-badge" style="background:#ffb3da);">SELECCIÓN</span>
+            </div>
+            <div class="prg-item-txt">¿Cuál de estas frases describe mejor tu experiencia con Mario en 2D?</div>
+            <div class="prg-item-opts">
+              <span>Creador SMM</span><span>Jugador SMM</span><span>Jugador SMB</span><span>Nunca he jugado</span>
+            </div>
+          </div>
+
+          <!-- 5: control -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">control</span>
+              <span class="prg-badge" style="background:var(--gold);">MÚLTIPLE (SÍ / NO)</span>
+            </div>
+            <div class="prg-item-txt">¿Con qué sueles jugar normalmente? (Indica Sí o No en cada opción)</div>
+            <div class="prg-item-opts">
+              <span>Mando / Gamepad</span><span>Teclado / Ratón (PC)</span><span>Pantalla táctil</span><span>Otro</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="prg-foot">
+          <b>Destino en datos:</b> Registrado en <code>src/experiment/data/initial.tsv</code> (1 fila por participante, vinculado mediante código anónimo de participante).
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna 2: Cuestionario Post-Nivel -->
+    <div class="prg-win">
+      <div class="prg-win-bar">
+        <span>BLOQUE POST-NIVEL · EXPERIENCIA SUBJETIVA</span>
+        <span>responses.tsv ▢ ✕</span>
+      </div>
+      <div class="prg-win-body">
+        <p class="prg-desc">
+          Evaluación inmediata tras jugar cada uno de los 6 niveles (P, N, H) en orden ciego para evitar sesgo de comparación retrospectiva:
+        </p>
+
+        <div class="prg-scale-bar">
+          <small>Totalmente en desacuerdo</small>
+          <div class="prg-scale-nums">
+            <span class="s-neg">-3</span><span class="s-neg">-2</span><span class="s-neg">-1</span>
+            <span class="s-zero">0</span>
+            <span class="s-pos">+1</span><span class="s-pos">+2</span><span class="s-pos">+3</span>
+          </div>
+          <small>Totalmente de acuerdo</small>
+        </div>
+
+        <div class="prg-items">
+          <!-- 1: disfrute -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">disfrute</span>
+              <span class="prg-badge" style="background:#ffb3da;">ESCALA −3 A +3</span>
+            </div>
+            <div class="prg-item-txt">1. «La pasé bien jugando este nivel.»</div>
+            <div class="prg-dim">Dimensión: <b>Disfrute intrínseco / Flow</b> (placer y diversión lúdica).</div>
+          </div>
+
+          <!-- 2: competencia -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">competencia</span>
+              <span class="prg-badge" style="background:var(--mint);">ESCALA −3 A +3</span>
+            </div>
+            <div class="prg-item-txt">2. «Sentí que era bueno jugando este nivel.»</div>
+            <div class="prg-dim">Dimensión: <b>Autoeficacia percibida</b> (modelo PENS: Competence Need).</div>
+          </div>
+
+          <!-- 3: dificultad -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">dificultad</span>
+              <span class="prg-badge" style="background:var(--gold-l);">7 OPCIONES (−3 A +3)</span>
+            </div>
+            <div class="prg-item-txt">3. «¿Cómo percibiste la dificultad de este nivel para ti?»</div>
+            <div class="prg-item-opts">
+              <span>-3 Demasiado fácil</span><span>-1 Algo fácil</span><span>0 Justa</span><span>+1 Algo difícil</span><span>+3 Demasiado difícil</span>
+            </div>
+          </div>
+
+          <!-- 4: ajuste_reto -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">ajuste_reto</span>
+              <span class="prg-badge" style="background:var(--mint);">ESCALA −3 A +3</span>
+            </div>
+            <div class="prg-item-txt">4. «El nivel ofreció un reto adecuado para mi nivel de habilidad.»</div>
+            <div class="prg-dim">Dimensión: <b>Equilibrio de Reto</b> (Canal de Flujo de Csikszentmihalyi).</div>
+          </div>
+
+          <!-- 5: variedad -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">variedad</span>
+              <span class="prg-badge">ESCALA −3 A +3</span>
+            </div>
+            <div class="prg-item-txt">5. «El nivel presentó elementos, obstáculos y situaciones variadas.»</div>
+            <div class="prg-dim">Dimensión: <b>Riqueza estructural y diversidad</b> de contenido generado.</div>
+          </div>
+
+          <!-- 6: rejugar -->
+          <div class="prg-item">
+            <div class="prg-item-hd">
+              <span class="prg-id">rejugar</span>
+              <span class="prg-badge" style="background:var(--gold);">ESCALA −3 A +3</span>
+            </div>
+            <div class="prg-item-txt">6. «Me gustaría jugar más niveles con este estilo y diseño.»</div>
+            <div class="prg-dim">Dimensión: <b>Intención de rejugabilidad</b> y retención lúdica global.</div>
+          </div>
+        </div>
+
+        <div class="prg-foot">
+          <b>Destino en datos:</b> Registrado en <code>src/experiment/data/responses.tsv</code> (6 filas por participante con ID de nivel, condición P/N/H, respuestas y telemetría).
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -3717,10 +4071,41 @@ H['s-thanks'] = {
     });
   });
 
+  const btnPreguntas = document.getElementById('btnTabGoPreguntas');
+  if(btnPreguntas){
+    btnPreguntas.addEventListener('click', (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-preguntas');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
+      }
+    });
+  }
+
   H['s-anexos'] = {
     enter(n){ setTab(n || 0); },
     leave(){ },
     step(n){ setTab(n || 0); }
+  };
+})();
+
+/* ===== 12-anexos-preguntas.html ===== */
+(function(){
+  const btnBack = document.getElementById('btnGoBackAnx');
+  if(btnBack){
+    btnBack.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'back', 2);
+      }
+    };
+  }
+
+  H['s-preguntas'] = {
+    enter(){ },
+    leave(){ },
+    step(){ }
   };
 })();
 

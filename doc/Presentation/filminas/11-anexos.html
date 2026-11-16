@@ -333,6 +333,7 @@
     <button class="anx-tab" data-tab="0" id="btnTab0">1 · DATASET HUGGING FACE</button>
     <button class="anx-tab" data-tab="1" id="btnTab1">2 · ATRIBUTOS DE CADA NIVEL</button>
     <button class="anx-tab" data-tab="2" id="btnTab2">3 · PIPELINE DE FILTRADO (FILTER_MM2)</button>
+    <button class="anx-tab" id="btnTabGoPreguntas" type="button" style="border-style:dashed;background:#fff8db">4 · INSTRUMENTO (PREGUNTAS) ➔</button>
   </div>
 
   <!-- Panel 0: Vista Dataset HF y Muestra de Registro Crudo -->
@@ -546,6 +547,17 @@
       setStep(idx, idx > step ? 'fwd' : 'back');
     });
   });
+
+  const btnPreguntas = document.getElementById('btnTabGoPreguntas');
+  if(btnPreguntas){
+    btnPreguntas.addEventListener('click', (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-preguntas');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
+      }
+    });
+  }
 
   H['s-anexos'] = {
     enter(n){ setTab(n || 0); },
