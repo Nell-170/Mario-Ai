@@ -848,6 +848,7 @@
     gap: 7px;
     margin-top: 4px;
   }
+
   .q-item {
     display: flex;
     gap: 9px;
@@ -857,6 +858,7 @@
     border: 2px solid var(--ink);
     box-shadow: 3px 3px 0 var(--ink);
   }
+
   .q-num {
     font: 400 9px var(--pixel);
     background: var(--mint);
@@ -865,15 +867,18 @@
     color: var(--ink);
     flex-shrink: 0;
   }
+
   .q-body {
     flex: 1;
     font-size: 12px;
     line-height: 1.35;
   }
+
   .q-body b {
     color: var(--ink);
     font-size: 12.5px;
   }
+
   .q-type {
     display: inline-block;
     font: 400 7.5px var(--pixel);
@@ -883,17 +888,20 @@
     margin-left: 6px;
     color: var(--ink);
   }
+
   .q-desc {
     color: #444;
     font-size: 11px;
     margin-top: 2px;
   }
+
   .q-opts {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
     margin-top: 4px;
   }
+
   .q-opts span {
     font-size: 10px;
     background: #f0ede8;
@@ -982,12 +990,18 @@
     <p class="pp" style="margin-bottom:8px">La persona llega al laboratorio y se le explica cómo será la sesión:</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
       <div class="shot has" style="height:155px;border:3px solid var(--ink);background:#111;position:relative">
-        <div style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 7px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">LABORATORIO</div>
-        <img src="img/10_experimento.jpg" alt="Puesto y entorno físico del experimento" style="display:block;width:100%;height:100%;object-fit:cover">
+        <div
+          style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 7px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">
+          LABORATORIO</div>
+        <img src="img/10_experimento.jpg" alt="Puesto y entorno físico del experimento"
+          style="display:block;width:100%;height:100%;object-fit:cover">
       </div>
       <div class="shot has" style="height:155px;border:3px solid var(--ink);background:#111;position:relative">
-        <div style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 7px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">PANTALLA INICIAL</div>
-        <img src="img/02_bienvenida_sesion.png" alt="Pantalla inicial de bienvenida del software" style="display:block;width:100%;height:100%;object-fit:contain">
+        <div
+          style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 7px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">
+          PANTALLA INICIAL</div>
+        <img src="img/02_bienvenida_sesion.png" alt="Pantalla inicial de bienvenida del software"
+          style="display:block;width:100%;height:100%;object-fit:contain">
       </div>
     </div>
     <div class="win-mock">
@@ -1007,7 +1021,8 @@
     <div class="ptag">2 · NIVELES DE FAMILIARIZACIÓN (F)</div>
     <p class="pp">La persona juega <b>2 niveles de práctica</b>. Mientras juega, capturamos su <b>telemetría</b>:</p>
     <div class="shot has" style="height:175px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
-      <img src="img/03_familiarizacion_controles.png" alt="Nivel de familiarización y controles" style="display:block;width:100%;height:100%;object-fit:contain">
+      <img src="img/03_familiarizacion_controles.png" alt="Nivel de familiarización y controles"
+        style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
     <div class="tele" id="tele" style="padding:10px 14px;font-size:12px;line-height:1.6"></div>
   </div>
@@ -1016,13 +1031,14 @@
     <div class="ptag">3 · CONSENTIMIENTO INFORMADO</div>
     <p class="pp">Antes de seguir, la persona decide. Prueba las dos ramas:</p>
     <div class="shot has" style="height:210px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
-      <img src="img/01_consentimiento_informado.png" alt="Consentimiento informado" style="display:block;width:100%;height:100%;object-fit:contain">
+      <img src="img/01_consentimiento_informado.png" alt="Consentimiento informado"
+        style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
     <div class="win-mock">
       <div class="bar"><span>RAMA DE DECISIÓN</span><span>▢ ✕</span></div>
       <div class="bd2" style="padding:10px 14px">
-        <div style="display:flex;gap:12px"><button class="pbtn no" id="cNo">NO ACEPTO</button><button
-            class="pbtn yes" id="cYes">ACEPTO</button></div>
+        <div style="display:flex;gap:12px"><button class="pbtn no" id="cNo">NO ACEPTO</button><button class="pbtn yes"
+            id="cYes">ACEPTO</button></div>
       </div>
     </div>
     <div class="res" id="cres" style="margin-top:8px">Elige una opción.</div>
@@ -1030,25 +1046,20 @@
   <!-- 7 -->
   <div class="fp" data-p="7" style="overflow-y:auto">
     <div class="ptag">4 · ENCUESTA INICIAL &amp; PERFIL DE LA MUESTRA</div>
-    <p class="pp" style="margin-bottom:8px">Caracterización de participantes previa al juego (<b>n = 76 participantes</b>):</p>
+    <p class="pp" style="margin-bottom:8px">Caracterización de participantes previa al juego (<b>n = 76
+        participantes</b>):</p>
 
     <!-- Barra de KPIs demográficos -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
-      <div style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:8px">
+      <div
+        style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
         <span style="font:400 7px var(--pixel);color:#333;display:block">MUESTRA TOTAL</span>
         <b style="font:400 20px/1.1 var(--display);color:var(--ink)">76 SUJETOS</b>
       </div>
-      <div style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+      <div
+        style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
         <span style="font:400 7px var(--pixel);color:#333;display:block">EDAD MEDIANA</span>
         <b style="font:400 20px/1.1 var(--display);color:var(--ink)">21 AÑOS</b>
-      </div>
-      <div style="border:2px solid var(--ink);background:#ffb3da;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 7px var(--pixel);color:#333;display:block">50% CENTRAL (Q1–Q3)</span>
-        <b style="font:400 20px/1.1 var(--display);color:var(--ink)">20 – 23 AÑOS</b>
-      </div>
-      <div style="border:2px solid var(--ink);background:#fff;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 7px var(--pixel);color:#333;display:block">JUEGO LIBRE</span>
-        <b style="font:400 17px/1.2 var(--display);color:var(--ink)">26H · 25P · 25N</b>
       </div>
     </div>
 
@@ -1056,29 +1067,35 @@
     <div style="display:grid;grid-template-columns:325px 325px;gap:12px;align-items:start">
       <!-- Columna 1: Resultados y Estadísticas de la muestra -->
       <div style="border:2.5px solid var(--ink);background:#fff;padding:8px 10px;box-shadow:3px 3px 0 var(--ink)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:4px">
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:4px">
           <span style="font:400 8px var(--pixel);color:var(--ink)">RESULTADOS DE LA MUESTRA</span>
-          <span style="font:700 9px monospace;background:var(--mint);padding:1px 5px;border:1px solid var(--ink)">n = 76</span>
+          <span style="font:700 9px monospace;background:var(--mint);padding:1px 5px;border:1px solid var(--ink)">n =
+            76</span>
         </div>
 
         <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:6px">
-          <tr style="border-bottom:1px solid #ddd"><td style="padding:2px 0;color:#555">Media ± DE:</td><td style="text-align:right;font-weight:700">22.8 ± 6.1 años</td></tr>
-          <tr style="border-bottom:1px solid #ddd"><td style="padding:2px 0;color:#555">Mediana:</td><td style="text-align:right;font-weight:700;color:var(--violet)">21 años</td></tr>
-          <tr style="border-bottom:1px solid #ddd"><td style="padding:2px 0;color:#555">Rango intercuartílico (Q1–Q3):</td><td style="text-align:right;font-weight:700">20 – 23 años</td></tr>
-          <tr><td style="padding:2px 0;color:#555">Rango mín – máx:</td><td style="text-align:right;font-weight:700">12 – 59 años</td></tr>
+          <tr style="border-bottom:1px solid #ddd">
+            <td style="padding:2px 0;color:#555">Media ± DE:</td>
+            <td style="text-align:right;font-weight:700">22.8 ± 6.1 años</td>
+          </tr>
+          <tr style="border-bottom:1px solid #ddd">
+            <td style="padding:2px 0;color:#555">Mediana:</td>
+            <td style="text-align:right;font-weight:700;color:var(--violet)">21 años</td>
+          </tr>
+          <tr style="border-bottom:1px solid #ddd">
+            <td style="padding:2px 0;color:#555">Rango intercuartílico (Q1–Q3):</td>
+            <td style="text-align:right;font-weight:700">20 – 23 años</td>
+          </tr>
+          <tr>
+            <td style="padding:2px 0;color:#555">Rango mín – máx:</td>
+            <td style="text-align:right;font-weight:700">12 – 59 años</td>
+          </tr>
         </table>
-
-        <div style="font-size:10.5px;line-height:1.4;color:#222;background:#fbf9f6;border:1px solid #e2ddd5;padding:6px 8px">
-          <div style="margin-bottom:4px">▸ <b>La mayoría de los participantes tiene entre 20 y 23 años</b> (cohorte joven y homogénea).</div>
-          <div style="margin-bottom:4px">▸ La media (22.8) queda por encima de la mediana (21) por valores atípicos altos (41 y 59 años); <b>la mediana describe mejor al participante típico</b>.</div>
-          <div style="margin-bottom:4px">▸ Participante de 12 años a revisar según criterio de inclusión.</div>
-          <div>▸ Distribución en juego libre: <b>Humano = 26, Personalizado = 25, Genérico = 25</b> (estrictamente balanceada).</div>
-        </div>
       </div>
 
       <!-- Columna 2: Instrumento de preguntas iniciales -->
       <div>
-        <div style="font:400 8px var(--pixel);color:#555;margin-bottom:5px">INSTRUMENTO (5 PREGUNTAS INITIAL.TSV):</div>
         <div class="q-list" style="margin-top:0;gap:4px">
           <div class="q-item" style="padding:4px 6px">
             <span class="q-num" style="padding:1px 4px;font-size:8px">1</span>
@@ -1151,30 +1168,37 @@
     <div class="ptag">CUESTIONARIO TRAS CADA NIVEL</div>
     <p class="pp" style="margin-bottom:6px">Evaluación de la experiencia de juego en escala Likert (−3 a +3):</p>
     <div class="shot has" style="height:135px;border:3px solid var(--ink);background:#111;margin-bottom:8px">
-      <img src="img/04_evaluacion_post_nivel_likert.png" alt="Cuestionario post-nivel Likert" style="display:block;width:100%;height:100%;object-fit:contain">
+      <img src="img/04_evaluacion_post_nivel_likert.png" alt="Cuestionario post-nivel Likert"
+        style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
     <div id="lik"></div>
   </div>
   <!-- 11 -->
   <div class="fp" data-p="11" style="overflow-y:auto">
     <div class="ptag">6 · RANKING Y PREFERENCIA DE NIVELES</div>
-    <p class="pp" style="margin-bottom:8px">Evaluación de preferencia ordinal (1.º favorito a 6.º menos preferido) con <b>n = 69 participantes</b>:</p>
+    <p class="pp" style="margin-bottom:8px">Evaluación de preferencia ordinal (1.º favorito a 6.º menos preferido) con
+      <b>n = 69 participantes</b>:
+    </p>
 
     <!-- Barra de KPIs del Ranking -->
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
-      <div style="border:2px solid var(--ink);background:#fff;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+      <div
+        style="border:2px solid var(--ink);background:#fff;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
         <span style="font:400 7px var(--pixel);color:#333;display:block">MUESTRA VÁLIDA</span>
         <b style="font:400 18px/1.1 var(--display);color:var(--ink)">69 SUJETOS</b>
       </div>
-      <div style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+      <div
+        style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
         <span style="font:400 7px var(--pixel);color:#333;display:block">HUMANO (H) ★</span>
         <b style="font:400 18px/1.1 var(--display);color:#0a7c55">RANK 3.13</b>
       </div>
-      <div style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+      <div
+        style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
         <span style="font:400 7px var(--pixel);color:#333;display:block">GENÉRICO (N)</span>
         <b style="font:400 18px/1.1 var(--display);color:var(--ink)">RANK 3.68</b>
       </div>
-      <div style="border:2px solid var(--ink);background:#ffb3da;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+      <div
+        style="border:2px solid var(--ink);background:#ffb3da;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
         <span style="font:400 7px var(--pixel);color:#333;display:block">PERSONALIZADO (P)</span>
         <b style="font:400 18px/1.1 var(--display);color:var(--ink)">RANK 3.69</b>
       </div>
@@ -1185,28 +1209,40 @@
       <!-- Columna 1: Método y Captura de Pantalla Real -->
       <div>
         <div class="shot has" style="height:210px;border:2.5px solid var(--ink);background:#111;margin-bottom:6px">
-          <img src="img/05_clasificacion_preferencia_ranking.png" alt="Pantalla de clasificación de preferencia en el experimento" style="display:block;width:100%;height:100%;object-fit:cover">
+          <img src="img/05_clasificacion_preferencia_ranking.png"
+            alt="Pantalla de clasificación de preferencia en el experimento"
+            style="display:block;width:100%;height:100%;object-fit:cover">
         </div>
-        <div style="font-size:10px;line-height:1.35;color:#444;background:#fbf9f6;border:1.5px solid #e2ddd5;padding:5px 7px">
-          <b>Tarea:</b> Ordenar los 6 niveles jugados mediante <i>drag-and-drop</i> y registrar observaciones cualitativas finales. 7 sujetos omitieron la fase (n = 69 válidos).
+        <div
+          style="font-size:10px;line-height:1.35;color:#444;background:#fbf9f6;border:1.5px solid #e2ddd5;padding:5px 7px">
+          <b>Tarea:</b> Ordenar los 6 niveles jugados mediante <i>drag-and-drop</i> y registrar observaciones
+          cualitativas finales. 7 sujetos omitieron la fase (n = 69 válidos).
         </div>
       </div>
 
       <!-- Columna 2: Resumen de Resultados Empíricos -->
       <div style="border:2.5px solid var(--ink);background:#fff;padding:8px 10px;box-shadow:3px 3px 0 var(--ink)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:3px">
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:3px">
           <span style="font:400 8px var(--pixel);color:var(--ink)">HALLAZGOS CLAVE DE PREFERENCIA</span>
-          <span style="font:700 8px monospace;background:var(--gold-l);padding:1px 4px;border:1px solid var(--ink)">414 OBSERVACIONES</span>
+          <span style="font:700 8px monospace;background:var(--gold-l);padding:1px 4px;border:1px solid var(--ink)">414
+            OBSERVACIONES</span>
         </div>
 
         <div style="font-size:10px;line-height:1.35;color:#222">
-          <div style="margin-bottom:4px">▸ <b>Humano superó en preferencia global</b> (rank 3.13). Rara vez fue el peor (solo 12 veces en 6.º lugar vs 27 en N y 30 en P).</div>
-          <div style="margin-bottom:4px">▸ <b>Empate técnico entre IAs:</b> Genérico (3.68) y Personalizado (3.69) prácticamente idénticos en ranking.</div>
-          <div style="margin-bottom:4px">▸ <b>Prueba de Friedman:</b> χ² = 5.52, <i>p</i> = 0.063 (diferencia marginal, no concluyente con esta muestra).</div>
-          <div style="margin-bottom:4px">▸ <b>Fuerte efecto de primacía/orden:</b> el 1.º nivel jugado promedió rank <b>2.20</b> vs <b>4.77</b> del 6.º (fatiga cognitiva).</div>
+          <div style="margin-bottom:4px">▸ <b>Humano superó en preferencia global</b> (rank 3.13). Rara vez fue el peor
+            (solo 12 veces en 6.º lugar vs 27 en N y 30 en P).</div>
+          <div style="margin-bottom:4px">▸ <b>Empate técnico entre IAs:</b> Genérico (3.68) y Personalizado (3.69)
+            prácticamente idénticos en ranking.</div>
+          <div style="margin-bottom:4px">▸ <b>Prueba de Friedman:</b> χ² = 5.52, <i>p</i> = 0.063 (diferencia marginal,
+            no concluyente con esta muestra).</div>
+          <div style="margin-bottom:4px">▸ <b>Fuerte efecto de primacía/orden:</b> el 1.º nivel jugado promedió rank
+            <b>2.20</b> vs <b>4.77</b> del 6.º (fatiga cognitiva).
+          </div>
         </div>
 
-        <button id="btnGoAnxRanking" type="button" style="margin-top:6px;width:100%;font:400 8px var(--pixel);padding:6px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink);transition:all .15s">
+        <button id="btnGoAnxRanking" type="button"
+          style="margin-top:6px;width:100%;font:400 8px var(--pixel);padding:6px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink);transition:all .15s">
           📊 VER ANÁLISIS DETALLADO EN ANEXOS ➔
         </button>
       </div>
@@ -1215,26 +1251,33 @@
   <!-- 12 -->
   <div class="fp" data-p="12" style="overflow-y:auto">
     <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
-    <p class="pp" style="margin-bottom:6px">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b> (opcional):</p>
+    <p class="pp" style="margin-bottom:6px">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>
+      (opcional):</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
       <div class="shot has" style="height:125px;border:3px solid var(--ink);background:#111">
-        <img src="img/07_invitacion_juego_voluntario.png" alt="Invitación al juego voluntario" style="display:block;width:100%;height:100%;object-fit:contain">
+        <img src="img/07_invitacion_juego_voluntario.png" alt="Invitación al juego voluntario"
+          style="display:block;width:100%;height:100%;object-fit:contain">
       </div>
       <div class="shot has" style="height:125px;border:3px solid var(--ink);background:#111">
-        <img src="img/08_modo_juego_libre.png" alt="Modo de juego libre voluntario" style="display:block;width:100%;height:100%;object-fit:contain">
+        <img src="img/08_modo_juego_libre.png" alt="Modo de juego libre voluntario"
+          style="display:block;width:100%;height:100%;object-fit:contain">
       </div>
     </div>
-    <div class="cond" style="margin:4px 0 8px">Condición asignada: <button data-c="P">P</button><button data-c="N">N</button><button data-c="H">H</button>
+    <div class="cond" style="margin:4px 0 8px">Condición asignada: <button data-c="P">P</button><button
+        data-c="N">N</button><button data-c="H">H</button>
     </div>
     <div class="timer" id="timer">20:00<small>(demo acelerada)</small></div>
     <div class="metrics">
       <div>Tiempo jugado<b id="mT">0 min</b></div>
       <div>Niveles jugados<b id="mL">0</b></div>
     </div>
-    <div style="font-size:10px;line-height:1.35;color:#222;background:#fbf9f6;border:1.5px solid #e2ddd5;padding:5px 8px;margin-top:6px">
-      <b>Muestra en juego libre (n = 76):</b> Asignación homogénea de <b>26 H · 25 P · 25 N</b> entre los participantes que aceptaron jugar voluntariamente.
+    <div
+      style="font-size:10px;line-height:1.35;color:#222;background:#fbf9f6;border:1.5px solid #e2ddd5;padding:5px 8px;margin-top:6px">
+      <b>Muestra en juego libre (n = 76):</b> Asignación homogénea de <b>26 H · 25 P · 25 N</b> entre los participantes
+      que aceptaron jugar voluntariamente.
     </div>
-    <p class="pp" style="margin-top:6px"><small>Ambos valores se registran como medida de compromiso (tiempo en tarea voluntaria).</small></p>
+    <p class="pp" style="margin-top:6px"><small>Ambos valores se registran como medida de compromiso (tiempo en tarea
+        voluntaria).</small></p>
   </div>
   <!-- 13 -->
   <div class="fp" data-p="13">
