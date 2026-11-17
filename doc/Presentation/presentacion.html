@@ -2374,9 +2374,16 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <!-- 4 -->
   <div class="fp" data-p="4">
     <div class="ptag">1 · BIENVENIDA Y ENTORNO EXPERIMENTAL</div>
-    <p class="pp">La persona llega al laboratorio y se le explica cómo será la sesión.</p>
-    <div class="shot has" style="height:225px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
-      <img src="img/10_experimento.jpg" alt="Puesto y entorno del experimento en el laboratorio" style="display:block;width:100%;height:100%;object-fit:contain">
+    <p class="pp" style="margin-bottom:8px">La persona llega al laboratorio y se le explica cómo será la sesión:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div class="shot has" style="height:155px;border:3px solid var(--ink);background:#111;position:relative">
+        <div style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 7px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">LABORATORIO</div>
+        <img src="img/10_experimento.jpg" alt="Puesto y entorno físico del experimento" style="display:block;width:100%;height:100%;object-fit:cover">
+      </div>
+      <div class="shot has" style="height:155px;border:3px solid var(--ink);background:#111;position:relative">
+        <div style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 7px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">PANTALLA INICIAL</div>
+        <img src="img/02_bienvenida_sesion.png" alt="Pantalla inicial de bienvenida del software" style="display:block;width:100%;height:100%;object-fit:contain">
+      </div>
     </div>
     <div class="win-mock">
       <div class="bar"><span>INSTRUCCIONES DE LA SESIÓN</span><span>LABORATORIO ▢ ✕</span></div>
@@ -3083,7 +3090,8 @@ const CONFIG = {
   // Capturas de pantalla para el diagrama de metodología (rutas a imágenes). Vacío = recuadro para cargar.
   shots: {
     hf: "img/ImagenHuggingFacePrincipal.png",
-    welcome: "img/10_experimento.jpg",
+    welcome: "img/02_bienvenida_sesion.png",
+    lab: "img/10_experimento.jpg",
     fam: "img/03_familiarizacion_controles.png",
     consent: "img/01_consentimiento_informado.png",
     survey: "",
