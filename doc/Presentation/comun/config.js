@@ -13,5 +13,16 @@ const CONFIG = {
   // Puede ser un texto o un objeto {angry, bored, happy}. Vacío = héroe original en pixel art.
   sprites: { player: "" },
   // Capturas de pantalla para el diagrama de metodología (rutas a imágenes). Vacío = recuadro para cargar.
-  shots: { hf: "img/ImagenHuggingFacePrincipal.png", welcome: "", fam: "", survey: "", quest: "" }
+  shots: {
+    hf: "img/ImagenHuggingFacePrincipal.png",
+    welcome: "img/02_bienvenida_sesion.png",
+    lab: "img/10_experimento.jpg",
+    fam: "img/03_familiarizacion_controles.png",
+    consent: "img/01_consentimiento_informado.png",
+    survey: "",
+    quest: "img/04_evaluacion_post_nivel_likert.png",
+    rank: "img/05_clasificacion_preferencia_ranking.png",
+    free_invite: "img/07_invitacion_juego_voluntario.png",
+    free_play: "img/08_modo_juego_libre.png"
+  }
 };

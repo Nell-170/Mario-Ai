@@ -9,15 +9,15 @@
 }
 .anx-tabs {
   position: absolute;
-  left: 360px;
+  left: 280px;
   top: 42px;
   display: flex;
   gap: 10px;
   z-index: 5;
 }
 .anx-tab {
-  font: 400 10px var(--pixel);
-  padding: 8px 14px;
+  font: 400 9.5px var(--pixel);
+  padding: 8px 12px;
   border: 3px solid var(--ink);
   background: #fff;
   cursor: pointer;
@@ -37,9 +37,9 @@
 .anx-panel {
   position: absolute;
   left: 60px;
-  top: 110px;
+  top: 104px;
   width: 1160px;
-  height: 560px;
+  height: 575px;
   display: none;
   opacity: 0;
   transition: opacity .35s;
@@ -49,31 +49,32 @@
   opacity: 1;
 }
 
-/* Panel 0: Vista Dataset Hugging Face */
+/* Panel 0: Vista Dataset Hugging Face & Registro Crudo */
 #anx-p0 {
-  grid-template-columns: 710px 420px;
+  grid-template-columns: 630px 500px;
   gap: 30px;
   align-items: start;
 }
 .anx-img-win {
   border: 4px solid var(--ink);
   background: #fff;
-  box-shadow: 7px 7px 0 var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
   overflow: hidden;
+  margin-bottom: 12px;
 }
 .anx-img-bar {
   background: var(--ink);
   color: #fff;
-  padding: 7px 12px;
+  padding: 6px 12px;
   font: 400 9px var(--pixel);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 .anx-img-body {
-  padding: 8px;
+  padding: 6px;
   background: #111;
-  max-height: 480px;
+  max-height: 235px;
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -81,22 +82,43 @@
 .anx-img-body img {
   width: 100%;
   height: auto;
+  max-height: 223px;
+  object-fit: contain;
   display: block;
-  border: 2px solid #333;
 }
+
+.anx-json-win {
+  border: 4px solid var(--ink);
+  background: #1e1e24;
+  box-shadow: 6px 6px 0 var(--ink);
+  overflow: hidden;
+}
+.anx-json-code {
+  margin: 0;
+  padding: 10px 14px;
+  font: 500 11.5px/1.45 'Courier New', monospace;
+  color: #e6e6e6;
+  background: #1e1e24;
+  overflow-x: auto;
+}
+.j-key { color: #ff7fc0; font-weight: 700; }
+.j-num { color: #94ddc6; font-weight: 700; }
+.j-str { color: #f6d36b; }
+.j-com { color: #888; font-style: italic; }
+
 .anx-card {
   border: 4px solid var(--ink);
   background: #fff;
-  box-shadow: 7px 7px 0 var(--ink);
-  padding: 20px;
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: 18px 20px;
 }
 .anx-badge {
   display: inline-block;
-  font: 400 9px var(--pixel);
-  padding: 5px 9px;
+  font: 400 8.5px var(--pixel);
+  padding: 4px 8px;
   background: var(--mint);
   border: 2px solid var(--ink);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .anx-title {
   font: 400 24px var(--display);
@@ -104,21 +126,21 @@
   margin: 0 0 10px;
 }
 .anx-desc {
-  font-size: 14.5px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.5;
   color: #222;
-  margin: 0 0 14px;
+  margin: 0 0 12px;
 }
 .anx-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  font-size: 13.5px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.55;
 }
 .anx-list li {
   margin-bottom: 8px;
-  padding-left: 20px;
+  padding-left: 18px;
   position: relative;
 }
 .anx-list li::before {
@@ -126,12 +148,111 @@
   position: absolute;
   left: 0;
   color: var(--violet);
-  font-size: 10px;
-  top: 2px;
+  font-size: 9px;
+  top: 3px;
 }
 
-/* Panel 1: Filtrado de código filter_mm2.py */
+/* Panel 1: Diccionario de Atributos */
 #anx-p1 {
+  grid-template-columns: 710px 420px;
+  gap: 30px;
+  align-items: start;
+}
+.anx-attr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.anx-attr-box {
+  border: 3px solid var(--ink);
+  background: #fff;
+  box-shadow: 5px 5px 0 var(--ink);
+  padding: 12px 14px;
+}
+.anx-attr-tag {
+  display: inline-block;
+  font: 400 8.5px var(--pixel);
+  padding: 3px 7px;
+  border: 2px solid var(--ink);
+  background: var(--gold-l);
+  margin-bottom: 8px;
+}
+.anx-attr-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.anx-attr-list li {
+  margin-bottom: 7px;
+  padding-left: 14px;
+  position: relative;
+}
+.anx-attr-list li::before {
+  content: '▪';
+  position: absolute;
+  left: 0;
+  color: var(--pink-d);
+  font-size: 14px;
+  top: -2px;
+}
+.anx-attr-list code {
+  background: #f0ede8;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font: 700 11px monospace;
+  color: var(--ink);
+  border: 1px solid #d5d0c8;
+}
+.anx-rule {
+  color: var(--violet);
+  font-weight: 600;
+  font-size: 11.5px;
+}
+
+.anx-qa-box {
+  margin-bottom: 11px;
+  padding-bottom: 9px;
+  border-bottom: 2px dashed #ddd;
+}
+.anx-qa-box:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.anx-q {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 3px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.anx-q::before {
+  content: '✔';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  background: var(--mint);
+  border: 1.5px solid var(--ink);
+  font: 700 8.5px var(--pixel);
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.anx-a {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #333;
+  margin: 0;
+  padding-left: 21px;
+}
+
+/* Panel 2: Pipeline de filtrado (filter_mm2.py) */
+#anx-p2 {
   grid-template-columns: 640px 480px;
   gap: 30px;
   align-items: start;
@@ -139,7 +260,7 @@
 .cf-anx-win {
   border: 4px solid var(--ink);
   background: #fff;
-  box-shadow: 7px 7px 0 var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
   overflow: hidden;
 }
 .cf-anx-bar {
@@ -182,6 +303,49 @@
   border-radius: 3px;
   border: 1px solid #444;
 }
+.cf-tbl-anx {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  background: #fff;
+}
+.cf-tbl-anx th {
+  background: var(--ink);
+  color: #fff;
+  font: 400 7.5px var(--pixel);
+  padding: 5px 7px;
+  text-align: left;
+  border-bottom: 2px solid var(--ink);
+}
+.cf-tbl-anx th.num, .cf-tbl-anx td.num {
+  text-align: right;
+  font-family: monospace;
+}
+.cf-tbl-anx td {
+  padding: 3.5px 7px;
+  border-bottom: 1px solid #e8e4de;
+  color: #222;
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+.cf-tbl-anx tr:nth-child(even) {
+  background: #fdfcf9;
+}
+.cf-tbl-anx tr.hl-astar {
+  background: #d7f4e8;
+  font-weight: 700;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+.cf-tbl-anx tr.hl-astar td {
+  color: var(--ink);
+}
+.cf-tbl-anx code {
+  font: 700 9.5px monospace;
+  background: #eee;
+  padding: 1px 3px;
+  border-radius: 2px;
+}
 .anx-stats {
   display: flex;
   gap: 12px;
@@ -206,60 +370,235 @@
 }
 </style>
 
-<section class="slide" id="s-anexos" data-min="0" data-max="1" data-sec="Anexos">
+<section class="slide" id="s-anexos" data-min="0" data-max="2" data-sec="Anexos">
   <h1 class="h1">ANEXOS</h1>
   <div class="anx-tabs">
     <button class="anx-tab" data-tab="0" id="btnTab0">1 · DATASET HUGGING FACE</button>
-    <button class="anx-tab" data-tab="1" id="btnTab1">2 · FILTRADO ESPECÍFICO (FILTER_MM2)</button>
+    <button class="anx-tab" data-tab="1" id="btnTab1">2 · ATRIBUTOS DE CADA NIVEL</button>
+    <button class="anx-tab" data-tab="2" id="btnTab2">3 · PIPELINE DE FILTRADO (FILTER_MM2)</button>
+    <button class="anx-tab" id="btnTabGoPreguntas" type="button" style="border-style:dashed;background:#fff8db">4 · INSTRUMENTO ➔</button>
+    <button class="anx-tab" id="btnTabGoRanking" type="button" style="border-style:dashed;background:#eaf8f3">5 · RANKING ➔</button>
   </div>
 
-  <!-- Panel 0: Dataset HF -->
+  <!-- Panel 0: Vista Dataset HF y Muestra de Registro Crudo -->
   <div class="anx-panel" id="anx-p0">
-    <div class="anx-img-win">
-      <div class="anx-img-bar">
-        <span>HUGGING FACE · REPOSITORIO SUPER MARIO MAKER 2</span>
-        <span>1920 × 1034 ▢ ✕</span>
+    <div>
+      <div class="anx-img-win">
+        <div class="anx-img-bar">
+          <span>HUGGING FACE · THEGREATRAMBLER/MM2_LEVEL</span>
+          <span>196 SHARDS PARQUET ▢ ✕</span>
+        </div>
+        <div class="anx-img-body">
+          <img src="img/ImagenHuggingFacePrincipal.png" alt="Dataset Super Mario Maker 2 en Hugging Face">
+        </div>
       </div>
-      <div class="anx-img-body">
-        <img src="img/ImagenHuggingFacePrincipal.png" alt="Dataset Super Mario Maker 2 en Hugging Face">
+
+      <div class="anx-json-win">
+        <div class="anx-img-bar">
+          <span>REGISTRO CRUDO EN DATASET (MUESTRA REAL JSON)</span>
+          <span>SMM2 RECORD</span>
+        </div>
+        <pre class="anx-json-code">{
+  <span class="j-key">"data_id"</span>: <span class="j-num">3008749</span>,                     <span class="j-com">// ID único en red de Nintendo</span>
+  <span class="j-key">"name"</span>: <span class="j-str">"SMB 1-1 Competitive Race"</span>,     <span class="j-com">// Nombre dado por el diseñador</span>
+  <span class="j-key">"gamestyle"</span>: <span class="j-num">0</span>,                      <span class="j-com">// 0 = Super Mario Bros. 1</span>
+  <span class="j-key">"theme"</span>: <span class="j-num">0</span>,                          <span class="j-com">// 0 = Overworld (pradera)</span>
+  <span class="j-key">"difficulty"</span>: <span class="j-num">0</span>,                     <span class="j-com">// Dificultad asignada por Nintendo</span>
+  <span class="j-key">"clear_rate"</span>: <span class="j-num">30.47</span>,                 <span class="j-com">// 30.47% tasa de superación</span>
+  <span class="j-key">"clears"</span>: <span class="j-num">2944</span>,  <span class="j-key">"attempts"</span>: <span class="j-num">9661</span>,  <span class="j-com">// Victorias e intentos globales</span>
+  <span class="j-key">"plays"</span>: <span class="j-num">7098</span>,   <span class="j-key">"likes"</span>: <span class="j-num">1735</span>,      <span class="j-com">// Sesiones únicas y valoración</span>
+  <span class="j-key">"timer"</span>: <span class="j-num">300</span>,                        <span class="j-com">// Tiempo límite (nivel completo)</span>
+  <span class="j-key">"level_data"</span>: <span class="j-str">"&lt;bytes binary BCD&gt;"</span>   <span class="j-com">// Geometría comprimida</span>
+}</pre>
       </div>
     </div>
+
     <div class="anx-card">
-      <span class="anx-badge">REPOSITORIO DE DATOS</span>
+      <span class="anx-badge">REPOSITORIO Y ESTRUCTURA DE DATOS</span>
       <h3 class="anx-title">SUPER MARIO MAKER 2 (HF)</h3>
       <p class="anx-desc">
-        Repositorio masivo con <b>~26.6 millones de registros</b> de niveles creados por la comunidad mundial de Nintendo Switch, incluyendo telemetría de juego y metadatos de diseño.
+        Repositorio abierto en Hugging Face (<code>TheGreatRambler/mm2_level</code>) que preserva <b>~26.6 millones de niveles</b> creados por personas en Nintendo Switch entre 2019 y 2021, integrando diseño espacial y telemetría comunitaria.
       </p>
+
+      <div class="anx-stats" style="margin: 0 0 14px 0;">
+        <div class="anx-stat-box" style="padding: 7px;"><span>NIVELES GLOBALES</span><b style="font-size:20px;">26.6M</b></div>
+        <div class="anx-stat-box" style="padding: 7px; background:var(--mint);"><span>FORMATO</span><b style="font-size:20px;">PARQUET</b></div>
+        <div class="anx-stat-box" style="padding: 7px; background:#ffb3da;"><span>LECTURA</span><b style="font-size:20px;">STREAMING</b></div>
+      </div>
+
       <ul class="anx-list">
-        <li><b>Metadatos extraídos:</b> <code>gamestyle</code>, <code>tag</code>, <code>clearrate</code>, <code>plays</code>, <code>likes</code> y tiempo de creación.</li>
-        <li><b>Propósito en el proyecto:</b> Banco base del que se extraen los niveles humanos reales (<b>Condición H</b>) y niveles de prueba previa (<b>Condición F</b>).</li>
-        <li><b>Garantía de calidad:</b> Filtrado algorítmico estricto y verificación de transitabilidad mediante el agente <b>A* (Baumgarten)</b>.</li>
+        <li><b>¿Por qué este repositorio?:</b> Es el corpus empírico más representativo y estandarizado de diseño humano de plataformas 2D disponible en la literatura científica.</li>
+        <li><b>Streaming sin descarga local:</b> Mediante la librería <code>datasets</code> de Hugging Face se procesan los 196 shards iterando registros en memoria RAM sin necesidad de descargar cientos de gigabytes a disco.</li>
+        <li><b>Doble naturaleza del dato:</b> Cada registro vincula la <b>telemetría de juego</b> (intentos, victorias, likes) con la <b>geometría pura del mapa</b> (bloques, plataformas, enemigos).</li>
       </ul>
     </div>
   </div>
 
-  <!-- Panel 1: Filtrado filter_mm2.py -->
+  <!-- Panel 1: Diccionario Detallado de Atributos y Criterios Metodológicos -->
   <div class="anx-panel" id="anx-p1">
+    <div>
+      <div class="anx-attr-grid">
+        <!-- Bloque 1: Identificación y Motor -->
+        <div class="anx-attr-box">
+          <span class="anx-attr-tag">IDENTIFICACIÓN &amp; MOTOR</span>
+          <ul class="anx-attr-list">
+            <li><code>data_id</code>: ID único en Nintendo Network (permite trazabilidad externa).</li>
+            <li><code>name</code>: Título otorgado por el autor humano.</li>
+            <li><code>gamestyle</code>: Motor físico (0: SMB1, 1: SMB3, 2: SMW, 3: NSMBU, 4: 3DW).<br><span class="anx-rule">→ Criterio: Solo 0 (SMB1) para emparejar con Mario-AI y MAF.</span></li>
+            <li><code>theme</code>: Entorno (0: Overworld, 1: Underground, 2: Castle...).</li>
+          </ul>
+        </div>
+
+        <!-- Bloque 2: Dificultad y Telemetría -->
+        <div class="anx-attr-box">
+          <span class="anx-attr-tag" style="background:var(--mint);">DIFICULTAD &amp; TELEMETRÍA</span>
+          <ul class="anx-attr-list">
+            <li><code>clear_rate</code>: % histórico de victorias ($clears/attempts$).<br><span class="anx-rule">→ Criterio: 30% a 50% (zona de flujo).</span></li>
+            <li><code>attempts</code>: Total de vidas/intentos jugados por usuarios.<br><span class="anx-rule">→ Criterio: &ge; 150 (significancia estadística).</span></li>
+            <li><code>clears</code>: Cantidad absoluta de superaciones exitosas.</li>
+            <li><code>plays</code>: Jugadores únicos que probaron el nivel.</li>
+          </ul>
+        </div>
+
+        <!-- Bloque 3: Curaduría y Aceptación -->
+        <div class="anx-attr-box">
+          <span class="anx-attr-tag" style="background:#ffb3da;">CURADURÍA SOCIAL</span>
+          <ul class="anx-attr-list">
+            <li><code>likes</code>: Votos positivos de jugadores reales.<br><span class="anx-rule">→ Criterio: &ge; 30 (filtro contra niveles troll o vacíos).</span></li>
+            <li><code>boos</code>: Votos negativos de descontento.</li>
+            <li><code>num_comments</code>: Comentarios dejados en el mapa.</li>
+            <li><code>difficulty</code>: Categoría Nintendo (Easy, Normal, Expert).</li>
+          </ul>
+        </div>
+
+        <!-- Bloque 4: Geometría y Tiempo -->
+        <div class="anx-attr-box">
+          <span class="anx-attr-tag" style="background:var(--gold);">GEOMETRÍA &amp; TIEMPO</span>
+          <ul class="anx-attr-list">
+            <li><code>timer</code>: Tiempo límite fijado en segundos.<br><span class="anx-rule">→ Criterio: &ge; 250s (proxy de longitud de nivel).</span></li>
+            <li><code>autoscroll_speed</code>: Velocidad de cámara (0 = manual).</li>
+            <li><code>level_data</code>: Blob binario comprimido con el tilemap.<br><span class="anx-rule">→ Se decodifica a matriz MAF/ASCII (X, ?, E, o).</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta lateral: Criterios Metodológicos y Control -->
+    <div class="anx-card">
+      <span class="anx-badge" style="background:var(--gold);">CRITERIOS METODOLÓGICOS</span>
+      <h3 class="anx-title">VALIDACIÓN Y CONTROL</h3>
+
+      <div class="anx-qa-box">
+        <div class="anx-q">HOMOGENEIDAD DE FÍSICAS (SMB1)</div>
+        <p class="anx-a">Garantiza total coherencia biomecánica con MarioGPT y Mario-AI, descartando mecánicas no lineales de otros estilos (agarre de ítems, saltos en pared o planeo).</p>
+      </div>
+
+      <div class="anx-qa-box">
+        <div class="anx-q">VENTANA DE FLUJO (30% - 50%)</div>
+        <p class="anx-a">Selecciona diseños con desafío balanceado, excluyendo niveles automatizados o pasillos vacíos (&gt;50%) y mapas punitivos de ensayo-error (&lt;30%).</p>
+      </div>
+
+      <div class="anx-qa-box">
+        <div class="anx-q">CONFIABILIDAD MUESTRAL (&ge; 150 INTENTOS)</div>
+        <p class="anx-a">Asegura representatividad estadística para mitigar artefactos por baja participación comunitaria mediante convergencia asintótica.</p>
+      </div>
+
+      <div class="anx-qa-box">
+        <div class="anx-q">SOLUBILIDAD FORMAL CERTIFICADA (A*)</div>
+        <p class="anx-a">Cada mapa convertido a MAF es recorrido y resuelto por el agente inteligente de Baumgarten antes de su inclusión en el banco experimental.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 2: Filtrado filter_mm2.py -->
+  <div class="anx-panel" id="anx-p2">
     <div>
       <div class="cf-anx-win">
         <div class="cf-anx-bar">
-          <span>src/dataset/filter_mm2.py · PIPELINE DE STREAMING</span>
-          <span>PYTHON 3</span>
+          <span>src/dataset/filter_mm2.py · EMBUDO DE FILTRADO (RESULTADOS REALES)</span>
+          <span>DATASET FUNNEL ▢ ✕</span>
         </div>
-        <div class="code-filter-anx" id="anxCodeFilter">
-          <div class="cf-line-anx" data-cf="0"><span><span class="cf-kw">for</span> rec <span class="cf-kw">in</span> ds:</span><span class="cf-cnt">26.6M (100%)</span></div>
-          <div class="cf-line-anx" data-cf="1"><span><span class="cf-kw"> if</span> rec[<span class="cf-str">"gamestyle"</span>] != <span class="cf-num">0</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~5.3M (SMB1)</span></div>
-          <div class="cf-line-anx" data-cf="2"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> (<span class="cf-num">30</span> &lt;= cr &lt;= <span class="cf-num">50</span>): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~580K (Flujo)</span></div>
-          <div class="cf-line-anx" data-cf="3"><span><span class="cf-kw"> if</span> attempts &lt; <span class="cf-num">150</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~140K (Fiable)</span></div>
-          <div class="cf-line-anx" data-cf="4"><span><span class="cf-kw"> if</span> likes &lt; <span class="cf-num">30</span> <span class="cf-kw">or</span> timer &lt; <span class="cf-num">250</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~25K (Calidad)</span></div>
-          <div class="cf-line-anx" data-cf="5"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> convert_maf(rec): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~12K (Geometría)</span></div>
-          <div class="cf-line-anx" data-cf="6"><span><span class="cf-com"> heapq.heappush(top_likes, rec)</span></span><span class="cf-cnt" style="color:var(--mint-d)">★ Top candidatos</span></div>
-        </div>
+        <table class="cf-tbl-anx">
+          <thead>
+            <tr>
+              <th>PASO &amp; CRITERIO</th>
+              <th class="num">QUEDAN</th>
+              <th class="num">DESCARTADOS</th>
+              <th class="num">% PASO PREV.</th>
+              <th class="num">% TOTAL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. Niveles inspeccionados</b> (lote streaming)</td>
+              <td class="num"><b>14 165</b></td>
+              <td class="num" style="color:#888">0</td>
+              <td class="num">100.0%</td>
+              <td class="num">100.0%</td>
+            </tr>
+            <tr>
+              <td><b>2. Estilo de juego:</b> <code>gamestyle == 0</code> (SMB1)</td>
+              <td class="num"><b>2 045</b></td>
+              <td class="num" style="color:#c33">12 120</td>
+              <td class="num">14.44%</td>
+              <td class="num">14.44%</td>
+            </tr>
+            <tr>
+              <td><b>3. Tasa de victoria:</b> <code>30.0 &le; clear_rate &le; 50.0</code></td>
+              <td class="num"><b>387</b></td>
+              <td class="num" style="color:#c33">1 658</td>
+              <td class="num">18.92%</td>
+              <td class="num">2.73%</td>
+            </tr>
+            <tr>
+              <td><b>4. Intentos mínimos:</b> <code>attempts &ge; 150</code></td>
+              <td class="num"><b>362</b></td>
+              <td class="num" style="color:#c33">25</td>
+              <td class="num">93.54%</td>
+              <td class="num">2.56%</td>
+            </tr>
+            <tr>
+              <td><b>5. Likes mínimos:</b> <code>likes &ge; 30</code></td>
+              <td class="num"><b>198</b></td>
+              <td class="num" style="color:#c33">164</td>
+              <td class="num">54.70%</td>
+              <td class="num">1.40%</td>
+            </tr>
+            <tr>
+              <td><b>6. Timer mínimo:</b> <code>timer &ge; 250</code></td>
+              <td class="num"><b>180</b></td>
+              <td class="num" style="color:#c33">18</td>
+              <td class="num">90.91%</td>
+              <td class="num">1.27%</td>
+            </tr>
+            <tr>
+              <td><b>7. Viable para MAF:</b> <code>convert() != None</code></td>
+              <td class="num"><b>80</b></td>
+              <td class="num" style="color:#c33">100</td>
+              <td class="num">44.44%</td>
+              <td class="num">0.56%</td>
+            </tr>
+            <tr>
+              <td><b>8. Top seleccionados:</b> <code>top 80 por likes</code></td>
+              <td class="num"><b>80</b></td>
+              <td class="num" style="color:#888">0</td>
+              <td class="num">100.0%</td>
+              <td class="num">0.56%</td>
+            </tr>
+            <tr class="hl-astar">
+              <td><b>★ 9. Verificados con A*:</b> solubilidad certificada</td>
+              <td class="num" style="color:var(--ink);font-size:12px"><b>14</b></td>
+              <td class="num" style="color:#c33">66</td>
+              <td class="num">17.50%</td>
+              <td class="num"><b>0.10%</b></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <div class="anx-stats">
-        <div class="anx-stat-box"><span>HF CRUDA</span><b>26.6M</b></div>
-        <div class="anx-stat-box" style="background:var(--mint)"><span>SMB1 + FLUJO</span><b>~25K</b></div>
-        <div class="anx-stat-box" style="background:#ffb3da"><span>A* VERIFICADOS</span><b>14</b></div>
+        <div class="anx-stat-box"><span>HF INSPECCIONADOS</span><b>14 165</b></div>
+        <div class="anx-stat-box" style="background:var(--gold-l)"><span>VIABLES MAF</span><b>80</b></div>
+        <div class="anx-stat-box" style="background:var(--mint)"><span>A* CERTIFICADOS</span><b>14</b></div>
       </div>
     </div>
 
@@ -289,13 +628,19 @@
   const slide = document.getElementById('s-anexos');
   if(!slide) return;
   const tabs = document.querySelectorAll('.anx-tab');
-  const panels = [document.getElementById('anx-p0'), document.getElementById('anx-p1')];
+  const panels = [
+    document.getElementById('anx-p0'),
+    document.getElementById('anx-p1'),
+    document.getElementById('anx-p2')
+  ];
   const lines = document.querySelectorAll('#anxCodeFilter .cf-line-anx');
 
   function setTab(idx){
     tabs.forEach((t, i) => t.classList.toggle('on', i === idx));
-    panels.forEach((p, i) => p.classList.toggle('on', i === idx));
-    if(idx === 1){
+    panels.forEach((p, i) => {
+      if(p) p.classList.toggle('on', i === idx);
+    });
+    if(idx === 2){
       lines.forEach(l => l.classList.remove('active'));
       lines.forEach((l, i) => {
         setTimeout(() => {
@@ -314,6 +659,28 @@
     });
   });
 
+  const btnPreguntas = document.getElementById('btnTabGoPreguntas');
+  if(btnPreguntas){
+    btnPreguntas.addEventListener('click', (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-preguntas');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
+      }
+    });
+  }
+
+  const btnRanking = document.getElementById('btnTabGoRanking');
+  if(btnRanking){
+    btnRanking.addEventListener('click', (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos-ranking');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
+      }
+    });
+  }
+
   H['s-anexos'] = {
     enter(n){ setTab(n || 0); },
     leave(){ },
@@ -321,4 +688,3 @@
   };
 })();
 </script>
-
