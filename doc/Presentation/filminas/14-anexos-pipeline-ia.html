@@ -1,0 +1,327 @@
+<!-- ============ FILMINA: ANEXOS · PIPELINE DE GENERACIÓN IA (TELEMETRÍA ➔ OLLAMA ➔ MARIOGPT) ============ -->
+
+<style>
+/* ---------- estilos para anexo de pipeline de IA ---------- */
+#s-anexos-pipeline {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+}
+.api-tabs {
+  position: absolute;
+  left: 260px;
+  top: 26px;
+  display: flex;
+  gap: 8px;
+  z-index: 5;
+}
+.api-tab {
+  font: 400 8.5px var(--pixel);
+  padding: 6px 10px;
+  border: 3px solid var(--ink);
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  transition: all .2s;
+}
+.api-tab:hover {
+  background: var(--gold-l);
+}
+.api-tab.on {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.api-container {
+  position: absolute;
+  left: 60px;
+  top: 76px;
+  width: 1160px;
+  height: 595px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Barra de flujo del pipeline */
+.api-flow-bar {
+  border: 3px solid var(--ink);
+  background: #fff;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 700 11px var(--body);
+}
+.api-step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 3px;
+  font-size: 11px;
+}
+.api-arrow {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+/* Cuadrícula de 3 columnas */
+.api-grid {
+  display: grid;
+  grid-template-columns: 365px 385px 380px;
+  gap: 15px;
+  flex: 1;
+}
+
+.api-win {
+  border: 3.5px solid var(--ink);
+  background: #fff;
+  box-shadow: 5px 5px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.api-win-hd {
+  background: var(--ink);
+  color: #fff;
+  padding: 5px 10px;
+  font: 400 8px var(--pixel);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.api-win-body {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background: #1e1e24;
+  color: #e6e6e6;
+  font: 500 10.5px/1.45 'Courier New', monospace;
+  overflow: hidden;
+}
+.api-code-scroll {
+  overflow-y: auto;
+  flex: 1;
+}
+.api-k { color: #ff7fc0; font-weight: 700; }
+.api-s { color: #f6d36b; }
+.api-n { color: #94ddc6; font-weight: 700; }
+.api-c { color: #888; font-style: italic; }
+.api-p { color: #ffb3da; }
+
+.api-foot {
+  border-top: 1.5px solid #333;
+  padding-top: 6px;
+  margin-top: 6px;
+  font-size: 10px;
+  line-height: 1.35;
+  color: #bbb;
+}
+.api-foot b {
+  color: #fff;
+}
+</style>
+
+<section class="slide" id="s-anexos-pipeline" data-min="0" data-max="0" data-sec="Anexos">
+  <h1 class="h1">ANEXOS</h1>
+  <div class="api-tabs">
+    <button class="api-tab" id="btnBackToMetodologiaIa" type="button" style="background:#eaf8f3">◀ METODOLOGÍA (PASO 8)</button>
+    <button class="api-tab" id="btnApiDataset" type="button">1-3 · DATASET</button>
+    <button class="api-tab" id="btnApiPreguntas" type="button">4 · PREGUNTAS</button>
+    <button class="api-tab" id="btnApiRanking" type="button">5 · RANKING</button>
+    <button class="api-tab on" type="button">6 · PIPELINE IA (TELEMETRÍA ➔ MARIOGPT)</button>
+    <button class="api-tab" id="btnApiPreguntaFormal" type="button" style="border-style:dashed;background:#fff8db">7 · PREGUNTA FORMAL ➔</button>
+  </div>
+
+  <div class="api-container">
+    <!-- Barra de flujo del Pipeline E2E -->
+    <div class="api-flow-bar">
+      <span class="api-step-pill" style="background:var(--mint-d);color:#fff">
+        <span>1. Telemetría Real</span>
+      </span>
+      <span class="api-arrow">➔</span>
+      <span class="api-step-pill" style="background:#ffb3da;color:var(--ink)">
+        <span>2. Inferencia en Ollama (gpt-oss:120b)</span>
+      </span>
+      <span class="api-arrow">➔</span>
+      <span class="api-step-pill" style="background:var(--gold-l);color:var(--ink)">
+        <span>3. Prompt a MarioGPT</span>
+      </span>
+      <span class="api-arrow">➔</span>
+      <span class="api-step-pill" style="background:var(--pink);color:var(--ink)">
+        <span>Nivel Personalizado P (Matriz ASCII)</span>
+      </span>
+    </div>
+
+    <!-- 3 Columnas del Pipeline -->
+    <div class="api-grid">
+      <!-- Columna 1: Telemetría Capturada Real -->
+      <div class="api-win">
+        <div class="api-win-hd">
+          <span>1 · TELEMETRÍA REAL CAPTURADA</span>
+          <span>telemetry_fam2.json ▢ ✕</span>
+        </div>
+        <div class="api-win-body">
+          <div class="api-code-scroll">
+            <span class="api-c">// Archivo real generado tras familiarización (Sesión S2):</span><br>
+            {<br>
+            &nbsp;&nbsp;<span class="api-k">"level"</span>: <span class="api-s">"familiarization/mm2_3001683.txt"</span>,<br>
+            &nbsp;&nbsp;<span class="api-k">"status"</span>: <span class="api-s">"LOSE"</span>, <span class="api-c">// Murió antes de la meta</span><br>
+            &nbsp;&nbsp;<span class="api-k">"completion"</span>: <span class="api-n">0.6063</span>, <span class="api-c">// 60.6% de avance</span><br>
+            &nbsp;&nbsp;<span class="api-k">"time_used_seconds"</span>: <span class="api-n">26.73</span>,<br>
+            &nbsp;&nbsp;<span class="api-k">"jumps"</span>: <span class="api-n">39</span>, <span class="api-c">// Estilo de salto frecuente</span><br>
+            &nbsp;&nbsp;<span class="api-k">"kills"</span>: <span class="api-n">5</span>,<br>
+            &nbsp;&nbsp;<span class="api-k">"hurts"</span>: <span class="api-n">22</span>, <span class="api-c">// Alta fricción / daño</span><br>
+            &nbsp;&nbsp;<span class="api-k">"coins"</span>: <span class="api-n">0</span>,<br>
+            &nbsp;&nbsp;<span class="api-k">"average_speed"</span>: <span class="api-n">107.92</span>, <span class="api-c">// px/s (rápido)</span><br>
+            &nbsp;&nbsp;<span class="api-k">"path_preference"</span>: <span class="api-s">"low"</span>, <span class="api-c">// Ruta inferior</span><br>
+            &nbsp;&nbsp;<span class="api-k">"death_positions"</span>: [<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;{<span class="api-k">"x"</span>: <span class="api-n">1542.5</span>, <span class="api-k">"y"</span>: <span class="api-n">209.7</span>},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;{<span class="api-k">"x"</span>: <span class="api-n">1678.3</span>, <span class="api-k">"y"</span>: <span class="api-n">223.0</span>},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;{<span class="api-k">"x"</span>: <span class="api-n">1843.2</span>, <span class="api-k">"y"</span>: <span class="api-n">223.0</span>}<br>
+            &nbsp;&nbsp;]<br>
+            }
+          </div>
+          <div class="api-foot">
+            <b>Diagnóstico:</b> Jugador rápido con salto constante, pero atascado en el obstáculo de la coordenada x=1542 a 1678.
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna 2: Prompt a Ollama (LLM) -->
+      <div class="api-win">
+        <div class="api-win-hd">
+          <span>2 · PROMPT PASADO A OLLAMA</span>
+          <span>gpt-oss:120b · SYSTEM PROMPT ▢ ✕</span>
+        </div>
+        <div class="api-win-body">
+          <div class="api-code-scroll">
+            <span class="api-c">/* System Prompt enviado al modelo LLM (Ollama Cloud / Local): */</span><br><br>
+            <span class="api-k">SYSTEM_PROMPT:</span><br>
+            <span class="api-s">"Eres un adaptador de telemetría para MarioGPT. Tu tarea es convertir un JSON de telemetría de un jugador humano en una sola línea de prompt lista para MarioGPT. No inventes información. Usa solo los datos del JSON.<br><br>
+            Formato de salida exacto:<br>
+            difficulty=...; route=...; jump=...; enemies=...; hazards=...; rewards=...; progression=...; avoid=...; must_have=...<br><br>
+            Reglas de adaptación biomecánica:<br>
+            - Usa SMB1 / Mario classic style.<br>
+            - Mantén la salida compacta y técnica.<br>
+            - Si la telemetría sugiere fracaso/frustración, reduce huecos imposibles, traps y enemigos agresivos.<br>
+            - Si sugiere avance parcial, prioriza rutas claras y saltos cortos.<br>
+            - Si sugiere buen progreso, mantiene progresión segura con curvas de reto."</span><br><br>
+            <span class="api-k">USER_PAYLOAD:</span><br>
+            <span class="api-c">"JSON de telemetría del jugador: { ...telemetry_fam2... } -> Genera exactamente una línea."</span>
+          </div>
+          <div class="api-foot">
+            <b>Rol del LLM:</b> Traduce métricas físicas continuas a descriptores semánticos que MarioGPT comprende.
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna 3: Ejemplo de Entrada a MarioGPT -->
+      <div class="api-win">
+        <div class="api-win-hd">
+          <span>3 · ENTRADA REAL A MARIOGPT</span>
+          <span>mario_lm.sample(prompts=[...]) ▢ ✕</span>
+        </div>
+        <div class="api-win-body">
+          <div class="api-code-scroll">
+            <span class="api-c">// 1. Prompt generado por Ollama y enviado a MarioGPT:</span><br>
+            <div style="background:#111;padding:6px;border:1px solid #444;border-radius:3px;margin:4px 0;color:#94ddc6;word-break:break-all">
+              <span class="api-p">difficulty</span>=medium; <span class="api-p">route</span>=low; <span class="api-p">jump</span>=short; <span class="api-p">enemies</span>=moderate; <span class="api-p">hazards</span>=low; <span class="api-p">rewards</span>=none; <span class="api-p">progression</span>=steady; <span class="api-p">avoid</span>=pos1542,pos1678,large_gaps; <span class="api-p">must_have</span>=clear_platforms,powerup_blocks
+            </div>
+            <br>
+            <span class="api-c">// 2. Nivel generado resultante (fragmento matriz ASCII 14 filas):</span><br>
+            <pre style="margin:4px 0;background:#111;padding:6px;border:1px solid #444;color:#f6d36b;font-size:9.5px;line-height:1.2;overflow-x:auto">
+--------------------------------------------------
+xxxxxxxxxxxxxxxxxxxxxxxxxxx--------------xxxxxxxxx
+SSSSSSSSSSSSSSSSSSSSSSSSSS-x-----SSSS---xxSSSSSSSS
+----------------------------x----------xx---------
+-----------------------------x----?---xx----------
+------------------------------x--S??-xx-----------
+-------------------------------x----xxXXX---------
+--S-------------------E----------xxx--------------
+E----E---------------<>------XXX-SSSS-------------
+>---<>------------XX-[]--XXX------------------E---
+]---[]-------E-E-XXX-[]--XXX-----------------[]---
+XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
+          </div>
+          <div class="api-foot">
+            <b>Generación:</b> Ejecutada en segundo plano en nodo GPU del clúster (o CUDA local) en ~30-40 segundos.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  const btnBack = document.getElementById('btnBackToMetodologiaIa');
+  if(btnBack){
+    btnBack.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-flow');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'back', 8);
+      }
+    };
+  }
+
+  const btnDS = document.getElementById('btnApiDataset');
+  if(btnDS){
+    btnDS.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'back', 0);
+      }
+    };
+  }
+
+  const btnPrg = document.getElementById('btnApiPreguntas');
+  if(btnPrg){
+    btnPrg.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-preguntas');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'back', 0);
+      }
+    };
+  }
+
+  const btnRank = document.getElementById('btnApiRanking');
+  if(btnRank){
+    btnRank.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos-ranking');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'back', 0);
+      }
+    };
+  }
+
+  const btnFormal = document.getElementById('btnApiPreguntaFormal');
+  if(btnFormal){
+    btnFormal.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos-pregunta');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
+      }
+    };
+  }
+
+  H['s-anexos-pipeline'] = {
+    enter() {},
+    leave() {},
+    step() {}
+  };
+})();
+</script>

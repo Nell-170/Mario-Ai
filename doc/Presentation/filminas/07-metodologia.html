@@ -1146,6 +1146,9 @@
     <div class="prompt" id="prompt"></div>
     <p class="pp" style="margin-top:10px"><small>Prompt de ejemplo, ilustrativo. Los niveles generados no se validan con
         A* durante el experimento.</small></p>
+    <button id="btnGoAnxPipeline" type="button" style="margin-top:6px;font:400 8.5px var(--pixel);padding:6px 10px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink)">
+      🔍 VER TELEMETRÍA Y PROMPT REALES EN ANEXOS ➔
+    </button>
   </div>
   <!-- 9 -->
   <div class="fp" data-p="9">
@@ -1543,6 +1546,18 @@
     };
 
     // 8 · generación
+    (function () {
+      const btnP = document.getElementById('btnGoAnxPipeline');
+      if (btnP) {
+        btnP.onclick = (e) => {
+          e.currentTarget.blur();
+          const idx = slides.findIndex(s => s.id === 's-anexos-pipeline');
+          if (idx >= 0 && typeof goSlide === 'function') {
+            goSlide(idx, 'fwd', 0);
+          }
+        };
+      }
+    })();
     PA[8] = {
       on() {
         const out = $('#prompt'), txt = 'Prompt → MarioGPT: «Nivel con saltos exigentes sobre vacíos, pocos enemigos y plataformas elevadas.»'; let i = 0; out.textContent = '';

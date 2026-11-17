@@ -179,7 +179,8 @@
     <button class="prg-tab" id="btnGoBackAnx" type="button">◀ 1-3 · DATASET &amp; FILTRADO</button>
     <button class="prg-tab on" type="button">4 · INSTRUMENTO (PREGUNTAS)</button>
     <button class="prg-tab" id="btnGoRankingAnx" type="button" style="border-style:dashed;background:#eaf8f3">5 · RANKING ➔</button>
-    <button class="prg-tab" id="btnGoPreguntaFormal" type="button" style="border-style:dashed;background:#fff8db">6 · PREGUNTA FORMAL ➔</button>
+    <button class="prg-tab" id="btnGoPipelineAnx" type="button" style="border-style:dashed;background:#ffd0ea">6 · PIPELINE IA ➔</button>
+    <button class="prg-tab" id="btnGoPreguntaFormal" type="button" style="border-style:dashed;background:#fff8db">7 · PREGUNTA FORMAL ➔</button>
   </div>
 
   <div class="prg-grid">
@@ -381,6 +382,17 @@
     btnRank.onclick = (e) => {
       e.currentTarget.blur();
       const idx = slides.findIndex(s => s.id === 's-anexos-ranking');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
+      }
+    };
+  }
+
+  const btnPipeline = document.getElementById('btnGoPipelineAnx');
+  if(btnPipeline){
+    btnPipeline.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos-pipeline');
       if(idx >= 0 && typeof goSlide === 'function'){
         goSlide(idx, 'fwd', 0);
       }

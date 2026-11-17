@@ -378,6 +378,7 @@
     <button class="anx-tab" data-tab="2" id="btnTab2">3 · PIPELINE DE FILTRADO (FILTER_MM2)</button>
     <button class="anx-tab" id="btnTabGoPreguntas" type="button" style="border-style:dashed;background:#fff8db">4 · INSTRUMENTO ➔</button>
     <button class="anx-tab" id="btnTabGoRanking" type="button" style="border-style:dashed;background:#eaf8f3">5 · RANKING ➔</button>
+    <button class="anx-tab" id="btnTabGoPipeline" type="button" style="border-style:dashed;background:#ffd0ea">6 · PIPELINE IA ➔</button>
   </div>
 
   <!-- Panel 0: Vista Dataset HF y Muestra de Registro Crudo -->
@@ -675,6 +676,17 @@
     btnRanking.addEventListener('click', (e) => {
       e.currentTarget.blur();
       const idx = slides.findIndex(s => s.id === 's-anexos-ranking');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
+      }
+    });
+  }
+
+  const btnPipeline = document.getElementById('btnTabGoPipeline');
+  if(btnPipeline){
+    btnPipeline.addEventListener('click', (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos-pipeline');
       if(idx >= 0 && typeof goSlide === 'function'){
         goSlide(idx, 'fwd', 0);
       }

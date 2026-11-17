@@ -193,9 +193,9 @@
   <h1 class="h1">ANEXOS</h1>
   <div class="ap-tabs">
     <button class="ap-tab" id="btnGoBackPrg" type="button">◀ 4 · INSTRUMENTO</button>
-    <button class="ap-tab" id="btnGoBackRank" type="button" style="border-style:dashed;background:#eaf8f3">◀ 5 ·
-      RANKING</button>
-    <button class="ap-tab on" type="button">6 · PREGUNTA FORMAL DE PROTOCOLO</button>
+    <button class="ap-tab" id="btnGoBackRank" type="button" style="border-style:dashed;background:#eaf8f3">◀ 5 · RANKING</button>
+    <button class="ap-tab" id="btnGoBackPipe" type="button" style="border-style:dashed;background:#ffd0ea">◀ 6 · PIPELINE IA</button>
+    <button class="ap-tab on" type="button">7 · PREGUNTA FORMAL DE PROTOCOLO</button>
   </div>
 
   <div class="ap-container">
@@ -272,6 +272,16 @@
       btnRank.onclick = (e) => {
         e.currentTarget.blur();
         const idx = slides.findIndex(s => s.id === 's-anexos-ranking');
+        if (idx >= 0 && typeof goSlide === 'function') {
+          goSlide(idx, 'back', 0);
+        }
+      };
+    }
+    const btnPipe = document.getElementById('btnGoBackPipe');
+    if (btnPipe) {
+      btnPipe.onclick = (e) => {
+        e.currentTarget.blur();
+        const idx = slides.findIndex(s => s.id === 's-anexos-pipeline');
         if (idx >= 0 && typeof goSlide === 'function') {
           goSlide(idx, 'back', 0);
         }
