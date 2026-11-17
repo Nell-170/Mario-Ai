@@ -2,7 +2,7 @@
 
 <style>
 /* ---------- question ---------- */
-.q{position:absolute;left:110px;right:110px;top:200px;text-align:center;font:500 46px/1.35 var(--body);min-height:190px}
+.q{position:absolute;left:80px;right:80px;top:165px;text-align:center;font:500 37px/1.4 var(--body);min-height:180px}
 .q .a{background:linear-gradient(transparent 58%,var(--olive) 58% 92%,transparent 92%)}
 .q .b{background:linear-gradient(transparent 58%,var(--mint) 58% 92%,transparent 92%)}
 .q .c{background:linear-gradient(transparent 58%,var(--pink) 58% 92%,transparent 92%)}
@@ -29,12 +29,24 @@
    ============================================================ */
 (function(){
   const el=document.getElementById('qtext'), runner=document.getElementById('runner');
-  const SEGS=[['¿Pueden los juegos ',''],['personalizados','a'],[' superar en ',''],['satisfacción','b'],[' y ',''],['dificultad','c'],[' a los juegos ',''],['diseñados por humanos','d'],['?','']];
+  const SEGS=[
+    ['¿Pueden los ', ''],
+    ['niveles personalizados', 'a'],
+    [' de un juego superar en ', ''],
+    ['satisfacción', 'b'],
+    [' y ', ''],
+    ['dificultad adaptada al usuario', 'c'],
+    [' tanto a los ', ''],
+    ['niveles no personalizados', 'd'],
+    [' como a los ', ''],
+    ['diseñados por seres humanos', 'b'],
+    ['?', '']
+  ];
   const FLAT=[]; SEGS.forEach(([t,c])=>[...t].forEach(ch=>FLAT.push([ch,c])));
   const html=(n,caret)=>{ let o='',pc=null; FLAT.slice(0,n).forEach(([ch,c])=>{ if(c!==pc){ if(pc!==null&&pc) o+='</span>'; if(c) o+=`<span class="${c}">`; pc=c; } o+=ch; }); if(pc) o+='</span>'; return o+(caret?'<i class="caret"></i>':''); };
   let timer=0, run=0;
   function type(){ clearInterval(timer); if(reduce){ el.innerHTML=html(FLAT.length); return; }
-    let n=0; el.innerHTML=''; timer=setInterval(()=>{ n++; el.innerHTML=html(n,n<FLAT.length); if(n>=FLAT.length) clearInterval(timer); },34); }
+    let n=0; el.innerHTML=''; timer=setInterval(()=>{ n++; el.innerHTML=html(n,n<FLAT.length); if(n>=FLAT.length) clearInterval(timer); },22); }
   function stopRun(){ clearInterval(run); run=0; }
   function resetRunner(){ stopRun(); runner.classList.remove('go'); runner.style.transition='none'; runner.src=heroURL('neutral',8,0); void runner.offsetWidth; runner.style.transition=''; }
   H['s-q']={
