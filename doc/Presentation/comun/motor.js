@@ -173,8 +173,22 @@ const WC=['#ff7fc0','#94ddc6','#f6d36b','#8aa24a','#1a1a1a'];
 for(let y=0;y<9;y++)for(let x=0;x<16;x++){ const c=document.createElement('i'); c.style.background=WC[(x*3+y*5)%WC.length]; c._d=(x+y); wipeEl.appendChild(c); cells.push(c); }
 async function wipe(mid){
   if(reduce){ mid(); return; }
-  const run=(from,to)=>Promise.all(cells.map(c=>c.animate([{transform:`scale(${from})`},{transform:`scale(${to})`}],{duration:200,delay:c._d*13,fill:'forwards',easing:'steps(4)'}).finished));
-  await run(0,1.02); mid(); await new Promise(r=>setTimeout(r,60)); await run(1.02,0);
+  /* Safari (WebKit/Apple Silicon) deja celdas "pegadas" cuando una animación con
+     fill:'forwards' termina en scale(0) sobre capas compuestas: por eso la
+     cortina solo existe mientras corre, y al terminar se cancelan las
+     animaciones y se oculta del todo (visibility:hidden). */
+  wipeEl.style.visibility='visible';
+  const anims=[];
+  const run=(from,to)=>Promise.all(cells.map(c=>{
+    const a=c.animate([{transform:`scale(${from})`},{transform:`scale(${to})`}],{duration:200,delay:c._d*13,fill:'both',easing:'steps(4)'});
+    anims.push(a); return a.finished;
+  }));
+  try{
+    await run(0,1.02); mid(); await new Promise(r=>setTimeout(r,60)); await run(1.02,0);
+  } finally {
+    anims.forEach(a=>a.cancel());
+    wipeEl.style.visibility='hidden';
+  }
 }
 document.getElementById('bnext').onclick=e=>{e.currentTarget.blur();next();};
 document.getElementById('bprev').onclick=e=>{e.currentTarget.blur();prev();};

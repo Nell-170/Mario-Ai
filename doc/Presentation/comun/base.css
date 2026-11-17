@@ -38,8 +38,8 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 #slide-num .sn-sep{color:#888}
 #slide-num .sn-tot{color:var(--ink)}
 #fx{position:absolute;inset:0;pointer-events:none;z-index:40}
-#wipe{position:absolute;inset:0;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(9,1fr);pointer-events:none;z-index:60}
-#wipe i{display:block;transform:scale(0)}
+#wipe{position:absolute;inset:0;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(9,1fr);pointer-events:none;z-index:60;visibility:hidden}
+#wipe i{display:block;transform:scale(0);will-change:transform;backface-visibility:hidden}
 
 /* ---------- adornos compartidos ---------- */
 .ground{position:absolute;left:0;right:0;bottom:0;height:80px;background-image:var(--brick);background-size:40px 40px;image-rendering:pixelated}
