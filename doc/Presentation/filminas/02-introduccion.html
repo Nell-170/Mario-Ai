@@ -1,217 +1,563 @@
 <!-- ============ FILMINA: INTRODUCCIÓN ============ -->
 
 <style>
-/* ---------- intro ---------- */
-.tv{position:absolute;left:60px;top:132px;width:408px;height:278px;border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);background:#23232b;overflow:hidden}
-.vslot{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .4s}
-.vslot.on{opacity:1;pointer-events:auto}
-.vslot video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;background:#000}
-.vslot.has-video video{display:block}
-.vslot.has-video .vph{display:none}
-.vph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;
-  background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 4px),#26262f}
-.vph .scene{position:relative;display:flex;align-items:flex-end;justify-content:center;height:130px}
-.vph .bub{position:absolute;top:-6px;left:calc(100% + 6px);white-space:nowrap;background:#fff;color:var(--ink);font:400 10px var(--pixel);padding:7px 8px;border:3px solid var(--ink)}
-.vph .lbl{font:400 9px/1.7 var(--pixel);text-align:center;color:#cfcfd8}
-.vslot[data-key=angry] .scene img{animation:shake .25s linear infinite}
-.vslot[data-key=bored] .scene img{animation:sway 2.6s ease-in-out infinite}
-.vslot[data-key=flow] .scene img{animation:bob .8s ease-in-out infinite}
-@keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
-@keyframes sway{50%{transform:rotate(-6deg) translateY(4px)}}
-.vload{position:absolute;right:8px;bottom:8px;font:400 8px var(--pixel);background:#fff;color:var(--ink);border:3px solid var(--ink);padding:6px 8px;cursor:pointer;z-index:3}
-.vload:hover{background:var(--gold-l)}
-.vload input{display:none}
-.state{position:absolute;left:60px;top:424px;width:408px;height:36px;border:4px solid var(--ink);display:flex;align-items:center;justify-content:center;font:700 14px var(--body);letter-spacing:.06em;background:var(--pink);transition:background .3s}
-.state[data-z=easy]{background:var(--mint)}
-.state[data-z=flow]{background:var(--gold-l)}
-.moods{position:absolute;left:60px;top:478px;display:flex;gap:12px}
-.mtab{display:flex;flex-direction:column;align-items:center;gap:6px;width:128px;padding:8px 4px 8px;border:3px solid var(--ink);background:#fff;cursor:pointer;font:700 12px var(--body);color:var(--ink);transition:transform .15s}
-.mtab:hover{transform:translateY(-3px)}
-.mtab.on{box-shadow:4px 4px 0 var(--ink)}
-.mtab[data-s="1"].on{background:var(--pink)} .mtab[data-s="2"].on{background:var(--mint)} .mtab[data-s="3"].on{background:var(--gold-l)}
-.mcap{position:absolute;left:60px;top:586px;width:408px;font-size:16px;line-height:1.45;font-weight:500;min-height:46px}
-.chart{position:absolute;left:560px;top:104px;width:640px;height:520px}
-.chart svg{position:absolute;inset:0;overflow:visible}
-.zp,.zm,.zb{transition:opacity .6s}
-.chart[data-st="1"] .zm{opacity:.18} .chart[data-st="1"] .zb{opacity:0}
-.chart[data-st="2"] .zp{opacity:.18} .chart[data-st="2"] .zb{opacity:0}
-.chart[data-st="3"] .zp,.chart[data-st="3"] .zm{opacity:.55}
-.zb{opacity:0}
-.chart[data-st="3"] .zb{opacity:1}
-.zl{font:500 21px var(--body);fill:var(--ink);transition:opacity .5s}
-.chart[data-st="1"] .zl-m{opacity:.25} .chart[data-st="2"] .zl-p{opacity:.25}
-.axl{font:500 20px var(--body);fill:var(--ink)}
-.axs{font:400 10px var(--pixel);fill:#777}
-.canal{font:italic 700 26px var(--body);fill:var(--ink);opacity:0;transition:opacity .6s}
-.chart[data-st="3"] .canal{opacity:1}
-.marker{position:absolute;width:48px;height:56px;margin:-48px 0 0 -24px;z-index:5;transition:left .9s cubic-bezier(.5,0,.2,1),top .9s cubic-bezier(.5,0,.2,1);touch-action:none}
-.marker.nt{transition:none}
-.marker.draggable{cursor:grab}
-.marker.draggable::after{content:"";position:absolute;inset:-10px;border:3px dashed var(--ink);opacity:.35;animation:blink 1.4s steps(2) infinite}
-.marker.dragging{cursor:grabbing}
-.marker img{width:48px;height:auto;filter:drop-shadow(3px 3px 0 rgba(0,0,0,.18))}
-.marker .bubble{position:absolute;left:34px;top:-30px;white-space:nowrap;background:#fff;border:3px solid var(--ink);padding:6px 7px;font:400 9px var(--pixel);z-index:6}
-.cc{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;z-index:3;transition:transform .35s,opacity .35s}
-.cc img{width:24px}
-.cc.got{transform:translateY(-26px) scale(1.4);opacity:0}
-.hud{position:absolute;left:112px;top:-16px;display:flex;align-items:center;gap:8px;font:400 11px var(--pixel);z-index:6}
-.hint{position:absolute;left:560px;top:636px;width:640px;font-size:13px;color:#444;font-style:italic;text-align:center}
+  /* ---------- intro ---------- */
+  .tv {
+    position: absolute;
+    left: 60px;
+    top: 132px;
+    width: 408px;
+    height: 278px;
+    border: 4px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    background: #23232b;
+    overflow: hidden
+  }
+
+  .vslot {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .4s
+  }
+
+  .vslot.on {
+    opacity: 1;
+    pointer-events: auto
+  }
+
+  .vslot video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    background: #000
+  }
+
+  .vslot.has-video video {
+    display: block
+  }
+
+  .vslot.has-video .vph {
+    display: none
+  }
+
+  .vph {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    color: #fff;
+    background: repeating-linear-gradient(0deg, rgba(255, 255, 255, .05) 0 2px, transparent 2px 4px), #26262f
+  }
+
+  .vph .scene {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 130px
+  }
+
+  .vph .bub {
+    position: absolute;
+    top: -6px;
+    left: calc(100% + 6px);
+    white-space: nowrap;
+    background: #fff;
+    color: var(--ink);
+    font: 400 10px var(--pixel);
+    padding: 7px 8px;
+    border: 3px solid var(--ink)
+  }
+
+  .vph .lbl {
+    font: 400 9px/1.7 var(--pixel);
+    text-align: center;
+    color: #cfcfd8
+  }
+
+  .vslot[data-key=angry] .scene img {
+    animation: shake .25s linear infinite
+  }
+
+  .vslot[data-key=bored] .scene img {
+    animation: sway 2.6s ease-in-out infinite
+  }
+
+  .vslot[data-key=flow] .scene img {
+    animation: bob .8s ease-in-out infinite
+  }
+
+  @keyframes shake {
+    25% {
+      transform: translateX(-3px)
+    }
+
+    75% {
+      transform: translateX(3px)
+    }
+  }
+
+  @keyframes sway {
+    50% {
+      transform: rotate(-6deg) translateY(4px)
+    }
+  }
+
+  .vload {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    font: 400 8px var(--pixel);
+    background: #fff;
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    padding: 6px 8px;
+    cursor: pointer;
+    z-index: 3
+  }
+
+  .vload:hover {
+    background: var(--gold-l)
+  }
+
+  .vload input {
+    display: none
+  }
+
+  .state {
+    position: absolute;
+    left: 60px;
+    top: 424px;
+    width: 408px;
+    height: 36px;
+    border: 4px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 14px var(--body);
+    letter-spacing: .06em;
+    background: var(--pink);
+    transition: background .3s
+  }
+
+  .state[data-z=easy] {
+    background: var(--mint)
+  }
+
+  .state[data-z=flow] {
+    background: var(--gold-l)
+  }
+
+  .moods {
+    position: absolute;
+    left: 60px;
+    top: 478px;
+    display: flex;
+    gap: 12px
+  }
+
+  .mtab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 128px;
+    padding: 8px 4px 8px;
+    border: 3px solid var(--ink);
+    background: #fff;
+    cursor: pointer;
+    font: 700 12px var(--body);
+    color: var(--ink);
+    transition: transform .15s
+  }
+
+  .mtab:hover {
+    transform: translateY(-3px)
+  }
+
+  .mtab.on {
+    box-shadow: 4px 4px 0 var(--ink)
+  }
+
+  .mtab[data-s="1"].on {
+    background: var(--pink)
+  }
+
+  .mtab[data-s="2"].on {
+    background: var(--mint)
+  }
+
+  .mtab[data-s="3"].on {
+    background: var(--gold-l)
+  }
+
+  .mcap {
+    position: absolute;
+    left: 60px;
+    top: 586px;
+    width: 408px;
+    font-size: 16px;
+    line-height: 1.45;
+    font-weight: 500;
+    min-height: 46px
+  }
+
+  .chart {
+    position: absolute;
+    left: 560px;
+    top: 104px;
+    width: 640px;
+    height: 520px
+  }
+
+  .chart svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible
+  }
+
+  .zp,
+  .zm,
+  .zb {
+    transition: opacity .6s
+  }
+
+  .chart[data-st="1"] .zm {
+    opacity: .18
+  }
+
+  .chart[data-st="1"] .zb {
+    opacity: 0
+  }
+
+  .chart[data-st="2"] .zp {
+    opacity: .18
+  }
+
+  .chart[data-st="2"] .zb {
+    opacity: 0
+  }
+
+  .chart[data-st="3"] .zp,
+  .chart[data-st="3"] .zm {
+    opacity: .55
+  }
+
+  .zb {
+    opacity: 0
+  }
+
+  .chart[data-st="3"] .zb {
+    opacity: 1
+  }
+
+  .zl {
+    font: 500 21px var(--body);
+    fill: var(--ink);
+    transition: opacity .5s
+  }
+
+  .chart[data-st="1"] .zl-m {
+    opacity: .25
+  }
+
+  .chart[data-st="2"] .zl-p {
+    opacity: .25
+  }
+
+  .axl {
+    font: 500 20px var(--body);
+    fill: var(--ink)
+  }
+
+  .axs {
+    font: 400 10px var(--pixel);
+    fill: #777
+  }
+
+  .canal {
+    font: italic 700 26px var(--body);
+    fill: var(--ink);
+    opacity: 0;
+    transition: opacity .6s
+  }
+
+  .chart[data-st="3"] .canal {
+    opacity: 1
+  }
+
+  .marker {
+    position: absolute;
+    width: 48px;
+    height: 56px;
+    margin: -48px 0 0 -24px;
+    z-index: 5;
+    transition: left .9s cubic-bezier(.5, 0, .2, 1), top .9s cubic-bezier(.5, 0, .2, 1);
+    touch-action: none
+  }
+
+  .marker.nt {
+    transition: none
+  }
+
+  .marker.draggable {
+    cursor: grab
+  }
+
+  .marker.draggable::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border: 3px dashed var(--ink);
+    opacity: .35;
+    animation: blink 1.4s steps(2) infinite
+  }
+
+  .marker.dragging {
+    cursor: grabbing
+  }
+
+  .marker img {
+    width: 48px;
+    height: auto;
+    filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, .18))
+  }
+
+  .marker .bubble {
+    position: absolute;
+    left: 34px;
+    top: -30px;
+    white-space: nowrap;
+    background: #fff;
+    border: 3px solid var(--ink);
+    padding: 6px 7px;
+    font: 400 9px var(--pixel);
+    z-index: 6
+  }
+
+  .cc {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    z-index: 3;
+    transition: transform .35s, opacity .35s
+  }
+
+  .cc img {
+    width: 24px
+  }
+
+  .cc.got {
+    transform: translateY(-26px) scale(1.4);
+    opacity: 0
+  }
+
+  .hud {
+    position: absolute;
+    left: 112px;
+    top: -16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font: 400 11px var(--pixel);
+    z-index: 6
+  }
+
+  .hint {
+    position: absolute;
+    left: 560px;
+    top: 636px;
+    width: 640px;
+    font-size: 13px;
+    color: #444;
+    font-style: italic;
+    text-align: center
+  }
 </style>
 
-  <section class="slide" id="s-intro" data-min="1" data-max="3" data-sec="Introducción">
-    <h1 class="h1">INTRODUCCIÓN</h1>
+<section class="slide" id="s-intro" data-min="1" data-max="3" data-sec="Introducción">
+  <h1 class="h1">INTRODUCCIÓN</h1>
 
-    <div class="tv">
-      <div class="vslot" data-key="angry">
-        <video muted loop playsinline preload="auto" src="videos/Frustrado.mp4"></video>
-        <div class="vph"><div class="scene"><img class="spr" data-spr="hero:angry" data-s="8" alt=""><span class="bub">¡#%&amp;@!</span></div>
-          <div class="lbl">VIDEO · JUGADOR FRUSTRADO<br>videos/Frustrado.mp4</div></div>
-        <label class="vload">CAMBIAR VIDEO<input type="file" accept="video/*"></label>
-      </div>
-      <div class="vslot" data-key="bored">
-        <video muted loop playsinline preload="auto" src="videos/Aburrido.mp4"></video>
-        <div class="vph"><div class="scene"><img class="spr" data-spr="hero:bored" data-s="8" alt=""><span class="bub">zzz...</span></div>
-          <div class="lbl">VIDEO · JUGADOR ABURRIDO<br>videos/Aburrido.mp4</div></div>
-        <label class="vload">CAMBIAR VIDEO<input type="file" accept="video/*"></label>
-      </div>
-      <div class="vslot" data-key="flow">
-        <video muted loop playsinline preload="auto" src="videos/Acachete.mp4"></video>
-        <div class="vph"><div class="scene"><img class="spr" data-spr="hero:happy" data-s="8" alt=""><span class="bub">¡qué bien!</span></div>
-          <div class="lbl">VIDEO · JUGADOR EN FLUJO<br>videos/Acachete.mp4</div></div>
-        <label class="vload">CAMBIAR VIDEO<input type="file" accept="video/*"></label>
+  <div class="tv">
+    <div class="vslot" data-key="angry">
+      <video muted loop playsinline preload="auto" src="videos/Frustrado.mp4"></video>
+      <div class="vph">
+        <div class="scene"><img class="spr" data-spr="hero:angry" data-s="8" alt=""><span class="bub">¡#%&amp;@!</span>
+        </div>
+        <div class="lbl">VIDEO · JUGADOR FRUSTRADO<br>videos/Frustrado.mp4</div>
       </div>
     </div>
-    <div class="state" id="state" data-z="hard">MUY DIFÍCIL → FRUSTRANTE</div>
-    <div class="moods">
-      <button class="mtab" data-s="1"><img class="spr" data-spr="hero:angry" data-s="3" alt="">Frustración</button>
-      <button class="mtab" data-s="2"><img class="spr" data-spr="hero:bored" data-s="3" alt="">Aburrimiento</button>
-      <button class="mtab" data-s="3"><img class="spr" data-spr="hero:happy" data-s="3" alt="">Flujo</button>
+    <div class="vslot" data-key="bored">
+      <video muted loop playsinline preload="auto" src="videos/Aburrido.mp4"></video>
+      <div class="vph">
+        <div class="scene"><img class="spr" data-spr="hero:bored" data-s="8" alt=""><span class="bub">zzz...</span>
+        </div>
+        <div class="lbl">VIDEO · JUGADOR ABURRIDO<br>videos/Aburrido.mp4</div>
+      </div>
     </div>
-    <div class="mcap" id="mcap"></div>
+    <div class="vslot" data-key="flow">
+      <video muted loop playsinline preload="auto" src="videos/Acachete.mp4"></video>
+      <div class="vph">
+        <div class="scene"><img class="spr" data-spr="hero:happy" data-s="8" alt=""><span class="bub">¡qué bien!</span>
+        </div>
+        <div class="lbl">VIDEO · JUGADOR EN FLUJO<br>videos/Acachete.mp4</div>
+      </div>
+    </div>
+  </div>
+  <div class="state" id="state" data-z="hard">MUY DIFÍCIL → FRUSTRANTE</div>
+  <div class="moods">
+    <button class="mtab" data-s="1"><img class="spr" data-spr="hero:angry" data-s="3" alt="">Frustración</button>
+    <button class="mtab" data-s="2"><img class="spr" data-spr="hero:bored" data-s="3" alt="">Aburrimiento</button>
+    <button class="mtab" data-s="3"><img class="spr" data-spr="hero:happy" data-s="3" alt="">Flujo</button>
+  </div>
+  <div class="mcap" id="mcap"></div>
 
-    <div class="chart" id="chart" data-st="1">
-      <svg viewBox="0 0 640 520" id="svg">
-        <polygon class="zp" fill="#ff7fc0" points="90,450 90,10 620,10"/>
-        <polygon class="zm" fill="#94ddc6" points="90,450 620,450 620,10"/>
-        <g class="zb">
-          <polygon fill="#fff" fill-opacity=".9" points="90,450 90,388 558,10 620,10 620,72 152,450"/>
-          <path id="wave" fill="none" stroke="#cbb6ff" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 10"/>
-        </g>
-        <text class="zl zl-p" x="108" y="48">Muy difícil → frustrante</text>
-        <text class="zl zl-m" x="352" y="432">Muy fácil → aburrido</text>
-        <text class="canal" text-anchor="middle" transform="translate(355 238) rotate(-39.7)">Canal de flujo</text>
-        <path d="M90 450V10" stroke="#1a1a1a" stroke-width="5" fill="none"/><polygon points="80,22 90,0 100,22" fill="#1a1a1a"/>
-        <path d="M90 450H630" stroke="#1a1a1a" stroke-width="5" fill="none"/><polygon points="618,440 640,450 618,460" fill="#1a1a1a"/>
-        <text class="axl" text-anchor="middle" transform="translate(40 230) rotate(-90)">Desafío / dificultad</text>
-        <text class="axl" text-anchor="middle" x="355" y="494">Habilidad del jugador</text>
-        <text class="axs" x="96" y="470">BAJA</text><text class="axs" x="540" y="470">ALTA</text>
-      </svg>
-      <div id="coins"></div>
-      <div class="hud pop-in" id="hud"><img class="spr" data-spr="coin" data-s="3" alt=""> × <span id="coinN">00</span></div>
-      <div class="marker nt" id="marker"><span class="bubble" id="bubble"></span><img class="spr" id="mimg" alt="jugador"></div>
+  <div class="chart" id="chart" data-st="1">
+    <svg viewBox="0 0 640 520" id="svg">
+      <polygon class="zp" fill="#ff7fc0" points="90,450 90,10 620,10" />
+      <polygon class="zm" fill="#94ddc6" points="90,450 620,450 620,10" />
+      <g class="zb">
+        <polygon fill="#fff" fill-opacity=".9" points="90,450 90,388 558,10 620,10 620,72 152,450" />
+        <path id="wave" fill="none" stroke="#cbb6ff" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 10" />
+      </g>
+      <text class="zl zl-p" x="108" y="48">Muy difícil → frustrante</text>
+      <text class="zl zl-m" x="352" y="432">Muy fácil → aburrido</text>
+      <text class="canal" text-anchor="middle" transform="translate(355 238) rotate(-39.7)">Canal de flujo</text>
+      <path d="M90 450V10" stroke="#1a1a1a" stroke-width="5" fill="none" />
+      <polygon points="80,22 90,0 100,22" fill="#1a1a1a" />
+      <path d="M90 450H630" stroke="#1a1a1a" stroke-width="5" fill="none" />
+      <polygon points="618,440 640,450 618,460" fill="#1a1a1a" />
+      <text class="axl" text-anchor="middle" transform="translate(40 230) rotate(-90)">Desafío / dificultad</text>
+      <text class="axl" text-anchor="middle" x="355" y="494">Habilidad del jugador</text>
+      <text class="axs" x="96" y="470">BAJA</text><text class="axs" x="540" y="470">ALTA</text>
+    </svg>
+    <div id="coins"></div>
+    <div class="hud pop-in" id="hud"><img class="spr" data-spr="coin" data-s="3" alt=""> × <span id="coinN">00</span>
     </div>
-    <div class="hint reveal" data-at="3" id="hint">Canal de flujo de Csikszentmihalyi, que en videojuegos se dibuja como reto vs. habilidad. Chen (2006)</div>
-  </section>
+    <div class="marker nt" id="marker"><span class="bubble" id="bubble"></span><img class="spr" id="mimg" alt="jugador">
+    </div>
+  </div>
+  <div class="hint reveal" data-at="3" id="hint">Canal de flujo de Csikszentmihalyi, que en videojuegos se dibuja como
+    reto vs. habilidad. Chen (2006)</div>
+</section>
 
 <script>
-/* ============================================================
-   INTRODUCCIÓN — canal de flujo interactivo
-   ============================================================ */
-(function(){
-  const CH={x0:90,y0:10,w:530,h:440};
-  const P=(u,v)=>({x:CH.x0+u*CH.w,y:CH.y0+(1-v)*CH.h});
-  const wave=u=>Math.min(1,Math.max(0,u+0.045*Math.sin(u*16)));
-  const chart=document.getElementById('chart'), marker=document.getElementById('marker'),
-        mimg=document.getElementById('mimg'), bubble=document.getElementById('bubble'),
-        stateEl=document.getElementById('state'), mcap=document.getElementById('mcap'),
-        coinsEl=document.getElementById('coins'), hud=document.getElementById('hud'), coinN=document.getElementById('coinN');
-  const slots=[...document.querySelectorAll('.vslot')];
-  const KEYS=['angry','bored','flow'];
-  const TXT={hard:'MUY DIFÍCIL → FRUSTRANTE',easy:'MUY FÁCIL → ABURRIDO',flow:'RETO ≈ HABILIDAD → FLUJO'};
-  const MOOD={hard:'angry',easy:'bored',flow:'happy'};
-  const BUB={hard:'¡IMPOSIBLE!',easy:'zzz...',flow:'¡FLOW!'};
-  const CAP=[
-    'Cuando el desafío supera por mucho la habilidad, el jugador se frustra.',
-    'Cuando el desafío es demasiado fácil para su habilidad, el jugador se aburre.',
-    'Cuando el reto crece al ritmo de la habilidad, aparece el flujo: el jugador disfruta.'
-  ];
-  /* camino ondulado */
-  let d=''; for(let i=0;i<=94;i++){ const u=0.03+i*0.01, p=P(u,wave(u)); d+=(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1); }
-  document.getElementById('wave').setAttribute('d',d);
+  /* ============================================================
+     INTRODUCCIÓN — canal de flujo interactivo
+     ============================================================ */
+  (function () {
+    const CH = { x0: 90, y0: 10, w: 530, h: 440 };
+    const P = (u, v) => ({ x: CH.x0 + u * CH.w, y: CH.y0 + (1 - v) * CH.h });
+    const wave = u => Math.min(1, Math.max(0, u + 0.045 * Math.sin(u * 16)));
+    const chart = document.getElementById('chart'), marker = document.getElementById('marker'),
+      mimg = document.getElementById('mimg'), bubble = document.getElementById('bubble'),
+      stateEl = document.getElementById('state'), mcap = document.getElementById('mcap'),
+      coinsEl = document.getElementById('coins'), hud = document.getElementById('hud'), coinN = document.getElementById('coinN');
+    const slots = [...document.querySelectorAll('.vslot')];
+    const KEYS = ['angry', 'bored', 'flow'];
+    const TXT = { hard: 'MUY DIFÍCIL → FRUSTRANTE', easy: 'MUY FÁCIL → ABURRIDO', flow: 'RETO ≈ HABILIDAD → FLUJO' };
+    const MOOD = { hard: 'angry', easy: 'bored', flow: 'happy' };
+    const BUB = { hard: '¡IMPOSIBLE!', easy: 'zzz...', flow: '¡FLOW!' };
+    const CAP = [
+      'Cuando el desafío supera por mucho la habilidad, el jugador se frustra.',
+      'Cuando el desafío es demasiado fácil para su habilidad, el jugador se aburre.',
+      'Cuando el reto crece al ritmo de la habilidad, aparece el flujo: el jugador disfruta.'
+    ];
+    /* camino ondulado */
+    let d = ''; for (let i = 0; i <= 94; i++) { const u = 0.03 + i * 0.01, p = P(u, wave(u)); d += (i ? 'L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1); }
+    document.getElementById('wave').setAttribute('d', d);
 
-  /* videos */
-  slots.forEach(s=>{
-    const v=s.querySelector('video'), src=CONFIG.videos[s.dataset.key] || v.getAttribute('src');
-    if(src){
-      v.src=src;
-      v.addEventListener('loadeddata',()=>s.classList.add('has-video'));
-      v.addEventListener('canplay',()=>s.classList.add('has-video'));
-      v.addEventListener('error',()=>s.classList.remove('has-video'));
-      if(v.readyState >= 2) s.classList.add('has-video');
+    /* videos */
+    slots.forEach(s => {
+      const v = s.querySelector('video'), src = CONFIG.videos[s.dataset.key] || v.getAttribute('src');
+      if (src) {
+        v.src = src;
+        v.addEventListener('loadeddata', () => s.classList.add('has-video'));
+        v.addEventListener('canplay', () => s.classList.add('has-video'));
+        v.addEventListener('error', () => s.classList.remove('has-video'));
+        if (v.readyState >= 2) s.classList.add('has-video');
+      }
+      const inp = s.querySelector('input');
+      if (inp) inp.onchange = e => { const f = e.target.files[0]; if (!f) return; v.src = URL.createObjectURL(f); s.classList.add('has-video'); v.play().catch(() => { }); };
+    });
+    function showVideo(k) {
+      slots.forEach(s => {
+        const on = s.dataset.key === k, v = s.querySelector('video'); s.classList.toggle('on', on);
+        if (on) { try { v.currentTime = 0 } catch (e) { } v.play().catch(() => { }); } else v.pause();
+      });
     }
-    s.querySelector('input').onchange=e=>{ const f=e.target.files[0]; if(!f)return; v.src=URL.createObjectURL(f); s.classList.add('has-video'); v.play().catch(()=>{}); };
-  });
-  function showVideo(k){
-    slots.forEach(s=>{ const on=s.dataset.key===k, v=s.querySelector('video'); s.classList.toggle('on',on);
-      if(on){ try{v.currentTime=0}catch(e){} v.play().catch(()=>{}); } else v.pause(); });
-  }
 
-  /* marcador */
-  let u=.2,v=.62,zone='hard',raf=0,coins=[],got=0;
-  function zoneOf(u,v){ const dd=v-u; return dd>0.13?'hard':dd<-0.13?'easy':'flow'; }
-  function setPos(nu,nv,anim){
-    u=nu;v=nv; marker.classList.toggle('nt',!anim);
-    const p=P(u,v); marker.style.left=p.x+'px'; marker.style.top=p.y+'px';
-    const z=zoneOf(u,v); if(z!==zone||!mimg.src) applyZone(z);
-  }
-  function applyZone(z){
-    zone=z; mimg.src=playerSrc(MOOD[z]); bubble.textContent=BUB[z];
-    stateEl.textContent=TXT[z]; stateEl.dataset.z=z;
-  }
-  function collect(){
-    coins.forEach(c=>{ if(c.got)return; const dx=c.u-u, dy=c.v-v; if(dx*dx+dy*dy<0.0016){ c.got=true; c.el.classList.add('got'); got++; coinN.textContent=String(got).padStart(2,'0'); } });
-  }
-  function buildCoins(){
-    coinsEl.innerHTML=''; coins=[]; got=0; coinN.textContent='00';
-    for(let i=0;i<12;i++){ const cu=0.1+i*0.073, cv=wave(cu), p=P(cu,cv);
-      const el=document.createElement('div'); el.className='cc'; el.style.left=p.x+'px'; el.style.top=(p.y-30)+'px';
-      const im=new Image(); im.src=px(ART.coin,3); im.className='spr spin'; im.style.animationDelay=(-i*0.13)+'s'; el.appendChild(im); coinsEl.appendChild(el);
-      coins.push({el,u:cu,v:cv-0.07,got:false}); }
-  }
-  function stopLoop(){ cancelAnimationFrame(raf); raf=0; }
-  function runPath(){
-    stopLoop(); const T=7000,t0=performance.now();
-    (function f(t){ let k=Math.min(1,(t-t0)/T); const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; const nu=0.04+e*0.92;
-      setPos(nu,wave(nu),false); collect(); if(k<1) raf=requestAnimationFrame(f); else { raf=0; } })(t0);
-  }
-  /* arrastre */
-  let drag=false;
-  marker.addEventListener('pointerdown',e=>{ if(step!==3)return; drag=true; stopLoop(); marker.setPointerCapture(e.pointerId); marker.classList.add('dragging'); e.preventDefault(); });
-  marker.addEventListener('pointermove',e=>{ if(!drag)return;
-    const r=chart.getBoundingClientRect(), sc=r.width/640;
-    const x=(e.clientX-r.left)/sc, y=(e.clientY-r.top)/sc;
-    const nu=Math.min(.97,Math.max(.03,(x-CH.x0)/CH.w)), nv=Math.min(.97,Math.max(.03,1-(y-CH.y0)/CH.h));
-    setPos(nu,nv,false); collect(); });
-  const end=()=>{ drag=false; marker.classList.remove('dragging'); };
-  marker.addEventListener('pointerup',end); marker.addEventListener('pointercancel',end);
-
-  /* pestañas de ánimo */
-  document.querySelectorAll('.mtab').forEach(b=>b.onclick=()=>{ b.blur(); if(!busy) setStep(+b.dataset.s,+b.dataset.s>step?'fwd':'back'); });
-
-  H['s-intro']={
-    enter(){ marker.classList.add('nt'); },
-    leave(){ stopLoop(); slots.forEach(s=>s.querySelector('video').pause()); },
-    step(n,old){
-      stopLoop();
-      chart.dataset.st=n; showVideo(KEYS[n-1]); mcap.textContent=CAP[n-1];
-      document.querySelectorAll('.mtab').forEach(b=>b.classList.toggle('on',+b.dataset.s===n));
-      marker.classList.toggle('draggable',n===3); hud.classList.toggle('show',n===3);
-      const first=old<1||!marker.style.left;
-      if(n===1){ setPos(.2,.62,!first); }
-      if(n===2){ setPos(.8,.38,!first); }
-      if(n===3){ buildCoins(); setPos(.04,wave(.04),true); setTimeout(()=>{ if(step===3&&!drag) runPath(); },1000); }
-      bubble.textContent=BUB[zone];
+    /* marcador */
+    let u = .2, v = .62, zone = 'hard', raf = 0, coins = [], got = 0;
+    function zoneOf(u, v) { const dd = v - u; return dd > 0.13 ? 'hard' : dd < -0.13 ? 'easy' : 'flow'; }
+    function setPos(nu, nv, anim) {
+      u = nu; v = nv; marker.classList.toggle('nt', !anim);
+      const p = P(u, v); marker.style.left = p.x + 'px'; marker.style.top = p.y + 'px';
+      const z = zoneOf(u, v); if (z !== zone || !mimg.src) applyZone(z);
     }
-  };
-})();
+    function applyZone(z) {
+      zone = z; mimg.src = playerSrc(MOOD[z]); bubble.textContent = BUB[z];
+      stateEl.textContent = TXT[z]; stateEl.dataset.z = z;
+    }
+    function collect() {
+      coins.forEach(c => { if (c.got) return; const dx = c.u - u, dy = c.v - v; if (dx * dx + dy * dy < 0.0016) { c.got = true; c.el.classList.add('got'); got++; coinN.textContent = String(got).padStart(2, '0'); } });
+    }
+    function buildCoins() {
+      coinsEl.innerHTML = ''; coins = []; got = 0; coinN.textContent = '00';
+      for (let i = 0; i < 12; i++) {
+        const cu = 0.1 + i * 0.073, cv = wave(cu), p = P(cu, cv);
+        const el = document.createElement('div'); el.className = 'cc'; el.style.left = p.x + 'px'; el.style.top = (p.y - 30) + 'px';
+        const im = new Image(); im.src = px(ART.coin, 3); im.className = 'spr spin'; im.style.animationDelay = (-i * 0.13) + 's'; el.appendChild(im); coinsEl.appendChild(el);
+        coins.push({ el, u: cu, v: cv - 0.07, got: false });
+      }
+    }
+    function stopLoop() { cancelAnimationFrame(raf); raf = 0; }
+    function runPath() {
+      stopLoop(); const T = 7000, t0 = performance.now();
+      (function f(t) {
+        let k = Math.min(1, (t - t0) / T); const e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; const nu = 0.04 + e * 0.92;
+        setPos(nu, wave(nu), false); collect(); if (k < 1) raf = requestAnimationFrame(f); else { raf = 0; }
+      })(t0);
+    }
+    /* arrastre */
+    let drag = false;
+    marker.addEventListener('pointerdown', e => { if (step !== 3) return; drag = true; stopLoop(); marker.setPointerCapture(e.pointerId); marker.classList.add('dragging'); e.preventDefault(); });
+    marker.addEventListener('pointermove', e => {
+      if (!drag) return;
+      const r = chart.getBoundingClientRect(), sc = r.width / 640;
+      const x = (e.clientX - r.left) / sc, y = (e.clientY - r.top) / sc;
+      const nu = Math.min(.97, Math.max(.03, (x - CH.x0) / CH.w)), nv = Math.min(.97, Math.max(.03, 1 - (y - CH.y0) / CH.h));
+      setPos(nu, nv, false); collect();
+    });
+    const end = () => { drag = false; marker.classList.remove('dragging'); };
+    marker.addEventListener('pointerup', end); marker.addEventListener('pointercancel', end);
+
+    /* pestañas de ánimo */
+    document.querySelectorAll('.mtab').forEach(b => b.onclick = () => { b.blur(); if (!busy) setStep(+b.dataset.s, +b.dataset.s > step ? 'fwd' : 'back'); });
+
+    H['s-intro'] = {
+      enter() { marker.classList.add('nt'); },
+      leave() { stopLoop(); slots.forEach(s => s.querySelector('video').pause()); },
+      step(n, old) {
+        stopLoop();
+        chart.dataset.st = n; showVideo(KEYS[n - 1]); mcap.textContent = CAP[n - 1];
+        document.querySelectorAll('.mtab').forEach(b => b.classList.toggle('on', +b.dataset.s === n));
+        marker.classList.toggle('draggable', n === 3); hud.classList.toggle('show', n === 3);
+        const first = old < 1 || !marker.style.left;
+        if (n === 1) { setPos(.2, .62, !first); }
+        if (n === 2) { setPos(.8, .38, !first); }
+        if (n === 3) { buildCoins(); setPos(.04, wave(.04), true); setTimeout(() => { if (step === 3 && !drag) runPath(); }, 1000); }
+        bubble.textContent = BUB[zone];
+      }
+    };
+  })();
 </script>
