@@ -2787,22 +2787,22 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
     <div class="tv">
       <div class="vslot" data-key="angry">
-        <video muted loop playsinline preload="auto"></video>
+        <video muted loop playsinline preload="auto" src="videos/Frustrado.mp4"></video>
         <div class="vph"><div class="scene"><img class="spr" data-spr="hero:angry" data-s="8" alt=""><span class="bub">¡#%&amp;@!</span></div>
-          <div class="lbl">VIDEO · JUGADOR ENOJADO<br>CONFIG.videos.angry</div></div>
-        <label class="vload">CARGAR VIDEO<input type="file" accept="video/*"></label>
+          <div class="lbl">VIDEO · JUGADOR FRUSTRADO<br>videos/Frustrado.mp4</div></div>
+        <label class="vload">CAMBIAR VIDEO<input type="file" accept="video/*"></label>
       </div>
       <div class="vslot" data-key="bored">
-        <video muted loop playsinline preload="auto"></video>
+        <video muted loop playsinline preload="auto" src="videos/Aburrido.mp4"></video>
         <div class="vph"><div class="scene"><img class="spr" data-spr="hero:bored" data-s="8" alt=""><span class="bub">zzz...</span></div>
-          <div class="lbl">VIDEO · JUGADOR ABURRIDO<br>CONFIG.videos.bored</div></div>
-        <label class="vload">CARGAR VIDEO<input type="file" accept="video/*"></label>
+          <div class="lbl">VIDEO · JUGADOR ABURRIDO<br>videos/Aburrido.mp4</div></div>
+        <label class="vload">CAMBIAR VIDEO<input type="file" accept="video/*"></label>
       </div>
       <div class="vslot" data-key="flow">
-        <video muted loop playsinline preload="auto"></video>
+        <video muted loop playsinline preload="auto" src="videos/Acachete.mp4"></video>
         <div class="vph"><div class="scene"><img class="spr" data-spr="hero:happy" data-s="8" alt=""><span class="bub">¡qué bien!</span></div>
-          <div class="lbl">VIDEO · JUGADOR DISFRUTANDO<br>CONFIG.videos.flow</div></div>
-        <label class="vload">CARGAR VIDEO<input type="file" accept="video/*"></label>
+          <div class="lbl">VIDEO · JUGADOR EN FLUJO<br>videos/Acachete.mp4</div></div>
+        <label class="vload">CAMBIAR VIDEO<input type="file" accept="video/*"></label>
       </div>
     </div>
     <div class="state" id="state" data-z="hard">MUY DIFÍCIL → FRUSTRANTE</div>
@@ -4292,9 +4292,9 @@ const CONFIG = {
   // Rutas a tus videos (relativas a este archivo). Vacío = muestra el placeholder.
   // También puedes pulsar «CARGAR VIDEO» en cada recuadro para probar uno al vuelo.
   videos: {
-    angry: "",   // ej: "videos/jugador_enojado.mp4"
-    bored: "",   // ej: "videos/jugador_aburrido.mp4"
-    flow: ""    // ej: "videos/jugador_disfrutando.mp4"
+    angry: "videos/Frustrado.mp4",
+    bored: "videos/Aburrido.mp4",
+    flow:  "videos/Acachete.mp4"
   },
   // Opcional: tu propio sprite para el "jugador" del gráfico (PNG pixelado).
   // Puede ser un texto o un objeto {angry, bored, happy}. Vacío = héroe original en pixel art.
@@ -4567,8 +4567,14 @@ H['s-title']={};
 
   /* videos */
   slots.forEach(s=>{
-    const v=s.querySelector('video'), src=CONFIG.videos[s.dataset.key];
-    if(src){ v.src=src; v.addEventListener('loadeddata',()=>s.classList.add('has-video')); v.addEventListener('error',()=>s.classList.remove('has-video')); }
+    const v=s.querySelector('video'), src=CONFIG.videos[s.dataset.key] || v.getAttribute('src');
+    if(src){
+      v.src=src;
+      v.addEventListener('loadeddata',()=>s.classList.add('has-video'));
+      v.addEventListener('canplay',()=>s.classList.add('has-video'));
+      v.addEventListener('error',()=>s.classList.remove('has-video'));
+      if(v.readyState >= 2) s.classList.add('has-video');
+    }
     s.querySelector('input').onchange=e=>{ const f=e.target.files[0]; if(!f)return; v.src=URL.createObjectURL(f); s.classList.add('has-video'); v.play().catch(()=>{}); };
   });
   function showVideo(k){
