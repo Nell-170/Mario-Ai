@@ -15,7 +15,7 @@ const CONFIG = {
   // Capturas de pantalla para el diagrama de metodología (rutas a imágenes). Vacío = recuadro para cargar.
   shots: {
     hf: "img/ImagenHuggingFacePrincipal.png",
-    welcome: "img/02_bienvenida_sesion.png",
+    welcome: "img/10_experimento.jpg",
     fam: "img/03_familiarizacion_controles.png",
     consent: "img/01_consentimiento_informado.png",
     survey: "",
