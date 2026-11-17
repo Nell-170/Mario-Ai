@@ -303,6 +303,49 @@
   border-radius: 3px;
   border: 1px solid #444;
 }
+.cf-tbl-anx {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  background: #fff;
+}
+.cf-tbl-anx th {
+  background: var(--ink);
+  color: #fff;
+  font: 400 7.5px var(--pixel);
+  padding: 5px 7px;
+  text-align: left;
+  border-bottom: 2px solid var(--ink);
+}
+.cf-tbl-anx th.num, .cf-tbl-anx td.num {
+  text-align: right;
+  font-family: monospace;
+}
+.cf-tbl-anx td {
+  padding: 3.5px 7px;
+  border-bottom: 1px solid #e8e4de;
+  color: #222;
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+.cf-tbl-anx tr:nth-child(even) {
+  background: #fdfcf9;
+}
+.cf-tbl-anx tr.hl-astar {
+  background: #d7f4e8;
+  font-weight: 700;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+}
+.cf-tbl-anx tr.hl-astar td {
+  color: var(--ink);
+}
+.cf-tbl-anx code {
+  font: 700 9.5px monospace;
+  background: #eee;
+  padding: 1px 3px;
+  border-radius: 2px;
+}
 .anx-stats {
   display: flex;
   gap: 12px;
@@ -471,23 +514,90 @@
     <div>
       <div class="cf-anx-win">
         <div class="cf-anx-bar">
-          <span>src/dataset/filter_mm2.py · PIPELINE DE STREAMING</span>
-          <span>PYTHON 3</span>
+          <span>src/dataset/filter_mm2.py · EMBUDO DE FILTRADO (RESULTADOS REALES)</span>
+          <span>DATASET FUNNEL ▢ ✕</span>
         </div>
-        <div class="code-filter-anx" id="anxCodeFilter">
-          <div class="cf-line-anx" data-cf="0"><span><span class="cf-kw">for</span> rec <span class="cf-kw">in</span> ds:</span><span class="cf-cnt">26.6M (100%)</span></div>
-          <div class="cf-line-anx" data-cf="1"><span><span class="cf-kw"> if</span> rec[<span class="cf-str">"gamestyle"</span>] != <span class="cf-num">0</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~5.3M (SMB1)</span></div>
-          <div class="cf-line-anx" data-cf="2"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> (<span class="cf-num">30</span> &lt;= cr &lt;= <span class="cf-num">50</span>): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~580K (Flujo)</span></div>
-          <div class="cf-line-anx" data-cf="3"><span><span class="cf-kw"> if</span> attempts &lt; <span class="cf-num">150</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~140K (Fiable)</span></div>
-          <div class="cf-line-anx" data-cf="4"><span><span class="cf-kw"> if</span> likes &lt; <span class="cf-num">30</span> <span class="cf-kw">or</span> timer &lt; <span class="cf-num">250</span>: <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~25K (Calidad)</span></div>
-          <div class="cf-line-anx" data-cf="5"><span><span class="cf-kw"> if</span> <span class="cf-kw">not</span> convert_maf(rec): <span class="cf-kw">continue</span></span><span class="cf-cnt">→ ~12K (Geometría)</span></div>
-          <div class="cf-line-anx" data-cf="6"><span><span class="cf-com"> heapq.heappush(top_likes, rec)</span></span><span class="cf-cnt" style="color:var(--mint-d)">★ Top candidatos</span></div>
-        </div>
+        <table class="cf-tbl-anx">
+          <thead>
+            <tr>
+              <th>PASO &amp; CRITERIO</th>
+              <th class="num">QUEDAN</th>
+              <th class="num">DESCARTADOS</th>
+              <th class="num">% PASO PREV.</th>
+              <th class="num">% TOTAL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. Niveles inspeccionados</b> (lote streaming)</td>
+              <td class="num"><b>14 165</b></td>
+              <td class="num" style="color:#888">0</td>
+              <td class="num">100.0%</td>
+              <td class="num">100.0%</td>
+            </tr>
+            <tr>
+              <td><b>2. Estilo de juego:</b> <code>gamestyle == 0</code> (SMB1)</td>
+              <td class="num"><b>2 045</b></td>
+              <td class="num" style="color:#c33">12 120</td>
+              <td class="num">14.44%</td>
+              <td class="num">14.44%</td>
+            </tr>
+            <tr>
+              <td><b>3. Tasa de victoria:</b> <code>30.0 &le; clear_rate &le; 50.0</code></td>
+              <td class="num"><b>387</b></td>
+              <td class="num" style="color:#c33">1 658</td>
+              <td class="num">18.92%</td>
+              <td class="num">2.73%</td>
+            </tr>
+            <tr>
+              <td><b>4. Intentos mínimos:</b> <code>attempts &ge; 150</code></td>
+              <td class="num"><b>362</b></td>
+              <td class="num" style="color:#c33">25</td>
+              <td class="num">93.54%</td>
+              <td class="num">2.56%</td>
+            </tr>
+            <tr>
+              <td><b>5. Likes mínimos:</b> <code>likes &ge; 30</code></td>
+              <td class="num"><b>198</b></td>
+              <td class="num" style="color:#c33">164</td>
+              <td class="num">54.70%</td>
+              <td class="num">1.40%</td>
+            </tr>
+            <tr>
+              <td><b>6. Timer mínimo:</b> <code>timer &ge; 250</code></td>
+              <td class="num"><b>180</b></td>
+              <td class="num" style="color:#c33">18</td>
+              <td class="num">90.91%</td>
+              <td class="num">1.27%</td>
+            </tr>
+            <tr>
+              <td><b>7. Viable para MAF:</b> <code>convert() != None</code></td>
+              <td class="num"><b>80</b></td>
+              <td class="num" style="color:#c33">100</td>
+              <td class="num">44.44%</td>
+              <td class="num">0.56%</td>
+            </tr>
+            <tr>
+              <td><b>8. Top seleccionados:</b> <code>top 80 por likes</code></td>
+              <td class="num"><b>80</b></td>
+              <td class="num" style="color:#888">0</td>
+              <td class="num">100.0%</td>
+              <td class="num">0.56%</td>
+            </tr>
+            <tr class="hl-astar">
+              <td><b>★ 9. Verificados con A*:</b> solubilidad certificada</td>
+              <td class="num" style="color:var(--ink);font-size:12px"><b>14</b></td>
+              <td class="num" style="color:#c33">66</td>
+              <td class="num">17.50%</td>
+              <td class="num"><b>0.10%</b></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <div class="anx-stats">
-        <div class="anx-stat-box"><span>HF CRUDA</span><b>26.6M</b></div>
-        <div class="anx-stat-box" style="background:var(--mint)"><span>SMB1 + FLUJO</span><b>~25K</b></div>
-        <div class="anx-stat-box" style="background:#ffb3da"><span>A* VERIFICADOS</span><b>14</b></div>
+        <div class="anx-stat-box"><span>HF INSPECCIONADOS</span><b>14 165</b></div>
+        <div class="anx-stat-box" style="background:var(--gold-l)"><span>VIABLES MAF</span><b>80</b></div>
+        <div class="anx-stat-box" style="background:var(--mint)"><span>A* CERTIFICADOS</span><b>14</b></div>
       </div>
     </div>
 
