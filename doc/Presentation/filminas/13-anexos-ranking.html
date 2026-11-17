@@ -1,0 +1,428 @@
+<!-- ============ FILMINA: ANEXOS · RESULTADOS DETALLADOS DE RANKING ============ -->
+<!-- Muestra: 69 participantes con ranking (414 filas, 138 por tipo).
+     Convención: rank = 1 es el mejor nivel y rank = 6 el peor. -->
+
+<style>
+/* ---------- estilos para anexo de resultados de ranking ---------- */
+#s-anexos-ranking {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+}
+.ark-tabs {
+  position: absolute;
+  left: 280px;
+  top: 26px;
+  display: flex;
+  gap: 8px;
+  z-index: 5;
+}
+.ark-tab {
+  font: 400 9px var(--pixel);
+  padding: 6px 10px;
+  border: 3px solid var(--ink);
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  transition: all .2s;
+}
+.ark-tab:hover {
+  background: var(--gold-l);
+}
+.ark-tab.on {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+.ark-meta {
+  position: absolute;
+  right: 150px;
+  top: 28px;
+  font: 400 8px/1.6 var(--pixel);
+  color: #555;
+  z-index: 3;
+}
+.ark-meta b {
+  font-weight: 400;
+  background: var(--gold-l);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 2px 6px;
+  margin-right: 6px;
+}
+.ark-kpis {
+  position: absolute;
+  left: 60px;
+  top: 78px;
+  width: 1160px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.ark-kpi {
+  border: 3px solid var(--ink);
+  background: #fff;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 6px 10px;
+  text-align: center;
+}
+.ark-kpi .klbl {
+  display: block;
+  font: 400 7px var(--pixel);
+  color: #555;
+  margin-bottom: 3px;
+}
+.ark-kpi b {
+  display: block;
+  font: 400 22px/1.1 var(--display);
+  color: var(--ink);
+}
+.ark-kpi small {
+  display: block;
+  font-size: 10px;
+  color: #444;
+  margin-top: 2px;
+}
+
+.ark-grid {
+  position: absolute;
+  left: 60px;
+  top: 162px;
+  width: 1160px;
+  height: 515px;
+  display: grid;
+  grid-template-columns: 370px 410px 350px;
+  gap: 15px;
+  align-items: stretch;
+}
+.ark-card {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 5px 5px 0 var(--ink);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+}
+.ark-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 4px;
+}
+.ark-tag {
+  font: 400 8px var(--pixel);
+  background: var(--ink);
+  color: #fff;
+  padding: 2.5px 6px;
+}
+.ark-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+.ark-tbl th {
+  background: #f0ede8;
+  border: 1.5px solid var(--ink);
+  padding: 4px 6px;
+  font: 700 9.5px monospace;
+  text-align: center;
+}
+.ark-tbl td {
+  border: 1.5px solid var(--ink);
+  padding: 3.5px 6px;
+  text-align: center;
+  font-size: 10.5px;
+}
+.ark-pill {
+  display: inline-block;
+  font: 700 9px monospace;
+  padding: 1px 5px;
+  border-radius: 2px;
+  border: 1.5px solid var(--ink);
+}
+.ark-pill.H { background: var(--mint); }
+.ark-pill.N { background: var(--gold-l); }
+.ark-pill.P { background: #ffb3da; }
+
+.ark-note {
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: #222;
+  background: #f7f4f2;
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  margin-top: auto;
+}
+.ark-note b {
+  color: var(--ink);
+}
+</style>
+
+<section class="slide" id="s-anexos-ranking" data-min="0" data-max="0" data-sec="Anexos">
+  <h1 class="h1">ANEXOS</h1>
+  <div class="ark-tabs">
+    <button class="ark-tab" id="btnBackToMetodologia" type="button" style="background:#eaf8f3">◀ METODOLOGÍA (PASO 6)</button>
+    <button class="ark-tab" id="btnAnxDataset" type="button">1-3 · DATASET</button>
+    <button class="ark-tab" id="btnAnxPreguntas" type="button">4 · PREGUNTAS</button>
+    <button class="ark-tab on" type="button">5 · RESULTADOS RANKING</button>
+    <button class="ark-tab" id="btnAnxPreguntaFormal" type="button" style="border-style:dashed;background:#fff8db">6 · PREGUNTA FORMAL ➔</button>
+  </div>
+
+  <div class="ark-meta">
+    <b>PREFERENCIA ORDINAL</b>n = 69 PARTICIPANTES · 414 EVALUACIONES · TEST DE FRIEDMAN
+  </div>
+
+  <!-- Barra superior de KPIs -->
+  <div class="ark-kpis">
+    <div class="ark-kpi" style="background:#eaf8f3">
+      <span class="klbl">MEJOR CONDICIÓN</span>
+      <b style="color:#0a7c55">HUMANO (3.13)</b>
+      <small>Gana en preferencia media</small>
+    </div>
+    <div class="ark-kpi" style="background:#fff9e6">
+      <span class="klbl">COMPARACIÓN IA</span>
+      <b>N 3.68 ≈ P 3.69</b>
+      <small>Empate técnico en IAs</small>
+    </div>
+    <div class="ark-kpi" style="background:#fcebf4">
+      <span class="klbl">PRUEBA DE FRIEDMAN</span>
+      <b style="color:var(--violet)">p = 0.063</b>
+      <small>χ² = 5.52 (límite significancia)</small>
+    </div>
+    <div class="ark-kpi" style="background:#f2effc">
+      <span class="klbl">EFECTO DE ORDEN</span>
+      <b>1.º 2.20 → 6.º 4.77</b>
+      <small>Fuerte sesgo de primacía</small>
+    </div>
+  </div>
+
+  <!-- Cuadrícula en 3 columnas -->
+  <div class="ark-grid">
+    <!-- Columna 1: Rank medio y condición favorita -->
+    <div class="ark-card">
+      <div class="ark-head">
+        <span class="ark-tag">1 · RANK MEDIO POR TIPO</span>
+        <span style="font-size:9.5px;font-weight:700;color:#666">1=Mejor, 6=Peor</span>
+      </div>
+
+      <table class="ark-tbl">
+        <thead>
+          <tr>
+            <th style="text-align:left">TIPO DE NIVEL</th>
+            <th>RANK</th>
+            <th>DE</th>
+            <th>MED</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:left"><span class="ark-pill H">H</span> <b>Humano (MM2)</b></td>
+            <td style="font-weight:700;color:#0a7c55">3.13</td>
+            <td>1.56</td>
+            <td>3</td>
+          </tr>
+          <tr>
+            <td style="text-align:left"><span class="ark-pill N">N</span> Genérico</td>
+            <td style="font-weight:700">3.68</td>
+            <td>1.71</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td style="text-align:left"><span class="ark-pill P">P</span> Personalizado</td>
+            <td style="font-weight:700">3.69</td>
+            <td>1.80</td>
+            <td>4</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="font-size:10.5px;line-height:1.35;margin-bottom:6px">
+        <b>Mejor tipo según cada participante:</b>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <div style="flex:1;background:var(--mint);border:2px solid var(--ink);padding:3px;text-align:center">
+            <span style="font:400 6.5px var(--pixel);display:block">HUMANO</span>
+            <b style="font-size:15px">27</b> (39.1%)
+          </div>
+          <div style="flex:1;background:var(--gold-l);border:2px solid var(--ink);padding:3px;text-align:center">
+            <span style="font:400 6.5px var(--pixel);display:block">GENÉRICO</span>
+            <b style="font-size:15px">24</b> (34.8%)
+          </div>
+          <div style="flex:1;background:#ffb3da;border:2px solid var(--ink);padding:3px;text-align:center">
+            <span style="font:400 6.5px var(--pixel);display:block">PERSONALIZ.</span>
+            <b style="font-size:15px">18</b> (26.1%)
+          </div>
+        </div>
+      </div>
+
+      <div class="ark-note">
+        <b>Desglose por nivel:</b><br>
+        • Humano: N1 = <b>3.14</b> | N2 = <b>3.12</b> (consistente)<br>
+        • Genérico: N1 = 3.94 | N2 = 3.42<br>
+        • Personalizado: N1 = 3.57 | N2 = 3.81
+      </div>
+    </div>
+
+    <!-- Columna 2: Frecuencia de posiciones 1 a 6 -->
+    <div class="ark-card">
+      <div class="ark-head">
+        <span class="ark-tag">2 · DISTRIBUCIÓN POR POSICIÓN</span>
+        <span style="font-size:9.5px;font-weight:700;color:#666">138 niveles/tipo</span>
+      </div>
+
+      <table class="ark-tbl">
+        <thead>
+          <tr>
+            <th>TIPO</th>
+            <th>1.º</th>
+            <th>2.º</th>
+            <th>3.º</th>
+            <th>4.º</th>
+            <th>5.º</th>
+            <th style="background:#ffd0d0">6.º</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="ark-pill H">H</span></td>
+            <td><b>25</b></td>
+            <td><b>28</b></td>
+            <td><b>33</b></td>
+            <td>20</td>
+            <td>20</td>
+            <td style="font-weight:700;color:#0a7c55;background:#d7f4e8">12</td>
+          </tr>
+          <tr>
+            <td><span class="ark-pill N">N</span></td>
+            <td>19</td>
+            <td>24</td>
+            <td>17</td>
+            <td>27</td>
+            <td>24</td>
+            <td style="font-weight:700;color:#c1121f">27</td>
+          </tr>
+          <tr>
+            <td><span class="ark-pill P">P</span></td>
+            <td>25</td>
+            <td>17</td>
+            <td>19</td>
+            <td>22</td>
+            <td>25</td>
+            <td style="font-weight:700;color:#c1121f;background:#ffd0d0">30</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background:#fff0f8;border:2px solid var(--pink-d);padding:6px 8px;margin-bottom:6px;font-size:10.5px;line-height:1.35">
+        <b>Hallazgos en los extremos:</b>
+        <div style="margin-top:2px">
+          • <b>Humano rara vez fue el peor:</b> solo 12 veces en 6.º lugar (frente a 27 de N y 30 de P).<br>
+          • <b>Personalizado fue el más penalizado al fondo:</b> 30 veces en 6.º puesto (un 21.7% de sus apariciones).
+        </div>
+      </div>
+
+      <div class="ark-note">
+        <b>Prueba estadística de Friedman:</b><br>
+        Sobre el rank medio por participante (3 tipos, 69 sujetos):<br>
+        <b>χ² = 5.52, p = 0.063</b>.<br>
+        <i>En el límite de la significancia estadística (no concluyente con esta muestra).</i>
+      </div>
+    </div>
+
+    <!-- Columna 3: Efecto de orden y discusión -->
+    <div class="ark-card">
+      <div class="ark-head">
+        <span class="ark-tag">3 · EFECTO DE ORDEN DE JUEGO</span>
+        <span style="font-size:9.5px;font-weight:700;color:var(--ruby)">SESGO PRIMACÍA</span>
+      </div>
+
+      <table class="ark-tbl">
+        <thead>
+          <tr>
+            <th style="text-align:left">ORDEN EN QUE SE JUGÓ</th>
+            <th>RANK MEDIO ASIGNADO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="text-align:left">1.º nivel jugado</td><td style="font-weight:700;color:#0a7c55">2.20</td></tr>
+          <tr><td style="text-align:left">2.º nivel jugado</td><td style="font-weight:700">2.90</td></tr>
+          <tr><td style="text-align:left">3.º nivel jugado</td><td style="font-weight:700">3.14</td></tr>
+          <tr><td style="text-align:left">4.º nivel jugado</td><td style="font-weight:700">3.84</td></tr>
+          <tr><td style="text-align:left">5.º nivel jugado</td><td style="font-weight:700">4.14</td></tr>
+          <tr><td style="text-align:left">6.º nivel jugado</td><td style="font-weight:700;color:#c1121f">4.77</td></tr>
+        </tbody>
+      </table>
+
+      <div style="background:#fff3cd;border:2px solid var(--gold);padding:6px 8px;font-size:10.5px;line-height:1.35">
+        <b>⚠️ Alerta metodológica:</b><br>
+        Los niveles jugados antes se rankearon significativamente mejor, <b>sin importar su tipo</b>.
+        <div style="margin-top:2px;font-size:10px;color:#555">
+          Este efecto de fatiga/primacía es sustancial y exige modelarse como covariable aleatoria (LMM).
+        </div>
+      </div>
+
+      <div class="ark-note">
+        <b>Limitación de muestra:</b><br>
+        7 de los 76 participantes no completaron el ranking y quedan fuera de este análisis (n = 69).
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  const btnBack = document.getElementById('btnBackToMetodologia');
+  if(btnBack){
+    btnBack.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-flow');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'back', 11);
+      }
+    };
+  }
+
+  const btnDS = document.getElementById('btnAnxDataset');
+  if(btnDS){
+    btnDS.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'back', 2);
+      }
+    };
+  }
+
+  const btnPrg = document.getElementById('btnAnxPreguntas');
+  if(btnPrg){
+    btnPrg.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-preguntas');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'back', 0);
+      }
+    };
+  }
+
+  const btnFormal = document.getElementById('btnAnxPreguntaFormal');
+  if(btnFormal){
+    btnFormal.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos-pregunta');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
+      }
+    };
+  }
+
+  H['s-anexos-ranking'] = {
+    enter() {},
+    leave() {},
+    step() {}
+  };
+})();
+</script>

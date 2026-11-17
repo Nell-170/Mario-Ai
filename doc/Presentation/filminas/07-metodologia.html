@@ -1156,11 +1156,60 @@
     <div id="lik"></div>
   </div>
   <!-- 11 -->
-  <div class="fp" data-p="11">
-    <div class="ptag">6 · RANKING Y COMENTARIOS</div>
-    <p class="pp" style="margin-bottom:12px">La persona <b>ordena los 6 niveles</b> jugados (arrastrando las filas) y registra sus comentarios finales:</p>
-    <div class="shot has" style="height:420px;border:3px solid var(--ink);background:#111">
-      <img src="img/05_clasificacion_preferencia_ranking.png" alt="Clasificación de preferencia y ranking de niveles en el experimento" style="display:block;width:100%;height:100%;object-fit:contain">
+  <div class="fp" data-p="11" style="overflow-y:auto">
+    <div class="ptag">6 · RANKING Y PREFERENCIA DE NIVELES</div>
+    <p class="pp" style="margin-bottom:8px">Evaluación de preferencia ordinal (1.º favorito a 6.º menos preferido) con <b>n = 69 participantes</b>:</p>
+
+    <!-- Barra de KPIs del Ranking -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
+      <div style="border:2px solid var(--ink);background:#fff;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">MUESTRA VÁLIDA</span>
+        <b style="font:400 18px/1.1 var(--display);color:var(--ink)">69 SUJETOS</b>
+      </div>
+      <div style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">HUMANO (H) ★</span>
+        <b style="font:400 18px/1.1 var(--display);color:#0a7c55">RANK 3.13</b>
+      </div>
+      <div style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">GENÉRICO (N)</span>
+        <b style="font:400 18px/1.1 var(--display);color:var(--ink)">RANK 3.68</b>
+      </div>
+      <div style="border:2px solid var(--ink);background:#ffb3da;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">PERSONALIZADO (P)</span>
+        <b style="font:400 18px/1.1 var(--display);color:var(--ink)">RANK 3.69</b>
+      </div>
+    </div>
+
+    <!-- Dos columnas: Método (pantalla) a la izquierda, Resumen de Resultados a la derecha -->
+    <div style="display:grid;grid-template-columns:320px 330px;gap:12px;align-items:start">
+      <!-- Columna 1: Método y Captura de Pantalla Real -->
+      <div>
+        <div class="shot has" style="height:210px;border:2.5px solid var(--ink);background:#111;margin-bottom:6px">
+          <img src="img/05_clasificacion_preferencia_ranking.png" alt="Pantalla de clasificación de preferencia en el experimento" style="display:block;width:100%;height:100%;object-fit:cover">
+        </div>
+        <div style="font-size:10px;line-height:1.35;color:#444;background:#fbf9f6;border:1.5px solid #e2ddd5;padding:5px 7px">
+          <b>Tarea:</b> Ordenar los 6 niveles jugados mediante <i>drag-and-drop</i> y registrar observaciones cualitativas finales. 7 sujetos omitieron la fase (n = 69 válidos).
+        </div>
+      </div>
+
+      <!-- Columna 2: Resumen de Resultados Empíricos -->
+      <div style="border:2.5px solid var(--ink);background:#fff;padding:8px 10px;box-shadow:3px 3px 0 var(--ink)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:3px">
+          <span style="font:400 8px var(--pixel);color:var(--ink)">HALLAZGOS CLAVE DE PREFERENCIA</span>
+          <span style="font:700 8px monospace;background:var(--gold-l);padding:1px 4px;border:1px solid var(--ink)">414 OBSERVACIONES</span>
+        </div>
+
+        <div style="font-size:10px;line-height:1.35;color:#222">
+          <div style="margin-bottom:4px">▸ <b>Humano superó en preferencia global</b> (rank 3.13). Rara vez fue el peor (solo 12 veces en 6.º lugar vs 27 en N y 30 en P).</div>
+          <div style="margin-bottom:4px">▸ <b>Empate técnico entre IAs:</b> Genérico (3.68) y Personalizado (3.69) prácticamente idénticos en ranking.</div>
+          <div style="margin-bottom:4px">▸ <b>Prueba de Friedman:</b> χ² = 5.52, <i>p</i> = 0.063 (diferencia marginal, no concluyente con esta muestra).</div>
+          <div style="margin-bottom:4px">▸ <b>Fuerte efecto de primacía/orden:</b> el 1.º nivel jugado promedió rank <b>2.20</b> vs <b>4.77</b> del 6.º (fatiga cognitiva).</div>
+        </div>
+
+        <button id="btnGoAnxRanking" type="button" style="margin-top:6px;width:100%;font:400 8px var(--pixel);padding:6px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink);transition:all .15s">
+          📊 VER ANÁLISIS DETALLADO EN ANEXOS ➔
+        </button>
+      </div>
     </div>
   </div>
   <!-- 12 -->
@@ -1181,6 +1230,9 @@
     <div class="metrics">
       <div>Tiempo jugado<b id="mT">0 min</b></div>
       <div>Niveles jugados<b id="mL">0</b></div>
+    </div>
+    <div style="font-size:10px;line-height:1.35;color:#222;background:#fbf9f6;border:1.5px solid #e2ddd5;padding:5px 8px;margin-top:6px">
+      <b>Muestra en juego libre (n = 76):</b> Asignación homogénea de <b>26 H · 25 P · 25 N</b> entre los participantes que aceptaron jugar voluntariamente.
     </div>
     <p class="pp" style="margin-top:6px"><small>Ambos valores se registran como medida de compromiso (tiempo en tarea voluntaria).</small></p>
   </div>
@@ -1507,17 +1559,16 @@
 
     // 11 · ranking
     (function () {
-      const $ = s => document.querySelector(s), box = $('#rank');
-      if (!box) return;
-      let list = ['P1', 'H1', 'N1', 'H2', 'P2', 'N2'];
-      const draw = () => {
-        box.innerHTML = ''; list.forEach((id, i) => {
-          const t = id[0], d = document.createElement('div'); d.className = 'rk';
-          d.innerHTML = `<span class="n">${i + 1}</span><img src="${lvlThumb(60 + id.charCodeAt(0) + (+id[1]) * 17, 28, 16, 3)}" alt=""><span class="tg2 t-${t}">${t}</span><span>${t === 'P' ? 'Personalizado' : t === 'N' ? 'No personalizado' : 'Humano'} ${id[1]}</span><span class="sp"></span><button aria-label="subir">▲</button><button aria-label="bajar">▼</button>`;
-          const [up, dn] = d.querySelectorAll('button'); up.onclick = () => { if (i > 0) { [list[i - 1], list[i]] = [list[i], list[i - 1]]; draw(); } }; dn.onclick = () => { if (i < 5) { [list[i + 1], list[i]] = [list[i], list[i + 1]]; draw(); } }; box.appendChild(d);
-        });
-      };
-      draw();
+      const btn = document.getElementById('btnGoAnxRanking');
+      if (btn) {
+        btn.onclick = (e) => {
+          e.currentTarget.blur();
+          const idx = slides.findIndex(s => s.id === 's-anexos-ranking');
+          if (idx >= 0 && typeof goSlide === 'function') {
+            goSlide(idx, 'fwd', 0);
+          }
+        };
+      }
     })();
 
     // 12 · juego libre
