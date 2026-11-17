@@ -680,6 +680,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     pointer-events: auto
   }
 
+  .fp[data-p="7"],
   .fp[data-p="11"] {
     left: 528px;
     width: 702px;
@@ -1418,63 +1419,521 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .rhint{position:absolute;left:62px;top:104px;font:400 9px var(--pixel);z-index:3;opacity:0;transition:opacity .4s}
 #s-res[data-step="0"] .rhint{opacity:1}
 
+/* ===== 08b-resultados-ranking.html ===== */
+/* ---------- estilos para resultados de ranking ---------- */
+#s-res-rank {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+}
+.rk-meta {
+  position: absolute;
+  right: 150px;
+  top: 48px;
+  font: 400 8.5px/1.6 var(--pixel);
+  color: #555;
+  z-index: 3;
+}
+.rk-meta b {
+  font-weight: 400;
+  background: var(--gold-l);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 3px 6px;
+  margin-right: 6px;
+}
+.rk-kpis {
+  position: absolute;
+  left: 60px;
+  top: 104px;
+  width: 1160px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.rk-kpi {
+  border: 3px solid var(--ink);
+  background: #fff;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 8px 12px;
+  text-align: center;
+}
+.rk-kpi .klbl {
+  display: block;
+  font: 400 7.5px var(--pixel);
+  color: #555;
+  margin-bottom: 4px;
+}
+.rk-kpi b {
+  display: block;
+  font: 400 24px/1.1 var(--display);
+  color: var(--ink);
+}
+.rk-kpi small {
+  display: block;
+  font-size: 10.5px;
+  color: #444;
+  margin-top: 2px;
+}
+
+.rk-grid {
+  position: absolute;
+  left: 60px;
+  top: 198px;
+  width: 1160px;
+  height: 480px;
+  display: grid;
+  grid-template-columns: 370px 410px 350px;
+  gap: 15px;
+  align-items: stretch;
+}
+.rk-card {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 5px 5px 0 var(--ink);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+}
+.rk-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 5px;
+}
+.rk-tag {
+  font: 400 8.5px var(--pixel);
+  background: var(--ink);
+  color: #fff;
+  padding: 3px 6px;
+}
+.rk-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+  margin-bottom: 8px;
+}
+.rk-tbl th {
+  background: #1a1a1a;
+  color: #fff;
+  font: 400 7.5px var(--pixel);
+  padding: 5px 4px;
+  text-align: center;
+}
+.rk-tbl td {
+  padding: 5px 4px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+.rk-tbl tr:nth-child(even) td {
+  background: #faf8f5;
+}
+.rk-pill {
+  display: inline-block;
+  font: 700 8px var(--pixel);
+  padding: 2px 5px;
+  border: 1.5px solid var(--ink);
+}
+.rk-pill.H { background: var(--mint); }
+.rk-pill.N { background: var(--gold-l); }
+.rk-pill.P { background: #ffb3da; }
+
+.rk-note {
+  font-size: 11px;
+  line-height: 1.35;
+  color: #222;
+  background: #f7f4f2;
+  border: 1px solid #ddd;
+  padding: 7px 9px;
+  margin-top: auto;
+}
+.rk-note b {
+  color: var(--ink);
+}
+
 /* ===== 09-conclusiones.html ===== */
-#s-conc .ccol{position:absolute;top:122px;width:362px;height:532px}
-#s-conc .ccol.c1{left:60px} #s-conc .ccol.c2{left:459px} #s-conc .ccol.c3{left:858px}
-#s-conc .cdiv{position:absolute;top:130px;height:510px;border-left:3px dashed var(--ink);opacity:.35}
-#s-conc .chead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-#s-conc .cico{flex:none;width:40px;height:40px;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);display:flex;align-items:center;justify-content:center;font:400 30px/1 var(--display)}
-#s-conc .chead b{font:400 10px/1.5 var(--pixel)}
-#s-conc .cq{background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:12px 14px;font:600 15px/1.45 var(--body)}
-#s-conc .cq .a{color:var(--pink-d)} #s-conc .cq .b{color:var(--violet)} #s-conc .cq .c{color:var(--gold)} #s-conc .cq .d{color:var(--mint-d)}
-#s-conc .cans{margin-top:16px}
-#s-conc .cbig{font:400 46px/1 var(--display);letter-spacing:1px;margin:0 0 12px}
-#s-conc ul{list-style:none;margin:0;padding:0}
-#s-conc li{position:relative;padding:0 0 0 22px;margin:0 0 14px;font-size:15px;line-height:1.45}
-#s-conc li::before{content:"";position:absolute;left:2px;top:6px;width:9px;height:9px;border:2px solid var(--ink);background:var(--k,var(--gold-l))}
-#s-conc .c2 li{--k:var(--pink)} #s-conc .c3 li{--k:var(--mint)}
-#s-conc .stag{display:inline-block;font:400 7px var(--pixel);padding:3px 4px;border:2px solid var(--ink);background:var(--gold-l);vertical-align:1px;margin-left:4px}
-/* aparición escalonada de las viñetas */
-#s-conc .reveal li{opacity:0;transform:translateX(-10px);transition:opacity .35s,transform .35s}
-#s-conc .reveal.show li{opacity:1;transform:none}
-#s-conc .reveal.show li:nth-child(2){transition-delay:.12s} #s-conc .reveal.show li:nth-child(3){transition-delay:.24s}
-#s-conc .reveal.show li:nth-child(4){transition-delay:.36s} #s-conc .reveal.show li:nth-child(5){transition-delay:.48s}
+  #s-conc .ccol {
+    position: absolute;
+    top: 122px;
+    width: 362px;
+    height: 532px
+  }
 
-/* ---------- diagrama: P y sus tres flechas ---------- */
-#s-conc .pmap{position:relative;width:362px;height:290px}
-#s-conc .pnode{position:absolute;left:0;top:88px;width:126px;height:118px;background:var(--pink);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transform:scale(.6);opacity:0;transition:transform .45s cubic-bezier(.3,1.6,.5,1),opacity .3s}
-#s-conc .pnode b{font:400 7px var(--pixel);letter-spacing:.3px}
-#s-conc .pnode .pl{position:absolute;left:-12px;top:-12px;width:30px;height:30px;background:#fff;border:3px solid var(--ink);font:400 22px/24px var(--display);text-align:center}
-#s-conc .parr{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-#s-conc .parr path{fill:none;stroke:var(--ink);stroke-width:3.5;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .45s ease}
-#s-conc .pchip{position:absolute;left:168px;width:194px;height:84px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:7px 10px;
-  opacity:0;transform:translateX(-14px);transition:opacity .35s,transform .35s}
-#s-conc .pchip h5{margin:0 0 3px;font:400 25px/1 var(--display);letter-spacing:.5px}
-#s-conc .pchip p{margin:0;font:500 12px/1.4 var(--body)}
-#s-conc .cans.show .pnode{opacity:1;transform:none}
-#s-conc .cans.show .parr path{stroke-dashoffset:0}
-#s-conc .cans.show .pchip{opacity:1;transform:none}
-#s-conc .cans.show .parr path:nth-of-type(1){transition-delay:.35s} #s-conc .cans.show .pchip.k1{transition-delay:.7s}
-#s-conc .cans.show .parr path:nth-of-type(2){transition-delay:.9s}  #s-conc .cans.show .pchip.k2{transition-delay:1.25s}
-#s-conc .cans.show .parr path:nth-of-type(3){transition-delay:1.45s} #s-conc .cans.show .pchip.k3{transition-delay:1.8s}
+  #s-conc .ccol.c1 {
+    left: 60px
+  }
 
-/* ---------- limitaciones: MarioGPT arriba, P abajo ---------- */
-#s-conc .lmap{position:relative;width:362px;height:456px}
-#s-conc .larr{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-#s-conc .larr path{fill:none;stroke:var(--ink);stroke-width:3.5;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .45s ease}
-#s-conc .ltag{position:absolute;left:50%;transform:translateX(-50%);height:50px;padding:0 18px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);
-  font:400 27px/44px var(--display);letter-spacing:1px;white-space:nowrap}
-#s-conc .lbox{position:absolute;width:172px;height:92px;background:#fff0f8;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:8px 10px;
-  opacity:0;transform:scale(.85);transition:opacity .3s,transform .35s cubic-bezier(.3,1.5,.5,1)}
-#s-conc .lbox h5{margin:0 0 4px;font:400 22px/1 var(--display);letter-spacing:.5px}
-#s-conc .lbox p{margin:0;font:500 12.5px/1.4 var(--body)}
-#s-conc .c2.show .larr path{stroke-dashoffset:0}
-#s-conc .c2.show .lbox{opacity:1;transform:none}
-#s-conc .c2.show .larr path:nth-of-type(1){transition-delay:.2s}  #s-conc .c2.show .lbox.k1{transition-delay:.55s}
-#s-conc .c2.show .larr path:nth-of-type(2){transition-delay:.35s} #s-conc .c2.show .lbox.k2{transition-delay:.7s}
-#s-conc .c2.show .larr path:nth-of-type(3){transition-delay:1s}   #s-conc .c2.show .lbox.k3{transition-delay:1.35s}
-#s-conc .c2.show .larr path:nth-of-type(4){transition-delay:1.15s} #s-conc .c2.show .lbox.k4{transition-delay:1.5s}
+  #s-conc .ccol.c2 {
+    left: 459px
+  }
+
+  #s-conc .ccol.c3 {
+    left: 858px
+  }
+
+  #s-conc .cdiv {
+    position: absolute;
+    top: 130px;
+    height: 510px;
+    border-left: 3px dashed var(--ink);
+    opacity: .35
+  }
+
+  #s-conc .chead {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px
+  }
+
+  #s-conc .cico {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 400 30px/1 var(--display)
+  }
+
+  #s-conc .chead b {
+    font: 400 10px/1.5 var(--pixel)
+  }
+
+  #s-conc .cq {
+    background: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    padding: 12px 14px;
+    font: 600 15px/1.45 var(--body)
+  }
+
+  #s-conc .cq .a {
+    color: var(--pink-d)
+  }
+
+  #s-conc .cq .b {
+    color: var(--violet)
+  }
+
+  #s-conc .cq .c {
+    color: var(--gold)
+  }
+
+  #s-conc .cq .d {
+    color: var(--mint-d)
+  }
+
+  #s-conc .cans {
+    margin-top: 16px
+  }
+
+  #s-conc .cbig {
+    font: 400 46px/1 var(--display);
+    letter-spacing: 1px;
+    margin: 0 0 12px
+  }
+
+  #s-conc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0
+  }
+
+  #s-conc li {
+    position: relative;
+    padding: 0 0 0 22px;
+    margin: 0 0 14px;
+    font-size: 15px;
+    line-height: 1.45
+  }
+
+  #s-conc li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 6px;
+    width: 9px;
+    height: 9px;
+    border: 2px solid var(--ink);
+    background: var(--k, var(--gold-l))
+  }
+
+  #s-conc .c2 li {
+    --k: var(--pink)
+  }
+
+  #s-conc .c3 li {
+    --k: var(--mint)
+  }
+
+  #s-conc .stag {
+    display: inline-block;
+    font: 400 7px var(--pixel);
+    padding: 3px 4px;
+    border: 2px solid var(--ink);
+    background: var(--gold-l);
+    vertical-align: 1px;
+    margin-left: 4px
+  }
+
+  /* aparición escalonada de las viñetas */
+  #s-conc .reveal li {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity .35s, transform .35s
+  }
+
+  #s-conc .reveal.show li {
+    opacity: 1;
+    transform: none
+  }
+
+  #s-conc .reveal.show li:nth-child(2) {
+    transition-delay: .12s
+  }
+
+  #s-conc .reveal.show li:nth-child(3) {
+    transition-delay: .24s
+  }
+
+  #s-conc .reveal.show li:nth-child(4) {
+    transition-delay: .36s
+  }
+
+  #s-conc .reveal.show li:nth-child(5) {
+    transition-delay: .48s
+  }
+
+  /* ---------- diagrama: P y sus tres flechas ---------- */
+  #s-conc .pmap {
+    position: relative;
+    width: 362px;
+    height: 290px
+  }
+
+  #s-conc .pnode {
+    position: absolute;
+    left: 0;
+    top: 88px;
+    width: 126px;
+    height: 118px;
+    background: var(--pink);
+    border: 3px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transform: scale(.6);
+    opacity: 0;
+    transition: transform .45s cubic-bezier(.3, 1.6, .5, 1), opacity .3s
+  }
+
+  #s-conc .pnode b {
+    font: 400 7px var(--pixel);
+    letter-spacing: .3px
+  }
+
+  #s-conc .pnode .pl {
+    position: absolute;
+    left: -12px;
+    top: -12px;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    border: 3px solid var(--ink);
+    font: 400 22px/24px var(--display);
+    text-align: center
+  }
+
+  #s-conc .parr {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none
+  }
+
+  #s-conc .parr path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 3.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset .45s ease
+  }
+
+  #s-conc .pchip {
+    position: absolute;
+    left: 168px;
+    width: 194px;
+    height: 84px;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 7px 10px;
+    opacity: 0;
+    transform: translateX(-14px);
+    transition: opacity .35s, transform .35s
+  }
+
+  #s-conc .pchip h5 {
+    margin: 0 0 3px;
+    font: 400 25px/1 var(--display);
+    letter-spacing: .5px
+  }
+
+  #s-conc .pchip p {
+    margin: 0;
+    font: 500 12px/1.4 var(--body)
+  }
+
+  #s-conc .cans.show .pnode {
+    opacity: 1;
+    transform: none
+  }
+
+  #s-conc .cans.show .parr path {
+    stroke-dashoffset: 0
+  }
+
+  #s-conc .cans.show .pchip {
+    opacity: 1;
+    transform: none
+  }
+
+  #s-conc .cans.show .parr path:nth-of-type(1) {
+    transition-delay: .35s
+  }
+
+  #s-conc .cans.show .pchip.k1 {
+    transition-delay: .7s
+  }
+
+  #s-conc .cans.show .parr path:nth-of-type(2) {
+    transition-delay: .9s
+  }
+
+  #s-conc .cans.show .pchip.k2 {
+    transition-delay: 1.25s
+  }
+
+  #s-conc .cans.show .parr path:nth-of-type(3) {
+    transition-delay: 1.45s
+  }
+
+  #s-conc .cans.show .pchip.k3 {
+    transition-delay: 1.8s
+  }
+
+  /* ---------- limitaciones: MarioGPT arriba, P abajo ---------- */
+  #s-conc .lmap {
+    position: relative;
+    width: 362px;
+    height: 456px
+  }
+
+  #s-conc .larr {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none
+  }
+
+  #s-conc .larr path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 3.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset .45s ease
+  }
+
+  #s-conc .ltag {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 50px;
+    padding: 0 18px;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    font: 400 27px/44px var(--display);
+    letter-spacing: 1px;
+    white-space: nowrap
+  }
+
+  #s-conc .lbox {
+    position: absolute;
+    width: 172px;
+    height: 92px;
+    background: #fff0f8;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 8px 10px;
+    opacity: 0;
+    transform: scale(.85);
+    transition: opacity .3s, transform .35s cubic-bezier(.3, 1.5, .5, 1)
+  }
+
+  #s-conc .lbox h5 {
+    margin: 0 0 4px;
+    font: 400 22px/1 var(--display);
+    letter-spacing: .5px
+  }
+
+  #s-conc .lbox p {
+    margin: 0;
+    font: 500 12.5px/1.4 var(--body)
+  }
+
+  #s-conc .c2.show .larr path {
+    stroke-dashoffset: 0
+  }
+
+  #s-conc .c2.show .lbox {
+    opacity: 1;
+    transform: none
+  }
+
+  #s-conc .c2.show .larr path:nth-of-type(1) {
+    transition-delay: .2s
+  }
+
+  #s-conc .c2.show .lbox.k1 {
+    transition-delay: .55s
+  }
+
+  #s-conc .c2.show .larr path:nth-of-type(2) {
+    transition-delay: .35s
+  }
+
+  #s-conc .c2.show .lbox.k2 {
+    transition-delay: .7s
+  }
+
+  #s-conc .c2.show .larr path:nth-of-type(3) {
+    transition-delay: 1s
+  }
+
+  #s-conc .c2.show .lbox.k3 {
+    transition-delay: 1.35s
+  }
+
+  #s-conc .c2.show .larr path:nth-of-type(4) {
+    transition-delay: 1.15s
+  }
+
+  #s-conc .c2.show .lbox.k4 {
+    transition-delay: 1.5s
+  }
 
 /* ===== 10-agradecimiento.html ===== */
 #s-thanks .t {
@@ -2424,53 +2883,91 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   </div>
   <!-- 7 -->
   <div class="fp" data-p="7" style="overflow-y:auto">
-    <div class="ptag">4 · ENCUESTA INICIAL</div>
-    <p class="pp" style="margin-bottom:8px">Preguntas iniciales antes de comenzar el bloque principal:</p>
-    <div class="q-list">
-      <div class="q-item">
-        <span class="q-num">1</span>
-        <div class="q-body">
-          <b>Edad (en años)</b> <span class="q-type">Numérica</span>
-          <div class="q-desc">Edad cronológica del participante.</div>
+    <div class="ptag">4 · ENCUESTA INICIAL &amp; PERFIL DE LA MUESTRA</div>
+    <p class="pp" style="margin-bottom:8px">Caracterización de participantes previa al juego (<b>n = 76 participantes</b>):</p>
+
+    <!-- Barra de KPIs demográficos -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
+      <div style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">MUESTRA TOTAL</span>
+        <b style="font:400 20px/1.1 var(--display);color:var(--ink)">76 SUJETOS</b>
+      </div>
+      <div style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">EDAD MEDIANA</span>
+        <b style="font:400 20px/1.1 var(--display);color:var(--ink)">21 AÑOS</b>
+      </div>
+      <div style="border:2px solid var(--ink);background:#ffb3da;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">50% CENTRAL (Q1–Q3)</span>
+        <b style="font:400 20px/1.1 var(--display);color:var(--ink)">20 – 23 AÑOS</b>
+      </div>
+      <div style="border:2px solid var(--ink);background:#fff;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">JUEGO LIBRE</span>
+        <b style="font:400 17px/1.2 var(--display);color:var(--ink)">26H · 25P · 25N</b>
+      </div>
+    </div>
+
+    <!-- Contenido en dos columnas: Resultados a la izquierda, Preguntas a la derecha -->
+    <div style="display:grid;grid-template-columns:325px 325px;gap:12px;align-items:start">
+      <!-- Columna 1: Resultados y Estadísticas de la muestra -->
+      <div style="border:2.5px solid var(--ink);background:#fff;padding:8px 10px;box-shadow:3px 3px 0 var(--ink)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:4px">
+          <span style="font:400 8px var(--pixel);color:var(--ink)">RESULTADOS DE LA MUESTRA</span>
+          <span style="font:700 9px monospace;background:var(--mint);padding:1px 5px;border:1px solid var(--ink)">n = 76</span>
+        </div>
+
+        <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:6px">
+          <tr style="border-bottom:1px solid #ddd"><td style="padding:2px 0;color:#555">Media ± DE:</td><td style="text-align:right;font-weight:700">22.8 ± 6.1 años</td></tr>
+          <tr style="border-bottom:1px solid #ddd"><td style="padding:2px 0;color:#555">Mediana:</td><td style="text-align:right;font-weight:700;color:var(--violet)">21 años</td></tr>
+          <tr style="border-bottom:1px solid #ddd"><td style="padding:2px 0;color:#555">Rango intercuartílico (Q1–Q3):</td><td style="text-align:right;font-weight:700">20 – 23 años</td></tr>
+          <tr><td style="padding:2px 0;color:#555">Rango mín – máx:</td><td style="text-align:right;font-weight:700">12 – 59 años</td></tr>
+        </table>
+
+        <div style="font-size:10.5px;line-height:1.4;color:#222;background:#fbf9f6;border:1px solid #e2ddd5;padding:6px 8px">
+          <div style="margin-bottom:4px">▸ <b>La mayoría de los participantes tiene entre 20 y 23 años</b> (cohorte joven y homogénea).</div>
+          <div style="margin-bottom:4px">▸ La media (22.8) queda por encima de la mediana (21) por valores atípicos altos (41 y 59 años); <b>la mediana describe mejor al participante típico</b>.</div>
+          <div style="margin-bottom:4px">▸ Participante de 12 años a revisar según criterio de inclusión.</div>
+          <div>▸ Distribución en juego libre: <b>Humano = 26, Personalizado = 25, Genérico = 25</b> (estrictamente balanceada).</div>
         </div>
       </div>
-      <div class="q-item">
-        <span class="q-num">2</span>
-        <div class="q-body">
-          <b>Horas de juego semanales</b> <span class="q-type">Selección</span>
-          <div class="q-desc">¿Cuántas horas a la semana juegas videojuegos, de cualquier tipo?</div>
-          <div class="q-opts">
-            <span>&lt; 1 h</span><span>1 a 5 h</span><span>6 a 10 h</span><span>11 a 20 h</span><span>&gt; 20 h</span>
+
+      <!-- Columna 2: Instrumento de preguntas iniciales -->
+      <div>
+        <div style="font:400 8px var(--pixel);color:#555;margin-bottom:5px">INSTRUMENTO (5 PREGUNTAS INITIAL.TSV):</div>
+        <div class="q-list" style="margin-top:0;gap:4px">
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">1</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Edad</b> <span class="q-type" style="font-size:6.5px">Numérica</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Edad cronológica (en años).</div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="q-item">
-        <span class="q-num">3</span>
-        <div class="q-body">
-          <b>Plataformas 2D</b> <span class="q-type">Selección</span>
-          <div class="q-desc">De esas horas, ¿cuántas dedicas a plataformas 2D (Mario, Celeste, etc.)?</div>
-          <div class="q-opts">
-            <span>Ninguna</span><span>&lt; 1 h</span><span>1 a 3 h</span><span>4 a 7 h</span><span>&gt; 7 h</span>
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">2</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Horas videojuegos</b> <span class="q-type" style="font-size:6.5px">Selección</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Dedicación semanal (&lt;1h a &gt;20h).</div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="q-item">
-        <span class="q-num">4</span>
-        <div class="q-body">
-          <b>Experiencia con Mario 2D</b> <span class="q-type">Selección</span>
-          <div class="q-desc">¿Cuál de estas frases describe mejor tu experiencia con Mario?</div>
-          <div class="q-opts">
-            <span>Creador SMM</span><span>Jugador SMM</span><span>Jugador SMB</span><span>Nunca</span>
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">3</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Plataformas 2D</b> <span class="q-type" style="font-size:6.5px">Selección</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Horas en Mario, Celeste, Hollow Knight...</div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="q-item">
-        <span class="q-num">5</span>
-        <div class="q-body">
-          <b>Dispositivo habitual</b> <span class="q-type">Múltiple</span>
-          <div class="q-desc">¿Con qué sueles jugar normalmente? (Sí/No por opción)</div>
-          <div class="q-opts">
-            <span>Mando / Control</span><span>Teclado / Ratón</span><span>Pantalla táctil</span><span>Otro</span>
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">4</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Experiencia Mario 2D</b> <span class="q-type" style="font-size:6.5px">Selección</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Creador SMM, Jugador SMM, SMB, Nunca.</div>
+            </div>
+          </div>
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">5</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Control habitual</b> <span class="q-type" style="font-size:6.5px">Múltiple</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Mando / Teclado / Pantalla táctil / Otro.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -2584,81 +3081,310 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <div class="rhint blink">CLIC EN UN GRÁFICO PARA AMPLIARLO</div>
   </section>
 
+<!-- ============ FILMINA: RESULTADOS · RANKING DE PREFERENCIA ============ -->
+<!-- Muestra: 69 participantes con ranking (414 filas, 138 por tipo).
+     Convención: rank = 1 es el mejor nivel y rank = 6 el peor. -->
+
+
+
+<section class="slide" id="s-res-rank" data-min="0" data-max="0" data-despues-de="s-flow:11" data-sec="Metodología">
+  <h1 class="h1">RESULTADOS · RANKING DE NIVELES</h1>
+  <div class="rk-meta">
+    <b>PREFERENCIA</b>MUESTRA n = 69 PARTICIPANTES · 414 OBSERVACIONES · TEST DE FRIEDMAN
+  </div>
+
+  <!-- Barra superior de KPIs -->
+  <div class="rk-kpis">
+    <div class="rk-kpi" style="background:#eaf8f3">
+      <span class="klbl">MEJOR CONDICIÓN</span>
+      <b style="color:#0a7c55">HUMANO (3.13)</b>
+      <small>Gana en preferencia media</small>
+    </div>
+    <div class="rk-kpi" style="background:#fff9e6">
+      <span class="klbl">COMPARACIÓN IA</span>
+      <b>N 3.68 ≈ P 3.69</b>
+      <small>Empate técnico en IAs</small>
+    </div>
+    <div class="rk-kpi" style="background:#fcebf4">
+      <span class="klbl">PRUEBA DE FRIEDMAN</span>
+      <b style="color:var(--violet)">p = 0.063</b>
+      <small>χ² = 5.52 (límite significancia)</small>
+    </div>
+    <div class="rk-kpi" style="background:#f2effc">
+      <span class="klbl">EFECTO DE ORDEN</span>
+      <b>1.º 2.20 → 6.º 4.77</b>
+      <small>Fuerte sesgo de primacía</small>
+    </div>
+  </div>
+
+  <!-- Cuadrícula en 3 columnas -->
+  <div class="rk-grid">
+    <!-- Columna 1: Rank medio y condición favorita -->
+    <div class="rk-card">
+      <div class="rk-head">
+        <span class="rk-tag">1 · RANK MEDIO POR TIPO</span>
+        <span style="font-size:10px;font-weight:700;color:#666">1=Mejor, 6=Peor</span>
+      </div>
+
+      <table class="rk-tbl">
+        <thead>
+          <tr>
+            <th style="text-align:left">TIPO DE NIVEL</th>
+            <th>RANK</th>
+            <th>DE</th>
+            <th>MED</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:left"><span class="rk-pill H">H</span> <b>Humano (MM2)</b></td>
+            <td style="font-weight:700;color:#0a7c55">3.13</td>
+            <td>1.56</td>
+            <td>3</td>
+          </tr>
+          <tr>
+            <td style="text-align:left"><span class="rk-pill N">N</span> Genérico</td>
+            <td style="font-weight:700">3.68</td>
+            <td>1.71</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td style="text-align:left"><span class="rk-pill P">P</span> Personalizado</td>
+            <td style="font-weight:700">3.69</td>
+            <td>1.80</td>
+            <td>4</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="font-size:11px;line-height:1.4;margin-bottom:6px">
+        <b>Mejor tipo según cada participante:</b>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <div style="flex:1;background:var(--mint);border:2px solid var(--ink);padding:4px;text-align:center">
+            <span style="font:400 7px var(--pixel);display:block">HUMANO</span>
+            <b style="font-size:16px">27</b> (39.1%)
+          </div>
+          <div style="flex:1;background:var(--gold-l);border:2px solid var(--ink);padding:4px;text-align:center">
+            <span style="font:400 7px var(--pixel);display:block">GENÉRICO</span>
+            <b style="font-size:16px">24</b> (34.8%)
+          </div>
+          <div style="flex:1;background:#ffb3da;border:2px solid var(--ink);padding:4px;text-align:center">
+            <span style="font:400 7px var(--pixel);display:block">PERSONALIZ.</span>
+            <b style="font-size:16px">18</b> (26.1%)
+          </div>
+        </div>
+      </div>
+
+      <div class="rk-note">
+        <b>Desglose por nivel:</b><br>
+        • Humano: N1 = <b>3.14</b> | N2 = <b>3.12</b> (consistente)<br>
+        • Genérico: N1 = 3.94 | N2 = 3.42<br>
+        • Personalizado: N1 = 3.57 | N2 = 3.81
+      </div>
+    </div>
+
+    <!-- Columna 2: Frecuencia de posiciones 1 a 6 -->
+    <div class="rk-card">
+      <div class="rk-head">
+        <span class="rk-tag">2 · DISTRIBUCIÓN POR POSICIÓN</span>
+        <span style="font-size:10px;font-weight:700;color:#666">138 niveles/tipo</span>
+      </div>
+
+      <table class="rk-tbl">
+        <thead>
+          <tr>
+            <th>TIPO</th>
+            <th>1.º</th>
+            <th>2.º</th>
+            <th>3.º</th>
+            <th>4.º</th>
+            <th>5.º</th>
+            <th style="background:#c1121f">6.º</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rk-pill H">H</span></td>
+            <td><b>25</b></td>
+            <td><b>28</b></td>
+            <td><b>33</b></td>
+            <td>20</td>
+            <td>20</td>
+            <td style="font-weight:700;color:#0a7c55;background:#d7f4e8">12</td>
+          </tr>
+          <tr>
+            <td><span class="rk-pill N">N</span></td>
+            <td>19</td>
+            <td>24</td>
+            <td>17</td>
+            <td>27</td>
+            <td>24</td>
+            <td style="font-weight:700;color:#c1121f">27</td>
+          </tr>
+          <tr>
+            <td><span class="rk-pill P">P</span></td>
+            <td>25</td>
+            <td>17</td>
+            <td>19</td>
+            <td>22</td>
+            <td>25</td>
+            <td style="font-weight:700;color:#c1121f;background:#ffd0d0">30</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background:#fff0f8;border:2px solid var(--pink-d);padding:7px 9px;margin-bottom:6px;font-size:11px;line-height:1.4">
+        <b>Hallazgos en los extremos:</b>
+        <div style="margin-top:3px">
+          • <b>Humano rara vez fue el peor:</b> solo 12 veces en 6.º lugar (frente a 27 de N y 30 de P).<br>
+          • <b>Personalizado fue el más penalizado al fondo:</b> 30 veces en 6.º puesto (un 21.7% de sus apariciones).
+        </div>
+      </div>
+
+      <div class="rk-note">
+        <b>Prueba estadística de Friedman:</b><br>
+        Sobre el rank medio por participante (3 tipos, 69 sujetos):<br>
+        <b>χ² = 5.52, p = 0.063</b>.<br>
+        <i>En el límite de la significancia estadística (no concluyente con esta muestra).</i>
+      </div>
+    </div>
+
+    <!-- Columna 3: Efecto de orden y discusión -->
+    <div class="rk-card">
+      <div class="rk-head">
+        <span class="rk-tag">3 · EFECTO DE ORDEN DE JUEGO</span>
+        <span style="font-size:10px;font-weight:700;color:var(--ruby)">SESGO PRIMACÍA</span>
+      </div>
+
+      <table class="rk-tbl">
+        <thead>
+          <tr>
+            <th style="text-align:left">ORDEN EN QUE SE JUGÓ</th>
+            <th>RANK MEDIO ASIGNADO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="text-align:left">1.º nivel jugado</td><td style="font-weight:700;color:#0a7c55">2.20</td></tr>
+          <tr><td style="text-align:left">2.º nivel jugado</td><td style="font-weight:700">2.90</td></tr>
+          <tr><td style="text-align:left">3.º nivel jugado</td><td style="font-weight:700">3.14</td></tr>
+          <tr><td style="text-align:left">4.º nivel jugado</td><td style="font-weight:700">3.84</td></tr>
+          <tr><td style="text-align:left">5.º nivel jugado</td><td style="font-weight:700">4.14</td></tr>
+          <tr><td style="text-align:left">6.º nivel jugado</td><td style="font-weight:700;color:#c1121f">4.77</td></tr>
+        </tbody>
+      </table>
+
+      <div style="background:#fff3cd;border:2px solid var(--gold);padding:7px 9px;font-size:11px;line-height:1.4">
+        <b>⚠️ Alerta metodológica:</b><br>
+        Los niveles jugados antes se rankearon significativamente mejor, <b>sin importar su tipo</b>.
+        <div style="margin-top:3px;font-size:10.5px;color:#555">
+          Este efecto de fatiga/primacía es sustancial y exige modelarse como covariable aleatoria (LMM).
+        </div>
+      </div>
+
+      <div class="rk-note">
+        <b>Limitación de muestra:</b><br>
+        7 de los 76 participantes no completaron el ranking y quedan fuera de este análisis (n = 69).
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ FILMINA: CONCLUSIONES PRELIMINARES ============ -->
 <!-- Tres columnas: pregunta y respuesta | limitaciones | trabajo futuro.
      Las cifras salen de la filmina de resultados (LMM, p ajustados por Holm). -->
 
 
 
-  <section class="slide" id="s-conc" data-min="1" data-max="4" data-sec="Conclusiones">
-    <h1 class="h1">CONCLUSIONES PRELIMINARES</h1>
-    <div class="cdiv" style="left:440px"></div>
-    <div class="cdiv" style="left:839px"></div>
+<section class="slide" id="s-conc" data-min="1" data-max="4" data-sec="Conclusiones">
+  <h1 class="h1">CONCLUSIONES PRELIMINARES</h1>
+  <div class="cdiv" style="left:440px"></div>
+  <div class="cdiv" style="left:839px"></div>
 
-    <!-- 1 · pregunta y respuesta -->
-    <div class="ccol c1">
-      <div class="reveal" data-at="1">
-        <div class="chead"><span class="cico" style="background:var(--gold-l)">?</span><b>PREGUNTA</b></div>
-        <div class="cq">¿Pueden los juegos <span class="a">personalizados</span> superar en <span class="b">satisfacción</span> y <span class="c">dificultad</span> a los juegos <span class="d">diseñados por humanos</span>?</div>
-      </div>
-      <div class="cans reveal" data-at="2">
-        <p class="cbig">NO, POR AHORA</p>
-        <div class="pmap">
-          <svg class="parr" viewBox="0 0 362 290">
-            <defs><marker id="carw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none"/></marker></defs>
-            <path d="M131 120 C150 120 144 42 162 42" pathLength="1" marker-end="url(#carw)"/>
-            <path d="M131 147 H162" pathLength="1" marker-end="url(#carw)"/>
-            <path d="M131 174 C150 174 144 250 162 250" pathLength="1" marker-end="url(#carw)"/>
-          </svg>
-          <div class="pnode"><span class="pl">P</span><img class="spr" data-spr="hero:neutral" data-s="4" alt=""><b>PERSONALIZADOS</b></div>
-          <div class="pchip k1" style="top:0;background:#ffd0d0">
-            <h5>▼ SATISFACCIÓN</h5>
-            <p>Frente a H: <b>−0.90</b> disfrute, <b>−1.11</b> competencia.</p>
-          </div>
-          <div class="pchip k2" style="top:104px;background:var(--gold-l)">
-            <h5>▲ DIFICULTAD</h5>
-            <p><b>+0.84</b> vs. H y <b>+0.63</b> vs. N, sin mejor ajuste del reto.</p>
-          </div>
-          <div class="pchip k3" style="top:208px;background:#d7f4e8">
-            <h5>≈ N EN DISFRUTE</h5>
-            <p>Pero algo más variados<span class="stag">FRÁGIL</span></p>
-          </div>
+  <!-- 1 · pregunta y respuesta -->
+  <div class="ccol c1">
+    <div class="reveal" data-at="1">
+      <div class="chead"><span class="cico" style="background:var(--gold-l)">?</span><b>PREGUNTA</b></div>
+      <div class="cq">¿Pueden los juegos <span class="a">personalizados</span> superar en <span
+          class="b">satisfacción</span> y <span class="c">dificultad</span> a los juegos <span class="d">diseñados por
+          humanos</span>?</div>
+    </div>
+    <div class="cans reveal" data-at="2">
+      <p class="cbig">NO, POR AHORA</p>
+      <div class="pmap">
+        <svg class="parr" viewBox="0 0 362 290">
+          <defs>
+            <marker id="carw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+              <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
+            </marker>
+          </defs>
+          <path d="M131 120 C150 120 144 42 162 42" pathLength="1" marker-end="url(#carw)" />
+          <path d="M131 147 H162" pathLength="1" marker-end="url(#carw)" />
+          <path d="M131 174 C150 174 144 250 162 250" pathLength="1" marker-end="url(#carw)" />
+        </svg>
+        <div class="pnode"><span class="pl">P</span><img class="spr" data-spr="hero:neutral" data-s="4"
+            alt=""><b>PERSONALIZADOS</b></div>
+        <div class="pchip k1" style="top:0;background:#ffd0d0">
+          <h5>▼ SATISFACCIÓN</h5>
+          <p>Frente a H: <b>−0.90</b> disfrute, <b>−1.11</b> competencia.</p>
+        </div>
+        <div class="pchip k2" style="top:104px;background:var(--gold-l)">
+          <h5>▲ DIFICULTAD</h5>
+          <p><b>+0.84</b> vs. H y <b>+0.63</b> vs. N, sin mejor ajuste del reto.</p>
+        </div>
+        <div class="pchip k3" style="top:208px;background:#d7f4e8">
+          <h5>≈ N EN DISFRUTE</h5>
+          <p>Pero algo más variados<span class="stag">FRÁGIL</span></p>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- 2 · limitaciones -->
-    <div class="ccol c2 reveal" data-at="3">
-      <div class="chead"><span class="cico" style="background:var(--pink)">!</span><b>LIMITACIONES</b></div>
-      <!-- arriba: limitaciones del generador · abajo: limitaciones de cómo se aplicó -->
-      <div class="lmap">
-        <svg class="larr" viewBox="0 0 362 456">
-          <defs><marker id="larw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none"/></marker></defs>
-          <path d="M150 50 C150 78 86 70 86 102" pathLength="1" marker-end="url(#larw)"/>
-          <path d="M212 50 C212 78 276 70 276 102" pathLength="1" marker-end="url(#larw)"/>
-          <path d="M150 400 C150 372 86 380 86 350" pathLength="1" marker-end="url(#larw)"/>
-          <path d="M212 400 C212 372 276 380 276 350" pathLength="1" marker-end="url(#larw)"/>
-        </svg>
-        <div class="ltag" style="top:0;background:#fff">MARIOGPT</div>
-        <div class="lbox k1" style="left:0;top:108px"><h5>GPT-2</h5><p>Modelo de 2019, ya antiguo.</p></div>
-        <div class="lbox k2" style="left:190px;top:108px"><h5>NIVELES CLÁSICOS</h5><p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p></div>
-        <div class="lbox k3" style="left:0;top:252px"><h5>REGLA, NO LLM</h5><p><b>120 de 122</b> prompts; solo 28 distintos.</p></div>
-        <div class="lbox k4" style="left:190px;top:252px"><h5>MENOS DATOS</h5><p>18 niveles de respaldo descartados.</p></div>
-        <div class="ltag" style="top:404px;background:var(--pink)">PERSONALIZADOS (P)</div>
+  <!-- 2 · limitaciones -->
+  <div class="ccol c2 reveal" data-at="3">
+    <div class="chead"><span class="cico" style="background:var(--pink)">!</span><b>LIMITACIONES</b></div>
+    <!-- arriba: limitaciones del generador · abajo: limitaciones de cómo se aplicó -->
+    <div class="lmap">
+      <svg class="larr" viewBox="0 0 362 456">
+        <defs>
+          <marker id="larw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+            <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
+          </marker>
+        </defs>
+        <path d="M150 50 C150 78 86 70 86 102" pathLength="1" marker-end="url(#larw)" />
+        <path d="M212 50 C212 78 276 70 276 102" pathLength="1" marker-end="url(#larw)" />
+        <path d="M150 400 C150 372 86 380 86 350" pathLength="1" marker-end="url(#larw)" />
+        <path d="M212 400 C212 372 276 380 276 350" pathLength="1" marker-end="url(#larw)" />
+      </svg>
+      <div class="ltag" style="top:0;background:#fff">MARIOGPT</div>
+      <div class="lbox k1" style="left:0;top:108px">
+        <h5>GPT-2</h5>
+        <p>Modelo de 2019, ya antiguo.</p>
       </div>
+      <div class="lbox k2" style="left:190px;top:108px">
+        <h5>NIVELES CLÁSICOS</h5>
+        <p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p>
+      </div>
+      <div class="lbox k3" style="left:0;top:252px">
+        <h5>REGLA, NO LLM</h5>
+        <p><b>120 de 122</b> prompts; solo 28 distintos.</p>
+      </div>
+      <div class="lbox k4" style="left:190px;top:252px">
+        <h5>MENOS DATOS</h5>
+        <p>18 niveles de respaldo descartados.</p>
+      </div>
+      <div class="ltag" style="top:404px;background:var(--pink)">PERSONALIZADOS (P)</div>
     </div>
+  </div>
 
-    <!-- 3 · trabajo futuro -->
-    <div class="ccol c3 reveal" data-at="4">
-      <div class="chead"><span class="cico" style="background:var(--mint)">▶</span><b>TRABAJO FUTURO</b></div>
-      <ul>
-        <li><b>Generadores más recientes</b> o entrenados con Mario Maker 2.</li>
-        <li><b>Razonador LLM</b> en todas las personalizaciones.</li>
-        <li>Analizar <b>ranking</b>, <b>telemetría</b> y <b>juego libre</b>.</li>
-        <li><b>Modelo ordinal</b> y efecto de cada nivel.</li>
-      </ul>
-    </div>
-  </section>
+  <!-- 3 · trabajo futuro -->
+  <div class="ccol c3 reveal" data-at="4">
+    <div class="chead"><span class="cico" style="background:var(--mint)">▶</span><b>TRABAJO FUTURO</b></div>
+    <ul>
+      <li><b>Generadores más recientes</b> o entrenados con Mario Maker 2.</li>
+      <li><b>Razonador LLM</b> en todas las personalizaciones.</li>
+    </ul>
+  </div>
+</section>
 
 <!-- ============ FILMINA: AGRADECIMIENTO ============ -->
 
@@ -4047,8 +4773,15 @@ H['s-prisma']={
   };
 })();
 
+/* ===== 08b-resultados-ranking.html ===== */
+H['s-res-rank'] = {
+  enter() {},
+  leave() {},
+  step() {}
+};
+
 /* ===== 09-conclusiones.html ===== */
-/* CONCLUSIONES — todo lo controlan data-at y las clases .reveal del motor */
+  /* CONCLUSIONES — todo lo controlan data-at y las clases .reveal del motor */
 
 /* ===== 10-agradecimiento.html ===== */
 /* ============================================================

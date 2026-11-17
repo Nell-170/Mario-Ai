@@ -3,134 +3,479 @@
      Las cifras salen de la filmina de resultados (LMM, p ajustados por Holm). -->
 
 <style>
-#s-conc .ccol{position:absolute;top:122px;width:362px;height:532px}
-#s-conc .ccol.c1{left:60px} #s-conc .ccol.c2{left:459px} #s-conc .ccol.c3{left:858px}
-#s-conc .cdiv{position:absolute;top:130px;height:510px;border-left:3px dashed var(--ink);opacity:.35}
-#s-conc .chead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-#s-conc .cico{flex:none;width:40px;height:40px;border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);display:flex;align-items:center;justify-content:center;font:400 30px/1 var(--display)}
-#s-conc .chead b{font:400 10px/1.5 var(--pixel)}
-#s-conc .cq{background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:12px 14px;font:600 15px/1.45 var(--body)}
-#s-conc .cq .a{color:var(--pink-d)} #s-conc .cq .b{color:var(--violet)} #s-conc .cq .c{color:var(--gold)} #s-conc .cq .d{color:var(--mint-d)}
-#s-conc .cans{margin-top:16px}
-#s-conc .cbig{font:400 46px/1 var(--display);letter-spacing:1px;margin:0 0 12px}
-#s-conc ul{list-style:none;margin:0;padding:0}
-#s-conc li{position:relative;padding:0 0 0 22px;margin:0 0 14px;font-size:15px;line-height:1.45}
-#s-conc li::before{content:"";position:absolute;left:2px;top:6px;width:9px;height:9px;border:2px solid var(--ink);background:var(--k,var(--gold-l))}
-#s-conc .c2 li{--k:var(--pink)} #s-conc .c3 li{--k:var(--mint)}
-#s-conc .stag{display:inline-block;font:400 7px var(--pixel);padding:3px 4px;border:2px solid var(--ink);background:var(--gold-l);vertical-align:1px;margin-left:4px}
-/* aparición escalonada de las viñetas */
-#s-conc .reveal li{opacity:0;transform:translateX(-10px);transition:opacity .35s,transform .35s}
-#s-conc .reveal.show li{opacity:1;transform:none}
-#s-conc .reveal.show li:nth-child(2){transition-delay:.12s} #s-conc .reveal.show li:nth-child(3){transition-delay:.24s}
-#s-conc .reveal.show li:nth-child(4){transition-delay:.36s} #s-conc .reveal.show li:nth-child(5){transition-delay:.48s}
+  #s-conc .ccol {
+    position: absolute;
+    top: 122px;
+    width: 362px;
+    height: 532px
+  }
 
-/* ---------- diagrama: P y sus tres flechas ---------- */
-#s-conc .pmap{position:relative;width:362px;height:290px}
-#s-conc .pnode{position:absolute;left:0;top:88px;width:126px;height:118px;background:var(--pink);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transform:scale(.6);opacity:0;transition:transform .45s cubic-bezier(.3,1.6,.5,1),opacity .3s}
-#s-conc .pnode b{font:400 7px var(--pixel);letter-spacing:.3px}
-#s-conc .pnode .pl{position:absolute;left:-12px;top:-12px;width:30px;height:30px;background:#fff;border:3px solid var(--ink);font:400 22px/24px var(--display);text-align:center}
-#s-conc .parr{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-#s-conc .parr path{fill:none;stroke:var(--ink);stroke-width:3.5;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .45s ease}
-#s-conc .pchip{position:absolute;left:168px;width:194px;height:84px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:7px 10px;
-  opacity:0;transform:translateX(-14px);transition:opacity .35s,transform .35s}
-#s-conc .pchip h5{margin:0 0 3px;font:400 25px/1 var(--display);letter-spacing:.5px}
-#s-conc .pchip p{margin:0;font:500 12px/1.4 var(--body)}
-#s-conc .cans.show .pnode{opacity:1;transform:none}
-#s-conc .cans.show .parr path{stroke-dashoffset:0}
-#s-conc .cans.show .pchip{opacity:1;transform:none}
-#s-conc .cans.show .parr path:nth-of-type(1){transition-delay:.35s} #s-conc .cans.show .pchip.k1{transition-delay:.7s}
-#s-conc .cans.show .parr path:nth-of-type(2){transition-delay:.9s}  #s-conc .cans.show .pchip.k2{transition-delay:1.25s}
-#s-conc .cans.show .parr path:nth-of-type(3){transition-delay:1.45s} #s-conc .cans.show .pchip.k3{transition-delay:1.8s}
+  #s-conc .ccol.c1 {
+    left: 60px
+  }
 
-/* ---------- limitaciones: MarioGPT arriba, P abajo ---------- */
-#s-conc .lmap{position:relative;width:362px;height:456px}
-#s-conc .larr{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-#s-conc .larr path{fill:none;stroke:var(--ink);stroke-width:3.5;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .45s ease}
-#s-conc .ltag{position:absolute;left:50%;transform:translateX(-50%);height:50px;padding:0 18px;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);
-  font:400 27px/44px var(--display);letter-spacing:1px;white-space:nowrap}
-#s-conc .lbox{position:absolute;width:172px;height:92px;background:#fff0f8;border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:8px 10px;
-  opacity:0;transform:scale(.85);transition:opacity .3s,transform .35s cubic-bezier(.3,1.5,.5,1)}
-#s-conc .lbox h5{margin:0 0 4px;font:400 22px/1 var(--display);letter-spacing:.5px}
-#s-conc .lbox p{margin:0;font:500 12.5px/1.4 var(--body)}
-#s-conc .c2.show .larr path{stroke-dashoffset:0}
-#s-conc .c2.show .lbox{opacity:1;transform:none}
-#s-conc .c2.show .larr path:nth-of-type(1){transition-delay:.2s}  #s-conc .c2.show .lbox.k1{transition-delay:.55s}
-#s-conc .c2.show .larr path:nth-of-type(2){transition-delay:.35s} #s-conc .c2.show .lbox.k2{transition-delay:.7s}
-#s-conc .c2.show .larr path:nth-of-type(3){transition-delay:1s}   #s-conc .c2.show .lbox.k3{transition-delay:1.35s}
-#s-conc .c2.show .larr path:nth-of-type(4){transition-delay:1.15s} #s-conc .c2.show .lbox.k4{transition-delay:1.5s}
+  #s-conc .ccol.c2 {
+    left: 459px
+  }
+
+  #s-conc .ccol.c3 {
+    left: 858px
+  }
+
+  #s-conc .cdiv {
+    position: absolute;
+    top: 130px;
+    height: 510px;
+    border-left: 3px dashed var(--ink);
+    opacity: .35
+  }
+
+  #s-conc .chead {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px
+  }
+
+  #s-conc .cico {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 400 30px/1 var(--display)
+  }
+
+  #s-conc .chead b {
+    font: 400 10px/1.5 var(--pixel)
+  }
+
+  #s-conc .cq {
+    background: #fff;
+    border: 3px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    padding: 12px 14px;
+    font: 600 15px/1.45 var(--body)
+  }
+
+  #s-conc .cq .a {
+    color: var(--pink-d)
+  }
+
+  #s-conc .cq .b {
+    color: var(--violet)
+  }
+
+  #s-conc .cq .c {
+    color: var(--gold)
+  }
+
+  #s-conc .cq .d {
+    color: var(--mint-d)
+  }
+
+  #s-conc .cans {
+    margin-top: 16px
+  }
+
+  #s-conc .cbig {
+    font: 400 46px/1 var(--display);
+    letter-spacing: 1px;
+    margin: 0 0 12px
+  }
+
+  #s-conc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0
+  }
+
+  #s-conc li {
+    position: relative;
+    padding: 0 0 0 22px;
+    margin: 0 0 14px;
+    font-size: 15px;
+    line-height: 1.45
+  }
+
+  #s-conc li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 6px;
+    width: 9px;
+    height: 9px;
+    border: 2px solid var(--ink);
+    background: var(--k, var(--gold-l))
+  }
+
+  #s-conc .c2 li {
+    --k: var(--pink)
+  }
+
+  #s-conc .c3 li {
+    --k: var(--mint)
+  }
+
+  #s-conc .stag {
+    display: inline-block;
+    font: 400 7px var(--pixel);
+    padding: 3px 4px;
+    border: 2px solid var(--ink);
+    background: var(--gold-l);
+    vertical-align: 1px;
+    margin-left: 4px
+  }
+
+  /* aparición escalonada de las viñetas */
+  #s-conc .reveal li {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity .35s, transform .35s
+  }
+
+  #s-conc .reveal.show li {
+    opacity: 1;
+    transform: none
+  }
+
+  #s-conc .reveal.show li:nth-child(2) {
+    transition-delay: .12s
+  }
+
+  #s-conc .reveal.show li:nth-child(3) {
+    transition-delay: .24s
+  }
+
+  #s-conc .reveal.show li:nth-child(4) {
+    transition-delay: .36s
+  }
+
+  #s-conc .reveal.show li:nth-child(5) {
+    transition-delay: .48s
+  }
+
+  /* ---------- diagrama: P y sus tres flechas ---------- */
+  #s-conc .pmap {
+    position: relative;
+    width: 362px;
+    height: 290px
+  }
+
+  #s-conc .pnode {
+    position: absolute;
+    left: 0;
+    top: 88px;
+    width: 126px;
+    height: 118px;
+    background: var(--pink);
+    border: 3px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transform: scale(.6);
+    opacity: 0;
+    transition: transform .45s cubic-bezier(.3, 1.6, .5, 1), opacity .3s
+  }
+
+  #s-conc .pnode b {
+    font: 400 7px var(--pixel);
+    letter-spacing: .3px
+  }
+
+  #s-conc .pnode .pl {
+    position: absolute;
+    left: -12px;
+    top: -12px;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    border: 3px solid var(--ink);
+    font: 400 22px/24px var(--display);
+    text-align: center
+  }
+
+  #s-conc .parr {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none
+  }
+
+  #s-conc .parr path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 3.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset .45s ease
+  }
+
+  #s-conc .pchip {
+    position: absolute;
+    left: 168px;
+    width: 194px;
+    height: 84px;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 7px 10px;
+    opacity: 0;
+    transform: translateX(-14px);
+    transition: opacity .35s, transform .35s
+  }
+
+  #s-conc .pchip h5 {
+    margin: 0 0 3px;
+    font: 400 25px/1 var(--display);
+    letter-spacing: .5px
+  }
+
+  #s-conc .pchip p {
+    margin: 0;
+    font: 500 12px/1.4 var(--body)
+  }
+
+  #s-conc .cans.show .pnode {
+    opacity: 1;
+    transform: none
+  }
+
+  #s-conc .cans.show .parr path {
+    stroke-dashoffset: 0
+  }
+
+  #s-conc .cans.show .pchip {
+    opacity: 1;
+    transform: none
+  }
+
+  #s-conc .cans.show .parr path:nth-of-type(1) {
+    transition-delay: .35s
+  }
+
+  #s-conc .cans.show .pchip.k1 {
+    transition-delay: .7s
+  }
+
+  #s-conc .cans.show .parr path:nth-of-type(2) {
+    transition-delay: .9s
+  }
+
+  #s-conc .cans.show .pchip.k2 {
+    transition-delay: 1.25s
+  }
+
+  #s-conc .cans.show .parr path:nth-of-type(3) {
+    transition-delay: 1.45s
+  }
+
+  #s-conc .cans.show .pchip.k3 {
+    transition-delay: 1.8s
+  }
+
+  /* ---------- limitaciones: MarioGPT arriba, P abajo ---------- */
+  #s-conc .lmap {
+    position: relative;
+    width: 362px;
+    height: 456px
+  }
+
+  #s-conc .larr {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none
+  }
+
+  #s-conc .larr path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 3.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset .45s ease
+  }
+
+  #s-conc .ltag {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 50px;
+    padding: 0 18px;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    font: 400 27px/44px var(--display);
+    letter-spacing: 1px;
+    white-space: nowrap
+  }
+
+  #s-conc .lbox {
+    position: absolute;
+    width: 172px;
+    height: 92px;
+    background: #fff0f8;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 8px 10px;
+    opacity: 0;
+    transform: scale(.85);
+    transition: opacity .3s, transform .35s cubic-bezier(.3, 1.5, .5, 1)
+  }
+
+  #s-conc .lbox h5 {
+    margin: 0 0 4px;
+    font: 400 22px/1 var(--display);
+    letter-spacing: .5px
+  }
+
+  #s-conc .lbox p {
+    margin: 0;
+    font: 500 12.5px/1.4 var(--body)
+  }
+
+  #s-conc .c2.show .larr path {
+    stroke-dashoffset: 0
+  }
+
+  #s-conc .c2.show .lbox {
+    opacity: 1;
+    transform: none
+  }
+
+  #s-conc .c2.show .larr path:nth-of-type(1) {
+    transition-delay: .2s
+  }
+
+  #s-conc .c2.show .lbox.k1 {
+    transition-delay: .55s
+  }
+
+  #s-conc .c2.show .larr path:nth-of-type(2) {
+    transition-delay: .35s
+  }
+
+  #s-conc .c2.show .lbox.k2 {
+    transition-delay: .7s
+  }
+
+  #s-conc .c2.show .larr path:nth-of-type(3) {
+    transition-delay: 1s
+  }
+
+  #s-conc .c2.show .lbox.k3 {
+    transition-delay: 1.35s
+  }
+
+  #s-conc .c2.show .larr path:nth-of-type(4) {
+    transition-delay: 1.15s
+  }
+
+  #s-conc .c2.show .lbox.k4 {
+    transition-delay: 1.5s
+  }
 </style>
 
-  <section class="slide" id="s-conc" data-min="1" data-max="4" data-sec="Conclusiones">
-    <h1 class="h1">CONCLUSIONES PRELIMINARES</h1>
-    <div class="cdiv" style="left:440px"></div>
-    <div class="cdiv" style="left:839px"></div>
+<section class="slide" id="s-conc" data-min="1" data-max="4" data-sec="Conclusiones">
+  <h1 class="h1">CONCLUSIONES PRELIMINARES</h1>
+  <div class="cdiv" style="left:440px"></div>
+  <div class="cdiv" style="left:839px"></div>
 
-    <!-- 1 · pregunta y respuesta -->
-    <div class="ccol c1">
-      <div class="reveal" data-at="1">
-        <div class="chead"><span class="cico" style="background:var(--gold-l)">?</span><b>PREGUNTA</b></div>
-        <div class="cq">¿Pueden los juegos <span class="a">personalizados</span> superar en <span class="b">satisfacción</span> y <span class="c">dificultad</span> a los juegos <span class="d">diseñados por humanos</span>?</div>
-      </div>
-      <div class="cans reveal" data-at="2">
-        <p class="cbig">NO, POR AHORA</p>
-        <div class="pmap">
-          <svg class="parr" viewBox="0 0 362 290">
-            <defs><marker id="carw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none"/></marker></defs>
-            <path d="M131 120 C150 120 144 42 162 42" pathLength="1" marker-end="url(#carw)"/>
-            <path d="M131 147 H162" pathLength="1" marker-end="url(#carw)"/>
-            <path d="M131 174 C150 174 144 250 162 250" pathLength="1" marker-end="url(#carw)"/>
-          </svg>
-          <div class="pnode"><span class="pl">P</span><img class="spr" data-spr="hero:neutral" data-s="4" alt=""><b>PERSONALIZADOS</b></div>
-          <div class="pchip k1" style="top:0;background:#ffd0d0">
-            <h5>▼ SATISFACCIÓN</h5>
-            <p>Frente a H: <b>−0.90</b> disfrute, <b>−1.11</b> competencia.</p>
-          </div>
-          <div class="pchip k2" style="top:104px;background:var(--gold-l)">
-            <h5>▲ DIFICULTAD</h5>
-            <p><b>+0.84</b> vs. H y <b>+0.63</b> vs. N, sin mejor ajuste del reto.</p>
-          </div>
-          <div class="pchip k3" style="top:208px;background:#d7f4e8">
-            <h5>≈ N EN DISFRUTE</h5>
-            <p>Pero algo más variados<span class="stag">FRÁGIL</span></p>
-          </div>
+  <!-- 1 · pregunta y respuesta -->
+  <div class="ccol c1">
+    <div class="reveal" data-at="1">
+      <div class="chead"><span class="cico" style="background:var(--gold-l)">?</span><b>PREGUNTA</b></div>
+      <div class="cq">¿Pueden los juegos <span class="a">personalizados</span> superar en <span
+          class="b">satisfacción</span> y <span class="c">dificultad</span> a los juegos <span class="d">diseñados por
+          humanos</span>?</div>
+    </div>
+    <div class="cans reveal" data-at="2">
+      <p class="cbig">NO, POR AHORA</p>
+      <div class="pmap">
+        <svg class="parr" viewBox="0 0 362 290">
+          <defs>
+            <marker id="carw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+              <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
+            </marker>
+          </defs>
+          <path d="M131 120 C150 120 144 42 162 42" pathLength="1" marker-end="url(#carw)" />
+          <path d="M131 147 H162" pathLength="1" marker-end="url(#carw)" />
+          <path d="M131 174 C150 174 144 250 162 250" pathLength="1" marker-end="url(#carw)" />
+        </svg>
+        <div class="pnode"><span class="pl">P</span><img class="spr" data-spr="hero:neutral" data-s="4"
+            alt=""><b>PERSONALIZADOS</b></div>
+        <div class="pchip k1" style="top:0;background:#ffd0d0">
+          <h5>▼ SATISFACCIÓN</h5>
+          <p>Frente a H: <b>−0.90</b> disfrute, <b>−1.11</b> competencia.</p>
+        </div>
+        <div class="pchip k2" style="top:104px;background:var(--gold-l)">
+          <h5>▲ DIFICULTAD</h5>
+          <p><b>+0.84</b> vs. H y <b>+0.63</b> vs. N, sin mejor ajuste del reto.</p>
+        </div>
+        <div class="pchip k3" style="top:208px;background:#d7f4e8">
+          <h5>≈ N EN DISFRUTE</h5>
+          <p>Pero algo más variados<span class="stag">FRÁGIL</span></p>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- 2 · limitaciones -->
-    <div class="ccol c2 reveal" data-at="3">
-      <div class="chead"><span class="cico" style="background:var(--pink)">!</span><b>LIMITACIONES</b></div>
-      <!-- arriba: limitaciones del generador · abajo: limitaciones de cómo se aplicó -->
-      <div class="lmap">
-        <svg class="larr" viewBox="0 0 362 456">
-          <defs><marker id="larw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none"/></marker></defs>
-          <path d="M150 50 C150 78 86 70 86 102" pathLength="1" marker-end="url(#larw)"/>
-          <path d="M212 50 C212 78 276 70 276 102" pathLength="1" marker-end="url(#larw)"/>
-          <path d="M150 400 C150 372 86 380 86 350" pathLength="1" marker-end="url(#larw)"/>
-          <path d="M212 400 C212 372 276 380 276 350" pathLength="1" marker-end="url(#larw)"/>
-        </svg>
-        <div class="ltag" style="top:0;background:#fff">MARIOGPT</div>
-        <div class="lbox k1" style="left:0;top:108px"><h5>GPT-2</h5><p>Modelo de 2019, ya antiguo.</p></div>
-        <div class="lbox k2" style="left:190px;top:108px"><h5>NIVELES CLÁSICOS</h5><p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p></div>
-        <div class="lbox k3" style="left:0;top:252px"><h5>REGLA, NO LLM</h5><p><b>120 de 122</b> prompts; solo 28 distintos.</p></div>
-        <div class="lbox k4" style="left:190px;top:252px"><h5>MENOS DATOS</h5><p>18 niveles de respaldo descartados.</p></div>
-        <div class="ltag" style="top:404px;background:var(--pink)">PERSONALIZADOS (P)</div>
+  <!-- 2 · limitaciones -->
+  <div class="ccol c2 reveal" data-at="3">
+    <div class="chead"><span class="cico" style="background:var(--pink)">!</span><b>LIMITACIONES</b></div>
+    <!-- arriba: limitaciones del generador · abajo: limitaciones de cómo se aplicó -->
+    <div class="lmap">
+      <svg class="larr" viewBox="0 0 362 456">
+        <defs>
+          <marker id="larw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+            <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
+          </marker>
+        </defs>
+        <path d="M150 50 C150 78 86 70 86 102" pathLength="1" marker-end="url(#larw)" />
+        <path d="M212 50 C212 78 276 70 276 102" pathLength="1" marker-end="url(#larw)" />
+        <path d="M150 400 C150 372 86 380 86 350" pathLength="1" marker-end="url(#larw)" />
+        <path d="M212 400 C212 372 276 380 276 350" pathLength="1" marker-end="url(#larw)" />
+      </svg>
+      <div class="ltag" style="top:0;background:#fff">MARIOGPT</div>
+      <div class="lbox k1" style="left:0;top:108px">
+        <h5>GPT-2</h5>
+        <p>Modelo de 2019, ya antiguo.</p>
       </div>
+      <div class="lbox k2" style="left:190px;top:108px">
+        <h5>NIVELES CLÁSICOS</h5>
+        <p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p>
+      </div>
+      <div class="lbox k3" style="left:0;top:252px">
+        <h5>REGLA, NO LLM</h5>
+        <p><b>120 de 122</b> prompts; solo 28 distintos.</p>
+      </div>
+      <div class="lbox k4" style="left:190px;top:252px">
+        <h5>MENOS DATOS</h5>
+        <p>18 niveles de respaldo descartados.</p>
+      </div>
+      <div class="ltag" style="top:404px;background:var(--pink)">PERSONALIZADOS (P)</div>
     </div>
+  </div>
 
-    <!-- 3 · trabajo futuro -->
-    <div class="ccol c3 reveal" data-at="4">
-      <div class="chead"><span class="cico" style="background:var(--mint)">▶</span><b>TRABAJO FUTURO</b></div>
-      <ul>
-        <li><b>Generadores más recientes</b> o entrenados con Mario Maker 2.</li>
-        <li><b>Razonador LLM</b> en todas las personalizaciones.</li>
-        <li>Analizar <b>ranking</b>, <b>telemetría</b> y <b>juego libre</b>.</li>
-        <li><b>Modelo ordinal</b> y efecto de cada nivel.</li>
-      </ul>
-    </div>
-  </section>
+  <!-- 3 · trabajo futuro -->
+  <div class="ccol c3 reveal" data-at="4">
+    <div class="chead"><span class="cico" style="background:var(--mint)">▶</span><b>TRABAJO FUTURO</b></div>
+    <ul>
+      <li><b>Generadores más recientes</b> o entrenados con Mario Maker 2.</li>
+      <li><b>Razonador LLM</b> en todas las personalizaciones.</li>
+    </ul>
+  </div>
+</section>
 
 <script>
-/* CONCLUSIONES — todo lo controlan data-at y las clases .reveal del motor */
+  /* CONCLUSIONES — todo lo controlan data-at y las clases .reveal del motor */
 </script>

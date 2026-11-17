@@ -222,6 +222,7 @@
     pointer-events: auto
   }
 
+  .fp[data-p="7"],
   .fp[data-p="11"] {
     left: 528px;
     width: 702px;
@@ -1028,53 +1029,91 @@
   </div>
   <!-- 7 -->
   <div class="fp" data-p="7" style="overflow-y:auto">
-    <div class="ptag">4 · ENCUESTA INICIAL</div>
-    <p class="pp" style="margin-bottom:8px">Preguntas iniciales antes de comenzar el bloque principal:</p>
-    <div class="q-list">
-      <div class="q-item">
-        <span class="q-num">1</span>
-        <div class="q-body">
-          <b>Edad (en años)</b> <span class="q-type">Numérica</span>
-          <div class="q-desc">Edad cronológica del participante.</div>
+    <div class="ptag">4 · ENCUESTA INICIAL &amp; PERFIL DE LA MUESTRA</div>
+    <p class="pp" style="margin-bottom:8px">Caracterización de participantes previa al juego (<b>n = 76 participantes</b>):</p>
+
+    <!-- Barra de KPIs demográficos -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
+      <div style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">MUESTRA TOTAL</span>
+        <b style="font:400 20px/1.1 var(--display);color:var(--ink)">76 SUJETOS</b>
+      </div>
+      <div style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">EDAD MEDIANA</span>
+        <b style="font:400 20px/1.1 var(--display);color:var(--ink)">21 AÑOS</b>
+      </div>
+      <div style="border:2px solid var(--ink);background:#ffb3da;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">50% CENTRAL (Q1–Q3)</span>
+        <b style="font:400 20px/1.1 var(--display);color:var(--ink)">20 – 23 AÑOS</b>
+      </div>
+      <div style="border:2px solid var(--ink);background:#fff;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
+        <span style="font:400 7px var(--pixel);color:#333;display:block">JUEGO LIBRE</span>
+        <b style="font:400 17px/1.2 var(--display);color:var(--ink)">26H · 25P · 25N</b>
+      </div>
+    </div>
+
+    <!-- Contenido en dos columnas: Resultados a la izquierda, Preguntas a la derecha -->
+    <div style="display:grid;grid-template-columns:325px 325px;gap:12px;align-items:start">
+      <!-- Columna 1: Resultados y Estadísticas de la muestra -->
+      <div style="border:2.5px solid var(--ink);background:#fff;padding:8px 10px;box-shadow:3px 3px 0 var(--ink)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:4px">
+          <span style="font:400 8px var(--pixel);color:var(--ink)">RESULTADOS DE LA MUESTRA</span>
+          <span style="font:700 9px monospace;background:var(--mint);padding:1px 5px;border:1px solid var(--ink)">n = 76</span>
+        </div>
+
+        <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:6px">
+          <tr style="border-bottom:1px solid #ddd"><td style="padding:2px 0;color:#555">Media ± DE:</td><td style="text-align:right;font-weight:700">22.8 ± 6.1 años</td></tr>
+          <tr style="border-bottom:1px solid #ddd"><td style="padding:2px 0;color:#555">Mediana:</td><td style="text-align:right;font-weight:700;color:var(--violet)">21 años</td></tr>
+          <tr style="border-bottom:1px solid #ddd"><td style="padding:2px 0;color:#555">Rango intercuartílico (Q1–Q3):</td><td style="text-align:right;font-weight:700">20 – 23 años</td></tr>
+          <tr><td style="padding:2px 0;color:#555">Rango mín – máx:</td><td style="text-align:right;font-weight:700">12 – 59 años</td></tr>
+        </table>
+
+        <div style="font-size:10.5px;line-height:1.4;color:#222;background:#fbf9f6;border:1px solid #e2ddd5;padding:6px 8px">
+          <div style="margin-bottom:4px">▸ <b>La mayoría de los participantes tiene entre 20 y 23 años</b> (cohorte joven y homogénea).</div>
+          <div style="margin-bottom:4px">▸ La media (22.8) queda por encima de la mediana (21) por valores atípicos altos (41 y 59 años); <b>la mediana describe mejor al participante típico</b>.</div>
+          <div style="margin-bottom:4px">▸ Participante de 12 años a revisar según criterio de inclusión.</div>
+          <div>▸ Distribución en juego libre: <b>Humano = 26, Personalizado = 25, Genérico = 25</b> (estrictamente balanceada).</div>
         </div>
       </div>
-      <div class="q-item">
-        <span class="q-num">2</span>
-        <div class="q-body">
-          <b>Horas de juego semanales</b> <span class="q-type">Selección</span>
-          <div class="q-desc">¿Cuántas horas a la semana juegas videojuegos, de cualquier tipo?</div>
-          <div class="q-opts">
-            <span>&lt; 1 h</span><span>1 a 5 h</span><span>6 a 10 h</span><span>11 a 20 h</span><span>&gt; 20 h</span>
+
+      <!-- Columna 2: Instrumento de preguntas iniciales -->
+      <div>
+        <div style="font:400 8px var(--pixel);color:#555;margin-bottom:5px">INSTRUMENTO (5 PREGUNTAS INITIAL.TSV):</div>
+        <div class="q-list" style="margin-top:0;gap:4px">
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">1</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Edad</b> <span class="q-type" style="font-size:6.5px">Numérica</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Edad cronológica (en años).</div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="q-item">
-        <span class="q-num">3</span>
-        <div class="q-body">
-          <b>Plataformas 2D</b> <span class="q-type">Selección</span>
-          <div class="q-desc">De esas horas, ¿cuántas dedicas a plataformas 2D (Mario, Celeste, etc.)?</div>
-          <div class="q-opts">
-            <span>Ninguna</span><span>&lt; 1 h</span><span>1 a 3 h</span><span>4 a 7 h</span><span>&gt; 7 h</span>
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">2</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Horas videojuegos</b> <span class="q-type" style="font-size:6.5px">Selección</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Dedicación semanal (&lt;1h a &gt;20h).</div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="q-item">
-        <span class="q-num">4</span>
-        <div class="q-body">
-          <b>Experiencia con Mario 2D</b> <span class="q-type">Selección</span>
-          <div class="q-desc">¿Cuál de estas frases describe mejor tu experiencia con Mario?</div>
-          <div class="q-opts">
-            <span>Creador SMM</span><span>Jugador SMM</span><span>Jugador SMB</span><span>Nunca</span>
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">3</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Plataformas 2D</b> <span class="q-type" style="font-size:6.5px">Selección</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Horas en Mario, Celeste, Hollow Knight...</div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="q-item">
-        <span class="q-num">5</span>
-        <div class="q-body">
-          <b>Dispositivo habitual</b> <span class="q-type">Múltiple</span>
-          <div class="q-desc">¿Con qué sueles jugar normalmente? (Sí/No por opción)</div>
-          <div class="q-opts">
-            <span>Mando / Control</span><span>Teclado / Ratón</span><span>Pantalla táctil</span><span>Otro</span>
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">4</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Experiencia Mario 2D</b> <span class="q-type" style="font-size:6.5px">Selección</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Creador SMM, Jugador SMM, SMB, Nunca.</div>
+            </div>
+          </div>
+          <div class="q-item" style="padding:4px 6px">
+            <span class="q-num" style="padding:1px 4px;font-size:8px">5</span>
+            <div class="q-body" style="font-size:11px">
+              <b>Control habitual</b> <span class="q-type" style="font-size:6.5px">Múltiple</span>
+              <div class="q-desc" style="font-size:10px;margin-top:0">Mando / Teclado / Pantalla táctil / Otro.</div>
+            </div>
           </div>
         </div>
       </div>
