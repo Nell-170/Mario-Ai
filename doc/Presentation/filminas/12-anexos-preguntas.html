@@ -178,6 +178,7 @@
   <div class="prg-tabs">
     <button class="prg-tab" id="btnGoBackAnx" type="button">◀ 1-3 · DATASET &amp; FILTRADO</button>
     <button class="prg-tab on" type="button">4 · INSTRUMENTO DE EVALUACIÓN (PREGUNTAS)</button>
+    <button class="prg-tab" id="btnGoPreguntaFormal" type="button" style="border-style:dashed;background:#fff8db">5 · PREGUNTA FORMAL ➔</button>
   </div>
 
   <div class="prg-grid">
@@ -359,6 +360,17 @@
       const idx = slides.findIndex(s => s.id === 's-anexos');
       if(idx >= 0 && typeof goSlide === 'function'){
         goSlide(idx, 'back', 2);
+      }
+    };
+  }
+
+  const btnFormal = document.getElementById('btnGoPreguntaFormal');
+  if(btnFormal){
+    btnFormal.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos-pregunta');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
       }
     };
   }

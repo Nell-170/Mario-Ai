@@ -134,10 +134,10 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 
 /* ===== 03-pregunta.html ===== */
 /* ---------- question ---------- */
-.q{position:absolute;left:80px;right:80px;top:165px;text-align:center;font:500 37px/1.4 var(--body);min-height:180px}
-.q .a{background:linear-gradient(transparent 58%,var(--olive) 58% 92%,transparent 92%)}
+.q{position:absolute;left:90px;right:90px;top:180px;text-align:center;font:500 44px/1.38 var(--body);min-height:180px}
+.q .a{background:linear-gradient(transparent 58%,var(--pink) 58% 92%,transparent 92%)}
 .q .b{background:linear-gradient(transparent 58%,var(--mint) 58% 92%,transparent 92%)}
-.q .c{background:linear-gradient(transparent 58%,var(--pink) 58% 92%,transparent 92%)}
+.q .c{background:linear-gradient(transparent 58%,var(--olive) 58% 92%,transparent 92%)}
 .q .d{background:linear-gradient(transparent 58%,var(--gold-l) 58% 92%,transparent 92%)}
 .caret{display:inline-block;width:.45ch;height:1em;background:var(--ink);vertical-align:-.12em;margin-left:3px;animation:blink .8s steps(2) infinite}
 .bridge{position:absolute;left:0;right:0;top:432px;text-align:center;font:400 14px/1.9 var(--pixel)}
@@ -2487,6 +2487,161 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   font: 700 10px monospace;
   border: 1px solid #ccc;
 }
+
+/* ===== 13-anexos-pregunta-formal.html ===== */
+/* ---------- estilos para anexo de pregunta formal ---------- */
+#s-anexos-pregunta {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+}
+.ap-tabs {
+  position: absolute;
+  left: 280px;
+  top: 36px;
+  display: flex;
+  gap: 10px;
+  z-index: 5;
+}
+.ap-tab {
+  font: 400 9.5px var(--pixel);
+  padding: 7px 12px;
+  border: 3px solid var(--ink);
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  transition: all .2s;
+}
+.ap-tab:hover {
+  background: var(--gold-l);
+}
+.ap-tab.on {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+.ap-meta {
+  position: absolute;
+  right: 150px;
+  top: 40px;
+  font: 400 8px var(--pixel);
+  color: #555;
+  background: #fff8db;
+  border: 1.5px dashed var(--ink);
+  padding: 4px 8px;
+}
+
+.ap-container {
+  position: absolute;
+  left: 60px;
+  top: 92px;
+  width: 1160px;
+  height: 580px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Recuadro de la pregunta formal */
+.ap-qbox {
+  border: 4px solid var(--ink);
+  background: #fff;
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: 14px 18px;
+}
+.ap-qbox-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.ap-badge {
+  font: 400 8px var(--pixel);
+  padding: 3px 8px;
+  background: var(--gold-l);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+}
+.ap-qtext {
+  font: 500 24px/1.35 var(--body);
+  color: var(--ink);
+  margin: 0;
+}
+.ap-qtext .hl-p { background: linear-gradient(transparent 60%, var(--pink) 60% 92%, transparent 92%); }
+.ap-qtext .hl-s { background: linear-gradient(transparent 60%, var(--mint) 60% 92%, transparent 92%); }
+.ap-qtext .hl-d { background: linear-gradient(transparent 60%, var(--olive) 60% 92%, transparent 92%); }
+.ap-qtext .hl-n { background: linear-gradient(transparent 60%, var(--gold-l) 60% 92%, transparent 92%); }
+.ap-qtext .hl-h { background: linear-gradient(transparent 60%, var(--mint-d) 60% 92%, transparent 92%); }
+
+/* Cuadrícula de 2 columnas de defensa */
+.ap-grid {
+  display: grid;
+  grid-template-columns: 570px 570px;
+  gap: 20px;
+  flex: 1;
+}
+.ap-card {
+  border: 3.5px solid var(--ink);
+  background: #fff;
+  box-shadow: 5px 5px 0 var(--ink);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+}
+.ap-card-hd {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 5px;
+  margin-bottom: 8px;
+}
+.ap-card-hd b {
+  font: 400 9px var(--pixel);
+  color: var(--ink);
+}
+.ap-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11.5px;
+  line-height: 1.38;
+}
+.ap-item {
+  border: 1.5px solid var(--ink);
+  background: #faf8f5;
+  padding: 5px 8px;
+}
+.ap-item b {
+  color: var(--ink);
+}
+.ap-item-tag {
+  display: inline-block;
+  font: 700 8px monospace;
+  padding: 1px 4px;
+  border: 1px solid var(--ink);
+  margin-right: 4px;
+}
+.ap-qa-box {
+  background: #fdfaf6;
+  border: 1.5px solid var(--ink);
+  padding: 6px 9px;
+  margin-bottom: 6px;
+}
+.ap-q {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--violet);
+  margin-bottom: 2px;
+}
+.ap-a {
+  font-size: 11px;
+  line-height: 1.35;
+  color: #222;
+  margin: 0;
+}
 </style>
 </head>
 <body>
@@ -3304,9 +3459,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <div class="ccol c1">
     <div class="reveal" data-at="1">
       <div class="chead"><span class="cico" style="background:var(--gold-l)">?</span><b>PREGUNTA</b></div>
-      <div class="cq">¿Pueden los juegos <span class="a">personalizados</span> superar en <span
-          class="b">satisfacción</span> y <span class="c">dificultad</span> a los juegos <span class="d">diseñados por
-          humanos</span>?</div>
+      <div class="cq">¿Pueden los niveles que se <span class="a">adaptan al jugador</span> superar a los <span class="c">no personalizados</span> o a los <span class="d">diseñados por humanos</span>?</div>
     </div>
     <div class="cans reveal" data-at="2">
       <p class="cbig">NO, POR AHORA</p>
@@ -3612,6 +3765,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   <div class="prg-tabs">
     <button class="prg-tab" id="btnGoBackAnx" type="button">◀ 1-3 · DATASET &amp; FILTRADO</button>
     <button class="prg-tab on" type="button">4 · INSTRUMENTO DE EVALUACIÓN (PREGUNTAS)</button>
+    <button class="prg-tab" id="btnGoPreguntaFormal" type="button" style="border-style:dashed;background:#fff8db">5 · PREGUNTA FORMAL ➔</button>
   </div>
 
   <div class="prg-grid">
@@ -3778,6 +3932,95 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
         <div class="prg-foot">
           <b>Destino en datos:</b> Registrado en <code>src/experiment/data/responses.tsv</code> (6 filas por participante con ID de nivel, condición P/N/H, respuestas y telemetría).
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FILMINA: ANEXOS · PREGUNTA DE INVESTIGACIÓN FORMAL ============ -->
+
+
+
+<section class="slide" id="s-anexos-pregunta" data-min="0" data-max="0" data-sec="Anexos">
+  <h1 class="h1">ANEXOS</h1>
+  <div class="ap-tabs">
+    <button class="ap-tab" id="btnGoBackPrg" type="button">◀ 4 · INSTRUMENTO (PREGUNTAS)</button>
+    <button class="ap-tab on" type="button">5 · PREGUNTA FORMAL (CASO DE EMERGENCIA)</button>
+  </div>
+  <div class="ap-meta">RESPALDO FORMAL ANTE EL JURADO</div>
+
+  <div class="ap-container">
+    <!-- Pregunta Formal Completa -->
+    <div class="ap-qbox">
+      <div class="ap-qbox-bar">
+        <span class="ap-badge">FORMULACIÓN FORMAL COMPLETA (PROTOCOLO / TESIS ESCRITA)</span>
+        <span style="font:400 8px var(--pixel);color:#666">VERSIÓN EXTENDIDA</span>
+      </div>
+      <p class="ap-qtext">
+        «¿Pueden los <span class="hl-p">niveles personalizados</span> de un juego superar en <span class="hl-s">satisfacción</span> y <span class="hl-d">dificultad adaptada al usuario</span> tanto a los <span class="hl-n">niveles no personalizados</span> como a los <span class="hl-h">diseñados por seres humanos</span>?»
+      </p>
+    </div>
+
+    <!-- Dos Columnas de Soporte Metodológico -->
+    <div class="ap-grid">
+      <!-- Columna 1: Operacionalización de Constructos -->
+      <div class="ap-card">
+        <div class="ap-card-hd">
+          <b>OPERACIONALIZACIÓN DE VARIABLES Y CONSTRUCTOS</b>
+          <span style="font:700 8.5px monospace;background:var(--mint);padding:1px 5px;border:1px solid var(--ink)">DISEÑO FACTORIAL</span>
+        </div>
+        <div class="ap-items">
+          <div class="ap-item">
+            <span class="ap-item-tag" style="background:#ffb3da">P</span>
+            <b>Niveles personalizados:</b> Generación procedural con MarioGPT condicionada por telemetría motriz individual (saltos, muertes, velocidad) procesada por Ollama.
+          </div>
+          <div class="ap-item">
+            <span class="ap-item-tag" style="background:var(--mint)">SATISFACCIÓN</span>
+            <b>Constructo psicométrico:</b> Medido mediante escalas Likert (−3 a +3) en dos dimensiones validadas: <i>Disfrute intrínseco / Flow</i> y <i>Autoeficacia / Competencia percibida</i> (PENS).
+          </div>
+          <div class="ap-item">
+            <span class="ap-item-tag" style="background:var(--gold-l)">DIFICULTAD</span>
+            <b>Dificultad adaptada:</b> Percepción subjetiva del balance reto-habilidad (canal de flujo de Csikszentmihalyi, centrado en $0 = \text{reto justo}$).
+          </div>
+          <div class="ap-item">
+            <span class="ap-item-tag" style="background:#fff2a8">N</span>
+            <b>Línea base no personalizada:</b> MarioGPT con parámetros aleatorios sin telemetría (aísla el efecto del generador IA del efecto de la personalización).
+          </div>
+          <div class="ap-item">
+            <span class="ap-item-tag" style="background:var(--mint-d)">H</span>
+            <b>Línea base humana:</b> Niveles reales de Super Mario Maker 2 filtrados por zona de flujo comunitaria (clear rate 30–50%, $\ge 150$ intentos) y validados con agente A*.
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna 2: Argumentación de Defensa ante el Jurado -->
+      <div class="ap-card">
+        <div class="ap-card-hd">
+          <b>GUÍA DE DEFENSA ANTE EL JURADO</b>
+          <span style="font:700 8.5px monospace;background:var(--gold-l);padding:1px 5px;border:1px solid var(--ink)">PREGUNTAS CLAVE</span>
+        </div>
+        <div style="display:flex;flex-direction:column;justify-content:space-between;flex:1">
+          <div class="ap-qa-box">
+            <div class="ap-q">¿Por qué contrastar contra DOS líneas base (N y H)?</div>
+            <p class="ap-a">
+              Si solo comparamos contra niveles humanos (H), un peor desempeño podría deberse a defectos generales de MarioGPT y no a la personalización. El comparador no personalizado (N) aísla el valor agregado exacto de la telemetría.
+            </p>
+          </div>
+
+          <div class="ap-qa-box">
+            <div class="ap-q">¿Cuál es la respuesta empírica a la pregunta formal?</div>
+            <p class="ap-a">
+              <b>«No, por ahora»:</b> P no supera a H en disfrute (−0.90) ni competencia (−1.11), y resulta más difícil (+0.84 vs H, +0.63 vs N) sin mejor ajuste de reto. Además, P y N empatan prácticamente en disfrute (−0.06) y en ranking medio (3.68 vs 3.69).
+            </p>
+          </div>
+
+          <div class="ap-qa-box" style="margin-bottom:0">
+            <div class="ap-q">¿Qué modelos estadísticos formales sustentan la respuesta?</div>
+            <p class="ap-a">
+              Modelos Lineales de Efectos Mixtos (LMM) con ajuste de Holm ($n=72$, 396 observaciones), prueba no paramétrica de Friedman para el ranking ($n=69, p=0.063$) y control de covariable de orden de juego.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -4157,22 +4400,18 @@ H['s-title']={};
   const el=document.getElementById('qtext'), runner=document.getElementById('runner');
   const SEGS=[
     ['¿Pueden los ', ''],
-    ['niveles personalizados', 'a'],
-    [' de un juego superar en ', ''],
-    ['satisfacción', 'b'],
-    [' y ', ''],
-    ['dificultad adaptada al usuario', 'c'],
-    [' tanto a los ', ''],
-    ['niveles no personalizados', 'd'],
-    [' como a los ', ''],
-    ['diseñados por seres humanos', 'b'],
+    ['niveles que se adaptan al jugador', 'a'],
+    [' superar a los ', ''],
+    ['no personalizados', 'd'],
+    [' o a los ', ''],
+    ['diseñados por humanos', 'b'],
     ['?', '']
   ];
   const FLAT=[]; SEGS.forEach(([t,c])=>[...t].forEach(ch=>FLAT.push([ch,c])));
   const html=(n,caret)=>{ let o='',pc=null; FLAT.slice(0,n).forEach(([ch,c])=>{ if(c!==pc){ if(pc!==null&&pc) o+='</span>'; if(c) o+=`<span class="${c}">`; pc=c; } o+=ch; }); if(pc) o+='</span>'; return o+(caret?'<i class="caret"></i>':''); };
   let timer=0, run=0;
   function type(){ clearInterval(timer); if(reduce){ el.innerHTML=html(FLAT.length); return; }
-    let n=0; el.innerHTML=''; timer=setInterval(()=>{ n++; el.innerHTML=html(n,n<FLAT.length); if(n>=FLAT.length) clearInterval(timer); },22); }
+    let n=0; el.innerHTML=''; timer=setInterval(()=>{ n++; el.innerHTML=html(n,n<FLAT.length); if(n>=FLAT.length) clearInterval(timer); },28); }
   function stopRun(){ clearInterval(run); run=0; }
   function resetRunner(){ stopRun(); runner.classList.remove('go'); runner.style.transition='none'; runner.src=heroURL('neutral',8,0); void runner.offsetWidth; runner.style.transition=''; }
   H['s-q']={
@@ -4860,7 +5099,37 @@ H['s-thanks'] = {
     };
   }
 
+  const btnFormal = document.getElementById('btnGoPreguntaFormal');
+  if(btnFormal){
+    btnFormal.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-anexos-pregunta');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'fwd', 0);
+      }
+    };
+  }
+
   H['s-preguntas'] = {
+    enter(){ },
+    leave(){ },
+    step(){ }
+  };
+})();
+
+/* ===== 13-anexos-pregunta-formal.html ===== */
+(function(){
+  const btn = document.getElementById('btnGoBackPrg');
+  if(btn){
+    btn.onclick = (e) => {
+      e.currentTarget.blur();
+      const idx = slides.findIndex(s => s.id === 's-preguntas');
+      if(idx >= 0 && typeof goSlide === 'function'){
+        goSlide(idx, 'back', 0);
+      }
+    };
+  }
+  H['s-anexos-pregunta'] = {
     enter(){ },
     leave(){ },
     step(){ }
