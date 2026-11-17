@@ -52,8 +52,8 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 #slide-num .sn-sep{color:#888}
 #slide-num .sn-tot{color:var(--ink)}
 #fx{position:absolute;inset:0;pointer-events:none;z-index:40}
-#wipe{position:absolute;inset:0;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(9,1fr);pointer-events:none;z-index:60}
-#wipe i{display:block;transform:scale(0)}
+#wipe{position:absolute;inset:0;display:grid;grid-template-columns:repeat(16,1fr);grid-template-rows:repeat(9,1fr);pointer-events:none;z-index:60;visibility:hidden}
+#wipe i{display:block;transform:scale(0);will-change:transform;backface-visibility:hidden}
 
 /* ---------- adornos compartidos ---------- */
 .ground{position:absolute;left:0;right:0;bottom:0;height:80px;background-image:var(--brick);background-size:40px 40px;image-rendering:pixelated}
@@ -4826,8 +4826,22 @@ const WC=['#ff7fc0','#94ddc6','#f6d36b','#8aa24a','#1a1a1a'];
 for(let y=0;y<9;y++)for(let x=0;x<16;x++){ const c=document.createElement('i'); c.style.background=WC[(x*3+y*5)%WC.length]; c._d=(x+y); wipeEl.appendChild(c); cells.push(c); }
 async function wipe(mid){
   if(reduce){ mid(); return; }
-  const run=(from,to)=>Promise.all(cells.map(c=>c.animate([{transform:`scale(${from})`},{transform:`scale(${to})`}],{duration:200,delay:c._d*13,fill:'forwards',easing:'steps(4)'}).finished));
-  await run(0,1.02); mid(); await new Promise(r=>setTimeout(r,60)); await run(1.02,0);
+  /* Safari (WebKit/Apple Silicon) deja celdas "pegadas" cuando una animación con
+     fill:'forwards' termina en scale(0) sobre capas compuestas: por eso la
+     cortina solo existe mientras corre, y al terminar se cancelan las
+     animaciones y se oculta del todo (visibility:hidden). */
+  wipeEl.style.visibility='visible';
+  const anims=[];
+  const run=(from,to)=>Promise.all(cells.map(c=>{
+    const a=c.animate([{transform:`scale(${from})`},{transform:`scale(${to})`}],{duration:200,delay:c._d*13,fill:'both',easing:'steps(4)'});
+    anims.push(a); return a.finished;
+  }));
+  try{
+    await run(0,1.02); mid(); await new Promise(r=>setTimeout(r,60)); await run(1.02,0);
+  } finally {
+    anims.forEach(a=>a.cancel());
+    wipeEl.style.visibility='hidden';
+  }
 }
 document.getElementById('bnext').onclick=e=>{e.currentTarget.blur();next();};
 document.getElementById('bprev').onclick=e=>{e.currentTarget.blur();prev();};
