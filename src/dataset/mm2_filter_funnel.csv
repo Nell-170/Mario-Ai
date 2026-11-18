@@ -1,0 +1,10 @@
+paso,criterio,quedan,descartados,pct_del_paso_previo,pct_del_total
+Niveles inspeccionados,-,14165,0,100.00,100.00
+Estilo de juego,gamestyle == 0,2045,12120,14.44,14.44
+Tasa de victoria,30.0 <= clear_rate <= 50.0,387,1658,18.92,2.73
+Intentos minimos,attempts >= 150,362,25,93.54,2.56
+Likes minimos,likes >= 30,198,164,54.70,1.40
+Timer minimo,timer >= 250,180,18,90.91,1.27
+Viable para MAF (convert),convert() != None,80,100,44.44,0.56
+Seleccionados (top por likes),top 80,80,0,,
+Con A* quedaron 14

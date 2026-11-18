@@ -68,6 +68,8 @@ def main():
     scanned = 0
     matched = 0
     viable = 0
+    funnel = dict.fromkeys(
+        ["inspected", "gamestyle", "clear_rate", "attempts", "likes", "timer", "maf_viable"], 0)
 
     print(f"Streaming dataset (buscando {args.want} niveles viables MAF, máx scan: {args.max_scan})...")
     for rec in ds:
@@ -82,24 +84,30 @@ def main():
         if scanned >= args.max_scan or (len(heap) >= args.want and scanned >= 4000):
             break
 
+        funnel["inspected"] += 1
         if rec["gamestyle"] != args.gamestyle:
             continue
+        funnel["gamestyle"] += 1
 
         cr = rec["clear_rate"]
         if cr is None or cr < args.min_clear or cr > args.max_clear:
             continue
+        funnel["clear_rate"] += 1
 
         attempts = rec["attempts"] or 0
         if attempts < args.min_attempts:
             continue
+        funnel["attempts"] += 1
 
         likes = rec.get("likes") or 0
         if likes < args.min_likes:
             continue
+        funnel["likes"] += 1
 
         timer = rec.get("timer") or 0
         if timer < args.min_timer:
             continue
+        funnel["timer"] += 1
 
         matched += 1
 
@@ -114,6 +122,7 @@ def main():
             continue
 
         viable += 1
+        funnel["maf_viable"] += 1
         meta = {k: rec.get(k) for k in META_FIELDS}
         entry = (likes, rec["data_id"], meta, rec["level_data"])
         if len(heap) < args.want:
@@ -124,6 +133,38 @@ def main():
     print(f"\nDone. scanned={scanned} matched_meta={matched} viable_maf={viable} selected={len(heap)}")
 
     selected = sorted(heap, key=lambda e: -e[0])  # most liked first
+
+    steps = [
+        ("inspected", "Niveles inspeccionados", "-"),
+        ("gamestyle", "Estilo de juego", f"gamestyle == {args.gamestyle}"),
+        ("clear_rate", "Tasa de victoria", f"{args.min_clear} <= clear_rate <= {args.max_clear}"),
+        ("attempts", "Intentos minimos", f"attempts >= {args.min_attempts}"),
+        ("likes", "Likes minimos", f"likes >= {args.min_likes}"),
+        ("timer", "Timer minimo", f"timer >= {args.min_timer}"),
+        ("maf_viable", "Viable para MAF (convert)", "convert() != None"),
+    ]
+    rows = []
+    prev = None
+    first = funnel["inspected"]
+    print("\nEmbudo de filtrado:")
+    print(f"{'Paso':<28}{'Criterio':<34}{'Quedan':>9}{'Descartados':>13}{'% del paso previo':>19}{'% del total':>13}")
+    for key, label, crit in steps:
+        n = funnel[key]
+        dropped = 0 if prev is None else prev - n
+        pct_prev = 100.0 if not prev else n * 100.0 / prev
+        pct_total = 100.0 if not first else n * 100.0 / first
+        print(f"{label:<28}{crit:<34}{n:>9,}{dropped:>13,}{pct_prev:>18.1f}%{pct_total:>12.2f}%")
+        rows.append([label, crit, n, dropped, f"{pct_prev:.2f}", f"{pct_total:.2f}"])
+        prev = n
+    print(f"{'Seleccionados (top por likes)':<62}{len(heap):>9,}")
+    rows.append(["Seleccionados (top por likes)", f"top {args.want}", len(heap), max(0, funnel["maf_viable"] - len(heap)), "", ""])
+
+    funnel_path = os.path.join(HERE, "mm2_filter_funnel.csv")
+    with open(funnel_path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["paso", "criterio", "quedan", "descartados", "pct_del_paso_previo", "pct_del_total"])
+        w.writerows(rows)
+    print(f"Wrote funnel       -> {funnel_path}")
 
     # Write metadata CSV
     csv_path = os.path.join(HERE, "mm2_selected.csv")
