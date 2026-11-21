@@ -135,11 +135,11 @@ slides.forEach((s,i)=>{
   const j=rest.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
   rest.splice(j+1,0,...mine); units.splice(0,units.length,...rest);
 });
-/* numeración: una por filmina (data-cuenta="paso" hace que cada sub-paso cuente como número propio) */
-const slideNum=[]; let _n=1;
-slides.forEach((s,i)=>{ slideNum[i]=_n; _n+=s.dataset.cuenta==='paso'?(mx(s)-mn(s)+1):1; });
-const TOTAL=_n-1;
-const numOf=(i,st)=>slideNum[i]+(slides[i].dataset.cuenta==='paso'?st-mn(slides[i]):0);
+/* numeración: una por filmina (data-cuenta="paso" hace que cada sub-paso cuente como número propio);
+   sigue el orden del recorrido, así que las filminas intercaladas quedan en su lugar */
+const numMap={}; let TOTAL=0, _prev=-1;
+units.forEach(u=>{ if(u[0]!==_prev||slides[u[0]].dataset.cuenta==='paso') TOTAL++; _prev=u[0]; numMap[u[0]+':'+u[1]]=TOTAL; });
+const numOf=(i,st)=>numMap[i+':'+st];
 const curNum=()=>numOf(cur,step);
 const unitOfNum=n=>units.findIndex(u=>numOf(u[0],u[1])===n);
 function updateNav(){
