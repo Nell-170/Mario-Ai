@@ -227,6 +227,7 @@
   }
 
   .fp[data-p="8"],
+  .fp[data-p="11"],
   .fp[data-p="12"] {
     left: 528px;
     width: 702px;
@@ -573,12 +574,20 @@
   }
 
   .cards6 {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
-    margin: 6px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 6px 0 12px;
     position: relative
   }
+  .cards6 .c6 { flex: 1; min-width: 0 }
+  .c6e { flex: none; width: 20px; height: 30px; border: 2.5px solid var(--ink); background: #fff; padding: 4px 3px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 2px 2px 0 var(--violet) }
+  .c6e i { display: block; height: 2.5px; background: var(--ink) }
+  .c6e i:last-child { width: 60%; background: var(--violet) }
+  .fp[data-p="11"] .qs { display: grid; gap: 5px }
+  .fp[data-p="11"] .qi { border: 2.5px solid var(--ink); border-left-width: 8px; border-left-color: var(--violet); padding: 2px 9px 3px; background: #fff; box-shadow: 2px 2px 0 var(--ink) }
+  .fp[data-p="11"] .qi b { display: block; font: 700 15.5px/1.2 var(--body) }
+  .fp[data-p="11"] .qi span { font: 500 14px/1.25 var(--body); color: #333 }
 
   .c6 {
     border: 3px solid var(--ink);
@@ -1232,18 +1241,29 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
           parámetros aleatorios, sin la telemetría del participante.</span></p>
       <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, validados con A* de antemano.</span>
       </p>
+      <p><span class="k" style="background:#fff;padding:5px 7px">E</span><span><b>Cuestionario</b> de 6 preguntas tras cada nivel.</span></p>
     </div>
-    <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
   </div>
   <!-- 11 -->
-  <div class="fp" data-p="11" style="overflow-y:auto">
+  <div class="fp" data-p="11">
     <div class="ptag">CUESTIONARIO TRAS CADA NIVEL</div>
-    <p class="pp" style="margin-bottom:6px">Evaluación de la experiencia de juego en escala Likert (−3 a +3):</p>
-    <div class="shot has" style="height:135px;border:3px solid var(--ink);background:#111;margin-bottom:8px">
-      <img src="img/04_evaluacion_post_nivel_likert.png" alt="Cuestionario post-nivel Likert"
-        style="display:block;width:100%;height:100%;object-fit:contain">
+    <p class="pp" style="margin-bottom:10px;font-size:18px;line-height:1.4">Basado en el <b>miniPXI</b> · escala Likert de −3 a +3.</p>
+    <div style="display:grid;grid-template-columns:322px 1fr;gap:14px;align-items:start">
+      <div>
+        <div class="shot has" style="height:244px;border:3px solid var(--ink);background:#111;cursor:default">
+          <img src="img/04_evaluacion_post_nivel_likert.png" alt="Cuestionario post-nivel Likert" style="display:block;width:100%;height:100%;object-fit:contain">
+        </div>
+        <p class="pp" style="margin:10px 0 0;font-size:16px;line-height:1.4">Se responde después de <b>cada uno de los 6 niveles</b> del bloque principal.</p>
+      </div>
+      <div class="qs">
+        <div class="qi"><b>Disfrute</b><span>«La pasé bien jugando este nivel.»</span></div>
+        <div class="qi"><b>Competencia</b><span>«Sentí que era bueno jugando este nivel.»</span></div>
+        <div class="qi"><b>Dificultad</b><span>«¿Cómo percibiste la dificultad de este nivel para ti?»</span></div>
+        <div class="qi"><b>Ajuste del reto</b><span>«El nivel ofreció un reto adecuado para mi nivel de habilidad.»</span></div>
+        <div class="qi"><b>Variedad</b><span>«El nivel presentó elementos, obstáculos y situaciones variadas.»</span></div>
+        <div class="qi"><b>Deseo de rejugar</b><span>«Me gustaría jugar más niveles con este estilo y diseño.»</span></div>
+      </div>
     </div>
-    <div id="lik"></div>
   </div>
   <!-- 12 -->
   <div class="fp" data-p="12" style="overflow-y:auto">
@@ -1399,7 +1419,7 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
       mgptN: { x: 2150, y: 170, w: 200, h: 100, l: ['MarioGPT', '(clúster HPC)'], c: 'gold', at: 4, go: 4 },
       gen: { x: 2440, y: 170, w: 280, h: 124, l: ['Niveles N', 'no personalizados'], c: 'gold', at: 4, go: 4, db: 1 },
       block: { x: 1450, y: 640, w: 300, h: 130, l: ['Bloque principal', '6 niveles: P · N · H', 'orden aleatorio'], c: 'block', n: 5, at: 10 },
-      quest: { x: 1430, y: 470, w: 210, h: 80, l: ['Cuestionario', '6 preguntas'], c: 'white', at: 11 },
+      quest: { x: 1430, y: 470, w: 210, h: 80, l: ['Cuestionario', '6 preguntas'], c: 'white', at: 10, go: 11 },
       rank: { x: 1830, y: 640, w: 260, h: 100, l: ['Ranking y', 'comentarios'], c: 'white', n: 6, at: 12 },
       free: { x: 2160, y: 640, w: 270, h: 100, l: ['Juego libre', 'voluntario ≤ 20 min'], c: 'white', n: 7, at: 13 },
       end: { x: 2460, y: 640, w: 170, h: 100, l: ['Final'], c: 'end', n: 8, at: 14 }
@@ -1407,7 +1427,7 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
     const FOCUS = { 1: ['hf'], 2: ['fil'], 3: ['astar'], 4: ['rnd', 'mgptN', 'gen'], 5: ['welcome'], 6: ['fam'], 7: ['cons'], 8: ['survey'], 9: ['tele', 'ollama', 'mgpt', 'pers'], 10: ['block'], 11: ['quest'], 12: ['rank'], 13: ['free'], 14: ['end'], 15: [] };
     const EDGES = [
       { d: 'M480 170H560', at: 2 }, { d: 'M900 170H980', at: 3 }, { d: 'M1320 170H1410', at: 3 },
-      { d: 'M1560 232V575', at: 10, lbl: ['H', 1590, 420] },
+      { d: 'M1560 232V575', at: 10, lbl: ['H · 14', 1590, 420] },
       { d: 'M285 640H340', at: 6 }, { d: 'M620 640H670', at: 7 },
       { d: 'M910 640H975', at: 8, lbl: ['Sí', 924, 690], id: 'eYes' },
       { d: 'M790 555V490', at: 7, lbl: ['No', 814, 532], id: 'eNo' },
@@ -1415,8 +1435,8 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
       { d: 'M480 690V890', at: 9, dash: 1 }, { d: 'M590 940H690', at: 9, dash: 1 }, { d: 'M910 940H1010', at: 9, dash: 1 }, { d: 'M1230 940H1345', at: 9, dash: 1 },
       { d: 'M1480 890V705', at: 10, lbl: ['P', 1448, 806] },
       { d: 'M1992 170H2042', at: 4 }, { d: 'M2252 170H2290', at: 4 },
-      { d: 'M2440 232V300H2595V790H1560V705', at: 10, lbl: ['N', 2100, 772] },
-      { d: 'M1450 575V510', at: 11, both: 1 }
+      { d: 'M2440 232V300H2595V790H1560V705', at: 10, lbl: ['N · 17', 1590, 768] },
+      { d: 'M1450 575V510', at: 10, both: 1 }
     ];
     const nodeEls = {}, edgeEls = [], extra = [];
     // carril de generación + banners (debajo de los nodos)
@@ -1472,7 +1492,7 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
       4: camFor(2175, 170, .7, 350, 300),
       5: camFor(160, 640, 1, 230, 175), 6: camFor(480, 640, 1, 230, 175), 7: camFor(790, 560, .85, 300, 340), 8: camFor(1100, 640, 1, 330, 185),
       9: camFor(975, 940, .48, 340, 330),
-      10: camFor(1500, 560, .66, 330, 380), 11: camFor(1450, 560, .9, 330, 360), 12: camFor(1830, 640, 1, 330, 330), 13: camFor(2160, 640, 1, 330, 330),
+      10: camFor(1500, 560, .66, 330, 250), 11: camFor(1430, 470, .9, 250, 175), 12: camFor(1830, 640, 1, 330, 330), 13: camFor(2160, 640, 1, 330, 330),
       14: camFor(2460, 640, 1, 300, 330), 15: { cx: 1270, cy: 530.5, lk: Math.log(.474) }
     };
 
@@ -1595,40 +1615,12 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
       }
     };
 
-    // 9 · bloque principal
-    const c6 = $('#cards6'); let order = ['P', 'H', 'N', 'P', 'H', 'N'].map((t, i) => ({ t, id: i })); const c6els = {};
-    order.forEach(o => { const d = document.createElement('div'); d.className = 'c6'; d.innerHTML = `<img src="${lvlThumb(40 + o.id * 11 + (o.t === 'P' ? 5 : 0), 28, 16, 3)}" alt=""><b class="t-${o.t}">${o.t}</b>`; c6els[o.id] = d; c6.appendChild(d); });
-    function shuffle() {
-      const first = Object.fromEntries(order.map(o => [o.id, c6els[o.id].getBoundingClientRect()]));
-      for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[order[i], order[j]] = [order[j], order[i]]; }
-      order.forEach(o => c6.appendChild(c6els[o.id]));
-      if (reduce) return; const sc = stage.getBoundingClientRect().width / 1280;
-      order.forEach(o => { const a = first[o.id], b = c6els[o.id].getBoundingClientRect(); c6els[o.id].animate([{ transform: `translate(${(a.left - b.left) / sc}px,${(a.top - b.top) / sc}px)` }, { transform: 'none' }], { duration: 550, easing: 'cubic-bezier(.3,1.3,.5,1)' }); });
-    }
-    $('#shuf').onclick = e => { e.currentTarget.blur(); shuffle(); };
-    PA[10] = { on() { T(shuffle, 700); } };
-
-    // 10 · cuestionario
-    (function () {
-      const box = $('#lik'), questions = [
-        { label: '1. Disfrute', prompt: 'La pasé bien jugando este nivel.' },
-        { label: '2. Competencia', prompt: 'Sentí que era bueno jugando este nivel.' },
-        { label: '3. Dificultad', prompt: '¿Cómo percibiste la dificultad de este nivel para ti?' },
-        { label: '4. Ajuste del reto', prompt: 'El nivel ofreció un reto adecuado para mi nivel de habilidad.' },
-        { label: '5. Variedad', prompt: 'El nivel presentó elementos, obstáculos y situaciones variadas.' },
-        { label: '6. Deseo de rejugar', prompt: 'Me gustaría jugar más niveles con este estilo y diseño.' }
-      ], rows = [];
-      let h = '<div class="lik"><span></span>' + [-3, -2, -1, 0, 1, 2, 3].map(v => `<span class="hd">${v > 0 ? '+' + v : v}</span>`).join('') + '</div>'; box.innerHTML = h;
-      questions.forEach(q => {
-        const r = document.createElement('div'); r.className = 'lik';
-        r.innerHTML = `<span title="${q.prompt}">${q.label}</span>` + [-3, -2, -1, 0, 1, 2, 3].map(v => `<button data-v="${v}" aria-label="${q.label} ${v}"></button>`).join('');
-        r.querySelectorAll('button').forEach(b => b.onclick = () => { b.blur(); sel(r, +b.dataset.v); });
-        box.appendChild(r);
-        rows.push(r);
-      });
-      window.__likSel = sel; function sel(r, v) { r.querySelectorAll('button').forEach(b => { const x = +b.dataset.v; b.className = x === v ? 'on ' + (v < 0 ? 'neg' : v > 0 ? 'pos' : 'zero') : ''; }); }
-      PA[11] = { on() { rows.forEach(r => sel(r, 99)); rows.forEach((r, i) => T(() => sel(r, Math.floor(Math.random() * 7) - 3), 350 + i * 180)); } };
-    })();
+    // 9 · bloque principal (orden fijo, con el cuestionario E tras cada nivel)
+    const c6 = $('#cards6');
+    ['H', 'N', 'P', 'N', 'P', 'H'].forEach((tp, i) => {
+      const d = document.createElement('div'); d.className = 'c6'; d.innerHTML = `<img src="${lvlThumb(40 + i * 11 + (tp === 'P' ? 5 : 0), 28, 16, 3)}" alt=""><b class="t-${tp}">${tp}</b>`; c6.appendChild(d);
+      const e = document.createElement('div'); e.className = 'c6e'; e.title = 'Cuestionario'; e.innerHTML = '<i></i><i></i><i></i>'; c6.appendChild(e);
+    });
 
     // 11 · ranking
     (function () {
