@@ -1458,6 +1458,32 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
   .fp[data-p="12"] div[style*="grid-template-columns:repeat(4"] span{font-size:8px !important;white-space:nowrap}
   .fnode.dim, .fedge.dim { opacity: .15 !important }
 
+  /* ---------- paneles laterales izquierdos + gráficos ---------- */
+  .fp.lside{left:36px;top:258px;width:628px;height:auto;transform:translateX(-34px);padding:12px 14px}
+  .fp.lside.on{transform:none}
+  .st-h{font:400 11px/1.4 var(--pixel);margin:0 0 8px}
+  .st-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+  .st-k{border:2px solid var(--ink);background:var(--gold-l);text-align:center;padding:4px 2px;box-shadow:2px 2px 0 var(--ink)}
+  .st-k:nth-child(even){background:var(--mint)}
+  .st-k b{display:block;font:400 30px/1 var(--display)}
+  .st-k span{font:700 12.5px var(--body)}
+  .st-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .st-c{border:2px solid var(--ink);padding:7px 9px;background:#fff}
+  .st-c h4{margin:0 0 6px;font:400 10px/1.5 var(--pixel)}
+  .brow{display:grid;grid-template-columns:74px 1fr 82px;align-items:center;gap:6px;font:600 14px var(--body);margin:4px 0}
+  .brow.w2{grid-template-columns:104px 1fr 62px}
+  .brow .tr{height:17px;background:#eee;border:1.5px solid var(--ink)}
+  .brow .tr i{display:block;height:100%}
+  .brow b{text-align:right;font-weight:700}
+  .st-sub{font:500 12.5px/1.3 var(--body);color:#555;margin:-1px 0 3px}
+  .st-note{font:500 13.5px/1.35 var(--body);margin-top:5px}
+  .c-mint{background:var(--mint-d)}.c-gold{background:var(--gold)}.c-ruby{background:#e0559f}.c-vio{background:var(--violet)}.c-gray{background:#9aa}
+  .stack{display:flex;height:24px;border:2px solid var(--ink)}
+  .stack i{display:flex;align-items:center;justify-content:center;font:700 13px var(--body);font-style:normal;color:var(--ink)}
+  .plbl{font:400 10px/1.5 var(--pixel);margin-bottom:6px;color:var(--pink-d)}
+  .tele.static{font-size:10.3px;line-height:1.36;padding:8px 10px;white-space:pre}
+  .tele.static .cm{color:#8da0b3}
+
 /* ===== 08-resultados.html ===== */
 /* ---------- resultados: 6 gráficos con zoom ---------- */
 .rleg{position:absolute;left:330px;right:150px;top:40px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px 16px;font:600 12.5px var(--body);z-index:3}
@@ -3224,12 +3250,11 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
     <div class="ptag">VERIFICACIÓN CON A*</div>
     <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y se
       almacena en el banco de <b>niveles humanos (H)</b>.</p>
-    <svg class="astar" id="astar" viewBox="0 0 560 200" height="214"></svg>
+    <svg class="astar" id="astar" viewBox="0 0 560 200" height="168"></svg>
     <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE
         → NIVELES H</span></div>
     <div class="a-res"><b>14</b> niveles quedaron después de la verificación con A*</div>
-    <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Menta: ruta encontrada. Esta validación
-        se hace de antemano, solo para los niveles humanos.</small></p>
+    <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Verde: ruta hasta la meta. Validación previa, solo para niveles humanos.</small></p>
   </div>
   <!-- 4 -->
   <div class="fp" data-p="4">
@@ -3237,6 +3262,7 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
     <p class="pp">Son los niveles de comparación sin personalización: <b>no usan la telemetría</b> del participante.</p>
     <div class="chain"><span style="background:var(--gold-l)">Parámetros aleatorios</span><i>▶</i><span style="background:var(--gold-l)">MarioGPT</span><i>▶</i><span
         style="background:var(--gold-l)">Niveles N</span></div>
+    
     <ul class="nlist">
       <li>Generados con <b>MarioGPT</b> en el clúster HPC.</li>
       <li>Con <b>parámetros aleatorios</b>.</li>
@@ -3246,44 +3272,88 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
   <!-- 5 -->
   <div class="fp" data-p="5">
     <div class="ptag">1 · BIENVENIDA Y ENTORNO</div>
-    <p class="pp" style="margin-bottom:8px">La persona llega al laboratorio y se le explica cómo será la sesión:</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-      <div class="shot has" style="height:105px;border:3px solid var(--ink);background:#111;position:relative">
-        <div
-          style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 9px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">
-          LABORATORIO</div>
-        <img src="img/10_experimento.jpg" alt="Puesto y entorno físico del experimento"
-          style="display:block;width:100%;height:100%;object-fit:cover">
-      </div>
-      <div class="shot has" style="height:105px;border:3px solid var(--ink);background:#111;position:relative">
-        <div
-          style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 9px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">
-          PANTALLA INICIAL</div>
-        <img src="img/02_bienvenida_sesion.png" alt="Pantalla inicial de bienvenida del software"
-          style="display:block;width:100%;height:100%;object-fit:contain">
-      </div>
+    <p class="pp" style="margin-bottom:10px">Al llegar al laboratorio se explica cómo será la sesión:</p>
+    <div class="shot has" style="height:262px;border:3px solid var(--ink);background:#111;margin-bottom:12px;cursor:default">
+      <img src="img/02_bienvenida_sesion.png" alt="Pantalla inicial de bienvenida del software"
+        style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
     <div class="win-mock">
-      <div class="bar"><span>INSTRUCCIONES DE LA SESIÓN</span><span>LABORATORIO ▢ ✕</span></div>
-      <div class="bd2"><b>En esta sesión vas a:</b>
-        <ol>
-          <li>Jugar niveles de práctica y calibración inicial.</li>
-          <li>Jugar 6 niveles y evaluar cada uno (bloque ciego P, N, H).</li>
-          <li>Ordenarlos por preferencia y dejar comentarios.</li>
-          <li>Opcionalmente, seguir jugando libremente.</li>
-        </ol>
+      <div class="bar"><span>EN ESTA SESIÓN VAS A…</span><span>▢ ✕</span></div>
+      <div class="bd2" style="padding:8px 14px;font-size:18px;line-height:1.5">
+        Jugar práctica y <b>6 niveles</b> (P, N, H), evaluarlos y ordenarlos.
       </div>
+    </div>
+  </div>
+  <div class="fp lside" data-p="5">
+    <div class="shot has" style="height:372px;border:3px solid var(--ink);background:#111;cursor:default">
+      <div style="position:absolute;top:8px;left:8px;background:var(--ink);color:#fff;font:400 11px var(--pixel);padding:4px 7px;z-index:2;border:1px solid #fff">LABORATORIO</div>
+      <img src="img/10_experimento_web.jpg" alt="Puesto y entorno físico del experimento" style="display:block;width:100%;height:100%;object-fit:cover">
     </div>
   </div>
   <!-- 6 -->
   <div class="fp" data-p="6">
     <div class="ptag">2 · NIVELES DE FAMILIARIZACIÓN (F)</div>
-    <p class="pp">La persona juega <b>2 niveles de práctica</b>. Mientras juega, capturamos su <b>telemetría</b>:</p>
-    <div class="shot has" style="height:120px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
+    <p class="pp" style="font-size:17px;line-height:1.4;margin-bottom:8px">La persona juega <b>2 niveles de práctica</b>, tomados de los <b>niveles H</b>. Esta es la telemetría real que capturamos:</p>
+    <div class="shot has" style="height:178px;border:3px solid var(--ink);background:#111;margin-bottom:8px;cursor:default">
       <img src="img/03_familiarizacion_controles.png" alt="Nivel de familiarización y controles"
         style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
-    <div class="tele" id="tele" style="padding:10px 14px;font-size:15.5px;line-height:1.6"></div>
+    <div class="tele static">{
+  "level": "familiarization/mm2_3001683.txt",
+  "status": "LOSE",                 <span class="cm">// Murió antes de la meta</span>
+  "completion": 0.6063,             <span class="cm">// 60.6% de avance</span>
+  "time_used_seconds": 26.73,
+  "jumps": 39,                      <span class="cm">// Estilo de salto frecuente</span>
+  "kills": 5,
+  "hurts": 22,                      <span class="cm">// Alta fricción / daño</span>
+  "coins": 0,
+  "average_speed": 107.92,          <span class="cm">// px/s (rápido)</span>
+  "path_preference": "low",         <span class="cm">// Ruta inferior</span>
+  "death_positions": [
+    {"x": 1542.5, "y": 209.7},
+    {"x": 1678.3, "y": 223.0},
+    {"x": 1843.2, "y": 223.0}
+  ]
+}</div>
+  </div>
+  <div class="fp lside" data-p="6">
+    <div class="st-h">RESULTADOS DE FAMILIARIZACIÓN · 76 PARTICIPANTES</div>
+    <div class="st-kpis">
+      <div class="st-k"><b>76</b><span>participantes</span></div>
+      <div class="st-k"><b>152</b><span>niveles jugados</span></div>
+      <div class="st-k"><b>1.34</b><span>niveles / persona</span></div>
+      <div class="st-k"><b>2.70</b><span>min / persona</span></div>
+    </div>
+    <div class="st-grid">
+      <div class="st-c"><h4>RESULTADO POR INTENTO</h4>
+        <div class="brow "><span>Ganó</span><div class="tr"><i class="c-mint" style="width:67.1%"></i></div><b>102 · 67%</b></div>
+        <div class="brow "><span>Tiempo</span><div class="tr"><i class="c-gold" style="width:23.0%"></i></div><b>35 · 23%</b></div>
+        <div class="brow "><span>Perdió</span><div class="tr"><i class="c-ruby" style="width:9.9%"></i></div><b>15 · 10%</b></div>
+      </div>
+      <div class="st-c"><h4>COMPLETADOS / JUGADOR</h4>
+        <div class="brow "><span>2 niveles</span><div class="tr"><i class="c-mint" style="width:50.0%"></i></div><b>38 · 50%</b></div>
+        <div class="brow "><span>1 nivel</span><div class="tr"><i class="c-gold" style="width:34.2%"></i></div><b>26 · 34%</b></div>
+        <div class="brow "><span>0 niveles</span><div class="tr"><i class="c-ruby" style="width:15.8%"></i></div><b>12 · 16%</b></div>
+      </div>
+      <div class="st-c"><h4>% COMPLETADO / NIVEL</h4>
+        <div class="brow "><span>3000330</span><div class="tr"><i class="c-vio" style="width:63.2%"></i></div><b>63.2%</b></div>
+        <div class="st-sub">21 tiempos agotados · 85.5 s</div>
+        <div class="brow "><span>3001683</span><div class="tr"><i class="c-vio" style="width:71.1%"></i></div><b>71.1%</b></div>
+        <div class="st-sub">14 tiempos agotados · 76.6 s</div>
+      </div>
+      <div class="st-c"><h4>TIEMPO / JUGADOR</h4>
+        <svg viewBox="0 0 290 84" width="100%" style="display:block">
+          <line x1="12" y1="34" x2="276" y2="34" stroke="#1a1a1a" stroke-width="3"/>
+          <rect x="150.5" y="16" width="82" height="36" fill="#94ddc6" stroke="#1a1a1a" stroke-width="3"/>
+          <line x1="201" y1="16" x2="201" y2="52" stroke="#1a1a1a" stroke-width="5"/>
+          <path d="M188 62l6 8h-12z" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/>
+          <g font-family="Arial,sans-serif" font-size="12" text-anchor="middle" fill="#1a1a1a">
+            <text x="12" y="82">0</text><text x="77" y="82">1</text><text x="143" y="82">2</text><text x="209" y="82">3</text><text x="272" y="82">4 min</text>
+          </g>
+        </svg>
+        <div class="st-note">Mediana <b>2.90</b> · media 2.70 ▲</div>
+      </div>
+    </div>
   </div>
   <!-- 7 -->
   <div class="fp" data-p="7">
@@ -3305,109 +3375,78 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
   <!-- 8 -->
   <div class="fp" data-p="8" style="overflow-y:auto">
     <div class="ptag">4 · ENCUESTA INICIAL &amp; PERFIL DE LA MUESTRA</div>
-    <p class="pp" style="margin-bottom:8px">Caracterización de participantes previa al juego (<b>n = 76
-        participantes</b>):</p>
-
-    <!-- Barra de KPIs demográficos -->
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:8px">
-      <div
-        style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 9px var(--pixel);color:#333;display:block">MUESTRA TOTAL</span>
-        <b style="font:400 25.5px/1.1 var(--display);color:var(--ink)">76 SUJETOS</b>
+    <div class="st-c" style="margin-bottom:10px">
+      <h4>EDAD · n = 76</h4>
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:center">
+        <div style="font:600 15.5px/1.5 var(--body)">Media <b>22.8</b> (DE 6.1)<br>Mediana <b style="color:var(--violet)">21</b><br>Rango <b>12–59</b> años</div>
+        <div><svg viewBox="0 0 410 92" width="100%" style="display:block">
+          <line x1="22" y1="40" x2="392" y2="40" stroke="#1a1a1a" stroke-width="3"/>
+          <line x1="22" y1="30" x2="22" y2="50" stroke="#1a1a1a" stroke-width="3"/><line x1="392" y1="30" x2="392" y2="50" stroke="#1a1a1a" stroke-width="3"/>
+          <rect x="97" y="24" width="28" height="32" fill="#94ddc6" stroke="#1a1a1a" stroke-width="3"/>
+          <line x1="104" y1="24" x2="104" y2="56" stroke="#1a1a1a" stroke-width="5"/>
+          <path d="M115 66l6 9h-12z" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/>
+          <g font-family="Arial,sans-serif" font-size="13" text-anchor="middle" fill="#1a1a1a" font-weight="700">
+            <text x="22" y="20">12</text><text x="392" y="20">59</text><text x="111" y="16">Q1–Q3: 20–23</text>
+          </g>
+          <g font-family="Arial,sans-serif" font-size="12" text-anchor="middle" fill="#555">
+            <text x="22" y="90">10</text><text x="97" y="90">20</text><text x="172" y="90">30</text><text x="247" y="90">40</text><text x="322" y="90">50</text><text x="390" y="90">60 años</text>
+          </g>
+        </svg></div>
       </div>
-      <div
-        style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 9px var(--pixel);color:#333;display:block">EDAD MEDIANA</span>
-        <b style="font:400 25.5px/1.1 var(--display);color:var(--ink)">21 AÑOS</b>
-      </div>
+      <div class="st-note" style="margin-top:2px">La mayoría tiene 20–23 años; los extremos (12 y 59) suben la media.</div>
     </div>
-
-    <!-- Contenido en dos columnas: Resultados a la izquierda, Preguntas a la derecha -->
-    <div style="display:grid;grid-template-columns:325px 325px;gap:12px;align-items:start">
-      <!-- Columna 1: Resultados y Estadísticas de la muestra -->
-      <div style="border:2.5px solid var(--ink);background:#fff;padding:8px 10px;box-shadow:3px 3px 0 var(--ink)">
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:4px">
-          <span style="font:400 10px var(--pixel);color:var(--ink)">RESULTADOS DE LA MUESTRA</span>
-          <span style="font:700 11.5px monospace;background:var(--mint);padding:1px 5px;border:1px solid var(--ink)">n =
-            76</span>
-        </div>
-
-        <table style="width:100%;font-size:14px;border-collapse:collapse;margin-bottom:6px">
-          <tr style="border-bottom:1px solid #ddd">
-            <td style="padding:2px 0;color:#555">Media ± DE:</td>
-            <td style="text-align:right;font-weight:700">22.8 ± 6.1 años</td>
-          </tr>
-          <tr style="border-bottom:1px solid #ddd">
-            <td style="padding:2px 0;color:#555">Mediana:</td>
-            <td style="text-align:right;font-weight:700;color:var(--violet)">21 años</td>
-          </tr>
-          <tr style="border-bottom:1px solid #ddd">
-            <td style="padding:2px 0;color:#555">Rango intercuartílico (Q1–Q3):</td>
-            <td style="text-align:right;font-weight:700">20 – 23 años</td>
-          </tr>
-          <tr>
-            <td style="padding:2px 0;color:#555">Rango mín – máx:</td>
-            <td style="text-align:right;font-weight:700">12 – 59 años</td>
-          </tr>
-        </table>
+    <div class="st-grid">
+      <div class="st-c"><h4>HORAS DE JUEGO SEMANALES</h4>
+        <div class="brow w2"><span>&lt; 1 h</span><div class="tr"><i class="c-mint" style="width:28.9%"></i></div><b>22</b></div>
+        <div class="brow w2"><span>1–5 h</span><div class="tr"><i class="c-mint" style="width:26.3%"></i></div><b>20</b></div>
+        <div class="brow w2"><span>6–20 h</span><div class="tr"><i class="c-mint" style="width:34.2%"></i></div><b>26</b></div>
+        <div class="brow w2"><span>&gt; 20 h</span><div class="tr"><i class="c-mint" style="width:10.5%"></i></div><b>8</b></div>
       </div>
-
-      <!-- Columna 2: Instrumento de preguntas iniciales -->
-      <div>
-        <div class="q-list" style="margin-top:0;gap:4px">
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:10px">1</span>
-            <div class="q-body" style="font-size:14px">
-              <b>Edad</b> <span class="q-type" style="font-size:8.5px">Numérica</span>
-              <div class="q-desc" style="font-size:13px;margin-top:0">Edad cronológica (en años).</div>
-            </div>
-          </div>
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:10px">2</span>
-            <div class="q-body" style="font-size:14px">
-              <b>Horas videojuegos</b> <span class="q-type" style="font-size:8.5px">Selección</span>
-              <div class="q-desc" style="font-size:13px;margin-top:0">Dedicación semanal (&lt;1h a &gt;20h).</div>
-            </div>
-          </div>
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:10px">3</span>
-            <div class="q-body" style="font-size:14px">
-              <b>Plataformas 2D</b> <span class="q-type" style="font-size:8.5px">Selección</span>
-              <div class="q-desc" style="font-size:13px;margin-top:0">Horas en Mario, Celeste, Hollow Knight...</div>
-            </div>
-          </div>
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:10px">4</span>
-            <div class="q-body" style="font-size:14px">
-              <b>Experiencia Mario 2D</b> <span class="q-type" style="font-size:8.5px">Selección</span>
-              <div class="q-desc" style="font-size:13px;margin-top:0">Creador SMM, Jugador SMM, SMB, Nunca.</div>
-            </div>
-          </div>
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:10px">5</span>
-            <div class="q-body" style="font-size:14px">
-              <b>Control habitual</b> <span class="q-type" style="font-size:8.5px">Múltiple</span>
-              <div class="q-desc" style="font-size:13px;margin-top:0">Mando / Teclado / Pantalla táctil / Otro.</div>
-            </div>
-          </div>
-        </div>
+      <div class="st-c"><h4>EXPERIENCIA CON MARIO</h4>
+        <div class="brow w2"><span>Jugó SMB</span><div class="tr"><i class="c-gold" style="width:56.6%"></i></div><b>43</b></div>
+        <div class="brow w2"><span>Nunca jugó</span><div class="tr"><i class="c-gold" style="width:21.1%"></i></div><b>16</b></div>
+        <div class="brow w2"><span>Jugó en SMM</span><div class="tr"><i class="c-gold" style="width:14.5%"></i></div><b>11</b></div>
+        <div class="brow w2"><span>Creó en SMM</span><div class="tr"><i class="c-gold" style="width:7.9%"></i></div><b>6</b></div>
+      </div>
+      <div class="st-c"><h4>CONTROLES HABITUALES (MÚLTIPLE)</h4>
+        <div class="brow w2"><span>Mando</span><div class="tr"><i class="c-vio" style="width:73.7%"></i></div><b>56</b></div>
+        <div class="brow w2"><span>Teclado/ratón</span><div class="tr"><i class="c-vio" style="width:65.8%"></i></div><b>50</b></div>
+        <div class="brow w2"><span>Táctil</span><div class="tr"><i class="c-vio" style="width:61.8%"></i></div><b>47</b></div>
+        <div class="brow w2"><span>Otro</span><div class="tr"><i class="c-vio" style="width:13.2%"></i></div><b>10</b></div>
+      </div>
+      <div class="st-c"><h4>JUEGOS DE PLATAFORMAS 2D</h4>
+        <div class="stack"><i class="c-ruby" style="width:51.3%">39 (51%)</i><i class="c-mint" style="width:48.7%">37</i></div>
+        <div class="st-note"><b>39 (51%)</b> no juegan ninguno; los otros 37 sí juegan alguno.</div>
       </div>
     </div>
   </div>
   <!-- 9 -->
   <div class="fp" data-p="9">
     <div class="ptag">EN SEGUNDO PLANO · GENERACIÓN</div>
-    <p class="pp">Al terminar la familiarización, la telemetría pasa por el LLM, que produce un <b>prompt para
-        MarioGPT</b>. MarioGPT genera los niveles personalizados <b>mientras el participante sigue jugando</b>.</p>
-    <div class="chain"><span>Telemetría</span><i>▶</i><span>Ollama</span><i>▶</i><span>MarioGPT</span><i>▶</i><span
-        style="background:var(--pink)">Nivel P</span></div>
-    <div class="prompt" id="prompt"></div>
-    <p class="pp" style="margin-top:10px"><small>Prompt de ejemplo, ilustrativo. Los niveles generados no se validan con
-        A* durante el experimento.</small></p>
-    <button id="btnGoAnxPipeline" type="button" style="margin-top:6px;font:400 9.5px var(--pixel);padding:6px 10px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink)">
-      🔍 VER TELEMETRÍA Y PROMPT REALES EN ANEXOS ➔
-    </button>
+    <p class="pp" style="font-size:16px;line-height:1.35;margin-bottom:6px">La telemetría pasa por el LLM, que produce un <b>prompt para MarioGPT</b>, mientras la persona sigue jugando.</p>
+    <div class="prompt" style="background:#f4f1ff;border-color:var(--violet);font-size:13px;line-height:1.4;margin-top:4px;padding:7px 10px">
+      <div class="plbl" style="color:var(--violet)">OLLAMA · PROMPT DEL SISTEMA</div>
+      Eres un adaptador de telemetría para MarioGPT. Tu tarea es convertir un JSON de telemetría de un jugador humano en una sola línea de prompt lista para MarioGPT. No inventes información. Usa solo los datos del JSON.
+    </div>
+    <div class="prompt" style="font-size:13px;line-height:1.4;margin-top:8px;padding:7px 10px">
+      <div class="plbl">MARIOGPT · PROMPT GENERADO</div>
+      <span id="mgprompt"></span>
+    </div>
+    <div class="prompt" style="background:#fff;border-color:var(--ink);margin-top:8px;padding:6px 10px">
+      <div class="plbl" style="margin-bottom:3px;color:var(--ink)">NIVEL GENERADO POR MARIOGPT</div>
+      <pre style="margin:0;font:500 12.5px/1.08 'Courier New',monospace;letter-spacing:0">--------------------------------------------------
+xxxxxxxxxxxxxxxxxxxxxxxxxxx--------------xxxxxxxxx
+SSSSSSSSSSSSSSSSSSSSSSSSSS-x-----SSSS---xxSSSSSSSS
+----------------------------x----------xx---------
+-----------------------------x----?---xx----------
+------------------------------x--S??-xx-----------
+-------------------------------x----xxXXX---------
+--S-------------------E----------xxx--------------
+E----E---------------<>------XXX-SSSS-------------
+>---<>------------XX-[]--XXX------------------E---
+]---[]-------E-E-XXX-[]--XXX-----------------[]---
+XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
+    </div>
   </div>
   <!-- 10 -->
   <div class="fp" data-p="10">
@@ -5082,7 +5121,7 @@ H['s-prisma']={
       hf: { x: 310, y: 170, w: 340, h: 100, l: ['Selección de niveles', 'Hugging Face'], c: 'mint', at: 1 },
       fil: { x: 730, y: 170, w: 340, h: 100, l: ['Filtración', 'por criterio'], c: 'mint', at: 2 },
       astar: { x: 1150, y: 170, w: 340, h: 100, l: ['Verificación', 'con A*'], c: 'mint', at: 3 },
-      bank: { x: 1560, y: 170, w: 300, h: 124, l: ['Niveles H', '14 niveles'], c: 'gold', at: 3, go: 3, db: 1 },
+      bank: { x: 1560, y: 170, w: 300, h: 124, l: ['Niveles H', '14 niveles'], c: 'mint', at: 3, go: 3, db: 1 },
       welcome: { x: 160, y: 640, w: 250, h: 100, l: ['Bienvenida', 'Explicación de sesión'], c: 'white', n: 1, at: 5 },
       fam: { x: 480, y: 640, w: 280, h: 100, l: ['Niveles de', 'familiarización (F)'], c: 'white', n: 2, at: 6 },
       cons: { x: 790, y: 640, w: 240, h: 170, l: ['Consentimiento', 'informado'], c: 'gold', n: 3, at: 7, dia: 1 },
@@ -5141,7 +5180,7 @@ H['s-prisma']={
         const shPath = `M ${x0} ${y0 + rh} A ${n.w / 2} ${rh} 0 0 1 ${x1} ${y0 + rh} L ${x1} ${y1 - rh} A ${n.w / 2} ${rh} 0 0 1 ${x0} ${y1 - rh} Z`;
         E('path', { class: 'sh', d: shPath, transform: 'translate(9 9)' }, g);
         E('path', { class: 'bx', d: shPath, fill: COL[n.c] }, g);
-        E('ellipse', { cx: n.x, cy: y0 + rh, rx: n.w / 2, ry: rh, fill: '#fff2a8', stroke: '#1a1a1a', 'stroke-width': 5 }, g);
+        E('ellipse', { cx: n.x, cy: y0 + rh, rx: n.w / 2, ry: rh, fill: n.c === 'mint' ? '#c9efe2' : '#fff2a8', stroke: '#1a1a1a', 'stroke-width': 5 }, g);
       } else {
         E('rect', { class: 'sh', x: x0 + 9, y: y0 + 9, width: n.w, height: n.h }, g); E('rect', { class: 'bx', x: x0, y: y0, width: n.w, height: n.h, fill: COL[n.c] }, g);
       }
@@ -5167,7 +5206,7 @@ H['s-prisma']={
     const CAMS = {
       1: camFor(310, 170, 1, 330, 300), 2: camFor(730, 170, 1, 330, 300), 3: camFor(1235, 170, .75, 250, 300),
       4: camFor(2175, 170, .7, 350, 300),
-      5: camFor(160, 640, 1, 300, 330), 6: camFor(480, 640, 1, 330, 330), 7: camFor(790, 560, .85, 300, 340), 8: camFor(1100, 640, 1, 330, 330),
+      5: camFor(160, 640, 1, 230, 175), 6: camFor(480, 640, 1, 230, 175), 7: camFor(790, 560, .85, 300, 340), 8: camFor(1100, 640, 1, 330, 185),
       9: camFor(975, 940, .48, 340, 330),
       10: camFor(1500, 560, .66, 330, 380), 11: camFor(1450, 560, .9, 330, 360), 12: camFor(1830, 640, 1, 330, 330), 13: camFor(2160, 640, 1, 330, 330),
       14: camFor(2460, 640, 1, 300, 330), 15: { cx: 1270, cy: 530.5, lk: Math.log(.474) }
@@ -5264,19 +5303,6 @@ H['s-prisma']={
       }, off() { }
     };
 
-    // 5 · telemetría
-    PA[6] = {
-      on() {
-        const box = $('#tele'); let t = 0, sal = 0, mue = 0, mon = 0, ene = 0, last = {}, now = 0;
-        const render = () => {
-          const f = (k, v) => (now - (last[k] || -1e9) < 260 ? `<span class="fl">${v}</span>` : `<em>${v}</em>`);
-          box.innerHTML = `{\n  "participante": <em>"P07"</em>,\n  "nivel": <em>"F1"</em>,\n  "tiempo_s": ${f('t', t.toFixed(1))},\n  "saltos": ${f('s', sal)},\n  "muertes": ${f('m', mue)},\n  "monedas": ${f('c', mon)},\n  "enemigos_derrotados": ${f('e', ene)}\n}`;
-        };
-        render();
-        I(() => { now += 100; t += .1; if (Math.random() < .22) { sal++; last.s = now; } if (Math.random() < .04) { mue++; last.m = now; } if (Math.random() < .1) { mon++; last.c = now; } if (Math.random() < .05) { ene++; last.e = now; } last.t = now; render(); }, 100);
-      }
-    };
-
     // 6 · consentimiento
     const cres = $('#cres');
     function choose(b) {
@@ -5295,22 +5321,10 @@ H['s-prisma']={
     };
 
     // 8 · generación
-    (function () {
-      const btnP = document.getElementById('btnGoAnxPipeline');
-      if (btnP) {
-        btnP.onclick = (e) => {
-          e.currentTarget.blur();
-          const idx = slides.findIndex(s => s.id === 's-anexos-pipeline');
-          if (idx >= 0 && typeof goSlide === 'function') {
-            goSlide(idx, 'fwd', 0);
-          }
-        };
-      }
-    })();
     PA[9] = {
       on() {
-        const out = $('#prompt'), txt = 'Prompt → MarioGPT: «Nivel con saltos exigentes sobre vacíos, pocos enemigos y plataformas elevadas.»'; let i = 0; out.textContent = '';
-        if (reduce) out.textContent = txt; else I(() => { if (i < txt.length) out.textContent = txt.slice(0, ++i); }, 32);
+        const out = $('#mgprompt'), txt = 'difficulty=medium; route=low; jump=short; enemies=moderate; hazards=low; rewards=none; progression=steady; avoid=pos1542,pos1678,large_gaps; must_have=clear_platforms,powerup_blocks'; let i = 0; out.textContent = '';
+        if (reduce) out.textContent = txt; else I(() => { if (i < txt.length) out.textContent = txt.slice(0, i += 2); }, 22);
         T(() => {
           packet([[480, 700], [480, 940], [1120, 940], [1480, 940], [1480, 720]], 220, null, false);
         }, 2000);
