@@ -1570,15 +1570,18 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
   }
 
   #s-conc .ccol.c1 {
-    left: 60px
+    left: 44px;
+    width: 312px
   }
 
   #s-conc .ccol.c2 {
-    left: 459px
+    left: 386px;
+    width: 520px
   }
 
   #s-conc .ccol.c3 {
-    left: 858px
+    left: 934px;
+    width: 298px
   }
 
   #s-conc .cdiv {
@@ -1843,8 +1846,8 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
   /* ---------- limitaciones: MarioGPT arriba, P abajo ---------- */
   #s-conc .lmap {
     position: relative;
-    width: 362px;
-    height: 456px
+    width: 520px;
+    height: 470px
   }
 
   #s-conc .larr {
@@ -1880,12 +1883,12 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
 
   #s-conc .lbox {
     position: absolute;
-    width: 172px;
-    height: 92px;
+    width: 164px;
+    height: 88px;
     background: #fff0f8;
     border: 3px solid var(--ink);
     box-shadow: 4px 4px 0 var(--ink);
-    padding: 8px 10px;
+    padding: 6px 9px;
     opacity: 0;
     transform: scale(.85);
     transition: opacity .3s, transform .35s cubic-bezier(.3, 1.5, .5, 1)
@@ -1893,13 +1896,19 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
 
   #s-conc .lbox h5 {
     margin: 0 0 4px;
-    font: 400 22px/1 var(--display);
+    font: 400 19px/1 var(--display);
     letter-spacing: .5px
   }
 
   #s-conc .lbox p {
     margin: 0;
-    font: 500 12.5px/1.4 var(--body)
+    font: 500 11.5px/1.3 var(--body)
+  }
+
+  #s-conc .fut li {
+    margin: 0 0 8px;
+    font-size: 13.5px;
+    line-height: 1.35
   }
 
   #s-conc .c2.show .larr path {
@@ -1911,46 +1920,14 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
     transform: none
   }
 
-  #s-conc .c2.show .larr path:nth-of-type(1) {
-    transition-delay: .2s
-  }
-
-  #s-conc .c2.show .lbox.k1 {
-    transition-delay: .55s
-  }
-
-  #s-conc .c2.show .larr path:nth-of-type(2) {
-    transition-delay: .35s
-  }
-
-  #s-conc .c2.show .lbox.k2 {
-    transition-delay: .7s
-  }
-
-  #s-conc .c2.show .larr path:nth-of-type(3) {
-    transition-delay: 1s
-  }
-
-  #s-conc .c2.show .lbox.k3 {
-    transition-delay: 1.35s
-  }
-
-  #s-conc .c2.show .larr path:nth-of-type(4) {
-    transition-delay: 1.15s
-  }
-
-  #s-conc .c2.show .lbox.k4 {
-    transition-delay: 1.5s
-  }
-
 /* ===== 10-agradecimiento.html ===== */
 #s-thanks .t {
   position: absolute;
   left: 0;
   right: 0;
-  top: 76px;
+  top: 70px;
   text-align: center;
-  font: 400 96px/.95 var(--display);
+  font: 400 112px/.95 var(--display);
   letter-spacing: 2px;
   color: var(--ink);
 }
@@ -1958,9 +1935,9 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
   position: absolute;
   left: 0;
   right: 0;
-  top: 172px;
+  top: 186px;
   text-align: center;
-  font: 400 24px/1.3 var(--display);
+  font: 400 31px/1.3 var(--display);
   color: var(--violet);
   letter-spacing: 1px;
 }
@@ -1968,10 +1945,10 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
   position: absolute;
   left: 0;
   right: 0;
-  top: 245px;
+  top: 262px;
   text-align: center;
-  font-size: 15px;
-  line-height: 1.85;
+  font-size: 23px;
+  line-height: 1.7;
 }
 #s-thanks .authors small {
   color: #555;
@@ -1980,21 +1957,21 @@ table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:sep
   position: absolute;
   left: 0;
   right: 0;
-  top: 420px;
+  top: 410px;
   text-align: center;
-  font-size: 16px;
+  font-size: 26px;
   font-weight: 600;
 }
 #s-thanks .q-pill {
   position: absolute;
   left: 50%;
-  top: 470px;
+  top: 462px;
   transform: translateX(-50%);
   background: #fff;
   border: 3px solid var(--ink);
   box-shadow: 4px 4px 0 var(--ink);
-  padding: 8px 18px;
-  font: 400 11px var(--pixel);
+  padding: 10px 22px;
+  font: 400 17px var(--pixel);
   color: var(--ink);
 }
 
@@ -3507,95 +3484,46 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
   <!-- 12 -->
   <div class="fp" data-p="12" style="overflow-y:auto">
     <div class="ptag">6 · RANKING Y PREFERENCIA DE NIVELES</div>
-    <p class="pp" style="margin-bottom:8px">Evaluación de preferencia ordinal (1.º favorito a 6.º menos preferido) con
-      <b>n = 69 participantes</b>:
-    </p>
-
-    <!-- Barra de KPIs del Ranking -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
-      <div
-        style="border:2px solid var(--ink);background:#fff;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 9px var(--pixel);color:#333;display:block">MUESTRA VÁLIDA</span>
-        <b style="font:400 23px/1.1 var(--display);color:var(--ink)">69 SUJETOS</b>
+    <p class="pp" style="font-size:16px;line-height:1.35;margin-bottom:8px">Preferencia: 1.º = favorito · <b>n = 69</b> (7 sin ranking).</p>
+    <div class="st-grid">
+      <div class="st-c"><h4>RANK MEDIO · MENOR = MEJOR</h4>
+        <div class="brow w2"><span>Humano (H)</span><div class="tr"><i class="c-mint" style="width:52.2%"></i></div><b>3.13</b></div>
+        <div class="brow w2"><span>Genérico (N)</span><div class="tr"><i class="c-gold" style="width:61.3%"></i></div><b>3.68</b></div>
+        <div class="brow w2"><span>Personal. (P)</span><div class="tr"><i class="c-ruby" style="width:61.5%"></i></div><b>3.69</b></div>
       </div>
-      <div
-        style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 9px var(--pixel);color:#333;display:block">HUMANO (H) ★</span>
-        <b style="font:400 23px/1.1 var(--display);color:#0a7c55">RANK 3.13</b>
+      <div class="st-c"><h4>MEJOR TIPO POR PERSONA</h4>
+        <div class="brow w2"><span>Humano (H)</span><div class="tr"><i class="c-mint" style="width:39.1%"></i></div><b>27</b></div>
+        <div class="brow w2"><span>Genérico (N)</span><div class="tr"><i class="c-gold" style="width:34.8%"></i></div><b>24</b></div>
+        <div class="brow w2"><span>Personal. (P)</span><div class="tr"><i class="c-ruby" style="width:26.1%"></i></div><b>18</b></div>
       </div>
-      <div
-        style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 9px var(--pixel);color:#333;display:block">GENÉRICO (N)</span>
-        <b style="font:400 23px/1.1 var(--display);color:var(--ink)">RANK 3.68</b>
-      </div>
-      <div
-        style="border:2px solid var(--ink);background:#ffb3da;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 9px var(--pixel);color:#333;display:block">PERSONALIZADO (P)</span>
-        <b style="font:400 23px/1.1 var(--display);color:var(--ink)">RANK 3.69</b>
-      </div>
+      <div class="st-c"><h4>VECES EN CADA POSICIÓN</h4><div style="display:flex;gap:12px;font:600 13px var(--body);margin:-2px 0 2px"><span><i style="display:inline-block;width:11px;height:11px;background:#4fbf98;border:2px solid #1a1a1a;margin-right:4px"></i>Humano</span><span><i style="display:inline-block;width:11px;height:11px;background:#dba93b;border:2px solid #1a1a1a;margin-right:4px"></i>Genérico</span><span><i style="display:inline-block;width:11px;height:11px;background:#e0559f;border:2px solid #1a1a1a;margin-right:4px"></i>Personal.</span></div><svg viewBox="0 0 310 150" width="100%" style="display:block;font-family:Montserrat,Arial,sans-serif;fill:#1a1a1a"><line x1="4" y1="124" x2="306" y2="124" stroke="#1a1a1a" stroke-width="2"/><rect x="8" y="51.5" width="14" height="72.5" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="15" y="47.5" text-anchor="middle" font-size="9.5" font-weight="700">25</text><rect x="23" y="68.9" width="14" height="55.1" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="30" y="64.9" text-anchor="middle" font-size="9.5" font-weight="700">19</text><rect x="38" y="51.5" width="14" height="72.5" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="45" y="47.5" text-anchor="middle" font-size="9.5" font-weight="700">25</text><text x="30" y="143" text-anchor="middle" font-size="12.5">1.º</text><rect x="58" y="42.8" width="14" height="81.2" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="65" y="38.8" text-anchor="middle" font-size="9.5" font-weight="700">28</text><rect x="73" y="54.4" width="14" height="69.6" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="80" y="50.4" text-anchor="middle" font-size="9.5" font-weight="700">24</text><rect x="88" y="74.7" width="14" height="49.3" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="95" y="70.7" text-anchor="middle" font-size="9.5" font-weight="700">17</text><text x="80" y="143" text-anchor="middle" font-size="12.5">2.º</text><rect x="108" y="28.3" width="14" height="95.7" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="115" y="24.3" text-anchor="middle" font-size="9.5" font-weight="700">33</text><rect x="123" y="74.7" width="14" height="49.3" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="130" y="70.7" text-anchor="middle" font-size="9.5" font-weight="700">17</text><rect x="138" y="68.9" width="14" height="55.1" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="145" y="64.9" text-anchor="middle" font-size="9.5" font-weight="700">19</text><text x="130" y="143" text-anchor="middle" font-size="12.5">3.º</text><rect x="158" y="66.0" width="14" height="58.0" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="165" y="62.0" text-anchor="middle" font-size="9.5" font-weight="700">20</text><rect x="173" y="45.7" width="14" height="78.3" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="180" y="41.7" text-anchor="middle" font-size="9.5" font-weight="700">27</text><rect x="188" y="60.2" width="14" height="63.8" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="195" y="56.2" text-anchor="middle" font-size="9.5" font-weight="700">22</text><text x="180" y="143" text-anchor="middle" font-size="12.5">4.º</text><rect x="208" y="66.0" width="14" height="58.0" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="215" y="62.0" text-anchor="middle" font-size="9.5" font-weight="700">20</text><rect x="223" y="54.4" width="14" height="69.6" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="230" y="50.4" text-anchor="middle" font-size="9.5" font-weight="700">24</text><rect x="238" y="51.5" width="14" height="72.5" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="245" y="47.5" text-anchor="middle" font-size="9.5" font-weight="700">25</text><text x="230" y="143" text-anchor="middle" font-size="12.5">5.º</text><rect x="258" y="89.2" width="14" height="34.8" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="265" y="85.2" text-anchor="middle" font-size="9.5" font-weight="700">12</text><rect x="273" y="45.7" width="14" height="78.3" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="280" y="41.7" text-anchor="middle" font-size="9.5" font-weight="700">27</text><rect x="288" y="37.0" width="14" height="87.0" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="295" y="33.0" text-anchor="middle" font-size="9.5" font-weight="700">30</text><text x="280" y="143" text-anchor="middle" font-size="12.5">6.º</text></svg></div>
+      <div class="st-c"><h4>RANK SEGÚN ORDEN DE JUEGO</h4>
+        <svg viewBox="0 0 310 150" width="100%" style="display:block;font-family:Montserrat,Arial,sans-serif;fill:#1a1a1a"><line x1="4" y1="124" x2="306" y2="124" stroke="#1a1a1a" stroke-width="2"/><rect x="14" y="82.2" width="34" height="41.8" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="31" y="78.2" text-anchor="middle" font-size="13" font-weight="700">2.20</text><text x="31" y="143" text-anchor="middle" font-size="12.5">1.º</text><rect x="63" y="68.9" width="34" height="55.1" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="80" y="64.9" text-anchor="middle" font-size="13" font-weight="700">2.90</text><text x="80" y="143" text-anchor="middle" font-size="12.5">2.º</text><rect x="112" y="64.3" width="34" height="59.7" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="129" y="60.3" text-anchor="middle" font-size="13" font-weight="700">3.14</text><text x="129" y="143" text-anchor="middle" font-size="12.5">3.º</text><rect x="161" y="51.0" width="34" height="73.0" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="178" y="47.0" text-anchor="middle" font-size="13" font-weight="700">3.84</text><text x="178" y="143" text-anchor="middle" font-size="12.5">4.º</text><rect x="210" y="45.3" width="34" height="78.7" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="227" y="41.3" text-anchor="middle" font-size="13" font-weight="700">4.14</text><text x="227" y="143" text-anchor="middle" font-size="12.5">5.º</text><rect x="259" y="33.4" width="34" height="90.6" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="276" y="29.4" text-anchor="middle" font-size="13" font-weight="700">4.77</text><text x="276" y="143" text-anchor="middle" font-size="12.5">6.º</text></svg></div>
     </div>
-
-    <!-- Dos columnas: Método (pantalla) a la izquierda, Resumen de Resultados a la derecha -->
-    <div style="display:grid;grid-template-columns:320px 330px;gap:12px;align-items:start">
-      <!-- Columna 1: Método y Captura de Pantalla Real -->
-      <div>
-        <div class="shot has" style="height:210px;border:2.5px solid var(--ink);background:#111;margin-bottom:6px">
-          <img src="img/05_clasificacion_preferencia_ranking.png"
-            alt="Pantalla de clasificación de preferencia en el experimento"
-            style="display:block;width:100%;height:100%;object-fit:cover">
-        </div>
-        <div
-          style="font-size:13px;line-height:1.35;color:#444;background:#fbf9f6;border:1.5px solid #e2ddd5;padding:5px 7px">
-          <b>Tarea:</b> Ordenar 6 niveles (<i>drag-and-drop</i>) + comentarios cualitativos (n = 69 válidos, 7
-          omitidos).
-        </div>
-      </div>
-
-      <!-- Columna 2: Resumen de Resultados Empíricos -->
-      <div style="border:2.5px solid var(--ink);background:#fff;padding:8px 10px;box-shadow:3px 3px 0 var(--ink)">
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:2px solid var(--ink);padding-bottom:3px">
-          <span style="font:400 10px var(--pixel);color:var(--ink)">HALLAZGOS CLAVE (PREFERENCIA)</span>
-          <span style="font:700 10px monospace;background:var(--gold-l);padding:1px 4px;border:1px solid var(--ink)">414
-            EVALUACIONES</span>
-        </div>
-
-        <div style="font-size:14px;line-height:1.45;color:#111">
-          <div style="margin-bottom:6px">▸ <b>Humano favorito:</b> Rank medio <b>3.13</b> (rara vez 6.º).</div>
-          <div style="margin-bottom:6px">▸ <b>Empate en IAs:</b> N (<b>3.68</b>) ≈ P (<b>3.69</b>).</div>
-          <div style="margin-bottom:6px">▸ <b>Test de Friedman:</b> χ² = 5.52, <i>p</i> = 0.063 (marginal).</div>
-          <div style="margin-bottom:3px">▸ <b>Efecto primacía/orden:</b> 1.º (<b>2.20</b>) a 6.º (<b>4.77</b>).</div>
-        </div>
-
-        <button id="btnGoAnxRanking" type="button"
-          style="margin-top:8px;width:100%;font:400 10px var(--pixel);padding:6px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink);transition:all .15s">
-          📊 VER ANÁLISIS DETALLADO EN ANEXOS ➔
-        </button>
-      </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+      <div class="st-note" style="flex:1;margin:0"><b>Friedman:</b> χ² = 5.52, <i>p</i> = 0.063 (no concluyente).</div>
+      <button id="btnGoAnxRanking" type="button" style="font:400 9px var(--pixel);padding:6px 8px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink)">📊 ANÁLISIS EN ANEXOS ➔</button>
+    </div>
+  </div>
+  <div class="fp lside" data-p="12" style="width:480px">
+    <div class="shot has" style="height:316px;border:3px solid var(--ink);background:#111;cursor:default">
+      <div style="position:absolute;top:8px;left:8px;background:var(--ink);color:#fff;font:400 10px var(--pixel);padding:4px 7px;z-index:2;border:1px solid #fff">PANTALLA DE RANKING</div>
+      <img src="img/05_clasificacion_preferencia_ranking.png" alt="Pantalla de clasificación de preferencia" style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
   </div>
   <!-- 13 -->
-  <div class="fp" data-p="13" style="overflow-y:auto">
+  <div class="fp" data-p="13">
     <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
-    <p class="pp" style="margin-bottom:6px">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>
-      (opcional):</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-      <div class="shot has" style="height:125px;border:3px solid var(--ink);background:#111">
-        <img src="img/07_invitacion_juego_voluntario.png" alt="Invitación al juego voluntario"
-          style="display:block;width:100%;height:100%;object-fit:contain">
-      </div>
-      <div class="shot has" style="height:125px;border:3px solid var(--ink);background:#111">
-        <img src="img/08_modo_juego_libre.png" alt="Modo de juego libre voluntario"
-          style="display:block;width:100%;height:100%;object-fit:contain">
-      </div>
+    <p class="pp" style="font-size:17px;line-height:1.4;margin-bottom:8px">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b> (opcional).</p>
+    <div class="shot has" style="height:226px;border:3px solid var(--ink);background:#111;margin-bottom:12px;cursor:default">
+      <img src="img/07_invitacion_juego_voluntario.png" alt="Invitación al juego voluntario" style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
-    <div class="cond" style="margin:4px 0 8px">Condición asignada: <button data-c="P">P</button><button
-        data-c="N">N</button><button data-c="H">H</button>
-    </div>
-    <div class="timer" id="timer">20:00<small>(demo acelerada)</small></div>
-    <div class="metrics">
-      <div>Tiempo jugado<b id="mT">0 min</b></div>
-      <div>Niveles jugados<b id="mL">0</b></div>
+    <div class="res" style="margin:0;font-size:18px;min-height:0;background:var(--gold-l)">Solo <b>2 personas</b> jugaron en esta modalidad: una con niveles <b>genéricos (N)</b> y otra con <b>personalizados (P)</b>.</div>
+  </div>
+  <div class="fp lside" data-p="13" style="width:630px">
+    <div class="shot has" style="height:296px;border:3px solid var(--ink);background:#111;cursor:default">
+      <div style="position:absolute;top:8px;left:8px;background:var(--ink);color:#fff;font:400 10px var(--pixel);padding:4px 7px;z-index:2;border:1px solid #fff">MODO DE JUEGO LIBRE</div>
+      <img src="img/08_modo_juego_libre.png" alt="Modo de juego libre voluntario" style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
   </div>
   <!-- 14 -->
@@ -3610,7 +3538,6 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
 
   <div class="flegend"><i style="background:var(--mint)"></i>Parte 1 · Niveles H<br><i style="background:var(--gold-l)"></i>Parte 2 · Niveles N<br><i
       style="background:#fff"></i>Parte 3 · Experimento<br><i style="background:#ffb3da"></i>Segundo plano</div>
-  <div class="fhint blink">CLIC EN UNA CAJA PARA VOLVER A SU EXPLICACIÓN</div>
 </section>
 
 <!-- ============ FILMINA: RESULTADOS · MEDIAS DEL LMM ============ -->
@@ -3630,16 +3557,16 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
     </div>
   </section>
 
-<!-- ============ FILMINA: CONCLUSIONES PRELIMINARES ============ -->
+<!-- ============ FILMINA: CONCLUSIONES ============ -->
 <!-- Tres columnas: pregunta y respuesta | limitaciones | trabajo futuro.
      Las cifras salen de la filmina de resultados (LMM, p ajustados por Holm). -->
 
 
 
 <section class="slide" id="s-conc" data-min="1" data-max="4" data-sec="Conclusiones">
-  <h1 class="h1">CONCLUSIONES PRELIMINARES</h1>
-  <div class="cdiv" style="left:440px"></div>
-  <div class="cdiv" style="left:839px"></div>
+  <h1 class="h1">CONCLUSIONES</h1>
+  <div class="cdiv" style="left:372px"></div>
+  <div class="cdiv" style="left:920px"></div>
 
   <!-- 1 · pregunta y respuesta -->
   <div class="ccol c1">
@@ -3648,79 +3575,62 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
       <div class="cq">¿Pueden los niveles que se <span class="a">adaptan al jugador</span> superar a los <span class="c">no personalizados</span> o a los <span class="d">diseñados por humanos</span>?</div>
     </div>
     <div class="cans reveal" data-at="2">
-      <p class="cbig">NO, POR AHORA</p>
-      <div class="pmap">
-        <svg class="parr" viewBox="0 0 362 290">
-          <defs>
-            <marker id="carw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
-              <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
-            </marker>
-          </defs>
-          <path d="M131 120 C150 120 144 42 162 42" pathLength="1" marker-end="url(#carw)" />
-          <path d="M131 147 H162" pathLength="1" marker-end="url(#carw)" />
-          <path d="M131 174 C150 174 144 250 162 250" pathLength="1" marker-end="url(#carw)" />
-        </svg>
-        <div class="pnode"><span class="pl">P</span><img class="spr" data-spr="hero:neutral" data-s="4"
-            alt=""><b>PERSONALIZADOS</b></div>
-        <div class="pchip k1" style="top:0;background:#ffd0d0">
-          <h5>▼ SATISFACCIÓN</h5>
-          <p>Frente a H: <b>−0.90</b> disfrute, <b>−1.11</b> competencia.</p>
-        </div>
-        <div class="pchip k2" style="top:104px;background:var(--gold-l)">
-          <h5>▲ DIFICULTAD</h5>
-          <p><b>+0.84</b> vs. H y <b>+0.63</b> vs. N, sin mejor ajuste del reto.</p>
-        </div>
-        <div class="pchip k3" style="top:208px;background:#d7f4e8">
-          <h5>≈ N EN DISFRUTE</h5>
-          <p>Pero algo más variados<span class="stag">FRÁGIL</span></p>
-        </div>
-      </div>
+      <p style="font:600 16.5px/1.45 var(--body);margin:0 0 10px">En este experimento, los niveles <b class="b">personalizados</b> todavía no superan a los <b style="color:var(--mint-d)">diseñados por humanos</b>.</p>
+      <p style="font:600 16.5px/1.45 var(--body);margin:0 0 14px">Entre los niveles adaptados, hay indicios de que los <b class="a">personalizados</b> se perciben algo más variados que los <b class="c">no personalizados</b>, aunque con evidencia frágil.</p>
+      <p class="cbig" style="color:var(--violet);font-size:42px">¡VAMOS POR BUEN CAMINO!</p>
     </div>
   </div>
 
   <!-- 2 · limitaciones -->
   <div class="ccol c2 reveal" data-at="3">
     <div class="chead"><span class="cico" style="background:var(--pink)">!</span><b>LIMITACIONES</b></div>
-    <!-- arriba: limitaciones del generador · abajo: limitaciones de cómo se aplicó -->
     <div class="lmap">
-      <svg class="larr" viewBox="0 0 362 456">
+      <svg class="larr" viewBox="0 0 520 470">
         <defs>
           <marker id="larw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
             <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
           </marker>
         </defs>
-        <path d="M150 50 C150 78 86 70 86 102" pathLength="1" marker-end="url(#larw)" />
-        <path d="M212 50 C212 78 276 70 276 102" pathLength="1" marker-end="url(#larw)" />
-        <path d="M150 400 C150 372 86 380 86 350" pathLength="1" marker-end="url(#larw)" />
-        <path d="M212 400 C212 372 276 380 276 350" pathLength="1" marker-end="url(#larw)" />
+        <path d="M216 36 C216 48 82 44 82 58" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.32s" />
+        <path d="M260 36V58" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.44s" />
+        <path d="M304 36 C304 48 438 44 438 58" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.56s" />
+        <path d="M216 194 C216 206 82 202 82 216" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.68s" />
+        <path d="M260 194V216" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.8s" />
+        <path d="M304 194 C304 206 438 202 438 216" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.92s" />
+        <path d="M194 352 C194 364 60 360 60 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.04s" />
+        <path d="M238 352 C238 364 194 360 194 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.16s" />
+        <path d="M282 352 C282 364 326 360 326 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.28s" />
+        <path d="M326 352 C326 364 460 360 460 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.4s" />
       </svg>
-      <div class="ltag" style="top:0;background:#fff">MARIOGPT</div>
-      <div class="lbox k1" style="left:0;top:108px">
-        <h5>GPT-2</h5>
-        <p>Modelo de 2019, ya antiguo.</p>
-      </div>
-      <div class="lbox k2" style="left:190px;top:108px">
-        <h5>NIVELES CLÁSICOS</h5>
-        <p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p>
-      </div>
-      <div class="lbox k3" style="left:0;top:252px">
-        <h5>REGLA, NO LLM</h5>
-        <p><b>120 de 122</b> prompts; solo 28 distintos.</p>
-      </div>
-      <div class="lbox k4" style="left:190px;top:252px">
-        <h5>MENOS DATOS</h5>
-        <p>18 niveles de respaldo descartados.</p>
-      </div>
-      <div class="ltag" style="top:404px;background:var(--pink)">PERSONALIZADOS (P)</div>
+      <div class="ltag" style="top:0px;background:#fff;height:36px;font-size:22px;line-height:30px">MARIOGPT</div>
+      <div class="lbox k1" style="left:0px;top:60px;width:164px;transition-delay:0.67s"><h5>GPT-2</h5><p>Modelo de 2019, ya antiguo.</p></div>
+      <div class="lbox k2" style="left:178px;top:60px;width:164px;transition-delay:0.79s"><h5>NIVELES CLÁSICOS</h5><p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p></div>
+      <div class="lbox k3" style="left:356px;top:60px;width:164px;transition-delay:0.91s"><h5>NIVELES DIFÍCILES</h5><p>Entrenado con niveles difíciles, no con los que gustan a la gente.</p></div>
+      <div class="ltag" style="top:158px;background:var(--pink);height:36px;font-size:22px;line-height:30px">PERSONALIZADOS (P)</div>
+      <div class="lbox k4" style="left:0px;top:218px;width:164px;transition-delay:1.03s"><h5>REGLA, NO LLM</h5><p><b>120 de 122</b> prompts; solo 28 distintos.</p></div>
+      <div class="lbox k5" style="left:178px;top:218px;width:164px;transition-delay:1.15s"><h5>MENOS DATOS</h5><p>18 niveles de respaldo descartados.</p></div>
+      <div class="lbox k6" style="left:356px;top:218px;width:164px;transition-delay:1.27s"><h5>SIN ESTUDIO PREVIO</h5><p>No había un estudio previo de cómo personalizar.</p></div>
+      <div class="ltag" style="top:316px;background:var(--gold-l);height:36px;font-size:22px;line-height:30px">DISEÑO DEL ESTUDIO</div>
+      <div class="lbox k7" style="left:0px;top:376px;width:121px;transition-delay:1.39s"><h5>SIN A*</h5><p>Los N y P no se validaron; los H sí.</p></div>
+      <div class="lbox k8" style="left:133px;top:376px;width:121px;transition-delay:1.51s"><h5>ORDEN</h5><p>Rank de 2.20 (1.º) a 4.77 (6.º).</p></div>
+      <div class="lbox k9" style="left:266px;top:376px;width:121px;transition-delay:1.63s"><h5>TELEMETRÍA</h5><p>Solo 2 niveles de práctica.</p></div>
+      <div class="lbox k10" style="left:399px;top:376px;width:121px;transition-delay:1.75s"><h5>MUESTRA</h5><p>72 personas, jóvenes; 14 H y 17 N.</p></div>
     </div>
   </div>
 
   <!-- 3 · trabajo futuro -->
   <div class="ccol c3 reveal" data-at="4">
     <div class="chead"><span class="cico" style="background:var(--mint)">▶</span><b>TRABAJO FUTURO</b></div>
-    <ul>
+    <ul class="fut">
       <li><b>Generadores más recientes</b> o entrenados con Mario Maker 2.</li>
       <li><b>Razonador LLM</b> en todas las personalizaciones.</li>
+      <li><b>Estudiar por qué</b> gustan los niveles de Hugging Face.</li>
+      <li><b>Entrenar un modelo</b> con niveles populares.</li>
+      <li><b>Validar con A*</b> los niveles generados.</li>
+      <li><b>Calibrar la dificultad</b> de P: se perciben más difíciles.</li>
+      <li><b>Más telemetría:</b> más niveles de práctica o adaptar durante la sesión.</li>
+      <li><b>Modelo mixto</b> que controle el orden de juego.</li>
+      <li><b>Muestra más diversa</b> y medidas objetivas (tiempo, muertes).</li>
     </ul>
   </div>
 </section>
@@ -3730,9 +3640,9 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
 
 
 <section class="slide gray" id="s-thanks" data-min="0" data-max="0" data-sec="Agradecimiento">
-  <img class="spr cloud" data-spr="cloud" data-s="6" style="top:50px;animation-duration:70s;animation-delay:-5s" alt="">
-  <img class="spr cloud" data-spr="cloud" data-s="5" style="top:220px;animation-duration:90s;animation-delay:-40s" alt="">
-  <img class="spr cloud" data-spr="cloud" data-s="7" style="top:410px;animation-duration:80s;animation-delay:-20s" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="6" style="left:40px;top:44px;animation:none" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="5" style="left:1060px;top:200px;animation:none" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="7" style="left:50px;top:340px;animation:none" alt="">
 
   <div class="t">¡MUCHAS GRACIAS!</div>
   <div class="sub">TELEMETRY-BASED ADAPTIVE LEVEL GENERATION IN 2D PLATFORMERS</div>
@@ -3745,10 +3655,10 @@ XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
 
   <div class="uni">Universidad de Costa Rica · 2026</div>
 
-  <div class="q-pill blink">¿PREGUNTAS O COMENTARIOS?</div>
+  <div class="q-pill">¿PREGUNTAS O COMENTARIOS?</div>
 
-  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:380px;top:540px;animation-delay:-.3s" alt="">
-  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:880px;top:540px;animation-delay:-.8s" alt="">
+  <img class="spr abs" data-spr="coin" data-s="4" style="left:380px;top:540px" alt="">
+  <img class="spr abs" data-spr="coin" data-s="4" style="left:880px;top:540px" alt="">
   <img class="spr abs bob" data-spr="hero:happy" data-s="6" style="left:604px;top:526px" alt="">
   <div class="ground"></div>
 </section>
@@ -5227,7 +5137,7 @@ H['s-prisma']={
       4: camFor(2175, 170, .7, 350, 300),
       5: camFor(160, 640, 1, 230, 175), 6: camFor(480, 640, 1, 230, 175), 7: camFor(790, 560, .85, 300, 340), 8: camFor(1100, 640, 1, 330, 185),
       9: camFor(975, 940, .48, 340, 330),
-      10: camFor(1500, 560, .66, 330, 250), 11: camFor(1430, 470, .9, 250, 175), 12: camFor(1830, 640, 1, 330, 330), 13: camFor(2160, 640, 1, 330, 330),
+      10: camFor(1500, 560, .66, 330, 250), 11: camFor(1430, 470, .9, 250, 175), 12: camFor(1830, 640, 1, 300, 175), 13: camFor(2160, 640, 1, 230, 175),
       14: camFor(2460, 640, 1, 300, 330), 15: { cx: 1270, cy: 530.5, lk: Math.log(.474) }
     };
 
@@ -5369,22 +5279,6 @@ H['s-prisma']={
           }
         };
       }
-    })();
-
-    // 12 · juego libre
-    (function () {
-      const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; let cond = 'P', sim = 0, lv = 0, nextLv = 150; const tm = $('#timer'), mT = $('#mT'), mL = $('#mL');
-      const paintC = () => $$('.cond button').forEach(b => b.className = b.dataset.c === cond ? 'on ' + cond : '');
-      $$('.cond button').forEach(b => b.onclick = () => { b.blur(); cond = b.dataset.c; sim = 0; lv = 0; nextLv = 150; paintC(); });
-      const fmt = s => { const r = Math.max(0, 1200 - s); return String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(Math.floor(r % 60)).padStart(2, '0'); };
-      PA[13] = {
-        on() {
-          sim = 0; lv = 0; nextLv = 150; paintC(); I(() => {
-            sim += reduce ? 0 : 5; if (sim >= 1200) { sim = 0; lv = 0; nextLv = 150; } if (sim >= nextLv) { lv++; nextLv += 110 + Math.random() * 90; }
-            tm.firstChild.nodeValue = fmt(sim); mT.textContent = Math.floor(sim / 60) + ' min'; mL.textContent = lv;
-          }, 100);
-        }
-      };
     })();
 
     // 13 · final
@@ -5549,11 +5443,7 @@ H['s-prisma']={
 /* ============================================================
    AGRADECIMIENTO
    ============================================================ */
-H['s-thanks'] = {
-  enter() {
-    burst(640, 480, 24);
-  }
-};
+H['s-thanks'] = {};
 
 /* ===== 11-anexos.html ===== */
 (function(){
