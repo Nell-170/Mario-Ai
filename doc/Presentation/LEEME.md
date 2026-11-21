@@ -44,3 +44,6 @@ Cada archivo de `filminas/` tiene tres bloques: `<style>` (su CSS), `<section>` 
 - Para agregar una filmina, crea p. ej. `filminas/12-nueva.html` con los mismos tres bloques. El orden lo da el número del nombre.
 - Lo que va en `<script>` de una filmina puede usar lo de `motor.js`: `H['id-de-la-section'] = { enter, leave, step }`, `setStep`, `step`, `burst`, `countTo`, `px`, `heroURL`, etc.
 - Si una filmina usa una clase de otra (por ejemplo `.ground` o `.cloud`), esa clase va en `comun/base.css`.
+
+- Contador de diapositivas: cuenta una por filmina. `data-cuenta="paso"` en la `<section>` hace que cada sub-paso cuente como número propio (se usa en la introducción).
+- `data-sin-transicion="id-de-section"` omite la cortina pixelada entre esa filmina y la indicada (la tabla de antecedentes entra sin cortina desde el PRISMA).

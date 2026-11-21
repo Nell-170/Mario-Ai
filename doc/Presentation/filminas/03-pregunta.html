@@ -13,12 +13,11 @@
 #runner.go{transition:left 1.9s linear;left:1330px}
 </style>
 
-  <section class="slide gray" id="s-q" data-min="1" data-max="2" data-sec="Pregunta">
+  <section class="slide gray" id="s-q" data-min="1" data-max="1" data-sec="Pregunta">
     <h1 class="h1">PREGUNTA DE INVESTIGACIÓN</h1>
-    <img class="spr cloud" data-spr="cloud" data-s="5" style="top:150px;animation-duration:90s;animation-delay:-20s" alt="">
-    <img class="spr cloud" data-spr="cloud" data-s="6" style="top:520px;animation-duration:75s;animation-delay:-50s" alt="">
+    <img class="spr cloud" data-spr="cloud" data-s="5" style="top:150px;left:960px;animation:none" alt="">
+    <img class="spr cloud" data-spr="cloud" data-s="6" style="top:470px;left:1020px;animation:none" alt="">
     <div class="q" id="qtext"></div>
-    <div class="bridge reveal" data-at="2">¿Qué se ha hecho ya? ▶▶</div>
     <img class="spr" id="runner" data-spr="hero:neutral" data-s="8" alt="">
     <div class="ground"></div>
   </section>
@@ -49,10 +48,7 @@
     enter(n,dir){ resetRunner(); if(dir==='back'){ clearInterval(timer); el.innerHTML=html(FLAT.length); } else type(); },
     leave(){ clearInterval(timer); stopRun(); },
     step(n,old){
-      if(n===1){ resetRunner(); if(old===2){ el.innerHTML=html(FLAT.length); } }
-      if(n===2){ clearInterval(timer); el.innerHTML=html(FLAT.length);
-        runner.src=heroURL('happy',8,0); let f=0; run=setInterval(()=>{ f^=1; runner.src=heroURL('happy',8,f); },130);
-        runner.classList.add('go'); setTimeout(stopRun,2000); }
+      if(n===1){ resetRunner(); }
     }
   };
 })();
