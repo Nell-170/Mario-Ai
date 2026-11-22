@@ -5,9 +5,9 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 76px;
+  top: 70px;
   text-align: center;
-  font: 400 96px/.95 var(--display);
+  font: 400 112px/.95 var(--display);
   letter-spacing: 2px;
   color: var(--ink);
 }
@@ -15,9 +15,9 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 172px;
+  top: 186px;
   text-align: center;
-  font: 400 24px/1.3 var(--display);
+  font: 400 31px/1.3 var(--display);
   color: var(--violet);
   letter-spacing: 1px;
 }
@@ -25,10 +25,10 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 245px;
+  top: 262px;
   text-align: center;
-  font-size: 15px;
-  line-height: 1.85;
+  font-size: 23px;
+  line-height: 1.7;
 }
 #s-thanks .authors small {
   color: #555;
@@ -37,29 +37,29 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 420px;
+  top: 410px;
   text-align: center;
-  font-size: 16px;
+  font-size: 26px;
   font-weight: 600;
 }
 #s-thanks .q-pill {
   position: absolute;
   left: 50%;
-  top: 470px;
+  top: 462px;
   transform: translateX(-50%);
   background: #fff;
   border: 3px solid var(--ink);
   box-shadow: 4px 4px 0 var(--ink);
-  padding: 8px 18px;
-  font: 400 11px var(--pixel);
+  padding: 10px 22px;
+  font: 400 17px var(--pixel);
   color: var(--ink);
 }
 </style>
 
 <section class="slide gray" id="s-thanks" data-min="0" data-max="0" data-sec="Agradecimiento">
-  <img class="spr cloud" data-spr="cloud" data-s="6" style="top:50px;animation-duration:70s;animation-delay:-5s" alt="">
-  <img class="spr cloud" data-spr="cloud" data-s="5" style="top:220px;animation-duration:90s;animation-delay:-40s" alt="">
-  <img class="spr cloud" data-spr="cloud" data-s="7" style="top:410px;animation-duration:80s;animation-delay:-20s" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="6" style="left:40px;top:44px;animation:none" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="5" style="left:1060px;top:200px;animation:none" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="7" style="left:50px;top:340px;animation:none" alt="">
 
   <div class="t">¡MUCHAS GRACIAS!</div>
   <div class="sub">TELEMETRY-BASED ADAPTIVE LEVEL GENERATION IN 2D PLATFORMERS</div>
@@ -72,10 +72,10 @@
 
   <div class="uni">Universidad de Costa Rica · 2026</div>
 
-  <div class="q-pill blink">¿PREGUNTAS O COMENTARIOS?</div>
+  <div class="q-pill">¿PREGUNTAS O COMENTARIOS?</div>
 
-  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:380px;top:540px;animation-delay:-.3s" alt="">
-  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:880px;top:540px;animation-delay:-.8s" alt="">
+  <img class="spr abs" data-spr="coin" data-s="4" style="left:380px;top:540px" alt="">
+  <img class="spr abs" data-spr="coin" data-s="4" style="left:880px;top:540px" alt="">
   <img class="spr abs bob" data-spr="hero:happy" data-s="6" style="left:604px;top:526px" alt="">
   <div class="ground"></div>
 </section>
@@ -84,10 +84,6 @@
 /* ============================================================
    AGRADECIMIENTO
    ============================================================ */
-H['s-thanks'] = {
-  enter() {
-    burst(640, 480, 24);
-  }
-};
+H['s-thanks'] = {};
 </script>
 

@@ -1,4 +1,4 @@
-<!-- ============ FILMINA: CONCLUSIONES PRELIMINARES ============ -->
+<!-- ============ FILMINA: CONCLUSIONES ============ -->
 <!-- Tres columnas: pregunta y respuesta | limitaciones | trabajo futuro.
      Las cifras salen de la filmina de resultados (LMM, p ajustados por Holm). -->
 
@@ -11,15 +11,18 @@
   }
 
   #s-conc .ccol.c1 {
-    left: 60px
+    left: 44px;
+    width: 312px
   }
 
   #s-conc .ccol.c2 {
-    left: 459px
+    left: 386px;
+    width: 520px
   }
 
   #s-conc .ccol.c3 {
-    left: 858px
+    left: 934px;
+    width: 298px
   }
 
   #s-conc .cdiv {
@@ -284,8 +287,8 @@
   /* ---------- limitaciones: MarioGPT arriba, P abajo ---------- */
   #s-conc .lmap {
     position: relative;
-    width: 362px;
-    height: 456px
+    width: 520px;
+    height: 470px
   }
 
   #s-conc .larr {
@@ -321,12 +324,12 @@
 
   #s-conc .lbox {
     position: absolute;
-    width: 172px;
-    height: 92px;
+    width: 164px;
+    height: 88px;
     background: #fff0f8;
     border: 3px solid var(--ink);
     box-shadow: 4px 4px 0 var(--ink);
-    padding: 8px 10px;
+    padding: 6px 9px;
     opacity: 0;
     transform: scale(.85);
     transition: opacity .3s, transform .35s cubic-bezier(.3, 1.5, .5, 1)
@@ -334,13 +337,19 @@
 
   #s-conc .lbox h5 {
     margin: 0 0 4px;
-    font: 400 22px/1 var(--display);
+    font: 400 19px/1 var(--display);
     letter-spacing: .5px
   }
 
   #s-conc .lbox p {
     margin: 0;
-    font: 500 12.5px/1.4 var(--body)
+    font: 500 11.5px/1.3 var(--body)
+  }
+
+  #s-conc .fut li {
+    margin: 0 0 8px;
+    font-size: 13.5px;
+    line-height: 1.35
   }
 
   #s-conc .c2.show .larr path {
@@ -352,43 +361,23 @@
     transform: none
   }
 
-  #s-conc .c2.show .larr path:nth-of-type(1) {
-    transition-delay: .2s
-  }
 
-  #s-conc .c2.show .lbox.k1 {
-    transition-delay: .55s
-  }
 
-  #s-conc .c2.show .larr path:nth-of-type(2) {
-    transition-delay: .35s
-  }
 
-  #s-conc .c2.show .lbox.k2 {
-    transition-delay: .7s
-  }
 
-  #s-conc .c2.show .larr path:nth-of-type(3) {
-    transition-delay: 1s
-  }
 
-  #s-conc .c2.show .lbox.k3 {
-    transition-delay: 1.35s
-  }
 
-  #s-conc .c2.show .larr path:nth-of-type(4) {
-    transition-delay: 1.15s
-  }
 
-  #s-conc .c2.show .lbox.k4 {
-    transition-delay: 1.5s
-  }
+
+
+
+
 </style>
 
 <section class="slide" id="s-conc" data-min="1" data-max="4" data-sec="Conclusiones">
-  <h1 class="h1">CONCLUSIONES PRELIMINARES</h1>
-  <div class="cdiv" style="left:440px"></div>
-  <div class="cdiv" style="left:839px"></div>
+  <h1 class="h1">CONCLUSIONES</h1>
+  <div class="cdiv" style="left:372px"></div>
+  <div class="cdiv" style="left:920px"></div>
 
   <!-- 1 · pregunta y respuesta -->
   <div class="ccol c1">
@@ -397,79 +386,62 @@
       <div class="cq">¿Pueden los niveles que se <span class="a">adaptan al jugador</span> superar a los <span class="c">no personalizados</span> o a los <span class="d">diseñados por humanos</span>?</div>
     </div>
     <div class="cans reveal" data-at="2">
-      <p class="cbig">NO, POR AHORA</p>
-      <div class="pmap">
-        <svg class="parr" viewBox="0 0 362 290">
-          <defs>
-            <marker id="carw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
-              <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
-            </marker>
-          </defs>
-          <path d="M131 120 C150 120 144 42 162 42" pathLength="1" marker-end="url(#carw)" />
-          <path d="M131 147 H162" pathLength="1" marker-end="url(#carw)" />
-          <path d="M131 174 C150 174 144 250 162 250" pathLength="1" marker-end="url(#carw)" />
-        </svg>
-        <div class="pnode"><span class="pl">P</span><img class="spr" data-spr="hero:neutral" data-s="4"
-            alt=""><b>PERSONALIZADOS</b></div>
-        <div class="pchip k1" style="top:0;background:#ffd0d0">
-          <h5>▼ SATISFACCIÓN</h5>
-          <p>Frente a H: <b>−0.90</b> disfrute, <b>−1.11</b> competencia.</p>
-        </div>
-        <div class="pchip k2" style="top:104px;background:var(--gold-l)">
-          <h5>▲ DIFICULTAD</h5>
-          <p><b>+0.84</b> vs. H y <b>+0.63</b> vs. N, sin mejor ajuste del reto.</p>
-        </div>
-        <div class="pchip k3" style="top:208px;background:#d7f4e8">
-          <h5>≈ N EN DISFRUTE</h5>
-          <p>Pero algo más variados<span class="stag">FRÁGIL</span></p>
-        </div>
-      </div>
+      <p style="font:600 16.5px/1.45 var(--body);margin:0 0 10px">En este experimento, los niveles <b class="b">personalizados</b> todavía no superan a los <b style="color:var(--mint-d)">diseñados por humanos</b>.</p>
+      <p style="font:600 16.5px/1.45 var(--body);margin:0 0 14px">Entre los niveles adaptados, hay indicios de que los <b class="a">personalizados</b> se perciben algo más variados que los <b class="c">no personalizados</b>, aunque con evidencia frágil.</p>
+      <p class="cbig" style="color:var(--violet);font-size:42px">¡VAMOS POR BUEN CAMINO!</p>
     </div>
   </div>
 
   <!-- 2 · limitaciones -->
   <div class="ccol c2 reveal" data-at="3">
     <div class="chead"><span class="cico" style="background:var(--pink)">!</span><b>LIMITACIONES</b></div>
-    <!-- arriba: limitaciones del generador · abajo: limitaciones de cómo se aplicó -->
     <div class="lmap">
-      <svg class="larr" viewBox="0 0 362 456">
+      <svg class="larr" viewBox="0 0 520 470">
         <defs>
           <marker id="larw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
             <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
           </marker>
         </defs>
-        <path d="M150 50 C150 78 86 70 86 102" pathLength="1" marker-end="url(#larw)" />
-        <path d="M212 50 C212 78 276 70 276 102" pathLength="1" marker-end="url(#larw)" />
-        <path d="M150 400 C150 372 86 380 86 350" pathLength="1" marker-end="url(#larw)" />
-        <path d="M212 400 C212 372 276 380 276 350" pathLength="1" marker-end="url(#larw)" />
+        <path d="M216 36 C216 48 82 44 82 58" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.32s" />
+        <path d="M260 36V58" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.44s" />
+        <path d="M304 36 C304 48 438 44 438 58" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.56s" />
+        <path d="M216 194 C216 206 82 202 82 216" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.68s" />
+        <path d="M260 194V216" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.8s" />
+        <path d="M304 194 C304 206 438 202 438 216" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.92s" />
+        <path d="M194 352 C194 364 60 360 60 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.04s" />
+        <path d="M238 352 C238 364 194 360 194 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.16s" />
+        <path d="M282 352 C282 364 326 360 326 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.28s" />
+        <path d="M326 352 C326 364 460 360 460 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.4s" />
       </svg>
-      <div class="ltag" style="top:0;background:#fff">MARIOGPT</div>
-      <div class="lbox k1" style="left:0;top:108px">
-        <h5>GPT-2</h5>
-        <p>Modelo de 2019, ya antiguo.</p>
-      </div>
-      <div class="lbox k2" style="left:190px;top:108px">
-        <h5>NIVELES CLÁSICOS</h5>
-        <p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p>
-      </div>
-      <div class="lbox k3" style="left:0;top:252px">
-        <h5>REGLA, NO LLM</h5>
-        <p><b>120 de 122</b> prompts; solo 28 distintos.</p>
-      </div>
-      <div class="lbox k4" style="left:190px;top:252px">
-        <h5>MENOS DATOS</h5>
-        <p>18 niveles de respaldo descartados.</p>
-      </div>
-      <div class="ltag" style="top:404px;background:var(--pink)">PERSONALIZADOS (P)</div>
+      <div class="ltag" style="top:0px;background:#fff;height:36px;font-size:22px;line-height:30px">MARIOGPT</div>
+      <div class="lbox k1" style="left:0px;top:60px;width:164px;transition-delay:0.67s"><h5>GPT-2</h5><p>Modelo de 2019, ya antiguo.</p></div>
+      <div class="lbox k2" style="left:178px;top:60px;width:164px;transition-delay:0.79s"><h5>NIVELES CLÁSICOS</h5><p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p></div>
+      <div class="lbox k3" style="left:356px;top:60px;width:164px;transition-delay:0.91s"><h5>NIVELES DIFÍCILES</h5><p>Entrenado con niveles difíciles, no con los que gustan a la gente.</p></div>
+      <div class="ltag" style="top:158px;background:var(--pink);height:36px;font-size:22px;line-height:30px">PERSONALIZADOS (P)</div>
+      <div class="lbox k4" style="left:0px;top:218px;width:164px;transition-delay:1.03s"><h5>REGLA, NO LLM</h5><p><b>120 de 122</b> prompts; solo 28 distintos.</p></div>
+      <div class="lbox k5" style="left:178px;top:218px;width:164px;transition-delay:1.15s"><h5>MENOS DATOS</h5><p>18 niveles de respaldo descartados.</p></div>
+      <div class="lbox k6" style="left:356px;top:218px;width:164px;transition-delay:1.27s"><h5>SIN ESTUDIO PREVIO</h5><p>No había un estudio previo de cómo personalizar.</p></div>
+      <div class="ltag" style="top:316px;background:var(--gold-l);height:36px;font-size:22px;line-height:30px">DISEÑO DEL ESTUDIO</div>
+      <div class="lbox k7" style="left:0px;top:376px;width:121px;transition-delay:1.39s"><h5>SIN A*</h5><p>Los N y P no se validaron; los H sí.</p></div>
+      <div class="lbox k8" style="left:133px;top:376px;width:121px;transition-delay:1.51s"><h5>ORDEN</h5><p>Rank de 2.20 (1.º) a 4.77 (6.º).</p></div>
+      <div class="lbox k9" style="left:266px;top:376px;width:121px;transition-delay:1.63s"><h5>TELEMETRÍA</h5><p>Solo 2 niveles de práctica.</p></div>
+      <div class="lbox k10" style="left:399px;top:376px;width:121px;transition-delay:1.75s"><h5>MUESTRA</h5><p>72 personas, jóvenes; 14 H y 17 N.</p></div>
     </div>
   </div>
 
   <!-- 3 · trabajo futuro -->
   <div class="ccol c3 reveal" data-at="4">
     <div class="chead"><span class="cico" style="background:var(--mint)">▶</span><b>TRABAJO FUTURO</b></div>
-    <ul>
+    <ul class="fut">
       <li><b>Generadores más recientes</b> o entrenados con Mario Maker 2.</li>
       <li><b>Razonador LLM</b> en todas las personalizaciones.</li>
+      <li><b>Estudiar por qué</b> gustan los niveles de Hugging Face.</li>
+      <li><b>Entrenar un modelo</b> con niveles populares.</li>
+      <li><b>Validar con A*</b> los niveles generados.</li>
+      <li><b>Calibrar la dificultad</b> de P: se perciben más difíciles.</li>
+      <li><b>Más telemetría:</b> más niveles de práctica o adaptar durante la sesión.</li>
+      <li><b>Modelo mixto</b> que controle el orden de juego.</li>
+      <li><b>Muestra más diversa</b> y medidas objetivas (tiempo, muertes).</li>
     </ul>
   </div>
 </section>

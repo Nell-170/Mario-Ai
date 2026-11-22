@@ -70,10 +70,11 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
   *{animation:none!important;transition:none!important}
 }
 /* ===== 01-titulo.html ===== */
-#s-title .t{position:absolute;left:0;right:0;top:92px;text-align:center;font:400 84px/.98 var(--display);letter-spacing:1px}
-#s-title .authors{position:absolute;left:0;right:0;top:330px;text-align:center;font-size:15px;line-height:1.85}
-#s-title .authors small{color:#555}
-#s-title .uni{position:absolute;left:0;right:0;top:470px;text-align:center;font-size:16px;font-weight:500}
+#s-title .t{position:absolute;left:0;right:0;top:58px;text-align:center;font:400 66px/1 var(--display);letter-spacing:1px}
+#s-title .sub{position:absolute;left:0;right:0;top:204px;text-align:center;font:italic 500 28px/1.2 var(--body);color:#444}
+#s-title .authors{position:absolute;left:0;right:0;top:272px;text-align:center;font-size:21px;line-height:1.7}
+#s-title .authors small{color:#555;font-size:18px}
+#s-title .uni{position:absolute;left:0;right:0;top:404px;text-align:center;font-size:24px;font-weight:600}
 
 /* ===== 02-introduccion.html ===== */
   /* ---------- intro ---------- */
@@ -212,12 +213,12 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
     left: 60px;
     top: 424px;
     width: 408px;
-    height: 36px;
+    height: 42px;
     border: 4px solid var(--ink);
     display: flex;
     align-items: center;
     justify-content: center;
-    font: 700 14px var(--body);
+    font: 700 18px var(--body);
     letter-spacing: .06em;
     background: var(--pink);
     transition: background .3s
@@ -234,7 +235,7 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
   .moods {
     position: absolute;
     left: 60px;
-    top: 478px;
+    top: 480px;
     display: flex;
     gap: 12px
   }
@@ -249,7 +250,7 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
     border: 3px solid var(--ink);
     background: #fff;
     cursor: pointer;
-    font: 700 12px var(--body);
+    font: 700 15px var(--body);
     color: var(--ink);
     transition: transform .15s
   }
@@ -277,12 +278,12 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
   .mcap {
     position: absolute;
     left: 60px;
-    top: 586px;
+    top: 578px;
     width: 408px;
-    font-size: 16px;
-    line-height: 1.45;
+    font-size: 20px;
+    line-height: 1.35;
     font-weight: 500;
-    min-height: 46px
+    min-height: 84px
   }
 
   .chart {
@@ -335,7 +336,7 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
   }
 
   .zl {
-    font: 500 21px var(--body);
+    font: 500 25px var(--body);
     fill: var(--ink);
     transition: opacity .5s
   }
@@ -349,17 +350,17 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
   }
 
   .axl {
-    font: 500 20px var(--body);
+    font: 500 24px var(--body);
     fill: var(--ink)
   }
 
   .axs {
-    font: 400 10px var(--pixel);
+    font: 400 12px var(--pixel);
     fill: #777
   }
 
   .canal {
-    font: italic 700 26px var(--body);
+    font: italic 700 30px var(--body);
     fill: var(--ink);
     opacity: 0;
     transition: opacity .6s
@@ -414,7 +415,7 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
     background: #fff;
     border: 3px solid var(--ink);
     padding: 6px 7px;
-    font: 400 9px var(--pixel);
+    font: 400 11px var(--pixel);
     z-index: 6
   }
 
@@ -424,7 +425,7 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
     height: 24px;
     margin: -12px 0 0 -12px;
     z-index: 3;
-    transition: transform .35s, opacity .35s
+    transition: none
   }
 
   .cc img {
@@ -432,7 +433,6 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
   }
 
   .cc.got {
-    transform: translateY(-26px) scale(1.4);
     opacity: 0
   }
 
@@ -443,16 +443,16 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
     display: flex;
     align-items: center;
     gap: 8px;
-    font: 400 11px var(--pixel);
+    font: 400 14px var(--pixel);
     z-index: 6
   }
 
   .hint {
     position: absolute;
     left: 560px;
-    top: 636px;
+    top: 628px;
     width: 640px;
-    font-size: 13px;
+    font-size: 17px;
     color: #444;
     font-style: italic;
     text-align: center
@@ -472,15 +472,15 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 
 /* ===== 04-antecedentes-prisma.html ===== */
 /* ---------- prisma ---------- */
-.qblock{position:absolute;left:60px;top:132px;width:440px;font:500 18px/1.65 'Courier New',monospace}
-.qblock .grp{display:block;padding:8px 10px;margin-bottom:4px;border:3px solid var(--ink);background:#fff}
-.qblock .tag{display:block;font:400 8px var(--pixel);margin-bottom:5px}
+.qblock{position:absolute;left:60px;top:120px;width:440px;font:500 20px/1.55 'Courier New',monospace}
+.qblock .grp{display:block;padding:10px 12px;margin-bottom:4px;border:3px solid var(--ink);background:#fff}
+.qblock .tag{display:block;font:400 11px var(--pixel);margin-bottom:8px}
 .qblock .g1{background:#ffe2f1;box-shadow:4px 4px 0 var(--pink)}
 .qblock .g2{background:#e1f6ef;box-shadow:4px 4px 0 var(--mint-d)}
 .qblock .g3{background:#fbf0cf;box-shadow:4px 4px 0 var(--gold)}
 .qblock .and{display:block;text-align:center;font:400 10px var(--pixel);margin:6px 0}
-.acm-note{position:absolute;left:60px;top:604px;width:440px;display:flex;align-items:center;gap:12px;font-size:14px}
-.dbchip{position:absolute;top:118px;width:130px;height:40px;border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;gap:8px;font:600 14px var(--body);color:#fff;background:var(--olive);cursor:default}
+.acm-note{position:absolute;left:968px;top:106px;width:252px;display:flex;align-items:center;gap:10px;font:600 16px/1.3 var(--body)}
+.dbchip{position:absolute;top:112px;width:140px;height:44px;border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;gap:8px;font:600 17px var(--body);color:#fff;background:var(--olive);cursor:default}
 .dbchip b{font-weight:700;color:var(--ink);background:#fff;padding:1px 7px}
 .dbchip.acm{background:var(--ruby);border-style:dashed;opacity:.85}
 .dbchip:hover{transform:translateY(-3px)}
@@ -491,41 +491,41 @@ img.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 .wires path.dash.show{stroke-dasharray:.04 .03;stroke-dashoffset:0}
 .wires polygon{fill:var(--ink);opacity:0;transition:opacity .3s .6s}
 .wires polygon.show{opacity:1}
-.circ{position:absolute;width:104px;height:104px;margin:-52px 0 0 -52px;border:4px solid var(--violet);border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
-.circ span{font:500 14px var(--body)}
-.circ b{font:400 46px/1 var(--display);color:var(--violet);margin-top:2px}
-.pbox{position:absolute;border:2.5px solid var(--ink);background:#fff;padding:9px 12px;font-size:13px;line-height:1.55}
-.pbox h4{margin:0 0 3px;font:600 14px var(--body)}
+.circ{position:absolute;width:128px;height:128px;margin:-64px 0 0 -64px;border:4px solid var(--violet);border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.circ span{font:500 15px var(--body)}
+.circ b{font:400 48px/1 var(--display);color:var(--violet);margin-top:2px}
+.pbox{position:absolute;border:2.5px solid var(--ink);background:#fff;padding:10px 14px;font-size:15px;line-height:1.5}
+.pbox h4{margin:0 0 4px;font:600 18px var(--body)}
 .pbox h4 b{color:var(--violet);font-weight:700}
-.exrow{display:grid;grid-template-columns:150px 26px 1fr;align-items:center;gap:6px;padding:1px 0;cursor:default;position:relative}
-.exrow i{display:block;height:9px;background:var(--pink);width:var(--w);transition:transform .2s;transform-origin:left}
+.exrow{display:grid;grid-template-columns:205px 28px 1fr;align-items:center;gap:6px;padding:2px 0;cursor:default;position:relative}
+.exrow i{display:block;height:10px;background:var(--pink);width:var(--w);transition:transform .2s;transform-origin:left}
 .exrow:hover i{transform:scaleY(1.7);background:var(--pink-d)}
-.exrow:hover::after{content:attr(data-pct);position:absolute;right:-4px;top:-16px;background:var(--ink);color:#fff;font:400 8px var(--pixel);padding:3px 5px}
-.incl{position:absolute;width:200px;height:56px;border:3px solid var(--ink);background:var(--gold);display:flex;align-items:center;justify-content:center;gap:12px;font:600 18px var(--body)}
-.incl b{font:400 38px var(--display);color:#fff;text-shadow:2px 2px 0 var(--ink)}
+.exrow:hover::after{content:attr(data-pct);position:absolute;right:-4px;top:-18px;background:var(--ink);color:#fff;font:400 10px var(--pixel);padding:3px 5px}
+.incl{position:absolute;width:220px;height:58px;border:3px solid var(--ink);background:var(--gold);display:flex;align-items:center;justify-content:center;gap:12px;font:600 22px var(--body)}
+.incl b{font:400 44px var(--display);color:#fff;text-shadow:2px 2px 0 var(--ink)}
 
 /* ===== 05-antecedentes-tabla.html ===== */
 /* ---------- table ---------- */
-.fpanel{position:absolute;left:60px;top:124px;width:250px}
-.fpanel h3{margin:0 0 10px;font:400 10px/1.7 var(--pixel)}
-.fbtn{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:10px;padding:10px 12px;border:3px solid var(--ink);background:#fff;font:600 15px var(--body);color:var(--ink);cursor:pointer;text-align:left;transition:transform .15s}
+.fpanel{position:absolute;left:60px;top:108px;width:250px}
+.fpanel h3{margin:0 0 8px;font:400 12px/1.6 var(--pixel)}
+.fbtn{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:8px;padding:8px 12px;border:3px solid var(--ink);background:#fff;font:600 18px var(--body);color:var(--ink);cursor:pointer;text-align:left;transition:transform .15s}
 .fbtn:hover{transform:translateX(4px)}
 .fbtn .bx{width:18px;height:18px;border:3px solid var(--ink);background:#fff;display:flex;align-items:center;justify-content:center;flex:none}
 .fbtn.on{background:var(--mint);box-shadow:4px 4px 0 var(--ink)}
 .fbtn.on .bx{background:var(--ink)}
 .fbtn.on .bx::after{content:"";width:6px;height:6px;background:var(--gold-l)}
-.counter{margin-top:16px;border:3px solid var(--ink);background:var(--bg);padding:12px 14px;display:flex;align-items:center;gap:12px}
+.counter{margin-top:12px;border:3px solid var(--ink);background:var(--bg);padding:12px 14px;display:flex;align-items:center;gap:12px}
 .counter .n{font:400 60px/1 var(--display)}
 .counter .n small{font-size:30px;color:#777}
-.counter .l{font:400 8px/1.8 var(--pixel)}
-.win{margin-top:14px;padding:10px 12px;background:var(--gold-l);border:3px solid var(--ink);font:600 14px/1.45 var(--body);min-height:0}
-.legend{margin-top:16px;font-size:12px;color:#555;line-height:1.7}
-table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:separate;border-spacing:0 3px;font-size:15px}
-.cmp th{font:600 14px var(--body);padding:0 6px;height:40px;text-align:center;background:var(--ink);color:#fff;cursor:pointer;user-select:none}
+.counter .l{font:400 10px/1.8 var(--pixel)}
+.win{margin-top:10px;padding:8px 12px;background:var(--gold-l);border:3px solid var(--ink);font:600 16px/1.35 var(--body);min-height:0}
+.legend{margin-top:12px;font-size:15px;color:#555;line-height:1.5}
+table.cmp{position:absolute;left:340px;top:108px;width:880px;border-collapse:separate;border-spacing:0 2px;font-size:18px}
+.cmp th{font:600 17px var(--body);padding:0 6px;height:40px;text-align:center;background:var(--ink);color:#fff;cursor:pointer;user-select:none}
 .cmp th:first-child{text-align:left;padding-left:14px;cursor:default}
 .cmp th.on{background:var(--mint-d);color:var(--ink)}
 .cmp th:hover:not(:first-child){background:var(--violet)}
-.cmp td{height:34px;padding:0 6px;text-align:center;background:#f7f4f2;transition:opacity .4s,filter .4s,background .3s}
+.cmp td{height:37px;padding:0 6px;text-align:center;background:#f7f4f2;transition:opacity .4s,filter .4s,background .3s}
 .cmp td:first-child{text-align:left;padding-left:14px;font-weight:500}
 .cmp tr.dim td{opacity:.2;filter:grayscale(1)}
 .cmp tr.me td{background:#fbeab8;font-weight:700;border-top:3px solid var(--ink);border-bottom:3px solid var(--ink)}
@@ -533,256 +533,8 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .cmp tr.me.dim td{opacity:.6;filter:none}
 .cmp td.colon{background:#e6f6ef}
 .cmp tr.me td.colon{background:#fbeab8}
-.tg{display:inline-block;min-width:68px;padding:3px 8px;font:700 12px var(--body);border:2px solid var(--ink)}
+.tg{display:inline-block;min-width:80px;padding:3px 8px;font:700 15px var(--body);border:2px solid var(--ink)}
 .tg.y{background:var(--mint)} .tg.n{background:var(--pink)} .tg.p{background:var(--gold-l)}
-
-/* ===== 06-niveles.html ===== */
-  /* ---------- Taxonomía de niveles (F, G, P, H) ---------- */
-  .levels-wrap {
-    position: absolute;
-    left: 60px;
-    top: 110px;
-    width: 1160px;
-  }
-
-  .lvl-subtitle {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-
-  .lvl-subtitle .tag {
-    font: 400 10px var(--pixel);
-    background: var(--ink);
-    color: #fff;
-    padding: 6px 12px;
-    box-shadow: 3px 3px 0 rgba(0, 0, 0, .2);
-  }
-
-  .lvl-subtitle .desc {
-    font: 500 14px var(--body);
-    color: #444;
-  }
-
-  /* Grid de 4 tarjetas */
-  .lvl-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    width: 100%;
-  }
-
-  .lvl-card {
-    background: #fff;
-    border: 4px solid var(--ink);
-    box-shadow: 6px 6px 0 var(--ink);
-    padding: 16px 14px 18px;
-    display: flex;
-    flex-direction: column;
-    cursor: pointer;
-    user-select: none;
-    transition: transform .25s cubic-bezier(.2, .9, .3, 1.2), box-shadow .25s ease, opacity .25s ease, filter .25s ease;
-    min-height: 290px;
-  }
-
-  .lvl-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 8px 8px 0 var(--ink);
-  }
-
-  .lvl-card.active {
-    transform: translateY(-8px);
-    box-shadow: 10px 10px 0 var(--ink);
-    border-color: var(--ink);
-    filter: none;
-    opacity: 1;
-  }
-
-  .lvl-card.dim {
-    opacity: .42;
-    filter: grayscale(.65);
-    transform: none;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, .4);
-  }
-
-  /* Encabezado de la tarjeta */
-  .lvl-card-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
-    border-bottom: 3px solid var(--ink);
-  }
-
-  .lvl-badge {
-    width: 52px;
-    height: 52px;
-    border: 3px solid var(--ink);
-    box-shadow: 3px 3px 0 var(--ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font: 400 38px/1 var(--display);
-    color: var(--ink);
-    flex-shrink: 0;
-  }
-
-  .b-F {
-    background: #ffffff;
-  }
-
-  .b-N {
-    background: var(--gold-l);
-  }
-
-  .b-P {
-    background: var(--pink);
-  }
-
-  .b-H {
-    background: var(--mint);
-  }
-
-  .lvl-head-info {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .lvl-pill {
-    font: 400 8px var(--pixel);
-    padding: 3px 6px;
-    border: 2px solid var(--ink);
-    display: inline-block;
-    align-self: flex-start;
-    color: var(--ink);
-  }
-
-  .p-F {
-    background: #e8eaed;
-  }
-
-  .p-N {
-    background: var(--gold-l);
-  }
-
-  .p-P {
-    background: var(--pink);
-  }
-
-  .p-H {
-    background: var(--mint);
-  }
-
-  .lvl-title {
-    font: 700 15px/1.15 var(--body);
-    margin: 0;
-    color: var(--ink);
-  }
-
-  /* Detalles y cuerpo */
-  .lvl-body {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    font-size: 12.5px;
-    line-height: 1.45;
-    flex: 1;
-  }
-
-  .lvl-row {
-    background: #f8f7f5;
-    border: 2px solid var(--ink);
-    padding: 7px 9px;
-  }
-
-  .lvl-row>b {
-    display: block;
-    font: 400 8px var(--pixel);
-    color: var(--ink);
-    margin-bottom: 4px;
-    letter-spacing: .5px;
-  }
-
-  .lvl-row span {
-    color: #2b2b2b;
-    font-weight: 500;
-  }
-
-  .lvl-footer-tag {
-    margin-top: auto;
-    padding-top: 8px;
-    font: 600 11.5px var(--body);
-    color: var(--violet);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .lvl-footer-tag::before {
-    content: "▶";
-    font: 400 8px var(--pixel);
-    color: var(--pink-d);
-  }
-
-  /* Tira de flujo al fondo (Timeline experimental) */
-  .lvl-timeline {
-    margin-top: 16px;
-    border: 3px solid var(--ink);
-    background: #fff;
-    box-shadow: 5px 5px 0 var(--ink);
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .lt-phase {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .lt-tag {
-    font: 400 8.5px var(--pixel);
-    background: var(--ink);
-    color: #fff;
-    padding: 4px 8px;
-    white-space: nowrap;
-  }
-
-  .lt-flow {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font: 600 13px var(--body);
-  }
-
-  .lt-box {
-    padding: 3px 8px;
-    border: 2px solid var(--ink);
-    font: 400 12px var(--display);
-    letter-spacing: .5px;
-  }
-
-  .lt-arrow {
-    font-size: 11px;
-    color: var(--ink);
-  }
-
-  .lt-sep {
-    height: 32px;
-    width: 2px;
-    background: var(--ink);
-  }
-
-  .lvl-timeline.hl-flow {
-    background: #fffaf0;
-    border-color: var(--ink);
-  }
 
 /* ===== 07-metodologia.html ===== */
   /* ---------- metodología: diagrama con zoom ---------- */
@@ -795,7 +547,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     left: 470px;
     top: 50px;
     z-index: 5;
-    font: 400 10px/1.5 var(--pixel);
+    font: 400 13px/1.5 var(--pixel);
     padding: 8px 12px;
     border: 3px solid var(--ink);
     background: var(--mint);
@@ -809,6 +561,10 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .fchip[data-p="3"] {
     background: #fff
+  }
+
+  .fchip[data-p="4"] {
+    background: #ffd0ea
   }
 
   #fsvg {
@@ -1006,15 +762,16 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     pointer-events: auto
   }
 
-  .fp[data-p="7"],
-  .fp[data-p="11"] {
+  .fp[data-p="8"],
+  .fp[data-p="11"],
+  .fp[data-p="12"] {
     left: 528px;
     width: 702px;
   }
 
   .ptag {
     display: inline-block;
-    font: 400 10px var(--pixel);
+    font: 400 13px var(--pixel);
     padding: 7px 10px;
     background: var(--ink);
     color: #fff;
@@ -1023,13 +780,13 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .pp {
     margin: 0 0 12px;
-    font-size: 15px;
+    font-size: 19px;
     line-height: 1.5
   }
 
   .pp small,
   .note {
-    font-size: 12px;
+    font-size: 15.5px;
     color: #666;
     font-style: italic
   }
@@ -1044,7 +801,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    font: 400 8px/1.8 var(--pixel);
+    font: 400 10px/1.8 var(--pixel);
     color: #666
   }
 
@@ -1084,7 +841,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     border: 3px solid var(--ink);
     box-shadow: 4px 4px 0 var(--ink);
     padding: 5px;
-    font-size: 10px;
+    font-size: 13px;
     opacity: 0;
     transform: translateY(30px) rotate(0);
     transition: all .55s cubic-bezier(.3, 1.4, .5, 1)
@@ -1100,7 +857,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   .doc b {
     display: block;
     margin-top: 5px;
-    font: 600 11px var(--body)
+    font: 600 14px var(--body)
   }
 
   .doc i {
@@ -1145,7 +902,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
   .hf-card .hlbl {
-    font: 400 7.5px var(--pixel);
+    font: 400 9.5px var(--pixel);
     color: #666;
     display: block;
     margin-bottom: 6px;
@@ -1158,7 +915,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .hf-card b {
     display: block;
-    font: 400 24px/1 var(--display);
+    font: 400 30.5px/1 var(--display);
     color: var(--ink);
     letter-spacing: 1px;
     margin-bottom: 4px
@@ -1166,7 +923,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .hf-card small {
     display: block;
-    font-size: 10.5px;
+    font-size: 13.5px;
     color: #555;
     line-height: 1.3;
     font-weight: 600
@@ -1174,7 +931,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .funwrap {
     position: relative;
-    height: 350px
+    height: 410px
   }
 
   .funnel {
@@ -1198,13 +955,13 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     background: var(--gold-l);
     border: 3px solid var(--ink);
     padding: 7px 12px;
-    font: 600 14px var(--body);
+    font: 600 20px var(--body);
     white-space: nowrap;
     box-shadow: 4px 4px 0 var(--ink)
   }
 
   .fout b {
-    font: 400 22px var(--display);
+    font: 400 32px var(--display);
     color: var(--violet);
     margin-left: 4px
   }
@@ -1221,7 +978,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     padding: 6px 10px;
     border: 3px solid var(--ink);
     background: var(--mint);
-    font: 400 9px var(--pixel);
+    font: 400 11.5px var(--pixel);
     opacity: 0;
     transition: opacity .3s, transform .3s;
     transform: scale(.7)
@@ -1240,7 +997,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   .win-mock .bar {
     background: var(--ink);
     color: #fff;
-    font: 400 8px var(--pixel);
+    font: 400 10px var(--pixel);
     padding: 7px 10px;
     display: flex;
     justify-content: space-between
@@ -1248,7 +1005,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .win-mock .bd2 {
     padding: 14px 16px;
-    font-size: 14.5px;
+    font-size: 18.5px;
     line-height: 1.6
   }
 
@@ -1264,7 +1021,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
   .pbtn {
-    font: 400 9px var(--pixel);
+    font: 400 11.5px var(--pixel);
     border: 3px solid var(--ink);
     background: #fff;
     padding: 9px 12px;
@@ -1293,7 +1050,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   .tele {
     background: #23232b;
     color: #b6f5dc;
-    font: 500 13px/1.75 'Courier New', monospace;
+    font: 500 16.5px/1.75 'Courier New', monospace;
     padding: 14px 16px;
     border: 3px solid var(--ink);
     white-space: pre
@@ -1313,7 +1070,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     margin-top: 14px;
     padding: 12px 14px;
     border: 3px solid var(--ink);
-    font: 600 15px/1.45 var(--body);
+    font: 600 19px/1.45 var(--body);
     min-height: 58px;
     background: #f7f4f2
   }
@@ -1331,7 +1088,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     align-items: center;
     gap: 6px;
     margin: 6px 0 12px;
-    font: 700 12px var(--body)
+    font: 700 15.5px var(--body)
   }
 
   .chain span {
@@ -1348,17 +1105,25 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     background: #fff0f8;
     border: 3px solid var(--pink-d);
     padding: 10px 12px;
-    font: 500 13px/1.6 'Courier New', monospace;
+    font: 500 16.5px/1.6 'Courier New', monospace;
     margin-top: 10px
   }
 
   .cards6 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 6px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 6px 0 12px;
     position: relative
   }
+  .cards6 .c6 { flex: 1; min-width: 0 }
+  .c6e { flex: none; width: 20px; height: 30px; border: 2.5px solid var(--ink); background: #fff; padding: 4px 3px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 2px 2px 0 var(--violet) }
+  .c6e i { display: block; height: 2.5px; background: var(--ink) }
+  .c6e i:last-child { width: 60%; background: var(--violet) }
+  .fp[data-p="11"] .qs { display: grid; gap: 5px }
+  .fp[data-p="11"] .qi { border: 2.5px solid var(--ink); border-left-width: 8px; border-left-color: var(--violet); padding: 2px 9px 3px; background: #fff; box-shadow: 2px 2px 0 var(--ink) }
+  .fp[data-p="11"] .qi b { display: block; font: 700 15.5px/1.2 var(--body) }
+  .fp[data-p="11"] .qi span { font: 500 14px/1.25 var(--body); color: #333 }
 
   .c6 {
     border: 3px solid var(--ink);
@@ -1376,7 +1141,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .c6 b {
     display: block;
-    font: 400 9px var(--pixel);
+    font: 400 11.5px var(--pixel);
     padding: 5px 4px 3px
   }
 
@@ -1393,7 +1158,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
   .leg3 {
-    font-size: 13px;
+    font-size: 16.5px;
     line-height: 1.5
   }
 
@@ -1406,7 +1171,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .leg3 .k {
     flex: none;
-    font: 400 9px var(--pixel);
+    font: 400 11.5px var(--pixel);
     border: 3px solid var(--ink);
     padding: 5px 6px
   }
@@ -1416,13 +1181,13 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     grid-template-columns: 180px repeat(7, 1fr);
     gap: 4px;
     align-items: center;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 600;
     margin-bottom: 4px
   }
 
   .lik .hd {
-    font: 400 8px var(--pixel);
+    font: 400 10px var(--pixel);
     text-align: center;
     color: #555
   }
@@ -1463,7 +1228,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     padding: 2px 6px 2px 4px;
     margin-bottom: 4px;
     background: #fff;
-    font: 700 12px var(--body)
+    font: 700 15.5px var(--body)
   }
 
   .rk img {
@@ -1475,12 +1240,12 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
   .rk .n {
-    font: 400 18px var(--display);
+    font: 400 23px var(--display);
     width: 18px
   }
 
   .rk .tg2 {
-    font: 400 7.5px var(--pixel);
+    font: 400 9.5px var(--pixel);
     padding: 3px 4px;
     border: 2px solid var(--ink)
   }
@@ -1495,7 +1260,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     width: 22px;
     height: 22px;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 13px;
     padding: 0
   }
 
@@ -1507,19 +1272,19 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     border: 3px solid var(--ink);
     background: #fff;
     padding: 8px 10px;
-    font-size: 13px;
+    font-size: 16.5px;
     color: #888;
     font-style: italic;
     height: 54px
   }
 
   .timer {
-    font: 400 76px/1 var(--display);
+    font: 400 97.5px/1 var(--display);
     margin: 2px 0 8px
   }
 
   .timer small {
-    font: 400 12px var(--pixel);
+    font: 400 15.5px var(--pixel);
     color: #555;
     margin-left: 8px
   }
@@ -1535,13 +1300,13 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     border: 3px solid var(--ink);
     padding: 10px 12px;
     background: #f7f4f2;
-    font-size: 12px;
+    font-size: 15.5px;
     font-weight: 600
   }
 
   .metrics b {
     display: block;
-    font: 400 40px/1.1 var(--display);
+    font: 400 51px/1.1 var(--display);
     color: var(--violet)
   }
 
@@ -1550,12 +1315,12 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     gap: 8px;
     align-items: center;
     margin-bottom: 6px;
-    font-size: 13px;
+    font-size: 16.5px;
     font-weight: 600
   }
 
   .cond button {
-    font: 400 11px var(--pixel);
+    font: 400 14px var(--pixel);
     border: 3px solid var(--ink);
     width: 40px;
     height: 36px;
@@ -1577,7 +1342,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
   .thanks {
-    font: 400 70px/1 var(--display);
+    font: 400 89.5px/1 var(--display);
     margin: 10px 0 6px
   }
 
@@ -1587,7 +1352,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     right: 0;
     bottom: 50px;
     text-align: center;
-    font: 400 10px var(--pixel);
+    font: 400 13px var(--pixel);
     z-index: 5;
     opacity: 0;
     transition: opacity .4s
@@ -1600,12 +1365,13 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   .flegend {
     position: absolute;
     right: 30px;
-    top: 112px;
+    top: auto;
+    bottom: 70px;
     z-index: 5;
     border: 3px solid var(--ink);
     background: #fff;
     padding: 8px 10px;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.8;
     opacity: 0;
     transition: opacity .4s;
@@ -1644,7 +1410,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
   .q-num {
-    font: 400 9px var(--pixel);
+    font: 400 11.5px var(--pixel);
     background: var(--mint);
     border: 2px solid var(--ink);
     padding: 3px 6px;
@@ -1654,18 +1420,18 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .q-body {
     flex: 1;
-    font-size: 12px;
+    font-size: 15.5px;
     line-height: 1.35;
   }
 
   .q-body b {
     color: var(--ink);
-    font-size: 12.5px;
+    font-size: 16px;
   }
 
   .q-type {
     display: inline-block;
-    font: 400 7.5px var(--pixel);
+    font: 400 9.5px var(--pixel);
     background: var(--gold-l);
     border: 1px solid var(--ink);
     padding: 1px 4px;
@@ -1675,7 +1441,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   .q-desc {
     color: #444;
-    font-size: 11px;
+    font-size: 14px;
     margin-top: 2px;
   }
 
@@ -1687,13 +1453,45 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
   .q-opts span {
-    font-size: 10px;
+    font-size: 13px;
     background: #f0ede8;
     border: 1px solid #ccc;
     padding: 1px 5px;
     border-radius: 2px;
     color: #333;
   }
+  .nlist{margin:10px 0 0;padding-left:26px;font-size:19px;line-height:1.5}
+  .nlist li{margin-bottom:8px}
+  .a-res{margin-top:12px;padding:10px 14px;border:3px solid var(--ink);background:var(--gold-l);font:600 18px/1.35 var(--body)}
+  .a-res b{font:400 38px/1 var(--display);color:var(--violet);margin-right:6px;vertical-align:-3px}
+  .fp[data-p="12"] div[style*="grid-template-columns:repeat(4"] span{font-size:8px !important;white-space:nowrap}
+  .fnode.dim, .fedge.dim { opacity: .15 !important }
+
+  /* ---------- paneles laterales izquierdos + gráficos ---------- */
+  .fp.lside{left:36px;top:258px;width:628px;height:auto;transform:translateX(-34px);padding:12px 14px}
+  .fp.lside.on{transform:none}
+  .st-h{font:400 11px/1.4 var(--pixel);margin:0 0 8px}
+  .st-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+  .st-k{border:2px solid var(--ink);background:var(--gold-l);text-align:center;padding:4px 2px;box-shadow:2px 2px 0 var(--ink)}
+  .st-k:nth-child(even){background:var(--mint)}
+  .st-k b{display:block;font:400 30px/1 var(--display)}
+  .st-k span{font:700 12.5px var(--body)}
+  .st-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .st-c{border:2px solid var(--ink);padding:7px 9px;background:#fff}
+  .st-c h4{margin:0 0 6px;font:400 10px/1.5 var(--pixel)}
+  .brow{display:grid;grid-template-columns:74px 1fr 82px;align-items:center;gap:6px;font:600 14px var(--body);margin:4px 0}
+  .brow.w2{grid-template-columns:104px 1fr 62px}
+  .brow .tr{height:17px;background:#eee;border:1.5px solid var(--ink)}
+  .brow .tr i{display:block;height:100%}
+  .brow b{text-align:right;font-weight:700}
+  .st-sub{font:500 12.5px/1.3 var(--body);color:#555;margin:-1px 0 3px}
+  .st-note{font:500 13.5px/1.35 var(--body);margin-top:5px}
+  .c-mint{background:var(--mint-d)}.c-gold{background:var(--gold)}.c-ruby{background:#e0559f}.c-vio{background:var(--violet)}.c-gray{background:#9aa}
+  .stack{display:flex;height:24px;border:2px solid var(--ink)}
+  .stack i{display:flex;align-items:center;justify-content:center;font:700 13px var(--body);font-style:normal;color:var(--ink)}
+  .plbl{font:400 10px/1.5 var(--pixel);margin-bottom:6px;color:var(--pink-d)}
+  .tele.static{font-size:10.3px;line-height:1.36;padding:8px 10px;white-space:pre}
+  .tele.static .cm{color:#8da0b3}
 
 /* ===== 08-resultados.html ===== */
 /* ---------- resultados: 6 gráficos con zoom ---------- */
@@ -1701,7 +1499,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .rleg span{display:flex;align-items:center;gap:6px}
 .rleg i{display:inline-block;width:13px;height:13px;border:2.5px solid var(--ink)}
 .rleg svg{display:block}
-.rmeta{position:absolute;right:150px;top:74px;font:400 8px/1.6 var(--pixel);color:#555;z-index:3}
+.rmeta{position:absolute;right:150px;top:62px;font:400 9px/1.6 var(--pixel);color:#555;z-index:3}
 .rmeta b{font-weight:400;background:var(--gold-l);color:var(--ink);border:2px solid var(--ink);padding:3px 6px;margin-right:6px}
 .rcard{position:absolute;background:#fff;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);cursor:pointer;
   transition:left .6s cubic-bezier(.5,0,.2,1),top .6s cubic-bezier(.5,0,.2,1),width .6s cubic-bezier(.5,0,.2,1),height .6s cubic-bezier(.5,0,.2,1),opacity .4s,box-shadow .2s;
@@ -1746,12 +1544,22 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 .rmeans span{flex:1;font-weight:600;white-space:nowrap;font-size:12.5px}
 .rmeans b{font:400 22px/1 var(--display);letter-spacing:.5px}
 .rmeans small{font-size:10.5px;color:#777;width:84px;text-align:right}
-.rread{font-size:14px;line-height:1.5;margin:0}
-.rread p{margin:0 0 8px}
+.rside{display:flex;flex-direction:column;justify-content:center}
+.rq{font:400 36px/1.12 var(--display);letter-spacing:.5px;margin:0 0 20px;padding-bottom:18px;border-bottom:4px solid var(--ink)}
+.rread{font-size:21px;line-height:1.45;margin:0}
+.rread p{margin:0 0 12px}
 .rread .k{color:var(--violet);font-weight:700}
 .rwarn{margin-top:10px;padding:8px 10px;border:3px solid var(--ink);background:var(--gold-l);font:600 12.5px/1.45 var(--body)}
 .rhint{position:absolute;left:62px;top:104px;font:400 9px var(--pixel);z-index:3;opacity:0;transition:opacity .4s}
 #s-res[data-step="0"] .rhint{opacity:1}
+/* sin transiciones ni animaciones en toda la sección */
+.rcard,.rside{transition:none !important;opacity:1}
+.rcard.gone{opacity:0}
+.rside{opacity:0}.rside.on{opacity:1}
+.rcard .eb{transform:none !important;transition:none !important}
+.rcard .pt{opacity:1 !important;transition:none !important}
+.rcard .br path{stroke-dashoffset:0 !important;transition:none !important}
+.rcard .br text{opacity:1 !important;transition:none !important}
 
 /* ===== 09-conclusiones.html ===== */
   #s-conc .ccol {
@@ -1762,15 +1570,18 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   }
 
   #s-conc .ccol.c1 {
-    left: 60px
+    left: 44px;
+    width: 312px
   }
 
   #s-conc .ccol.c2 {
-    left: 459px
+    left: 386px;
+    width: 520px
   }
 
   #s-conc .ccol.c3 {
-    left: 858px
+    left: 934px;
+    width: 298px
   }
 
   #s-conc .cdiv {
@@ -2035,8 +1846,8 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   /* ---------- limitaciones: MarioGPT arriba, P abajo ---------- */
   #s-conc .lmap {
     position: relative;
-    width: 362px;
-    height: 456px
+    width: 520px;
+    height: 470px
   }
 
   #s-conc .larr {
@@ -2072,12 +1883,12 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   #s-conc .lbox {
     position: absolute;
-    width: 172px;
-    height: 92px;
+    width: 164px;
+    height: 88px;
     background: #fff0f8;
     border: 3px solid var(--ink);
     box-shadow: 4px 4px 0 var(--ink);
-    padding: 8px 10px;
+    padding: 6px 9px;
     opacity: 0;
     transform: scale(.85);
     transition: opacity .3s, transform .35s cubic-bezier(.3, 1.5, .5, 1)
@@ -2085,13 +1896,19 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   #s-conc .lbox h5 {
     margin: 0 0 4px;
-    font: 400 22px/1 var(--display);
+    font: 400 19px/1 var(--display);
     letter-spacing: .5px
   }
 
   #s-conc .lbox p {
     margin: 0;
-    font: 500 12.5px/1.4 var(--body)
+    font: 500 11.5px/1.3 var(--body)
+  }
+
+  #s-conc .fut li {
+    margin: 0 0 8px;
+    font-size: 13.5px;
+    line-height: 1.35
   }
 
   #s-conc .c2.show .larr path {
@@ -2103,46 +1920,14 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     transform: none
   }
 
-  #s-conc .c2.show .larr path:nth-of-type(1) {
-    transition-delay: .2s
-  }
-
-  #s-conc .c2.show .lbox.k1 {
-    transition-delay: .55s
-  }
-
-  #s-conc .c2.show .larr path:nth-of-type(2) {
-    transition-delay: .35s
-  }
-
-  #s-conc .c2.show .lbox.k2 {
-    transition-delay: .7s
-  }
-
-  #s-conc .c2.show .larr path:nth-of-type(3) {
-    transition-delay: 1s
-  }
-
-  #s-conc .c2.show .lbox.k3 {
-    transition-delay: 1.35s
-  }
-
-  #s-conc .c2.show .larr path:nth-of-type(4) {
-    transition-delay: 1.15s
-  }
-
-  #s-conc .c2.show .lbox.k4 {
-    transition-delay: 1.5s
-  }
-
 /* ===== 10-agradecimiento.html ===== */
 #s-thanks .t {
   position: absolute;
   left: 0;
   right: 0;
-  top: 76px;
+  top: 70px;
   text-align: center;
-  font: 400 96px/.95 var(--display);
+  font: 400 112px/.95 var(--display);
   letter-spacing: 2px;
   color: var(--ink);
 }
@@ -2150,9 +1935,9 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   position: absolute;
   left: 0;
   right: 0;
-  top: 172px;
+  top: 186px;
   text-align: center;
-  font: 400 24px/1.3 var(--display);
+  font: 400 31px/1.3 var(--display);
   color: var(--violet);
   letter-spacing: 1px;
 }
@@ -2160,10 +1945,10 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   position: absolute;
   left: 0;
   right: 0;
-  top: 245px;
+  top: 262px;
   text-align: center;
-  font-size: 15px;
-  line-height: 1.85;
+  font-size: 23px;
+  line-height: 1.7;
 }
 #s-thanks .authors small {
   color: #555;
@@ -2172,21 +1957,21 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
   position: absolute;
   left: 0;
   right: 0;
-  top: 420px;
+  top: 410px;
   text-align: center;
-  font-size: 16px;
+  font-size: 26px;
   font-weight: 600;
 }
 #s-thanks .q-pill {
   position: absolute;
   left: 50%;
-  top: 470px;
+  top: 462px;
   transform: translateX(-50%);
   background: #fff;
   border: 3px solid var(--ink);
   box-shadow: 4px 4px 0 var(--ink);
-  padding: 8px 18px;
-  font: 400 11px var(--pixel);
+  padding: 10px 22px;
+  font: 400 17px var(--pixel);
   color: var(--ink);
 }
 
@@ -3217,10 +3002,11 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
   <section class="slide gray active" id="s-title" data-min="0" data-max="0">
-    <img class="spr cloud" data-spr="cloud" data-s="6" style="top:60px;animation-duration:70s;animation-delay:-10s" alt="">
-    <img class="spr cloud" data-spr="cloud" data-s="5" style="top:250px;animation-duration:95s;animation-delay:-60s" alt="">
-    <img class="spr cloud" data-spr="cloud" data-s="7" style="top:430px;animation-duration:80s;animation-delay:-30s" alt="">
-    <div class="t">TELEMETRY-BASED ADAPTIVE LEVEL<br>GENERATION IN 2D PLATFORMERS</div>
+    <img class="spr cloud" data-spr="cloud" data-s="6" style="top:300px;left:50px;animation:none" alt="">
+    <img class="spr cloud" data-spr="cloud" data-s="5" style="top:250px;left:1090px;animation:none" alt="">
+    <img class="spr cloud" data-spr="cloud" data-s="7" style="top:440px;left:120px;animation:none" alt="">
+    <div class="t">GENERACIÓN ADAPTATIVA DE NIVELES BASADA EN<br>TELEMETRÍA EN JUEGOS DE PLATAFORMAS 2D</div>
+    <div class="sub">Telemetry-Based Adaptive Level Generation in 2D Platformers</div>
     <div class="authors">
       1) Emmanuel González-Sandoval <small>antonio.gonzalezsandoval@ucr.ac.cr</small><br>
       2) Mario Cordero-Aguilar <small>mariogabriel.cordero@ucr.ac.cr</small><br>
@@ -3237,7 +3023,7 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-<section class="slide" id="s-intro" data-min="1" data-max="3" data-sec="Introducción">
+<section class="slide" id="s-intro" data-min="1" data-max="3" data-cuenta="paso" data-sec="Introducción">
   <h1 class="h1">INTRODUCCIÓN</h1>
 
   <div class="tv">
@@ -3307,12 +3093,11 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-  <section class="slide gray" id="s-q" data-min="1" data-max="2" data-sec="Pregunta">
+  <section class="slide gray" id="s-q" data-min="1" data-max="1" data-sec="Pregunta">
     <h1 class="h1">PREGUNTA DE INVESTIGACIÓN</h1>
-    <img class="spr cloud" data-spr="cloud" data-s="5" style="top:150px;animation-duration:90s;animation-delay:-20s" alt="">
-    <img class="spr cloud" data-spr="cloud" data-s="6" style="top:520px;animation-duration:75s;animation-delay:-50s" alt="">
+    <img class="spr cloud" data-spr="cloud" data-s="5" style="top:150px;left:960px;animation:none" alt="">
+    <img class="spr cloud" data-spr="cloud" data-s="6" style="top:470px;left:1020px;animation:none" alt="">
     <div class="q" id="qtext"></div>
-    <div class="bridge reveal" data-at="2">¿Qué se ha hecho ya? ▶▶</div>
     <img class="spr" id="runner" data-spr="hero:neutral" data-s="8" alt="">
     <div class="ground"></div>
   </section>
@@ -3331,46 +3116,46 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
         <br><br>AND ( "video game" OR "gaming" OR "platformers" OR "Super Mario" OR … )
       </span>
     </div>
+
+    <div class="dbchip reveal" data-at="1" style="left:515px">Scopus: <b>54</b></div>
+    <div class="dbchip reveal" data-at="1" style="left:665px">IEEE: <b>72</b></div>
+    <div class="dbchip acm reveal" data-at="1" style="left:815px">ACM</div>
     <div class="acm-note reveal" data-at="1"><img class="spr" data-spr="warn" data-s="4" alt=""><span>Nota: ACM no está por problemas técnicos</span></div>
 
-    <div class="dbchip reveal" data-at="1" style="left:528px">Scopus: <b>54</b></div>
-    <div class="dbchip reveal" data-at="1" style="left:670px">IEEE: <b>72</b></div>
-    <div class="dbchip acm reveal" data-at="1" style="left:812px">ACM</div>
-
     <svg class="wires" viewBox="0 0 1280 720">
-      <path data-at="2" pathLength="1" d="M593 158V182H735V198"/>
-      <path data-at="2" pathLength="1" d="M735 158V198"/>
-      <path data-at="2" class="dash" pathLength="1" d="M877 158V182H735"/>
-      <path data-at="3" pathLength="1" d="M735 302V388"/>
-      <path data-at="3" pathLength="1" d="M735 345H800"/>
-      <polygon data-at="3" points="727,380 735,392 743,380"/>
-      <path data-at="4" pathLength="1" d="M735 492V600"/>
-      <path data-at="4" pathLength="1" d="M735 540H800"/>
-      <polygon data-at="4" points="727,592 735,604 743,592"/>
+      <path data-at="2" pathLength="1" d="M585 156V168H735V180"/>
+      <path data-at="2" pathLength="1" d="M735 156V180"/>
+      <path data-at="2" class="dash" pathLength="1" d="M885 156V168H735"/>
+      <path data-at="3" pathLength="1" d="M735 308V364"/>
+      <path data-at="3" pathLength="1" d="M735 336H860"/>
+      <polygon data-at="3" points="727,356 735,368 743,356"/>
+      <path data-at="4" pathLength="1" d="M735 492V606"/>
+      <path data-at="4" pathLength="1" d="M735 530H860"/>
+      <polygon data-at="4" points="727,598 735,610 743,598"/>
     </svg>
 
-    <div class="circ pop-in" data-at="2" style="left:735px;top:250px"><span>Identificados</span><b id="n-ident">126</b></div>
-    <div class="pbox reveal" data-at="3" style="left:800px;top:312px;width:260px">
+    <div class="circ pop-in" data-at="2" style="left:735px;top:244px"><span>Identificados</span><b id="n-ident">126</b></div>
+    <div class="pbox reveal" data-at="3" style="left:860px;top:284px;width:350px">
       <h4>Removidos: <b id="n-rem">29</b></h4>
       <div class="exrow" data-pct="72%"><span>Duplicados</span><b>21</b><i style="--w:100%"></i></div>
       <div class="exrow" data-pct="28%"><span>No eran artículos completos</span><b>8</b><i style="--w:38%"></i></div>
     </div>
-    <div class="circ pop-in" data-at="3" style="left:735px;top:440px"><span>Examinados</span><b id="n-scr">97</b></div>
-    <div class="pbox reveal" data-at="4" style="left:800px;top:476px;width:320px">
+    <div class="circ pop-in" data-at="3" style="left:735px;top:428px"><span>Examinados</span><b id="n-scr">97</b></div>
+    <div class="pbox reveal" data-at="4" style="left:860px;top:454px;width:350px">
       <h4>Excluidos: <b id="n-exc">85</b></h4>
       <div class="exrow" data-pct="60%"><span>No eran de plataformas 2D</span><b>51</b><i style="--w:100%"></i></div>
       <div class="exrow" data-pct="24%"><span>Fuera de tema</span><b>20</b><i style="--w:39%"></i></div>
       <div class="exrow" data-pct="9%"><span>No se centran en jugadores</span><b>8</b><i style="--w:16%"></i></div>
       <div class="exrow" data-pct="7%"><span>No se centran en PCG</span><b>6</b><i style="--w:12%"></i></div>
     </div>
-    <div class="incl pop-in" data-at="5" id="incl" style="left:635px;top:606px">Incluidos<b id="n-inc">12</b><img class="spr" data-spr="check" data-s="4" alt=""></div>
+    <div class="incl pop-in" data-at="5" id="incl" style="left:625px;top:610px">Incluidos<b id="n-inc">12</b><img class="spr" data-spr="check" data-s="4" alt=""></div>
   </section>
 
 <!-- ============ FILMINA: ANTECEDENTES · TABLA ============ -->
 
 
 
-  <section class="slide" id="s-table" data-min="0" data-max="4" data-sec="Antecedentes">
+  <section class="slide" id="s-table" data-min="0" data-max="4" data-sec="Antecedentes" data-sin-transicion="s-prisma">
     <h1 class="h1">ANTECEDENTES</h1>
     <div class="fpanel">
       <h3>¿QUÉ ESTUDIOS CUMPLEN…?</h3>
@@ -3385,111 +3170,11 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <table class="cmp" id="cmp"><thead></thead><tbody></tbody></table>
   </section>
 
-<!-- ============ FILMINA: TAXONOMÍA DE NIVELES ============ -->
-
-
-
-<section class="slide" id="s-levels" data-min="0" data-max="0" data-sec="Metodología">
-  <h1 class="h1">METODOLOGÍA</h1>
-
-  <div class="levels-wrap">
-    <div class="lvl-subtitle">
-      <span class="desc">Definición de los 4 tipos de niveles empleados en el estudio:</span>
-    </div>
-
-    <div class="lvl-grid">
-      <!-- 1. NIVEL F -->
-      <div class="lvl-card" data-card="1">
-        <div class="lvl-card-head">
-          <div class="lvl-badge b-F">F</div>
-          <div class="lvl-head-info">
-            <span class="lvl-pill p-F">CALIBRACIÓN</span>
-            <h3 class="lvl-title">Familiarización</h3>
-          </div>
-        </div>
-        <div class="lvl-body">
-          <div class="lvl-row">
-            <b>ORIGEN</b>
-            <span>2 niveles reales de Super Mario Maker 2 con alta aprobación comunitaria.</span>
-          </div>
-          <div class="lvl-row">
-            <b>TELEMETRÍA</b>
-            <span>Captura la <b>telemetría basal</b> del jugador (velocidad, saltos, muertes).</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. NIVEL N -->
-      <div class="lvl-card" data-card="2">
-        <div class="lvl-card-head">
-          <div class="lvl-badge b-N">N</div>
-          <div class="lvl-head-info">
-            <span class="lvl-pill p-N">CONTROL</span>
-            <h3 class="lvl-title">No personalizados</h3>
-          </div>
-        </div>
-        <div class="lvl-body">
-          <div class="lvl-row">
-            <b>ORIGEN</b>
-            <span>Generados con MarioGPT en el clúster HPC, con parámetros aleatorios.</span>
-          </div>
-          <div class="lvl-row">
-            <b>TELEMETRÍA</b>
-            <span><strong>No usan telemetría:</strong> son iguales para todos los participantes.</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. NIVEL P -->
-      <div class="lvl-card" data-card="3">
-        <div class="lvl-card-head">
-          <div class="lvl-badge b-P">P</div>
-          <div class="lvl-head-info">
-            <span class="lvl-pill p-P">PROPUESTA</span>
-            <h3 class="lvl-title">Personalizados</h3>
-          </div>
-        </div>
-        <div class="lvl-body">
-          <div class="lvl-row">
-            <b>ORIGEN</b>
-            <span>Generados por IA procedural en segundo plano tras jugar la fase F.</span>
-          </div>
-          <div class="lvl-row">
-            <b>TELEMETRÍA</b>
-            <span>Sintetizados a partir de la <b>telemetría real registrada en F</b>.</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. NIVEL H -->
-      <div class="lvl-card" data-card="4">
-        <div class="lvl-card-head">
-          <div class="lvl-badge b-H">H</div>
-          <div class="lvl-head-info">
-            <span class="lvl-pill p-H">BASELINE</span>
-            <h3 class="lvl-title">Humanos</h3>
-          </div>
-        </div>
-        <div class="lvl-body">
-          <div class="lvl-row">
-            <b>ORIGEN</b>
-            <span>Dataset público Hugging Face (~26.6M niveles SMM2 humanos).</span>
-          </div>
-          <div class="lvl-row">
-            <b>VALIDACIÓN</b>
-            <span>Filtrados por zona de flujo (clear rate 30–50%) y 100% superables con <b>A*</b>.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ============ FILMINA: METODOLOGÍA · DIAGRAMA DE FLUJO ============ -->
 
 
 
-<section class="slide" id="s-flow" data-min="1" data-max="14" data-sec="Metodología">
+<section class="slide" id="s-flow" data-min="1" data-max="15" data-cuenta="paso" data-sec="Metodología">
   <svg id="fsvg" viewBox="-80 -229 2700 1519" preserveAspectRatio="xMidYMid meet">
     <defs>
       <marker id="arw" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2"
@@ -3536,18 +3221,24 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <p class="pp">Cada nivel pasa por tres filtros. Entre los que sobreviven, <b>se seleccionan los más populares</b>.
     </p>
     <div class="funwrap" id="funwrap">
-      <svg class="funnel" id="funnel" width="504" height="290" viewBox="0 0 504 290">
-        <polygon points="20,10 484,10 392,100 112,100" fill="#ffd0ea" stroke="#1a1a1a" stroke-width="4" />
-        <polygon points="112,104 392,104 340,194 164,194" fill="#d7f4e8" stroke="#1a1a1a" stroke-width="4" />
-        <polygon points="164,198 340,198 300,282 204,282" fill="#fbeab8" stroke="#1a1a1a" stroke-width="4" />
-        <g font-family="Bebas Neue, Impact, sans-serif" font-size="30" text-anchor="middle" fill="#1a1a1a"
-          letter-spacing="1">
-          <text x="252" y="64">ESTILO</text><text x="252" y="157">DIFICULTAD</text><text x="252" y="249"
-            font-size="26">CONFIABILIDAD</text>
+      <svg class="funnel" id="funnel" width="504" height="320" viewBox="0 0 504 320">
+        <rect x="2" y="2" width="500" height="54" fill="#fff" stroke="#1a1a1a" stroke-width="4" />
+        <polygon points="20,62 484,62 414,142 90,142" fill="#ffd0ea" stroke="#1a1a1a" stroke-width="4" />
+        <polygon points="90,146 414,146 364,226 140,226" fill="#d7f4e8" stroke="#1a1a1a" stroke-width="4" />
+        <polygon points="140,230 364,230 324,310 180,310" fill="#fbeab8" stroke="#1a1a1a" stroke-width="4" />
+        <g font-family="Bebas Neue, Impact, sans-serif" text-anchor="middle" fill="#1a1a1a" letter-spacing="1">
+          <text x="252" y="38" font-size="30">NIVELES INSPECCIONADOS: 14&#160;165</text>
+          <text x="252" y="98" font-size="32">ESTILO DE JUEGO</text>
+          <text x="252" y="182" font-size="32">TASA DE VICTORIA</text>
+          <text x="252" y="266" font-size="28">CONFIABILIDAD</text>
+        </g>
+        <g font-family="Montserrat, sans-serif" font-weight="800" text-anchor="middle" fill="#a31bb0">
+          <text x="252" y="130" font-size="28">2&#160;045</text>
+          <text x="252" y="214" font-size="28">387</text>
+          <text x="252" y="296" font-size="26">180</text>
         </g>
       </svg>
-      <div id="fundots" style="position:absolute;left:0;top:0;width:504px;height:350px;pointer-events:none"></div>
-      <div class="fout">★ Los más populares <b id="funN">0</b></div>
+      <div class="fout">★ Los más populares: <b>80</b></div>
     </div>
   </div>
   <!-- 3 -->
@@ -3555,56 +3246,113 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     <div class="ptag">VERIFICACIÓN CON A*</div>
     <p class="pp">Un agente <b>A*</b> intenta recorrer cada nivel. Si llega a la meta, el nivel es completable y se
       almacena en el banco de <b>niveles humanos (H)</b>.</p>
-    <svg class="astar" id="astar" viewBox="0 0 560 200" height="214"></svg>
+    <svg class="astar" id="astar" viewBox="0 0 560 200" height="168"></svg>
     <div style="display:flex;gap:10px;align-items:center;margin-top:12px"><span class="badge" id="abadge">✓ COMPLETABLE
         → NIVELES H</span></div>
-    <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Menta: ruta encontrada. Esta validación
-        se hace de antemano, solo para los niveles humanos.</small></p>
+    <div class="a-res"><b>14</b> niveles quedaron después de la verificación con A*</div>
+    <p class="pp" style="margin-top:12px"><small>Rosa: celdas exploradas por A*. Verde: ruta hasta la meta. Validación previa, solo para niveles humanos.</small></p>
   </div>
   <!-- 4 -->
   <div class="fp" data-p="4">
-    <div class="ptag">1 · BIENVENIDA Y ENTORNO EXPERIMENTAL</div>
-    <p class="pp" style="margin-bottom:8px">La persona llega al laboratorio y se le explica cómo será la sesión:</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-      <div class="shot has" style="height:155px;border:3px solid var(--ink);background:#111;position:relative">
-        <div
-          style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 7px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">
-          LABORATORIO</div>
-        <img src="img/10_experimento.jpg" alt="Puesto y entorno físico del experimento"
-          style="display:block;width:100%;height:100%;object-fit:cover">
-      </div>
-      <div class="shot has" style="height:155px;border:3px solid var(--ink);background:#111;position:relative">
-        <div
-          style="position:absolute;top:5px;left:6px;background:var(--ink);color:#fff;font:400 7px var(--pixel);padding:2px 5px;z-index:2;border:1px solid #fff">
-          PANTALLA INICIAL</div>
-        <img src="img/02_bienvenida_sesion.png" alt="Pantalla inicial de bienvenida del software"
-          style="display:block;width:100%;height:100%;object-fit:contain">
-      </div>
-    </div>
-    <div class="win-mock">
-      <div class="bar"><span>INSTRUCCIONES DE LA SESIÓN</span><span>LABORATORIO ▢ ✕</span></div>
-      <div class="bd2"><b>En esta sesión vas a:</b>
-        <ol>
-          <li>Jugar niveles de práctica y calibración inicial.</li>
-          <li>Jugar 6 niveles y evaluar cada uno (bloque ciego P, N, H).</li>
-          <li>Ordenarlos por preferencia y dejar comentarios.</li>
-          <li>Opcionalmente, seguir jugando libremente.</li>
-        </ol>
-      </div>
-    </div>
+    <div class="ptag">PARTE 2 · NIVELES N</div>
+    <p class="pp">Son los niveles de comparación sin personalización: <b>no usan la telemetría</b> del participante.</p>
+    <div class="chain"><span style="background:var(--gold-l)">Parámetros aleatorios</span><i>▶</i><span style="background:var(--gold-l)">MarioGPT</span><i>▶</i><span
+        style="background:var(--gold-l)">Niveles N</span></div>
+    
+    <ul class="nlist">
+      <li>Generados con <b>MarioGPT</b> en el clúster HPC.</li>
+      <li>Con <b>parámetros aleatorios</b>.</li>
+      <li>Resultado: los <b>niveles N</b>, iguales para todos los participantes.</li>
+    </ul>
   </div>
   <!-- 5 -->
   <div class="fp" data-p="5">
-    <div class="ptag">2 · NIVELES DE FAMILIARIZACIÓN (F)</div>
-    <p class="pp">La persona juega <b>2 niveles de práctica</b>. Mientras juega, capturamos su <b>telemetría</b>:</p>
-    <div class="shot has" style="height:175px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
-      <img src="img/03_familiarizacion_controles.png" alt="Nivel de familiarización y controles"
+    <div class="ptag">1 · BIENVENIDA Y ENTORNO</div>
+    <p class="pp" style="margin-bottom:10px">Al llegar al laboratorio se explica cómo será la sesión:</p>
+    <div class="shot has" style="height:262px;border:3px solid var(--ink);background:#111;margin-bottom:12px;cursor:default">
+      <img src="img/02_bienvenida_sesion.png" alt="Pantalla inicial de bienvenida del software"
         style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
-    <div class="tele" id="tele" style="padding:10px 14px;font-size:12px;line-height:1.6"></div>
+    <div class="win-mock">
+      <div class="bar"><span>EN ESTA SESIÓN VAS A…</span><span>▢ ✕</span></div>
+      <div class="bd2" style="padding:8px 14px;font-size:18px;line-height:1.5">
+        Jugar práctica y <b>6 niveles</b> (P, N, H), evaluarlos y ordenarlos.
+      </div>
+    </div>
+  </div>
+  <div class="fp lside" data-p="5">
+    <div class="shot has" style="height:372px;border:3px solid var(--ink);background:#111;cursor:default">
+      <div style="position:absolute;top:8px;left:8px;background:var(--ink);color:#fff;font:400 11px var(--pixel);padding:4px 7px;z-index:2;border:1px solid #fff">LABORATORIO</div>
+      <img src="img/10_experimento_web.jpg" alt="Puesto y entorno físico del experimento" style="display:block;width:100%;height:100%;object-fit:cover">
+    </div>
   </div>
   <!-- 6 -->
   <div class="fp" data-p="6">
+    <div class="ptag">2 · NIVELES DE FAMILIARIZACIÓN (F)</div>
+    <p class="pp" style="font-size:17px;line-height:1.4;margin-bottom:8px">La persona juega <b>2 niveles de práctica</b>, tomados de los <b>niveles H</b>. Esta es la telemetría real que capturamos:</p>
+    <div class="shot has" style="height:178px;border:3px solid var(--ink);background:#111;margin-bottom:8px;cursor:default">
+      <img src="img/03_familiarizacion_controles.png" alt="Nivel de familiarización y controles"
+        style="display:block;width:100%;height:100%;object-fit:contain">
+    </div>
+    <div class="tele static">{
+  "level": "familiarization/mm2_3001683.txt",
+  "status": "LOSE",                 <span class="cm">// Murió antes de la meta</span>
+  "completion": 0.6063,             <span class="cm">// 60.6% de avance</span>
+  "time_used_seconds": 26.73,
+  "jumps": 39,                      <span class="cm">// Estilo de salto frecuente</span>
+  "kills": 5,
+  "hurts": 22,                      <span class="cm">// Alta fricción / daño</span>
+  "coins": 0,
+  "average_speed": 107.92,          <span class="cm">// px/s (rápido)</span>
+  "path_preference": "low",         <span class="cm">// Ruta inferior</span>
+  "death_positions": [
+    {"x": 1542.5, "y": 209.7},
+    {"x": 1678.3, "y": 223.0},
+    {"x": 1843.2, "y": 223.0}
+  ]
+}</div>
+  </div>
+  <div class="fp lside" data-p="6">
+    <div class="st-h">RESULTADOS DE FAMILIARIZACIÓN · 76 PARTICIPANTES</div>
+    <div class="st-kpis">
+      <div class="st-k"><b>76</b><span>participantes</span></div>
+      <div class="st-k"><b>152</b><span>niveles jugados</span></div>
+      <div class="st-k"><b>1.34</b><span>niveles / persona</span></div>
+      <div class="st-k"><b>2.70</b><span>min / persona</span></div>
+    </div>
+    <div class="st-grid">
+      <div class="st-c"><h4>RESULTADO POR INTENTO</h4>
+        <div class="brow "><span>Ganó</span><div class="tr"><i class="c-mint" style="width:67.1%"></i></div><b>102 · 67%</b></div>
+        <div class="brow "><span>Tiempo</span><div class="tr"><i class="c-gold" style="width:23.0%"></i></div><b>35 · 23%</b></div>
+        <div class="brow "><span>Perdió</span><div class="tr"><i class="c-ruby" style="width:9.9%"></i></div><b>15 · 10%</b></div>
+      </div>
+      <div class="st-c"><h4>COMPLETADOS / JUGADOR</h4>
+        <div class="brow "><span>2 niveles</span><div class="tr"><i class="c-mint" style="width:50.0%"></i></div><b>38 · 50%</b></div>
+        <div class="brow "><span>1 nivel</span><div class="tr"><i class="c-gold" style="width:34.2%"></i></div><b>26 · 34%</b></div>
+        <div class="brow "><span>0 niveles</span><div class="tr"><i class="c-ruby" style="width:15.8%"></i></div><b>12 · 16%</b></div>
+      </div>
+      <div class="st-c"><h4>% COMPLETADO / NIVEL</h4>
+        <div class="brow "><span>3000330</span><div class="tr"><i class="c-vio" style="width:63.2%"></i></div><b>63.2%</b></div>
+        <div class="st-sub">21 tiempos agotados · 85.5 s</div>
+        <div class="brow "><span>3001683</span><div class="tr"><i class="c-vio" style="width:71.1%"></i></div><b>71.1%</b></div>
+        <div class="st-sub">14 tiempos agotados · 76.6 s</div>
+      </div>
+      <div class="st-c"><h4>TIEMPO / JUGADOR</h4>
+        <svg viewBox="0 0 290 84" width="100%" style="display:block">
+          <line x1="12" y1="34" x2="276" y2="34" stroke="#1a1a1a" stroke-width="3"/>
+          <rect x="150.5" y="16" width="82" height="36" fill="#94ddc6" stroke="#1a1a1a" stroke-width="3"/>
+          <line x1="201" y1="16" x2="201" y2="52" stroke="#1a1a1a" stroke-width="5"/>
+          <path d="M188 62l6 8h-12z" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/>
+          <g font-family="Arial,sans-serif" font-size="12" text-anchor="middle" fill="#1a1a1a">
+            <text x="12" y="82">0</text><text x="77" y="82">1</text><text x="143" y="82">2</text><text x="209" y="82">3</text><text x="272" y="82">4 min</text>
+          </g>
+        </svg>
+        <div class="st-note">Mediana <b>2.90</b> · media 2.70 ▲</div>
+      </div>
+    </div>
+  </div>
+  <!-- 7 -->
+  <div class="fp" data-p="7">
     <div class="ptag">3 · CONSENTIMIENTO INFORMADO</div>
     <p class="pp">Antes de seguir, la persona decide. Prueba las dos ramas:</p>
     <div class="shot has" style="height:210px;border:3px solid var(--ink);background:#111;margin-bottom:10px">
@@ -3620,115 +3368,84 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
     </div>
     <div class="res" id="cres" style="margin-top:8px">Elige una opción.</div>
   </div>
-  <!-- 7 -->
-  <div class="fp" data-p="7" style="overflow-y:auto">
-    <div class="ptag">4 · ENCUESTA INICIAL &amp; PERFIL DE LA MUESTRA</div>
-    <p class="pp" style="margin-bottom:8px">Caracterización de participantes previa al juego (<b>n = 76
-        participantes</b>):</p>
-
-    <!-- Barra de KPIs demográficos -->
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:8px">
-      <div
-        style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 7px var(--pixel);color:#333;display:block">MUESTRA TOTAL</span>
-        <b style="font:400 20px/1.1 var(--display);color:var(--ink)">76 SUJETOS</b>
-      </div>
-      <div
-        style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 7px var(--pixel);color:#333;display:block">EDAD MEDIANA</span>
-        <b style="font:400 20px/1.1 var(--display);color:var(--ink)">21 AÑOS</b>
-      </div>
-    </div>
-
-    <!-- Contenido en dos columnas: Resultados a la izquierda, Preguntas a la derecha -->
-    <div style="display:grid;grid-template-columns:325px 325px;gap:12px;align-items:start">
-      <!-- Columna 1: Resultados y Estadísticas de la muestra -->
-      <div style="border:2.5px solid var(--ink);background:#fff;padding:8px 10px;box-shadow:3px 3px 0 var(--ink)">
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;border-bottom:2px solid var(--ink);padding-bottom:4px">
-          <span style="font:400 8px var(--pixel);color:var(--ink)">RESULTADOS DE LA MUESTRA</span>
-          <span style="font:700 9px monospace;background:var(--mint);padding:1px 5px;border:1px solid var(--ink)">n =
-            76</span>
-        </div>
-
-        <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:6px">
-          <tr style="border-bottom:1px solid #ddd">
-            <td style="padding:2px 0;color:#555">Media ± DE:</td>
-            <td style="text-align:right;font-weight:700">22.8 ± 6.1 años</td>
-          </tr>
-          <tr style="border-bottom:1px solid #ddd">
-            <td style="padding:2px 0;color:#555">Mediana:</td>
-            <td style="text-align:right;font-weight:700;color:var(--violet)">21 años</td>
-          </tr>
-          <tr style="border-bottom:1px solid #ddd">
-            <td style="padding:2px 0;color:#555">Rango intercuartílico (Q1–Q3):</td>
-            <td style="text-align:right;font-weight:700">20 – 23 años</td>
-          </tr>
-          <tr>
-            <td style="padding:2px 0;color:#555">Rango mín – máx:</td>
-            <td style="text-align:right;font-weight:700">12 – 59 años</td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- Columna 2: Instrumento de preguntas iniciales -->
-      <div>
-        <div class="q-list" style="margin-top:0;gap:4px">
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:8px">1</span>
-            <div class="q-body" style="font-size:11px">
-              <b>Edad</b> <span class="q-type" style="font-size:6.5px">Numérica</span>
-              <div class="q-desc" style="font-size:10px;margin-top:0">Edad cronológica (en años).</div>
-            </div>
-          </div>
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:8px">2</span>
-            <div class="q-body" style="font-size:11px">
-              <b>Horas videojuegos</b> <span class="q-type" style="font-size:6.5px">Selección</span>
-              <div class="q-desc" style="font-size:10px;margin-top:0">Dedicación semanal (&lt;1h a &gt;20h).</div>
-            </div>
-          </div>
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:8px">3</span>
-            <div class="q-body" style="font-size:11px">
-              <b>Plataformas 2D</b> <span class="q-type" style="font-size:6.5px">Selección</span>
-              <div class="q-desc" style="font-size:10px;margin-top:0">Horas en Mario, Celeste, Hollow Knight...</div>
-            </div>
-          </div>
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:8px">4</span>
-            <div class="q-body" style="font-size:11px">
-              <b>Experiencia Mario 2D</b> <span class="q-type" style="font-size:6.5px">Selección</span>
-              <div class="q-desc" style="font-size:10px;margin-top:0">Creador SMM, Jugador SMM, SMB, Nunca.</div>
-            </div>
-          </div>
-          <div class="q-item" style="padding:4px 6px">
-            <span class="q-num" style="padding:1px 4px;font-size:8px">5</span>
-            <div class="q-body" style="font-size:11px">
-              <b>Control habitual</b> <span class="q-type" style="font-size:6.5px">Múltiple</span>
-              <div class="q-desc" style="font-size:10px;margin-top:0">Mando / Teclado / Pantalla táctil / Otro.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <!-- 8 -->
-  <div class="fp" data-p="8">
-    <div class="ptag">EN SEGUNDO PLANO · GENERACIÓN</div>
-    <p class="pp">Al terminar la familiarización, la telemetría pasa por el LLM, que produce un <b>prompt para
-        MarioGPT</b>. MarioGPT genera los niveles personalizados <b>mientras el participante sigue jugando</b>.</p>
-    <div class="chain"><span>Telemetría</span><i>▶</i><span>Ollama</span><i>▶</i><span>MarioGPT</span><i>▶</i><span
-        style="background:var(--pink)">Nivel P</span></div>
-    <div class="prompt" id="prompt"></div>
-    <p class="pp" style="margin-top:10px"><small>Prompt de ejemplo, ilustrativo. Los niveles generados no se validan con
-        A* durante el experimento.</small></p>
-    <button id="btnGoAnxPipeline" type="button" style="margin-top:6px;font:400 8.5px var(--pixel);padding:6px 10px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink)">
-      🔍 VER TELEMETRÍA Y PROMPT REALES EN ANEXOS ➔
-    </button>
+  <div class="fp" data-p="8" style="overflow-y:auto">
+    <div class="ptag">4 · ENCUESTA INICIAL &amp; PERFIL DE LA MUESTRA</div>
+    <div class="st-c" style="margin-bottom:10px">
+      <h4>EDAD · n = 76</h4>
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:10px;align-items:center">
+        <div style="font:600 15.5px/1.5 var(--body)">Media <b>22.8</b> (DE 6.1)<br>Mediana <b style="color:var(--violet)">21</b><br>Rango <b>12–59</b> años</div>
+        <div><svg viewBox="0 0 410 92" width="100%" style="display:block">
+          <line x1="22" y1="40" x2="392" y2="40" stroke="#1a1a1a" stroke-width="3"/>
+          <line x1="22" y1="30" x2="22" y2="50" stroke="#1a1a1a" stroke-width="3"/><line x1="392" y1="30" x2="392" y2="50" stroke="#1a1a1a" stroke-width="3"/>
+          <rect x="97" y="24" width="28" height="32" fill="#94ddc6" stroke="#1a1a1a" stroke-width="3"/>
+          <line x1="104" y1="24" x2="104" y2="56" stroke="#1a1a1a" stroke-width="5"/>
+          <path d="M115 66l6 9h-12z" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/>
+          <g font-family="Arial,sans-serif" font-size="13" text-anchor="middle" fill="#1a1a1a" font-weight="700">
+            <text x="22" y="20">12</text><text x="392" y="20">59</text><text x="111" y="16">Q1–Q3: 20–23</text>
+          </g>
+          <g font-family="Arial,sans-serif" font-size="12" text-anchor="middle" fill="#555">
+            <text x="22" y="90">10</text><text x="97" y="90">20</text><text x="172" y="90">30</text><text x="247" y="90">40</text><text x="322" y="90">50</text><text x="390" y="90">60 años</text>
+          </g>
+        </svg></div>
+      </div>
+      <div class="st-note" style="margin-top:2px">La mayoría tiene 20–23 años; los extremos (12 y 59) suben la media.</div>
+    </div>
+    <div class="st-grid">
+      <div class="st-c"><h4>HORAS DE JUEGO SEMANALES</h4>
+        <div class="brow w2"><span>&lt; 1 h</span><div class="tr"><i class="c-mint" style="width:28.9%"></i></div><b>22</b></div>
+        <div class="brow w2"><span>1–5 h</span><div class="tr"><i class="c-mint" style="width:26.3%"></i></div><b>20</b></div>
+        <div class="brow w2"><span>6–20 h</span><div class="tr"><i class="c-mint" style="width:34.2%"></i></div><b>26</b></div>
+        <div class="brow w2"><span>&gt; 20 h</span><div class="tr"><i class="c-mint" style="width:10.5%"></i></div><b>8</b></div>
+      </div>
+      <div class="st-c"><h4>EXPERIENCIA CON MARIO</h4>
+        <div class="brow w2"><span>Jugó SMB</span><div class="tr"><i class="c-gold" style="width:56.6%"></i></div><b>43</b></div>
+        <div class="brow w2"><span>Nunca jugó</span><div class="tr"><i class="c-gold" style="width:21.1%"></i></div><b>16</b></div>
+        <div class="brow w2"><span>Jugó en SMM</span><div class="tr"><i class="c-gold" style="width:14.5%"></i></div><b>11</b></div>
+        <div class="brow w2"><span>Creó en SMM</span><div class="tr"><i class="c-gold" style="width:7.9%"></i></div><b>6</b></div>
+      </div>
+      <div class="st-c"><h4>CONTROLES HABITUALES (MÚLTIPLE)</h4>
+        <div class="brow w2"><span>Mando</span><div class="tr"><i class="c-vio" style="width:73.7%"></i></div><b>56</b></div>
+        <div class="brow w2"><span>Teclado/ratón</span><div class="tr"><i class="c-vio" style="width:65.8%"></i></div><b>50</b></div>
+        <div class="brow w2"><span>Táctil</span><div class="tr"><i class="c-vio" style="width:61.8%"></i></div><b>47</b></div>
+        <div class="brow w2"><span>Otro</span><div class="tr"><i class="c-vio" style="width:13.2%"></i></div><b>10</b></div>
+      </div>
+      <div class="st-c"><h4>JUEGOS DE PLATAFORMAS 2D</h4>
+        <div class="stack"><i class="c-ruby" style="width:51.3%">39 (51%)</i><i class="c-mint" style="width:48.7%">37</i></div>
+        <div class="st-note"><b>39 (51%)</b> no juegan ninguno; los otros 37 sí juegan alguno.</div>
+      </div>
+    </div>
   </div>
   <!-- 9 -->
   <div class="fp" data-p="9">
+    <div class="ptag">EN SEGUNDO PLANO · GENERACIÓN</div>
+    <p class="pp" style="font-size:16px;line-height:1.35;margin-bottom:6px">La telemetría pasa por el LLM, que produce un <b>prompt para MarioGPT</b>, mientras la persona sigue jugando.</p>
+    <div class="prompt" style="background:#f4f1ff;border-color:var(--violet);font-size:13px;line-height:1.4;margin-top:4px;padding:7px 10px">
+      <div class="plbl" style="color:var(--violet)">OLLAMA · PROMPT DEL SISTEMA</div>
+      Eres un adaptador de telemetría para MarioGPT. Tu tarea es convertir un JSON de telemetría de un jugador humano en una sola línea de prompt lista para MarioGPT. No inventes información. Usa solo los datos del JSON.
+    </div>
+    <div class="prompt" style="font-size:13px;line-height:1.4;margin-top:8px;padding:7px 10px">
+      <div class="plbl">MARIOGPT · PROMPT GENERADO</div>
+      <span id="mgprompt"></span>
+    </div>
+    <div class="prompt" style="background:#fff;border-color:var(--ink);margin-top:8px;padding:6px 10px">
+      <div class="plbl" style="margin-bottom:3px;color:var(--ink)">NIVEL GENERADO POR MARIOGPT</div>
+      <pre style="margin:0;font:500 12.5px/1.08 'Courier New',monospace;letter-spacing:0">--------------------------------------------------
+xxxxxxxxxxxxxxxxxxxxxxxxxxx--------------xxxxxxxxx
+SSSSSSSSSSSSSSSSSSSSSSSSSS-x-----SSSS---xxSSSSSSSS
+----------------------------x----------xx---------
+-----------------------------x----?---xx----------
+------------------------------x--S??-xx-----------
+-------------------------------x----xxXXX---------
+--S-------------------E----------xxx--------------
+E----E---------------<>------XXX-SSSS-------------
+>---<>------------XX-[]--XXX------------------E---
+]---[]-------E-E-XXX-[]--XXX-----------------[]---
+XXXXXXXXXXXXXXXXXXX--XX--XX------XXXX------XXXXXXX</pre>
+    </div>
+  </div>
+  <!-- 10 -->
+  <div class="fp" data-p="10">
     <div class="ptag">5 · BLOQUE PRINCIPAL</div>
     <p class="pp">Cada participante juega <b>6 niveles de tres tipos</b>, <b>asignados en orden aleatorio desde un
         servidor</b>.</p>
@@ -3740,126 +3457,87 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
           parámetros aleatorios, sin la telemetría del participante.</span></p>
       <p><span class="k t-H">H</span><span><b>Humanos:</b> de Super Mario Maker 2, validados con A* de antemano.</span>
       </p>
+      <p><span class="k" style="background:#fff;padding:5px 7px">E</span><span><b>Cuestionario</b> de 6 preguntas tras cada nivel.</span></p>
     </div>
-    <button class="pbtn" id="shuf" style="margin-top:6px">🔀 BARAJAR</button>
-  </div>
-  <!-- 10 -->
-  <div class="fp" data-p="10" style="overflow-y:auto">
-    <div class="ptag">CUESTIONARIO TRAS CADA NIVEL</div>
-    <p class="pp" style="margin-bottom:6px">Evaluación de la experiencia de juego en escala Likert (−3 a +3):</p>
-    <div class="shot has" style="height:135px;border:3px solid var(--ink);background:#111;margin-bottom:8px">
-      <img src="img/04_evaluacion_post_nivel_likert.png" alt="Cuestionario post-nivel Likert"
-        style="display:block;width:100%;height:100%;object-fit:contain">
-    </div>
-    <div id="lik"></div>
   </div>
   <!-- 11 -->
-  <div class="fp" data-p="11" style="overflow-y:auto">
-    <div class="ptag">6 · RANKING Y PREFERENCIA DE NIVELES</div>
-    <p class="pp" style="margin-bottom:8px">Evaluación de preferencia ordinal (1.º favorito a 6.º menos preferido) con
-      <b>n = 69 participantes</b>:
-    </p>
-
-    <!-- Barra de KPIs del Ranking -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
-      <div
-        style="border:2px solid var(--ink);background:#fff;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 7px var(--pixel);color:#333;display:block">MUESTRA VÁLIDA</span>
-        <b style="font:400 18px/1.1 var(--display);color:var(--ink)">69 SUJETOS</b>
-      </div>
-      <div
-        style="border:2px solid var(--ink);background:var(--mint);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 7px var(--pixel);color:#333;display:block">HUMANO (H) ★</span>
-        <b style="font:400 18px/1.1 var(--display);color:#0a7c55">RANK 3.13</b>
-      </div>
-      <div
-        style="border:2px solid var(--ink);background:var(--gold-l);padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 7px var(--pixel);color:#333;display:block">GENÉRICO (N)</span>
-        <b style="font:400 18px/1.1 var(--display);color:var(--ink)">RANK 3.68</b>
-      </div>
-      <div
-        style="border:2px solid var(--ink);background:#ffb3da;padding:4px 6px;text-align:center;box-shadow:2px 2px 0 var(--ink)">
-        <span style="font:400 7px var(--pixel);color:#333;display:block">PERSONALIZADO (P)</span>
-        <b style="font:400 18px/1.1 var(--display);color:var(--ink)">RANK 3.69</b>
-      </div>
-    </div>
-
-    <!-- Dos columnas: Método (pantalla) a la izquierda, Resumen de Resultados a la derecha -->
-    <div style="display:grid;grid-template-columns:320px 330px;gap:12px;align-items:start">
-      <!-- Columna 1: Método y Captura de Pantalla Real -->
+  <div class="fp" data-p="11">
+    <div class="ptag">CUESTIONARIO TRAS CADA NIVEL</div>
+    <p class="pp" style="margin-bottom:10px;font-size:18px;line-height:1.4">Basado en el <b>miniPXI</b> · escala Likert de −3 a +3.</p>
+    <div style="display:grid;grid-template-columns:322px 1fr;gap:14px;align-items:start">
       <div>
-        <div class="shot has" style="height:210px;border:2.5px solid var(--ink);background:#111;margin-bottom:6px">
-          <img src="img/05_clasificacion_preferencia_ranking.png"
-            alt="Pantalla de clasificación de preferencia en el experimento"
-            style="display:block;width:100%;height:100%;object-fit:cover">
+        <div class="shot has" style="height:244px;border:3px solid var(--ink);background:#111;cursor:default">
+          <img src="img/04_evaluacion_post_nivel_likert.png" alt="Cuestionario post-nivel Likert" style="display:block;width:100%;height:100%;object-fit:contain">
         </div>
-        <div
-          style="font-size:10px;line-height:1.35;color:#444;background:#fbf9f6;border:1.5px solid #e2ddd5;padding:5px 7px">
-          <b>Tarea:</b> Ordenar 6 niveles (<i>drag-and-drop</i>) + comentarios cualitativos (n = 69 válidos, 7
-          omitidos).
-        </div>
+        <p class="pp" style="margin:10px 0 0;font-size:16px;line-height:1.4">Se responde después de <b>cada uno de los 6 niveles</b> del bloque principal.</p>
       </div>
-
-      <!-- Columna 2: Resumen de Resultados Empíricos -->
-      <div style="border:2.5px solid var(--ink);background:#fff;padding:8px 10px;box-shadow:3px 3px 0 var(--ink)">
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;border-bottom:2px solid var(--ink);padding-bottom:3px">
-          <span style="font:400 8px var(--pixel);color:var(--ink)">HALLAZGOS CLAVE (PREFERENCIA)</span>
-          <span style="font:700 8px monospace;background:var(--gold-l);padding:1px 4px;border:1px solid var(--ink)">414
-            EVALUACIONES</span>
-        </div>
-
-        <div style="font-size:11px;line-height:1.45;color:#111">
-          <div style="margin-bottom:6px">▸ <b>Humano favorito:</b> Rank medio <b>3.13</b> (rara vez 6.º).</div>
-          <div style="margin-bottom:6px">▸ <b>Empate en IAs:</b> N (<b>3.68</b>) ≈ P (<b>3.69</b>).</div>
-          <div style="margin-bottom:6px">▸ <b>Test de Friedman:</b> χ² = 5.52, <i>p</i> = 0.063 (marginal).</div>
-          <div style="margin-bottom:3px">▸ <b>Efecto primacía/orden:</b> 1.º (<b>2.20</b>) a 6.º (<b>4.77</b>).</div>
-        </div>
-
-        <button id="btnGoAnxRanking" type="button"
-          style="margin-top:8px;width:100%;font:400 8px var(--pixel);padding:6px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink);transition:all .15s">
-          📊 VER ANÁLISIS DETALLADO EN ANEXOS ➔
-        </button>
+      <div class="qs">
+        <div class="qi"><b>Disfrute</b><span>«La pasé bien jugando este nivel.»</span></div>
+        <div class="qi"><b>Competencia</b><span>«Sentí que era bueno jugando este nivel.»</span></div>
+        <div class="qi"><b>Dificultad</b><span>«¿Cómo percibiste la dificultad de este nivel para ti?»</span></div>
+        <div class="qi"><b>Ajuste del reto</b><span>«El nivel ofreció un reto adecuado para mi nivel de habilidad.»</span></div>
+        <div class="qi"><b>Variedad</b><span>«El nivel presentó elementos, obstáculos y situaciones variadas.»</span></div>
+        <div class="qi"><b>Deseo de rejugar</b><span>«Me gustaría jugar más niveles con este estilo y diseño.»</span></div>
       </div>
     </div>
   </div>
   <!-- 12 -->
   <div class="fp" data-p="12" style="overflow-y:auto">
-    <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
-    <p class="pp" style="margin-bottom:6px">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b>
-      (opcional):</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-      <div class="shot has" style="height:125px;border:3px solid var(--ink);background:#111">
-        <img src="img/07_invitacion_juego_voluntario.png" alt="Invitación al juego voluntario"
-          style="display:block;width:100%;height:100%;object-fit:contain">
+    <div class="ptag">6 · RANKING Y PREFERENCIA DE NIVELES</div>
+    <p class="pp" style="font-size:16px;line-height:1.35;margin-bottom:8px">Preferencia: 1.º = favorito · <b>n = 69</b> (7 sin ranking).</p>
+    <div class="st-grid">
+      <div class="st-c"><h4>RANK MEDIO · MENOR = MEJOR</h4>
+        <div class="brow w2"><span>Humano (H)</span><div class="tr"><i class="c-mint" style="width:52.2%"></i></div><b>3.13</b></div>
+        <div class="brow w2"><span>Genérico (N)</span><div class="tr"><i class="c-gold" style="width:61.3%"></i></div><b>3.68</b></div>
+        <div class="brow w2"><span>Personal. (P)</span><div class="tr"><i class="c-ruby" style="width:61.5%"></i></div><b>3.69</b></div>
       </div>
-      <div class="shot has" style="height:125px;border:3px solid var(--ink);background:#111">
-        <img src="img/08_modo_juego_libre.png" alt="Modo de juego libre voluntario"
-          style="display:block;width:100%;height:100%;object-fit:contain">
+      <div class="st-c"><h4>MEJOR TIPO POR PERSONA</h4>
+        <div class="brow w2"><span>Humano (H)</span><div class="tr"><i class="c-mint" style="width:39.1%"></i></div><b>27</b></div>
+        <div class="brow w2"><span>Genérico (N)</span><div class="tr"><i class="c-gold" style="width:34.8%"></i></div><b>24</b></div>
+        <div class="brow w2"><span>Personal. (P)</span><div class="tr"><i class="c-ruby" style="width:26.1%"></i></div><b>18</b></div>
       </div>
+      <div class="st-c"><h4>VECES EN CADA POSICIÓN</h4><div style="display:flex;gap:12px;font:600 13px var(--body);margin:-2px 0 2px"><span><i style="display:inline-block;width:11px;height:11px;background:#4fbf98;border:2px solid #1a1a1a;margin-right:4px"></i>Humano</span><span><i style="display:inline-block;width:11px;height:11px;background:#dba93b;border:2px solid #1a1a1a;margin-right:4px"></i>Genérico</span><span><i style="display:inline-block;width:11px;height:11px;background:#e0559f;border:2px solid #1a1a1a;margin-right:4px"></i>Personal.</span></div><svg viewBox="0 0 310 150" width="100%" style="display:block;font-family:Montserrat,Arial,sans-serif;fill:#1a1a1a"><line x1="4" y1="124" x2="306" y2="124" stroke="#1a1a1a" stroke-width="2"/><rect x="8" y="51.5" width="14" height="72.5" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="15" y="47.5" text-anchor="middle" font-size="9.5" font-weight="700">25</text><rect x="23" y="68.9" width="14" height="55.1" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="30" y="64.9" text-anchor="middle" font-size="9.5" font-weight="700">19</text><rect x="38" y="51.5" width="14" height="72.5" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="45" y="47.5" text-anchor="middle" font-size="9.5" font-weight="700">25</text><text x="30" y="143" text-anchor="middle" font-size="12.5">1.º</text><rect x="58" y="42.8" width="14" height="81.2" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="65" y="38.8" text-anchor="middle" font-size="9.5" font-weight="700">28</text><rect x="73" y="54.4" width="14" height="69.6" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="80" y="50.4" text-anchor="middle" font-size="9.5" font-weight="700">24</text><rect x="88" y="74.7" width="14" height="49.3" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="95" y="70.7" text-anchor="middle" font-size="9.5" font-weight="700">17</text><text x="80" y="143" text-anchor="middle" font-size="12.5">2.º</text><rect x="108" y="28.3" width="14" height="95.7" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="115" y="24.3" text-anchor="middle" font-size="9.5" font-weight="700">33</text><rect x="123" y="74.7" width="14" height="49.3" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="130" y="70.7" text-anchor="middle" font-size="9.5" font-weight="700">17</text><rect x="138" y="68.9" width="14" height="55.1" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="145" y="64.9" text-anchor="middle" font-size="9.5" font-weight="700">19</text><text x="130" y="143" text-anchor="middle" font-size="12.5">3.º</text><rect x="158" y="66.0" width="14" height="58.0" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="165" y="62.0" text-anchor="middle" font-size="9.5" font-weight="700">20</text><rect x="173" y="45.7" width="14" height="78.3" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="180" y="41.7" text-anchor="middle" font-size="9.5" font-weight="700">27</text><rect x="188" y="60.2" width="14" height="63.8" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="195" y="56.2" text-anchor="middle" font-size="9.5" font-weight="700">22</text><text x="180" y="143" text-anchor="middle" font-size="12.5">4.º</text><rect x="208" y="66.0" width="14" height="58.0" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="215" y="62.0" text-anchor="middle" font-size="9.5" font-weight="700">20</text><rect x="223" y="54.4" width="14" height="69.6" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="230" y="50.4" text-anchor="middle" font-size="9.5" font-weight="700">24</text><rect x="238" y="51.5" width="14" height="72.5" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="245" y="47.5" text-anchor="middle" font-size="9.5" font-weight="700">25</text><text x="230" y="143" text-anchor="middle" font-size="12.5">5.º</text><rect x="258" y="89.2" width="14" height="34.8" fill="#4fbf98" stroke="#1a1a1a" stroke-width="1.5"/><text x="265" y="85.2" text-anchor="middle" font-size="9.5" font-weight="700">12</text><rect x="273" y="45.7" width="14" height="78.3" fill="#dba93b" stroke="#1a1a1a" stroke-width="1.5"/><text x="280" y="41.7" text-anchor="middle" font-size="9.5" font-weight="700">27</text><rect x="288" y="37.0" width="14" height="87.0" fill="#e0559f" stroke="#1a1a1a" stroke-width="1.5"/><text x="295" y="33.0" text-anchor="middle" font-size="9.5" font-weight="700">30</text><text x="280" y="143" text-anchor="middle" font-size="12.5">6.º</text></svg></div>
+      <div class="st-c"><h4>RANK SEGÚN ORDEN DE JUEGO</h4>
+        <svg viewBox="0 0 310 150" width="100%" style="display:block;font-family:Montserrat,Arial,sans-serif;fill:#1a1a1a"><line x1="4" y1="124" x2="306" y2="124" stroke="#1a1a1a" stroke-width="2"/><rect x="14" y="82.2" width="34" height="41.8" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="31" y="78.2" text-anchor="middle" font-size="13" font-weight="700">2.20</text><text x="31" y="143" text-anchor="middle" font-size="12.5">1.º</text><rect x="63" y="68.9" width="34" height="55.1" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="80" y="64.9" text-anchor="middle" font-size="13" font-weight="700">2.90</text><text x="80" y="143" text-anchor="middle" font-size="12.5">2.º</text><rect x="112" y="64.3" width="34" height="59.7" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="129" y="60.3" text-anchor="middle" font-size="13" font-weight="700">3.14</text><text x="129" y="143" text-anchor="middle" font-size="12.5">3.º</text><rect x="161" y="51.0" width="34" height="73.0" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="178" y="47.0" text-anchor="middle" font-size="13" font-weight="700">3.84</text><text x="178" y="143" text-anchor="middle" font-size="12.5">4.º</text><rect x="210" y="45.3" width="34" height="78.7" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="227" y="41.3" text-anchor="middle" font-size="13" font-weight="700">4.14</text><text x="227" y="143" text-anchor="middle" font-size="12.5">5.º</text><rect x="259" y="33.4" width="34" height="90.6" fill="#a31bb0" stroke="#1a1a1a" stroke-width="1.5"/><text x="276" y="29.4" text-anchor="middle" font-size="13" font-weight="700">4.77</text><text x="276" y="143" text-anchor="middle" font-size="12.5">6.º</text></svg></div>
     </div>
-    <div class="cond" style="margin:4px 0 8px">Condición asignada: <button data-c="P">P</button><button
-        data-c="N">N</button><button data-c="H">H</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+      <div class="st-note" style="flex:1;margin:0"><b>Friedman:</b> χ² = 5.52, <i>p</i> = 0.063 (no concluyente).</div>
+      <button id="btnGoAnxRanking" type="button" style="font:400 9px var(--pixel);padding:6px 8px;border:2px solid var(--ink);background:var(--mint);cursor:pointer;box-shadow:2px 2px 0 var(--ink);color:var(--ink)">📊 ANÁLISIS EN ANEXOS ➔</button>
     </div>
-    <div class="timer" id="timer">20:00<small>(demo acelerada)</small></div>
-    <div class="metrics">
-      <div>Tiempo jugado<b id="mT">0 min</b></div>
-      <div>Niveles jugados<b id="mL">0</b></div>
+  </div>
+  <div class="fp lside" data-p="12" style="width:480px">
+    <div class="shot has" style="height:316px;border:3px solid var(--ink);background:#111;cursor:default">
+      <div style="position:absolute;top:8px;left:8px;background:var(--ink);color:#fff;font:400 10px var(--pixel);padding:4px 7px;z-index:2;border:1px solid #fff">PANTALLA DE RANKING</div>
+      <img src="img/05_clasificacion_preferencia_ranking.png" alt="Pantalla de clasificación de preferencia" style="display:block;width:100%;height:100%;object-fit:contain">
     </div>
   </div>
   <!-- 13 -->
   <div class="fp" data-p="13">
+    <div class="ptag">7 · JUEGO LIBRE VOLUNTARIO</div>
+    <p class="pp" style="font-size:17px;line-height:1.4;margin-bottom:8px">Hasta <b>20 minutos</b>, con niveles de <b>una sola condición asignada</b> (opcional).</p>
+    <div class="shot has" style="height:226px;border:3px solid var(--ink);background:#111;margin-bottom:12px;cursor:default">
+      <img src="img/07_invitacion_juego_voluntario.png" alt="Invitación al juego voluntario" style="display:block;width:100%;height:100%;object-fit:contain">
+    </div>
+    <div class="res" style="margin:0;font-size:18px;min-height:0;background:var(--gold-l)">Solo <b>2 personas</b> jugaron en esta modalidad: una con niveles <b>genéricos (N)</b> y otra con <b>personalizados (P)</b>.</div>
+  </div>
+  <div class="fp lside" data-p="13" style="width:630px">
+    <div class="shot has" style="height:296px;border:3px solid var(--ink);background:#111;cursor:default">
+      <div style="position:absolute;top:8px;left:8px;background:var(--ink);color:#fff;font:400 10px var(--pixel);padding:4px 7px;z-index:2;border:1px solid #fff">MODO DE JUEGO LIBRE</div>
+      <img src="img/08_modo_juego_libre.png" alt="Modo de juego libre voluntario" style="display:block;width:100%;height:100%;object-fit:contain">
+    </div>
+  </div>
+  <!-- 14 -->
+  <div class="fp" data-p="14">
     <div class="ptag">8 · FINAL</div>
     <div class="thanks">¡GRACIAS<br>POR JUGAR!</div>
     <p class="pp">Fin de la sesión. Los datos del participante quedan registrados para el análisis.</p>
     <img class="spr" data-spr="hero:happy" data-s="9" alt="" style="margin:14px auto 0" id="endhero">
   </div>
-  <!-- 14 -->
-  <div class="fp" data-p="14" style="display:none"></div>
+  <!-- 15 -->
+  <div class="fp" data-p="15" style="display:none"></div>
 
-  <div class="flegend"><i style="background:var(--mint)"></i>Parte 1<br><i style="background:#fff"></i>Parte 2<br><i
-      style="background:#ffb3da"></i>Segundo plano<br><i style="background:var(--gold-l)"></i>Decisión</div>
-  <div class="fhint blink">CLIC EN UNA CAJA PARA VOLVER A SU EXPLICACIÓN</div>
+  <div class="flegend"><i style="background:var(--mint)"></i>Parte 1 · Niveles H<br><i style="background:var(--gold-l)"></i>Parte 2 · Niveles N<br><i
+      style="background:#fff"></i>Parte 3 · Experimento<br><i style="background:#ffb3da"></i>Segundo plano</div>
 </section>
 
 <!-- ============ FILMINA: RESULTADOS · MEDIAS DEL LMM ============ -->
@@ -3869,37 +3547,26 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 
-  <section class="slide" id="s-res" data-min="0" data-max="6" data-despues-de="s-flow:10" data-sec="Metodología">
+  <section class="slide" id="s-res" data-min="0" data-max="6" data-cuenta="paso" data-sin-transicion="s-flow" data-despues-de="s-flow:11" data-sec="Metodología">
     <h1 class="h1">RESULTADOS</h1>
-    <div class="rleg">
-      <span><i style="background:var(--mint-d)"></i>Humano (H)</span>
-      <span><i style="background:var(--gold)"></i>LLM sin telemetría (N)</span>
-      <span><i style="background:var(--pink-d)"></i>LLM con telemetría (P)</span>
-      <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6"/></svg>p &lt; 0.05</span>
-      <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#a31bb0" stroke-width="2.6" stroke-dasharray="5 3"/></svg>p &lt; 0.05, frágil</span>
-      <span><svg width="30" height="10"><path d="M1 9V3H29V9" fill="none" stroke="#9a948f" stroke-width="1.4"/></svg>no significativa</span>
-    </div>
-    <div class="rmeta"><b>PRELIMINAR</b>MEDIAS DEL LMM E IC 95% · 72 PARTICIPANTES · 396 EVALUACIONES · p AJUSTADOS POR HOLM</div>
+    <div class="rmeta">MEDIAS DEL LMM E IC 95% · 72 PARTICIPANTES · 396 EVALUACIONES · p AJUSTADOS POR HOLM</div>
     <div id="rcards"></div>
     <div class="rside" id="rside">
-      <div class="rchips" id="rchips"></div>
-      <div class="ptag2" id="rtag"></div>
-      <div class="rmeans" id="rmeans"></div>
+      <div class="rq" id="rq"></div>
       <div class="rread" id="rread"></div>
     </div>
-    <div class="rhint blink">CLIC EN UN GRÁFICO PARA AMPLIARLO</div>
   </section>
 
-<!-- ============ FILMINA: CONCLUSIONES PRELIMINARES ============ -->
+<!-- ============ FILMINA: CONCLUSIONES ============ -->
 <!-- Tres columnas: pregunta y respuesta | limitaciones | trabajo futuro.
      Las cifras salen de la filmina de resultados (LMM, p ajustados por Holm). -->
 
 
 
 <section class="slide" id="s-conc" data-min="1" data-max="4" data-sec="Conclusiones">
-  <h1 class="h1">CONCLUSIONES PRELIMINARES</h1>
-  <div class="cdiv" style="left:440px"></div>
-  <div class="cdiv" style="left:839px"></div>
+  <h1 class="h1">CONCLUSIONES</h1>
+  <div class="cdiv" style="left:372px"></div>
+  <div class="cdiv" style="left:920px"></div>
 
   <!-- 1 · pregunta y respuesta -->
   <div class="ccol c1">
@@ -3908,79 +3575,62 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
       <div class="cq">¿Pueden los niveles que se <span class="a">adaptan al jugador</span> superar a los <span class="c">no personalizados</span> o a los <span class="d">diseñados por humanos</span>?</div>
     </div>
     <div class="cans reveal" data-at="2">
-      <p class="cbig">NO, POR AHORA</p>
-      <div class="pmap">
-        <svg class="parr" viewBox="0 0 362 290">
-          <defs>
-            <marker id="carw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
-              <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
-            </marker>
-          </defs>
-          <path d="M131 120 C150 120 144 42 162 42" pathLength="1" marker-end="url(#carw)" />
-          <path d="M131 147 H162" pathLength="1" marker-end="url(#carw)" />
-          <path d="M131 174 C150 174 144 250 162 250" pathLength="1" marker-end="url(#carw)" />
-        </svg>
-        <div class="pnode"><span class="pl">P</span><img class="spr" data-spr="hero:neutral" data-s="4"
-            alt=""><b>PERSONALIZADOS</b></div>
-        <div class="pchip k1" style="top:0;background:#ffd0d0">
-          <h5>▼ SATISFACCIÓN</h5>
-          <p>Frente a H: <b>−0.90</b> disfrute, <b>−1.11</b> competencia.</p>
-        </div>
-        <div class="pchip k2" style="top:104px;background:var(--gold-l)">
-          <h5>▲ DIFICULTAD</h5>
-          <p><b>+0.84</b> vs. H y <b>+0.63</b> vs. N, sin mejor ajuste del reto.</p>
-        </div>
-        <div class="pchip k3" style="top:208px;background:#d7f4e8">
-          <h5>≈ N EN DISFRUTE</h5>
-          <p>Pero algo más variados<span class="stag">FRÁGIL</span></p>
-        </div>
-      </div>
+      <p style="font:600 16.5px/1.45 var(--body);margin:0 0 10px">En este experimento, los niveles <b class="b">personalizados</b> todavía no superan a los <b style="color:var(--mint-d)">diseñados por humanos</b>.</p>
+      <p style="font:600 16.5px/1.45 var(--body);margin:0 0 14px">Entre los niveles adaptados, hay indicios de que los <b class="a">personalizados</b> se perciben algo más variados que los <b class="c">no personalizados</b>, aunque con evidencia frágil.</p>
+      <p class="cbig" style="color:var(--violet);font-size:42px">¡VAMOS POR BUEN CAMINO!</p>
     </div>
   </div>
 
   <!-- 2 · limitaciones -->
   <div class="ccol c2 reveal" data-at="3">
     <div class="chead"><span class="cico" style="background:var(--pink)">!</span><b>LIMITACIONES</b></div>
-    <!-- arriba: limitaciones del generador · abajo: limitaciones de cómo se aplicó -->
     <div class="lmap">
-      <svg class="larr" viewBox="0 0 362 456">
+      <svg class="larr" viewBox="0 0 520 470">
         <defs>
           <marker id="larw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
             <path d="M0 0L10 5L0 10z" style="fill:#1a1a1a;stroke:none;stroke-dasharray:none" />
           </marker>
         </defs>
-        <path d="M150 50 C150 78 86 70 86 102" pathLength="1" marker-end="url(#larw)" />
-        <path d="M212 50 C212 78 276 70 276 102" pathLength="1" marker-end="url(#larw)" />
-        <path d="M150 400 C150 372 86 380 86 350" pathLength="1" marker-end="url(#larw)" />
-        <path d="M212 400 C212 372 276 380 276 350" pathLength="1" marker-end="url(#larw)" />
+        <path d="M216 36 C216 48 82 44 82 58" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.32s" />
+        <path d="M260 36V58" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.44s" />
+        <path d="M304 36 C304 48 438 44 438 58" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.56s" />
+        <path d="M216 194 C216 206 82 202 82 216" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.68s" />
+        <path d="M260 194V216" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.8s" />
+        <path d="M304 194 C304 206 438 202 438 216" pathLength="1" marker-end="url(#larw)" style="transition-delay:0.92s" />
+        <path d="M194 352 C194 364 60 360 60 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.04s" />
+        <path d="M238 352 C238 364 194 360 194 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.16s" />
+        <path d="M282 352 C282 364 326 360 326 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.28s" />
+        <path d="M326 352 C326 364 460 360 460 374" pathLength="1" marker-end="url(#larw)" style="transition-delay:1.4s" />
       </svg>
-      <div class="ltag" style="top:0;background:#fff">MARIOGPT</div>
-      <div class="lbox k1" style="left:0;top:108px">
-        <h5>GPT-2</h5>
-        <p>Modelo de 2019, ya antiguo.</p>
-      </div>
-      <div class="lbox k2" style="left:190px;top:108px">
-        <h5>NIVELES CLÁSICOS</h5>
-        <p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p>
-      </div>
-      <div class="lbox k3" style="left:0;top:252px">
-        <h5>REGLA, NO LLM</h5>
-        <p><b>120 de 122</b> prompts; solo 28 distintos.</p>
-      </div>
-      <div class="lbox k4" style="left:190px;top:252px">
-        <h5>MENOS DATOS</h5>
-        <p>18 niveles de respaldo descartados.</p>
-      </div>
-      <div class="ltag" style="top:404px;background:var(--pink)">PERSONALIZADOS (P)</div>
+      <div class="ltag" style="top:0px;background:#fff;height:36px;font-size:22px;line-height:30px">MARIOGPT</div>
+      <div class="lbox k1" style="left:0px;top:60px;width:164px;transition-delay:0.67s"><h5>GPT-2</h5><p>Modelo de 2019, ya antiguo.</p></div>
+      <div class="lbox k2" style="left:178px;top:60px;width:164px;transition-delay:0.79s"><h5>NIVELES CLÁSICOS</h5><p>Entrenado solo con <i>Super Mario Bros.</i> y <i>The Lost Levels</i>.</p></div>
+      <div class="lbox k3" style="left:356px;top:60px;width:164px;transition-delay:0.91s"><h5>NIVELES DIFÍCILES</h5><p>Entrenado con niveles difíciles, no con los que gustan a la gente.</p></div>
+      <div class="ltag" style="top:158px;background:var(--pink);height:36px;font-size:22px;line-height:30px">PERSONALIZADOS (P)</div>
+      <div class="lbox k4" style="left:0px;top:218px;width:164px;transition-delay:1.03s"><h5>REGLA, NO LLM</h5><p><b>120 de 122</b> prompts; solo 28 distintos.</p></div>
+      <div class="lbox k5" style="left:178px;top:218px;width:164px;transition-delay:1.15s"><h5>MENOS DATOS</h5><p>18 niveles de respaldo descartados.</p></div>
+      <div class="lbox k6" style="left:356px;top:218px;width:164px;transition-delay:1.27s"><h5>SIN ESTUDIO PREVIO</h5><p>No había un estudio previo de cómo personalizar.</p></div>
+      <div class="ltag" style="top:316px;background:var(--gold-l);height:36px;font-size:22px;line-height:30px">DISEÑO DEL ESTUDIO</div>
+      <div class="lbox k7" style="left:0px;top:376px;width:121px;transition-delay:1.39s"><h5>SIN A*</h5><p>Los N y P no se validaron; los H sí.</p></div>
+      <div class="lbox k8" style="left:133px;top:376px;width:121px;transition-delay:1.51s"><h5>ORDEN</h5><p>Rank de 2.20 (1.º) a 4.77 (6.º).</p></div>
+      <div class="lbox k9" style="left:266px;top:376px;width:121px;transition-delay:1.63s"><h5>TELEMETRÍA</h5><p>Solo 2 niveles de práctica.</p></div>
+      <div class="lbox k10" style="left:399px;top:376px;width:121px;transition-delay:1.75s"><h5>MUESTRA</h5><p>72 personas, jóvenes; 14 H y 17 N.</p></div>
     </div>
   </div>
 
   <!-- 3 · trabajo futuro -->
   <div class="ccol c3 reveal" data-at="4">
     <div class="chead"><span class="cico" style="background:var(--mint)">▶</span><b>TRABAJO FUTURO</b></div>
-    <ul>
+    <ul class="fut">
       <li><b>Generadores más recientes</b> o entrenados con Mario Maker 2.</li>
       <li><b>Razonador LLM</b> en todas las personalizaciones.</li>
+      <li><b>Estudiar por qué</b> gustan los niveles de Hugging Face.</li>
+      <li><b>Entrenar un modelo</b> con niveles populares.</li>
+      <li><b>Validar con A*</b> los niveles generados.</li>
+      <li><b>Calibrar la dificultad</b> de P: se perciben más difíciles.</li>
+      <li><b>Más telemetría:</b> más niveles de práctica o adaptar durante la sesión.</li>
+      <li><b>Modelo mixto</b> que controle el orden de juego.</li>
+      <li><b>Muestra más diversa</b> y medidas objetivas (tiempo, muertes).</li>
     </ul>
   </div>
 </section>
@@ -3990,9 +3640,9 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
 
 <section class="slide gray" id="s-thanks" data-min="0" data-max="0" data-sec="Agradecimiento">
-  <img class="spr cloud" data-spr="cloud" data-s="6" style="top:50px;animation-duration:70s;animation-delay:-5s" alt="">
-  <img class="spr cloud" data-spr="cloud" data-s="5" style="top:220px;animation-duration:90s;animation-delay:-40s" alt="">
-  <img class="spr cloud" data-spr="cloud" data-s="7" style="top:410px;animation-duration:80s;animation-delay:-20s" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="6" style="left:40px;top:44px;animation:none" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="5" style="left:1060px;top:200px;animation:none" alt="">
+  <img class="spr cloud" data-spr="cloud" data-s="7" style="left:50px;top:340px;animation:none" alt="">
 
   <div class="t">¡MUCHAS GRACIAS!</div>
   <div class="sub">TELEMETRY-BASED ADAPTIVE LEVEL GENERATION IN 2D PLATFORMERS</div>
@@ -4005,10 +3655,10 @@ table.cmp{position:absolute;left:340px;top:124px;width:880px;border-collapse:sep
 
   <div class="uni">Universidad de Costa Rica · 2026</div>
 
-  <div class="q-pill blink">¿PREGUNTAS O COMENTARIOS?</div>
+  <div class="q-pill">¿PREGUNTAS O COMENTARIOS?</div>
 
-  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:380px;top:540px;animation-delay:-.3s" alt="">
-  <img class="spr abs bob" data-spr="coin" data-s="4" style="left:880px;top:540px;animation-delay:-.8s" alt="">
+  <img class="spr abs" data-spr="coin" data-s="4" style="left:380px;top:540px" alt="">
+  <img class="spr abs" data-spr="coin" data-s="4" style="left:880px;top:540px" alt="">
   <img class="spr abs bob" data-spr="hero:happy" data-s="6" style="left:604px;top:526px" alt="">
   <div class="ground"></div>
 </section>
@@ -4998,12 +4648,15 @@ function next(){ if(busy)return; const i=unitIdx(); if(i<units.length-1) goUnit(
 function prev(){ if(busy)return; const i=unitIdx(); if(i>0) goUnit(units[i-1],'back'); }
 async function goSlide(n,dir,at){
   busy=true;
-  await wipe(()=>{
+  /* data-sin-transicion="id": entre esa filmina y esta no se usa la cortina pixelada */
+  const quick=slides[n].dataset.sinTransicion===slides[cur].id||slides[cur].dataset.sinTransicion===slides[n].id;
+  const swap=()=>{
     H[slides[cur].id]?.leave?.();
     slides[cur].classList.remove('active'); cur=n; const sl=slides[cur]; sl.classList.add('active');
     step=at??(dir==='fwd'?mn(sl):mx(sl)); sl.dataset.step=step; applyAt(sl,step);
     H[sl.id]?.enter?.(step,dir); H[sl.id]?.step?.(step,-1,dir); updateNav();
-  });
+  };
+  if(quick) swap(); else await wipe(swap);
   busy=false;
 }
 /* barra de navegación: secciones */
@@ -5055,6 +4708,13 @@ slides.forEach((s,i)=>{
   const j=rest.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
   rest.splice(j+1,0,...mine); units.splice(0,units.length,...rest);
 });
+/* numeración: una por filmina (data-cuenta="paso" hace que cada sub-paso cuente como número propio);
+   sigue el orden del recorrido, así que las filminas intercaladas quedan en su lugar */
+const numMap={}; let TOTAL=0, _prev=-1;
+units.forEach(u=>{ if(u[0]!==_prev||slides[u[0]].dataset.cuenta==='paso') TOTAL++; _prev=u[0]; numMap[u[0]+':'+u[1]]=TOTAL; });
+const numOf=(i,st)=>numMap[i+':'+st];
+const curNum=()=>numOf(cur,step);
+const unitOfNum=n=>units.findIndex(u=>numOf(u[0],u[1])===n);
 function updateNav(){
   const isCover = cur === 0;
   if(secNav){
@@ -5072,21 +4732,19 @@ function updateNav(){
   if(bprev){
     bprev.style.display = isCover ? 'none' : '';
   }
-  const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
   const snCur = document.getElementById('sn-cur');
   const snTot = document.getElementById('sn-tot');
-  if(snCur) snCur.textContent = String(currentUnitIndex >= 0 ? currentUnitIndex + 1 : cur + 1);
-  if(snTot) snTot.textContent = String(units.length);
+  if(snCur) snCur.textContent = String(curNum());
+  if(snTot) snTot.textContent = String(TOTAL);
 }
 const snEl=document.getElementById('slide-num');
 if(snEl){
   snEl.onclick=()=>{
-    const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
-    const val=prompt(`Ir a transición (1 a ${units.length}):`, (currentUnitIndex >= 0 ? currentUnitIndex : cur) + 1);
+    const val=prompt(`Ir a diapositiva (1 a ${TOTAL}):`, curNum());
     const n=parseInt(val,10);
-    if(!isNaN(n)&&n>=1&&n<=units.length&&!busy){
-      const i=units.findIndex(u=>u[0]===cur&&u[1]===step);
-      if(n-1!==i) goUnit(units[n-1], n-1>i?'fwd':'back');
+    if(!isNaN(n)&&n>=1&&n<=TOTAL&&!busy){
+      const i=unitIdx(), k=unitOfNum(n);
+      if(k>=0&&k!==i) goUnit(units[k], k>i?'fwd':'back');
     }
   };
 }
@@ -5121,13 +4779,13 @@ let numBuf='', numTimer=0;
 function jumpBuf(){
   clearTimeout(numTimer); const n=parseInt(numBuf,10); numBuf=''; updateNav();
   if(busy||isNaN(n)) return;
-  const k=Math.min(Math.max(n,1),units.length)-1, i=units.findIndex(u=>u[0]===cur&&u[1]===step);
-  if(k!==i) goUnit(units[k], k>i?'fwd':'back');
+  const k=unitOfNum(Math.min(Math.max(n,1),TOTAL)), i=unitIdx();
+  if(k>=0&&k!==i) goUnit(units[k], k>i?'fwd':'back');
 }
 addEventListener('keydown',e=>{
   const t=e.target; const inCtl=t.closest&&t.closest('button,input,label');
   if(!inCtl && /^[0-9]$/.test(e.key)){
-    e.preventDefault(); numBuf=(numBuf+e.key).slice(-String(units.length).length);
+    e.preventDefault(); numBuf=(numBuf+e.key).slice(-String(TOTAL).length);
     const sc=document.getElementById('sn-cur'); if(sc) sc.textContent=numBuf;   // muestra lo que se va tecleando
     clearTimeout(numTimer); numTimer=setTimeout(jumpBuf,650);
   }
@@ -5226,7 +4884,7 @@ H['s-title']={};
       for (let i = 0; i < 12; i++) {
         const cu = 0.1 + i * 0.073, cv = wave(cu), p = P(cu, cv);
         const el = document.createElement('div'); el.className = 'cc'; el.style.left = p.x + 'px'; el.style.top = (p.y - 30) + 'px';
-        const im = new Image(); im.src = px(ART.coin, 3); im.className = 'spr spin'; im.style.animationDelay = (-i * 0.13) + 's'; el.appendChild(im); coinsEl.appendChild(el);
+        const im = new Image(); im.src = px(ART.coin, 3); im.className = 'spr'; el.appendChild(im); coinsEl.appendChild(el);
         coins.push({ el, u: cu, v: cv - 0.07, got: false });
       }
     }
@@ -5297,10 +4955,7 @@ H['s-title']={};
     enter(n,dir){ resetRunner(); if(dir==='back'){ clearInterval(timer); el.innerHTML=html(FLAT.length); } else type(); },
     leave(){ clearInterval(timer); stopRun(); },
     step(n,old){
-      if(n===1){ resetRunner(); if(old===2){ el.innerHTML=html(FLAT.length); } }
-      if(n===2){ clearInterval(timer); el.innerHTML=html(FLAT.length);
-        runner.src=heroURL('happy',8,0); let f=0; run=setInterval(()=>{ f^=1; runner.src=heroURL('happy',8,f); },130);
-        runner.classList.add('go'); setTimeout(stopRun,2000); }
+      if(n===1){ resetRunner(); }
     }
   };
 })();
@@ -5314,7 +4969,7 @@ H['s-prisma']={
     if(n>=2&&old<2) countTo(document.getElementById('n-ident'),126);
     if(n>=3&&old<3){ countTo(document.getElementById('n-rem'),29,700); countTo(document.getElementById('n-scr'),97); }
     if(n>=4&&old<4) countTo(document.getElementById('n-exc'),85);
-    if(n>=5&&old<5){ countTo(document.getElementById('n-inc'),12,700); setTimeout(()=>{ if(step===5) burst(735,610,14); },350); }
+    if(n>=5&&old<5){ countTo(document.getElementById('n-inc'),12,700); setTimeout(()=>{ if(step===5) burst(735,614,14); },350); }
   }
 };
 
@@ -5364,35 +5019,6 @@ H['s-prisma']={
   apply();
 })();
 
-/* ===== 06-niveles.html ===== */
-  (function () {
-    const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-    const slide = $('#s-levels');
-    if (!slide) return;
-    const cards = $$('#s-levels .lvl-card');
-
-    cards.forEach(c => {
-      c.addEventListener('click', () => {
-        const isAct = c.classList.contains('active');
-        cards.forEach(other => other.classList.remove('active', 'dim'));
-        if (!isAct) {
-          c.classList.add('active');
-          cards.forEach(other => { if (other !== c) other.classList.add('dim'); });
-        }
-      });
-    });
-
-    H['s-levels'] = {
-      enter() {
-        cards.forEach(c => c.classList.remove('active', 'dim'));
-      },
-      leave() {
-        cards.forEach(c => c.classList.remove('active', 'dim'));
-      },
-      step() { }
-    };
-  })();
-
 /* ===== 07-metodologia.html ===== */
   /* ============================================================
      METODOLOGÍA — diagrama de flujo con cámara (zoom) y paneles
@@ -5424,49 +5050,53 @@ H['s-prisma']={
       hf: { x: 310, y: 170, w: 340, h: 100, l: ['Selección de niveles', 'Hugging Face'], c: 'mint', at: 1 },
       fil: { x: 730, y: 170, w: 340, h: 100, l: ['Filtración', 'por criterio'], c: 'mint', at: 2 },
       astar: { x: 1150, y: 170, w: 340, h: 100, l: ['Verificación', 'con A*'], c: 'mint', at: 3 },
-      bank: { x: 1560, y: 170, w: 300, h: 124, l: ['Niveles H'], c: 'gold', at: 3, go: 3, db: 1 },
-      welcome: { x: 160, y: 640, w: 250, h: 100, l: ['Bienvenida', 'Explicación de sesión'], c: 'white', n: 1, at: 4 },
-      fam: { x: 480, y: 640, w: 280, h: 100, l: ['Niveles de', 'familiarización (F)'], c: 'white', n: 2, at: 5 },
-      cons: { x: 790, y: 640, w: 240, h: 170, l: ['Consentimiento', 'informado'], c: 'gold', n: 3, at: 6, dia: 1 },
-      exit: { x: 790, y: 450, w: 300, h: 80, l: ['Se borran los datos', 'y se sale'], c: 'danger', at: 6, go: 6 },
-      survey: { x: 1100, y: 640, w: 250, h: 100, l: ['Encuesta', 'inicial'], c: 'white', n: 4, at: 7 },
-      tele: { x: 480, y: 940, w: 220, h: 100, l: ['Telemetría'], c: 'pink', at: 8 },
-      ollama: { x: 800, y: 940, w: 220, h: 100, l: ['Ollama', '(LLM)'], c: 'pink', at: 8 },
-      mgpt: { x: 1120, y: 940, w: 220, h: 100, l: ['MarioGPT'], c: 'pink', at: 8 },
-      pers: { x: 1480, y: 940, w: 270, h: 100, l: ['Nivel', 'personalizado (P)'], c: 'pink', at: 8 },
-      gen: { x: 1850, y: 940, w: 280, h: 100, l: ['Niveles no', 'personalizados (N)'], c: 'gold', at: 9, go: 9 },
-      block: { x: 1450, y: 640, w: 300, h: 130, l: ['Bloque principal', '6 niveles: P · N · H', 'orden aleatorio'], c: 'block', n: 5, at: 9 },
-      quest: { x: 1430, y: 470, w: 210, h: 80, l: ['Cuestionario', '6 preguntas'], c: 'white', at: 10 },
-      rank: { x: 1830, y: 640, w: 260, h: 100, l: ['Ranking y', 'comentarios'], c: 'white', n: 6, at: 11 },
-      free: { x: 2160, y: 640, w: 270, h: 100, l: ['Juego libre', 'voluntario ≤ 20 min'], c: 'white', n: 7, at: 12 },
-      end: { x: 2460, y: 640, w: 170, h: 100, l: ['Final'], c: 'end', n: 8, at: 13 }
+      bank: { x: 1560, y: 170, w: 300, h: 124, l: ['Niveles H', '14 niveles'], c: 'mint', at: 3, go: 3, db: 1 },
+      welcome: { x: 160, y: 640, w: 250, h: 100, l: ['Bienvenida', 'Explicación de sesión'], c: 'white', n: 1, at: 5 },
+      fam: { x: 480, y: 640, w: 280, h: 100, l: ['Niveles de', 'familiarización (F)'], c: 'white', n: 2, at: 6 },
+      cons: { x: 790, y: 640, w: 240, h: 170, l: ['Consentimiento', 'informado'], c: 'gold', n: 3, at: 7, dia: 1 },
+      exit: { x: 790, y: 450, w: 300, h: 80, l: ['Se borran los datos', 'y se sale'], c: 'danger', at: 7, go: 7 },
+      survey: { x: 1100, y: 640, w: 250, h: 100, l: ['Encuesta', 'inicial'], c: 'white', n: 4, at: 8 },
+      tele: { x: 480, y: 940, w: 220, h: 100, l: ['Telemetría'], c: 'pink', at: 9 },
+      ollama: { x: 800, y: 940, w: 220, h: 100, l: ['Ollama', '(LLM)'], c: 'pink', at: 9 },
+      mgpt: { x: 1120, y: 940, w: 220, h: 100, l: ['MarioGPT'], c: 'pink', at: 9 },
+      pers: { x: 1480, y: 940, w: 270, h: 100, l: ['Nivel', 'personalizado (P)'], c: 'pink', at: 9 },
+      rnd: { x: 1880, y: 170, w: 220, h: 100, l: ['Parámetros', 'aleatorios'], c: 'gold', at: 4, go: 4 },
+      mgptN: { x: 2150, y: 170, w: 200, h: 100, l: ['MarioGPT', '(clúster HPC)'], c: 'gold', at: 4, go: 4 },
+      gen: { x: 2440, y: 170, w: 280, h: 124, l: ['Niveles N', 'no personalizados'], c: 'gold', at: 4, go: 4, db: 1 },
+      block: { x: 1450, y: 640, w: 300, h: 130, l: ['Bloque principal', '6 niveles: P · N · H', 'orden aleatorio'], c: 'block', n: 5, at: 10 },
+      quest: { x: 1430, y: 470, w: 210, h: 80, l: ['Cuestionario', '6 preguntas'], c: 'white', at: 10, go: 11 },
+      rank: { x: 1830, y: 640, w: 260, h: 100, l: ['Ranking y', 'comentarios'], c: 'white', n: 6, at: 12 },
+      free: { x: 2160, y: 640, w: 270, h: 100, l: ['Juego libre', 'voluntario ≤ 20 min'], c: 'white', n: 7, at: 13 },
+      end: { x: 2460, y: 640, w: 170, h: 100, l: ['Final'], c: 'end', n: 8, at: 14 }
     };
-    const FOCUS = { 1: ['hf'], 2: ['fil'], 3: ['astar'], 4: ['welcome'], 5: ['fam'], 6: ['cons'], 7: ['survey'], 8: ['tele', 'ollama', 'mgpt', 'pers'], 9: ['block'], 10: ['quest'], 11: ['rank'], 12: ['free'], 13: ['end'], 14: [] };
+    const FOCUS = { 1: ['hf'], 2: ['fil'], 3: ['astar'], 4: ['rnd', 'mgptN', 'gen'], 5: ['welcome'], 6: ['fam'], 7: ['cons'], 8: ['survey'], 9: ['tele', 'ollama', 'mgpt', 'pers'], 10: ['block'], 11: ['quest'], 12: ['rank'], 13: ['free'], 14: ['end'], 15: [] };
     const EDGES = [
       { d: 'M480 170H560', at: 2 }, { d: 'M900 170H980', at: 3 }, { d: 'M1320 170H1410', at: 3 },
-      { d: 'M1560 232V575', at: 9, lbl: ['H', 1590, 420] },
-      { d: 'M285 640H340', at: 5 }, { d: 'M620 640H670', at: 6 },
-      { d: 'M910 640H975', at: 7, lbl: ['Sí', 924, 690], id: 'eYes' },
-      { d: 'M790 555V490', at: 6, lbl: ['No', 814, 532], id: 'eNo' },
-      { d: 'M1225 640H1300', at: 9 }, { d: 'M1600 640H1700', at: 11 }, { d: 'M1960 640H2025', at: 12 }, { d: 'M2295 640H2375', at: 13 },
-      { d: 'M480 690V890', at: 8, dash: 1 }, { d: 'M590 940H690', at: 8, dash: 1 }, { d: 'M910 940H1010', at: 8, dash: 1 }, { d: 'M1230 940H1345', at: 8, dash: 1 },
-      { d: 'M1480 890V705', at: 9, lbl: ['P', 1448, 806] },
-      { d: 'M1850 890V790H1560V705', at: 9, lbl: ['N', 1700, 772] },
+      { d: 'M1560 232V575', at: 10, lbl: ['H · 14', 1590, 420] },
+      { d: 'M285 640H340', at: 6 }, { d: 'M620 640H670', at: 7 },
+      { d: 'M910 640H975', at: 8, lbl: ['Sí', 924, 690], id: 'eYes' },
+      { d: 'M790 555V490', at: 7, lbl: ['No', 814, 532], id: 'eNo' },
+      { d: 'M1225 640H1300', at: 10 }, { d: 'M1600 640H1700', at: 12 }, { d: 'M1960 640H2025', at: 13 }, { d: 'M2295 640H2375', at: 14 },
+      { d: 'M480 690V890', at: 9, dash: 1 }, { d: 'M590 940H690', at: 9, dash: 1 }, { d: 'M910 940H1010', at: 9, dash: 1 }, { d: 'M1230 940H1345', at: 9, dash: 1 },
+      { d: 'M1480 890V705', at: 10, lbl: ['P', 1448, 806] },
+      { d: 'M1992 170H2042', at: 4 }, { d: 'M2252 170H2290', at: 4 },
+      { d: 'M2440 232V300H2595V790H1560V705', at: 10, lbl: ['N · 17', 1590, 768] },
       { d: 'M1450 575V510', at: 10, both: 1 }
     ];
     const nodeEls = {}, edgeEls = [], extra = [];
     // carril de generación + banners (debajo de los nodos)
-    const lane = E('rect', { class: 'lane', x: 330, y: 830, width: 1335, height: 215, rx: 0 }, world); extra.push([lane, 8]);
-    const laneL = E('text', { class: 'lanelbl', x: 350, y: 866 }, world); laneL.textContent = 'GENERACIÓN EN SEGUNDO PLANO'; extra.push([laneL, 8]);
+    const lane = E('rect', { class: 'lane', x: 330, y: 830, width: 1335, height: 215, rx: 0 }, world); extra.push([lane, 9]);
+    const laneL = E('text', { class: 'lanelbl', x: 350, y: 866 }, world); laneL.textContent = 'GENERACIÓN EN SEGUNDO PLANO'; extra.push([laneL, 9]);
     function banner(txt, x, y, w, c, at) { const g = E('g', { class: 'banner' }, world); E('rect', { x: x + 6, y: y + 6, width: w, height: 54, fill: '#1a1a1a' }, g); E('rect', { x, y, width: w, height: 54, fill: c, stroke: '#1a1a1a', 'stroke-width': 5 }, g); const t = E('text', { x: x + 20, y: y + 39 }, g); t.textContent = txt; extra.push([g, at]); }
-    banner('PARTE 1 · SELECCIÓN DE NIVELES HUMANOS', 110, 34, 590, COLS_M(), 14);
-    banner('PARTE 2 · APLICACIÓN DEL EXPERIMENTO', 110, 330, 560, '#f6d36b', 14);
+    banner('PARTE 1 · SELECCIÓN DE NIVELES HUMANOS', 110, 34, 590, COLS_M(), 15);
+    banner('PARTE 2 · NIVELES NO PERSONALIZADOS (N)', 1790, 34, 640, '#f6d36b', 15);
+    banner('PARTE 3 · APLICACIÓN DEL EXPERIMENTO', 110, 330, 600, '#ffd0ea', 15);
     function COLS_M() { return COL.mint; }
     EDGES.forEach(ed => {
       const g = E('g', { class: 'fedge' + (ed.dash ? ' dash' : '') }, world);
       const p = E('path', { d: ed.d, pathLength: 1, 'marker-end': 'url(#arw)' }, g); if (ed.both) p.setAttribute('marker-start', 'url(#arw)');
       if (ed.lbl) { const t = E('text', { x: ed.lbl[1], y: ed.lbl[2] }, g); t.textContent = ed.lbl[0]; }
-      edgeEls.push({ g, at: ed.at, id: ed.id });
+      edgeEls.push({ g, at: ed.at, id: ed.id, top: /^M\d+ 170H/.test(ed.d) });
     });
     Object.entries(NODES).forEach(([id, n]) => {
       const g = E('g', { class: 'fnode', 'data-id': id }, world); nodeEls[id] = g;
@@ -5479,7 +5109,7 @@ H['s-prisma']={
         const shPath = `M ${x0} ${y0 + rh} A ${n.w / 2} ${rh} 0 0 1 ${x1} ${y0 + rh} L ${x1} ${y1 - rh} A ${n.w / 2} ${rh} 0 0 1 ${x0} ${y1 - rh} Z`;
         E('path', { class: 'sh', d: shPath, transform: 'translate(9 9)' }, g);
         E('path', { class: 'bx', d: shPath, fill: COL[n.c] }, g);
-        E('ellipse', { cx: n.x, cy: y0 + rh, rx: n.w / 2, ry: rh, fill: '#fff2a8', stroke: '#1a1a1a', 'stroke-width': 5 }, g);
+        E('ellipse', { cx: n.x, cy: y0 + rh, rx: n.w / 2, ry: rh, fill: n.c === 'mint' ? '#c9efe2' : '#fff2a8', stroke: '#1a1a1a', 'stroke-width': 5 }, g);
       } else {
         E('rect', { class: 'sh', x: x0 + 9, y: y0 + 9, width: n.w, height: n.h }, g); E('rect', { class: 'bx', x: x0, y: y0, width: n.w, height: n.h, fill: COL[n.c] }, g);
       }
@@ -5503,10 +5133,12 @@ H['s-prisma']={
       })(t0);
     }
     const CAMS = {
-      1: camFor(310, 170, 1, 330, 300), 2: camFor(730, 170, 1, 330, 300), 3: camFor(1235, 170, .75, 250, 300), 4: camFor(160, 640, 1, 300, 330),
-      5: camFor(480, 640, 1, 330, 330), 6: camFor(790, 560, .85, 300, 340), 7: camFor(1100, 640, 1, 330, 330), 8: camFor(975, 940, .48, 340, 330),
-      9: camFor(1500, 560, .66, 330, 380), 10: camFor(1450, 560, .9, 330, 360), 11: camFor(1830, 640, 1, 330, 330), 12: camFor(2160, 640, 1, 330, 330),
-      13: camFor(2460, 640, 1, 300, 330), 14: { cx: 1270, cy: 530.5, lk: Math.log(.474) }
+      1: camFor(310, 170, 1, 330, 300), 2: camFor(730, 170, 1, 330, 300), 3: camFor(1235, 170, .75, 250, 300),
+      4: camFor(2175, 170, .7, 350, 300),
+      5: camFor(160, 640, 1, 230, 175), 6: camFor(480, 640, 1, 230, 175), 7: camFor(790, 560, .85, 300, 340), 8: camFor(1100, 640, 1, 330, 185),
+      9: camFor(975, 940, .48, 340, 330),
+      10: camFor(1500, 560, .66, 330, 250), 11: camFor(1430, 470, .9, 250, 175), 12: camFor(1830, 640, 1, 300, 175), 13: camFor(2160, 640, 1, 230, 175),
+      14: camFor(2460, 640, 1, 300, 330), 15: { cx: 1270, cy: 530.5, lk: Math.log(.474) }
     };
 
     /* ---------- temporizadores / limpieza ---------- */
@@ -5570,29 +5202,6 @@ H['s-prisma']={
       }
     })();
 
-    // 2 · embudo
-    PA[2] = {
-      on() {
-        const box = $('#fundots'), N = $('#funN'); let n = 0, alive = 0; N.textContent = '0'; box.innerHTML = '';
-        const cl = ['#ff7fc0', '#94ddc6', '#f6d36b', '#8aa24a'], cx = 252;
-        const fx = [.85, .5, .22];
-        const spawn = () => {
-          if (alive > 26 || reduce) return; alive++;
-          const x0 = 50 + Math.random() * 404, r = Math.random(), fail = r < .3 ? 0 : r < .55 ? 1 : r < .75 ? 2 : -1, ys = [55, 150, 240];
-          const d = document.createElement('div'); d.className = 'fdot'; d.style.background = cl[Math.floor(Math.random() * 4)]; d.style.left = '-6px'; d.style.top = '-6px'; box.appendChild(d);
-          const P = (x, y, o = {}) => ({ transform: `translate(${x}px,${y}px)`, ...o }); let kf, dur;
-          if (fail >= 0) {
-            const xm = cx + (x0 - cx) * fx[fail], side = (Math.random() < .5 ? -1 : 1) * (150 + Math.random() * 60);
-            kf = [P(x0, 0), P(xm, ys[fail], { opacity: 1, offset: .7 }), P(xm + side, ys[fail] + 30, { opacity: 0 })]; dur = 900 + fail * 600;
-          }
-          else { kf = [P(x0, 0), P(cx + (x0 - cx) * fx[0], 55, { offset: .2 }), P(cx + (x0 - cx) * fx[1], 150, { offset: .45 }), P(cx + (x0 - cx) * fx[2], 240, { offset: .7 }), P(cx + (x0 - cx) * .1, 318, { opacity: 1, offset: .95 }), P(cx, 322, { opacity: 0 })]; dur = 2400; }
-          d.animate(kf, { duration: dur, easing: 'ease-in' }).finished.then(() => { d.remove(); alive--; if (fail < 0) { n++; N.textContent = n; } }).catch(() => { });
-        };
-        if (reduce) { N.textContent = '★'; return; }
-        I(spawn, 300); spawn();
-      }
-    };
-
     // 3 · A* (animación pausada, ocurre solo una vez sin bucle)
     PA[3] = {
       on() {
@@ -5623,19 +5232,6 @@ H['s-prisma']={
       }, off() { }
     };
 
-    // 5 · telemetría
-    PA[5] = {
-      on() {
-        const box = $('#tele'); let t = 0, sal = 0, mue = 0, mon = 0, ene = 0, last = {}, now = 0;
-        const render = () => {
-          const f = (k, v) => (now - (last[k] || -1e9) < 260 ? `<span class="fl">${v}</span>` : `<em>${v}</em>`);
-          box.innerHTML = `{\n  "participante": <em>"P07"</em>,\n  "nivel": <em>"F1"</em>,\n  "tiempo_s": ${f('t', t.toFixed(1))},\n  "saltos": ${f('s', sal)},\n  "muertes": ${f('m', mue)},\n  "monedas": ${f('c', mon)},\n  "enemigos_derrotados": ${f('e', ene)}\n}`;
-        };
-        render();
-        I(() => { now += 100; t += .1; if (Math.random() < .22) { sal++; last.s = now; } if (Math.random() < .04) { mue++; last.m = now; } if (Math.random() < .1) { mon++; last.c = now; } if (Math.random() < .05) { ene++; last.e = now; } last.t = now; render(); }, 100);
-      }
-    };
-
     // 6 · consentimiento
     const cres = $('#cres');
     function choose(b) {
@@ -5643,73 +5239,33 @@ H['s-prisma']={
       exit.classList.toggle('hl', b === 'no'); eNo.classList.toggle('hl', b === 'no');
       ['exit'].forEach(() => { }); if (b === 'no') { peek.delete('survey'); peek.delete('eYes'); eYes.classList.remove('run'); }
       if (b === 'yes') { peek.add('survey'); peek.add('eYes'); }
-      paint(6);
+      paint(7);
       if (b === 'yes') { eYes.classList.add('run'); sv.classList.add('focus'); } else sv.classList.remove('focus');
       cres.className = 'res ' + b; cres.textContent = b === 'no' ? 'No acepta → se borran sus datos y se sale de la sesión.' : 'Acepta → continuamos con la encuesta inicial.';
     }
     $('#cNo').onclick = e => { e.currentTarget.blur(); choose('no'); }; $('#cYes').onclick = e => { e.currentTarget.blur(); choose('yes'); };
-    PA[6] = {
+    PA[7] = {
       on() { cres.className = 'res'; cres.textContent = 'Elige una opción.'; T(() => choose('no'), 1100); T(() => choose('yes'), 3600); },
       off() { peek.clear(); nodeEls.exit.classList.remove('hl'); edgeEls.forEach(e => e.g.classList.remove('hl', 'run')); }
     };
 
     // 8 · generación
-    (function () {
-      const btnP = document.getElementById('btnGoAnxPipeline');
-      if (btnP) {
-        btnP.onclick = (e) => {
-          e.currentTarget.blur();
-          const idx = slides.findIndex(s => s.id === 's-anexos-pipeline');
-          if (idx >= 0 && typeof goSlide === 'function') {
-            goSlide(idx, 'fwd', 0);
-          }
-        };
-      }
-    })();
-    PA[8] = {
+    PA[9] = {
       on() {
-        const out = $('#prompt'), txt = 'Prompt → MarioGPT: «Nivel con saltos exigentes sobre vacíos, pocos enemigos y plataformas elevadas.»'; let i = 0; out.textContent = '';
-        if (reduce) out.textContent = txt; else I(() => { if (i < txt.length) out.textContent = txt.slice(0, ++i); }, 32);
+        const out = $('#mgprompt'), txt = 'difficulty=medium; route=low; jump=short; enemies=moderate; hazards=low; rewards=none; progression=steady; avoid=pos1542,pos1678,large_gaps; must_have=clear_platforms,powerup_blocks'; let i = 0; out.textContent = '';
+        if (reduce) out.textContent = txt; else I(() => { if (i < txt.length) out.textContent = txt.slice(0, i += 2); }, 22);
         T(() => {
           packet([[480, 700], [480, 940], [1120, 940], [1480, 940], [1480, 720]], 220, null, false);
         }, 2000);
       }
     };
 
-    // 9 · bloque principal
-    const c6 = $('#cards6'); let order = ['P', 'H', 'N', 'P', 'H', 'N'].map((t, i) => ({ t, id: i })); const c6els = {};
-    order.forEach(o => { const d = document.createElement('div'); d.className = 'c6'; d.innerHTML = `<img src="${lvlThumb(40 + o.id * 11 + (o.t === 'P' ? 5 : 0), 28, 16, 3)}" alt=""><b class="t-${o.t}">${o.t}</b>`; c6els[o.id] = d; c6.appendChild(d); });
-    function shuffle() {
-      const first = Object.fromEntries(order.map(o => [o.id, c6els[o.id].getBoundingClientRect()]));
-      for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[order[i], order[j]] = [order[j], order[i]]; }
-      order.forEach(o => c6.appendChild(c6els[o.id]));
-      if (reduce) return; const sc = stage.getBoundingClientRect().width / 1280;
-      order.forEach(o => { const a = first[o.id], b = c6els[o.id].getBoundingClientRect(); c6els[o.id].animate([{ transform: `translate(${(a.left - b.left) / sc}px,${(a.top - b.top) / sc}px)` }, { transform: 'none' }], { duration: 550, easing: 'cubic-bezier(.3,1.3,.5,1)' }); });
-    }
-    $('#shuf').onclick = e => { e.currentTarget.blur(); shuffle(); };
-    PA[9] = { on() { T(shuffle, 700); } };
-
-    // 10 · cuestionario
-    (function () {
-      const box = $('#lik'), questions = [
-        { label: '1. Disfrute', prompt: 'La pasé bien jugando este nivel.' },
-        { label: '2. Competencia', prompt: 'Sentí que era bueno jugando este nivel.' },
-        { label: '3. Dificultad', prompt: '¿Cómo percibiste la dificultad de este nivel para ti?' },
-        { label: '4. Ajuste del reto', prompt: 'El nivel ofreció un reto adecuado para mi nivel de habilidad.' },
-        { label: '5. Variedad', prompt: 'El nivel presentó elementos, obstáculos y situaciones variadas.' },
-        { label: '6. Deseo de rejugar', prompt: 'Me gustaría jugar más niveles con este estilo y diseño.' }
-      ], rows = [];
-      let h = '<div class="lik"><span></span>' + [-3, -2, -1, 0, 1, 2, 3].map(v => `<span class="hd">${v > 0 ? '+' + v : v}</span>`).join('') + '</div>'; box.innerHTML = h;
-      questions.forEach(q => {
-        const r = document.createElement('div'); r.className = 'lik';
-        r.innerHTML = `<span title="${q.prompt}">${q.label}</span>` + [-3, -2, -1, 0, 1, 2, 3].map(v => `<button data-v="${v}" aria-label="${q.label} ${v}"></button>`).join('');
-        r.querySelectorAll('button').forEach(b => b.onclick = () => { b.blur(); sel(r, +b.dataset.v); });
-        box.appendChild(r);
-        rows.push(r);
-      });
-      window.__likSel = sel; function sel(r, v) { r.querySelectorAll('button').forEach(b => { const x = +b.dataset.v; b.className = x === v ? 'on ' + (v < 0 ? 'neg' : v > 0 ? 'pos' : 'zero') : ''; }); }
-      PA[10] = { on() { rows.forEach(r => sel(r, 99)); rows.forEach((r, i) => T(() => sel(r, Math.floor(Math.random() * 7) - 3), 350 + i * 180)); } };
-    })();
+    // 9 · bloque principal (orden fijo, con el cuestionario E tras cada nivel)
+    const c6 = $('#cards6');
+    ['H', 'N', 'P', 'N', 'P', 'H'].forEach((tp, i) => {
+      const d = document.createElement('div'); d.className = 'c6'; d.innerHTML = `<img src="${lvlThumb(40 + i * 11 + (tp === 'P' ? 5 : 0), 28, 16, 3)}" alt=""><b class="t-${tp}">${tp}</b>`; c6.appendChild(d);
+      const e = document.createElement('div'); e.className = 'c6e'; e.title = 'Cuestionario'; e.innerHTML = '<i></i><i></i><i></i>'; c6.appendChild(e);
+    });
 
     // 11 · ranking
     (function () {
@@ -5725,26 +5281,10 @@ H['s-prisma']={
       }
     })();
 
-    // 12 · juego libre
-    (function () {
-      const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)]; let cond = 'P', sim = 0, lv = 0, nextLv = 150; const tm = $('#timer'), mT = $('#mT'), mL = $('#mL');
-      const paintC = () => $$('.cond button').forEach(b => b.className = b.dataset.c === cond ? 'on ' + cond : '');
-      $$('.cond button').forEach(b => b.onclick = () => { b.blur(); cond = b.dataset.c; sim = 0; lv = 0; nextLv = 150; paintC(); });
-      const fmt = s => { const r = Math.max(0, 1200 - s); return String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(Math.floor(r % 60)).padStart(2, '0'); };
-      PA[12] = {
-        on() {
-          sim = 0; lv = 0; nextLv = 150; paintC(); I(() => {
-            sim += reduce ? 0 : 5; if (sim >= 1200) { sim = 0; lv = 0; nextLv = 150; } if (sim >= nextLv) { lv++; nextLv += 110 + Math.random() * 90; }
-            tm.firstChild.nodeValue = fmt(sim); mT.textContent = Math.floor(sim / 60) + ' min'; mL.textContent = lv;
-          }, 100);
-        }
-      };
-    })();
-
     // 13 · final
-    PA[13] = { on() { T(() => { if (step === 13) burst(300, 330, 22); }, 600); } };
-    // 14 · vista completa: el participante recorre la Parte 2
-    PA[14] = {
+    PA[14] = { on() { T(() => { if (step === 14) burst(300, 330, 22); }, 600); } };
+    // 15 · vista completa: el participante recorre la Parte 3
+    PA[15] = {
       on() {
         T(() => {
           packet([[160, 640], [480, 640], [790, 640], [1100, 640], [1450, 640], [1830, 640], [2160, 640], [2460, 640]], 330, px(heroRows('happy'), 1), false);
@@ -5757,19 +5297,23 @@ H['s-prisma']={
       Object.entries(NODES).forEach(([id, nd]) => nodeEls[id].classList.toggle('vis', nd.at <= n || peek.has(id)));
       edgeEls.forEach(e => e.g.classList.toggle('vis', !!(e.at <= n || (e.id && peek.has(e.id)))));
       extra.forEach(([g, at]) => g.classList.toggle('vis', at <= n));
+      /* la fila de arriba (Partes 1 y 2) se atenúa mientras se explica la Parte 3 */
+      const dimTop = n >= 5 && n < 15, TOP = ['hf', 'fil', 'astar', 'bank', 'rnd', 'mgptN', 'gen'];
+      TOP.forEach(id => nodeEls[id].classList.toggle('dim', dimTop)); edgeEls.forEach(e => e.g.classList.toggle('dim', dimTop && e.top));
     }
-    const CHIP = { 1: [1, 'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'], 2: [1, 'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'], 3: [1, 'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'], 8: [2, 'PARTE 2 · GENERACIÓN EN SEGUNDO PLANO'], 14: [3, 'DIAGRAMA COMPLETO'] };
+    const CHIP = { 1: [1, 'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'], 2: [1, 'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'], 3: [1, 'PARTE 1 · SELECCIÓN DE NIVELES HUMANOS'], 4: [2, 'PARTE 2 · NIVELES NO PERSONALIZADOS (N)'], 9: [4, 'PARTE 3 · GENERACIÓN EN SEGUNDO PLANO'], 15: [3, 'DIAGRAMA COMPLETO'] };
 
     H['s-flow'] = {
       enter(n) { const at = n || 1; camTo(CAMS[at] || CAMS[1], 0); },
       leave() { clearAnim(); panels.forEach(p => p.classList.remove('on')); },
       step(n, old) {
-        clearAnim(); peek.clear(); slide.classList.toggle('full', n === 14);
+        clearAnim(); peek.clear(); slide.classList.toggle('full', n === 15);
+        $('#s-flow .h1').style.visibility = n === 1 ? 'visible' : 'hidden';
         edgeEls.forEach(e => e.g.classList.remove('hl', 'run')); nodeEls.exit.classList.remove('hl');
         Object.values(nodeEls).forEach(g => g.classList.remove('focus')); (FOCUS[n] || []).forEach(id => nodeEls[id]?.classList.add('focus'));
         paint(n);
-        const c = CHIP[n] || [2, 'PARTE 2 · APLICACIÓN DEL EXPERIMENTO']; chip.dataset.p = c[0]; chip.textContent = c[1];
-        camTo(CAMS[n] || CAMS[14], old < 1 ? 0 : 1100);
+        const c = CHIP[n] || [4, 'PARTE 3 · APLICACIÓN DEL EXPERIMENTO']; chip.dataset.p = c[0]; chip.textContent = c[1];
+        camTo(CAMS[n] || CAMS[15], old < 1 ? 0 : 1100);
         panels.forEach(p => p.classList.toggle('on', +p.dataset.p === n));
         PA[n]?.on?.();
       }
@@ -5787,39 +5331,31 @@ H['s-prisma']={
 
   /* condiciones: mismos colores que en la metodología (H menta, N dorado, P rosa) */
   const COND=[
-    {k:'H',name:'Humano (H)',short:'Humano (H)',col:'#4fbf98'},
-    {k:'N',name:'LLM sin telemetría (N)',short:'Sin telem. (N)',col:'#dba93b'},
-    {k:'P',name:'LLM con telemetría (P)',short:'Con telem. (P)',col:'#e0559f'}
+    {k:'H',name:'Humano (H)',lab:'Humano (H)',col:'#4fbf98'},
+    {k:'N',name:'No Personalizado (N)',lab:'No Personalizado (N)',col:'#dba93b'},
+    {k:'P',name:'Personalizado (P)',lab:'Personalizado (P)',col:'#e0559f'}
   ];
   /* m: [media, IC inf, IC sup] por condición (H, N, P)
      c: comparaciones [i, j, diferencia (i − j), p Holm, frágil] */
   const RES=[
     {name:'Disfrute', m:[[1.277,.909,1.644],[.258,-.110,.625],[.376,-.016,.767]],
      c:[[0,1,1.019,.00004],[0,2,.901,.0003],[1,2,-.118,.6207]],
-     read:['Los niveles <b>humanos se disfrutan más</b> que los generados: <span class="k">+1.02</span> puntos frente a N y <span class="k">+0.90</span> frente a P.',
-           'Entre N y P <b>no se detecta diferencia</b>: no hay evidencia de que la telemetría mejore el disfrute (lo que no demuestra que no influya).']},
+     q:'La pasé bien jugando este nivel', read:['Los niveles humanos se disfrutan más que los generados: <span class="k">+1.02</span> puntos frente a N y <span class="k">+0.90</span> frente a P.']},
     {name:'Competencia percibida', m:[[1.037,.656,1.418],[.247,-.134,.627],[-.078,-.482,.327]],
      c:[[0,1,.790,.0014],[0,2,1.114,.00004],[1,2,.324,.1818]],
-     read:['Las personas se sintieron <b>más competentes en los niveles humanos</b>: <span class="k">+0.79</span> frente a N y <span class="k">+1.11</span> frente a P.',
-           'N y P no se distinguen entre sí.']},
+     q:'Sentí que era bueno jugando este nivel', read:['Las personas se sintieron más competentes en los niveles humanos: <span class="k">+0.79</span> frente a N y <span class="k">+1.11</span> frente a P.']},
     {name:'Dificultad percibida', m:[[-.084,-.451,.282],[.131,-.235,.497],[.761,.371,1.151]],
      c:[[0,1,-.215,.3367],[0,2,-.845,.0009],[1,2,-.630,.0142]],
-     read:['Los niveles <b>personalizados (P) se perciben como los más difíciles</b>: <span class="k">+0.84</span> frente a H y <span class="k">+0.63</span> frente a N.',
-           'H y N no se distinguen. Es el <b>efecto más claro de la telemetría</b>, y se mantiene con o sin exclusiones.']},
+     q:'¿Cómo percibiste la dificultad de este nivel para ti?', read:['Los niveles personalizados (P) se perciben como los más difíciles: <span class="k">+0.84</span> frente a H y <span class="k">+0.63</span> frente a N.']},
     {name:'Ajuste del reto', m:[[.167,-.205,.538],[-.264,-.634,.107],[.189,-.204,.582]],
      c:[[0,1,.430,.1358],[0,2,-.022,.9212],[1,2,-.453,.1358]],
-     read:['<b>Ninguna comparación es significativa</b> tras la corrección de Holm.',
-           'Las tres condiciones quedan cerca del punto neutro de la escala.']},
+     q:'El nivel ofreció un reto adecuado para mi nivel de habilidad', read:['Las tres condiciones quedan cerca del punto neutro de la escala.']},
     {name:'Variedad', m:[[1.046,.672,1.420],[.178,-.195,.552],[.678,.284,1.072]],
      c:[[0,1,.868,.0001],[0,2,.368,.0854],[1,2,-.499,.0389,1]],
-     read:['Los niveles humanos son <b>más variados que N</b> (<span class="k">+0.87</span>).',
-           'P se percibe <b>más variado que N</b> (<span class="k">+0.50</span>) y no se distingue de H: la telemetría acerca a P a los humanos en esta variable.'],
-     warn:'La ventaja de P sobre N es frágil: deja de ser significativa si no se aplican las exclusiones.'},
+     q:'El nivel presentó elementos, obstáculos y situaciones variadas', read:['Los niveles humanos son más variados que N (<span class="k">+0.87</span>), pero no hay diferencia significativa con los personalizados P.']},
     {name:'Intención de rejugar', m:[[.718,.335,1.101],[-.110,-.492,.273],[.197,-.208,.602]],
      c:[[0,1,.828,.0006],[0,2,.521,.0499,1],[1,2,-.307,.1855]],
-     read:['Hay <b>más intención de rejugar los niveles humanos</b> que los N (<span class="k">+0.83</span>).',
-           'Frente a P la diferencia es <span class="k">+0.52</span>, justo en el límite. N y P no se distinguen.'],
-     warn:'H vs. P (p = 0.0499) es frágil: deja de ser significativa si no se aplican las exclusiones.'}
+     q:'Me gustaría jugar más niveles con este estilo y diseño', read:['Hay más intención de rejugar los niveles humanos que los N (<span class="k">+0.83</span>).', 'Frente a P la diferencia es <span class="k">+0.52</span>, justo en el límite.']}
   ];
 
   const fmtP=p=>{ if(p<.001) return 'p < 0.001'; let t=p.toFixed(3); if((p<.05)!==(+t<.05)) t=p.toFixed(4); return 'p = '+t; };
@@ -5833,7 +5369,11 @@ H['s-prisma']={
     const sv=E('svg',{viewBox:`0 0 ${W} ${Hh}`,preserveAspectRatio:'xMidYMid meet'});
     E('text',{class:'rt',x:W/2,y:28},sv).textContent=d.name.toUpperCase();
     for(let v=-3;v<=3;v++){ E('line',{class:v?'gl':'z',x1:X0,x2:X1,y1:Y(v),y2:Y(v)},sv); E('text',{class:'ax',x:X0-8,y:Y(v)+3.5},sv).textContent=v>0?'+'+v:v<0?'−'+(-v):'0'; }
-    COND.forEach((c,i)=>{ E('text',{class:'xl',x:xs[i],y:244},sv).textContent=c.short; });
+    COND.forEach((c,i)=>{
+      const w=c.lab.length*5.3, x0=xs[i]-(w+15)/2;
+      E('rect',{x:x0,y:236,width:10,height:10,fill:c.col,stroke:'#1a1a1a','stroke-width':2},sv);
+      E('text',{class:'xl',x:x0+15,y:245,style:'text-anchor:start;font-size:9px'},sv).textContent=c.lab;
+    });
     // barras de error y puntos
     d.m.forEach(([mu,lo,hi],i)=>{
       const x=xs[i], col=COND[i].col;
@@ -5865,23 +5405,17 @@ H['s-prisma']={
   const place=(c,r)=>{ c.style.left=r.l+'px'; c.style.top=r.t+'px'; c.style.width=r.w+'px'; c.style.height=r.h+'px'; };
 
   /* ---------- panel lateral ---------- */
-  const chips=document.getElementById('rchips');
-  RES.forEach((d,i)=>{ const b=document.createElement('button'); b.textContent=i+1; b.title=d.name; b.onclick=()=>{ b.blur(); setStep(i+1,'fwd'); }; chips.appendChild(b); });
-  const all=document.createElement('button'); all.className='all'; all.textContent='◀ LOS 6'; all.onclick=()=>{ all.blur(); setStep(0,'back'); }; chips.appendChild(all);
   function fillSide(i){
     const d=RES[i];
-    [...chips.children].forEach((b,k)=>b.classList.toggle('on',k===i));
-    document.getElementById('rtag').textContent=`${i+1}/6 · ${d.name.toUpperCase()}`;
-    document.getElementById('rmeans').innerHTML=d.m.map(([mu,lo,hi],k)=>
-      `<p><i style="background:${COND[k].col}"></i><span>${COND[k].name}</span><b>${fmtN(mu)}</b><small>[${fmtN(lo)}, ${fmtN(hi)}]</small></p>`).join('');
-    document.getElementById('rread').innerHTML=d.read.map(t=>`<p>${t}</p>`).join('')+(d.warn?`<div class="rwarn">⚠ ${d.warn}</div>`:'');
+    document.getElementById('rq').textContent=d.q;
+    document.getElementById('rread').innerHTML=d.read.map(x=>`<p>${x}</p>`).join('');
   }
 
   let timers=[];
   function intro(){
     timers.forEach(clearTimeout); timers=[];
     cards.forEach(c=>c.classList.remove('in'));
-    cards.forEach((c,i)=>timers.push(setTimeout(()=>c.classList.add('in'),reduce?0:80+i*130)));
+    cards.forEach(c=>c.classList.add('in'));
   }
   function layout(n){
     cards.forEach((c,i)=>{
@@ -5909,11 +5443,7 @@ H['s-prisma']={
 /* ============================================================
    AGRADECIMIENTO
    ============================================================ */
-H['s-thanks'] = {
-  enter() {
-    burst(640, 480, 24);
-  }
-};
+H['s-thanks'] = {};
 
 /* ===== 11-anexos.html ===== */
 (function(){
@@ -6052,7 +5582,7 @@ H['s-thanks'] = {
       e.currentTarget.blur();
       const idx = slides.findIndex(s => s.id === 's-flow');
       if(idx >= 0 && typeof goSlide === 'function'){
-        goSlide(idx, 'back', 11);
+        goSlide(idx, 'back', 12);
       }
     };
   }
@@ -6116,7 +5646,7 @@ H['s-thanks'] = {
       e.currentTarget.blur();
       const idx = slides.findIndex(s => s.id === 's-flow');
       if(idx >= 0 && typeof goSlide === 'function'){
-        goSlide(idx, 'back', 8);
+        goSlide(idx, 'back', 9);
       }
     };
   }

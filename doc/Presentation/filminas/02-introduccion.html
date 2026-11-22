@@ -137,12 +137,12 @@
     left: 60px;
     top: 424px;
     width: 408px;
-    height: 36px;
+    height: 42px;
     border: 4px solid var(--ink);
     display: flex;
     align-items: center;
     justify-content: center;
-    font: 700 14px var(--body);
+    font: 700 18px var(--body);
     letter-spacing: .06em;
     background: var(--pink);
     transition: background .3s
@@ -159,7 +159,7 @@
   .moods {
     position: absolute;
     left: 60px;
-    top: 478px;
+    top: 480px;
     display: flex;
     gap: 12px
   }
@@ -174,7 +174,7 @@
     border: 3px solid var(--ink);
     background: #fff;
     cursor: pointer;
-    font: 700 12px var(--body);
+    font: 700 15px var(--body);
     color: var(--ink);
     transition: transform .15s
   }
@@ -202,12 +202,12 @@
   .mcap {
     position: absolute;
     left: 60px;
-    top: 586px;
+    top: 578px;
     width: 408px;
-    font-size: 16px;
-    line-height: 1.45;
+    font-size: 20px;
+    line-height: 1.35;
     font-weight: 500;
-    min-height: 46px
+    min-height: 84px
   }
 
   .chart {
@@ -260,7 +260,7 @@
   }
 
   .zl {
-    font: 500 21px var(--body);
+    font: 500 25px var(--body);
     fill: var(--ink);
     transition: opacity .5s
   }
@@ -274,17 +274,17 @@
   }
 
   .axl {
-    font: 500 20px var(--body);
+    font: 500 24px var(--body);
     fill: var(--ink)
   }
 
   .axs {
-    font: 400 10px var(--pixel);
+    font: 400 12px var(--pixel);
     fill: #777
   }
 
   .canal {
-    font: italic 700 26px var(--body);
+    font: italic 700 30px var(--body);
     fill: var(--ink);
     opacity: 0;
     transition: opacity .6s
@@ -339,7 +339,7 @@
     background: #fff;
     border: 3px solid var(--ink);
     padding: 6px 7px;
-    font: 400 9px var(--pixel);
+    font: 400 11px var(--pixel);
     z-index: 6
   }
 
@@ -349,7 +349,7 @@
     height: 24px;
     margin: -12px 0 0 -12px;
     z-index: 3;
-    transition: transform .35s, opacity .35s
+    transition: none
   }
 
   .cc img {
@@ -357,7 +357,6 @@
   }
 
   .cc.got {
-    transform: translateY(-26px) scale(1.4);
     opacity: 0
   }
 
@@ -368,23 +367,23 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font: 400 11px var(--pixel);
+    font: 400 14px var(--pixel);
     z-index: 6
   }
 
   .hint {
     position: absolute;
     left: 560px;
-    top: 636px;
+    top: 628px;
     width: 640px;
-    font-size: 13px;
+    font-size: 17px;
     color: #444;
     font-style: italic;
     text-align: center
   }
 </style>
 
-<section class="slide" id="s-intro" data-min="1" data-max="3" data-sec="Introducción">
+<section class="slide" id="s-intro" data-min="1" data-max="3" data-cuenta="paso" data-sec="Introducción">
   <h1 class="h1">INTRODUCCIÓN</h1>
 
   <div class="tv">
@@ -516,7 +515,7 @@
       for (let i = 0; i < 12; i++) {
         const cu = 0.1 + i * 0.073, cv = wave(cu), p = P(cu, cv);
         const el = document.createElement('div'); el.className = 'cc'; el.style.left = p.x + 'px'; el.style.top = (p.y - 30) + 'px';
-        const im = new Image(); im.src = px(ART.coin, 3); im.className = 'spr spin'; im.style.animationDelay = (-i * 0.13) + 's'; el.appendChild(im); coinsEl.appendChild(el);
+        const im = new Image(); im.src = px(ART.coin, 3); im.className = 'spr'; el.appendChild(im); coinsEl.appendChild(el);
         coins.push({ el, u: cu, v: cv - 0.07, got: false });
       }
     }

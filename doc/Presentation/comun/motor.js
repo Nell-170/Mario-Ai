@@ -75,12 +75,15 @@ function next(){ if(busy)return; const i=unitIdx(); if(i<units.length-1) goUnit(
 function prev(){ if(busy)return; const i=unitIdx(); if(i>0) goUnit(units[i-1],'back'); }
 async function goSlide(n,dir,at){
   busy=true;
-  await wipe(()=>{
+  /* data-sin-transicion="id": entre esa filmina y esta no se usa la cortina pixelada */
+  const quick=slides[n].dataset.sinTransicion===slides[cur].id||slides[cur].dataset.sinTransicion===slides[n].id;
+  const swap=()=>{
     H[slides[cur].id]?.leave?.();
     slides[cur].classList.remove('active'); cur=n; const sl=slides[cur]; sl.classList.add('active');
     step=at??(dir==='fwd'?mn(sl):mx(sl)); sl.dataset.step=step; applyAt(sl,step);
     H[sl.id]?.enter?.(step,dir); H[sl.id]?.step?.(step,-1,dir); updateNav();
-  });
+  };
+  if(quick) swap(); else await wipe(swap);
   busy=false;
 }
 /* barra de navegación: secciones */
@@ -132,6 +135,13 @@ slides.forEach((s,i)=>{
   const j=rest.findIndex(u=>slides[u[0]].id===id&&u[1]===+st); if(j<0) return;
   rest.splice(j+1,0,...mine); units.splice(0,units.length,...rest);
 });
+/* numeración: una por filmina (data-cuenta="paso" hace que cada sub-paso cuente como número propio);
+   sigue el orden del recorrido, así que las filminas intercaladas quedan en su lugar */
+const numMap={}; let TOTAL=0, _prev=-1;
+units.forEach(u=>{ if(u[0]!==_prev||slides[u[0]].dataset.cuenta==='paso') TOTAL++; _prev=u[0]; numMap[u[0]+':'+u[1]]=TOTAL; });
+const numOf=(i,st)=>numMap[i+':'+st];
+const curNum=()=>numOf(cur,step);
+const unitOfNum=n=>units.findIndex(u=>numOf(u[0],u[1])===n);
 function updateNav(){
   const isCover = cur === 0;
   if(secNav){
@@ -149,21 +159,19 @@ function updateNav(){
   if(bprev){
     bprev.style.display = isCover ? 'none' : '';
   }
-  const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
   const snCur = document.getElementById('sn-cur');
   const snTot = document.getElementById('sn-tot');
-  if(snCur) snCur.textContent = String(currentUnitIndex >= 0 ? currentUnitIndex + 1 : cur + 1);
-  if(snTot) snTot.textContent = String(units.length);
+  if(snCur) snCur.textContent = String(curNum());
+  if(snTot) snTot.textContent = String(TOTAL);
 }
 const snEl=document.getElementById('slide-num');
 if(snEl){
   snEl.onclick=()=>{
-    const currentUnitIndex = units.findIndex(u => u[0] === cur && u[1] === step);
-    const val=prompt(`Ir a transición (1 a ${units.length}):`, (currentUnitIndex >= 0 ? currentUnitIndex : cur) + 1);
+    const val=prompt(`Ir a diapositiva (1 a ${TOTAL}):`, curNum());
     const n=parseInt(val,10);
-    if(!isNaN(n)&&n>=1&&n<=units.length&&!busy){
-      const i=units.findIndex(u=>u[0]===cur&&u[1]===step);
-      if(n-1!==i) goUnit(units[n-1], n-1>i?'fwd':'back');
+    if(!isNaN(n)&&n>=1&&n<=TOTAL&&!busy){
+      const i=unitIdx(), k=unitOfNum(n);
+      if(k>=0&&k!==i) goUnit(units[k], k>i?'fwd':'back');
     }
   };
 }
@@ -198,13 +206,13 @@ let numBuf='', numTimer=0;
 function jumpBuf(){
   clearTimeout(numTimer); const n=parseInt(numBuf,10); numBuf=''; updateNav();
   if(busy||isNaN(n)) return;
-  const k=Math.min(Math.max(n,1),units.length)-1, i=units.findIndex(u=>u[0]===cur&&u[1]===step);
-  if(k!==i) goUnit(units[k], k>i?'fwd':'back');
+  const k=unitOfNum(Math.min(Math.max(n,1),TOTAL)), i=unitIdx();
+  if(k>=0&&k!==i) goUnit(units[k], k>i?'fwd':'back');
 }
 addEventListener('keydown',e=>{
   const t=e.target; const inCtl=t.closest&&t.closest('button,input,label');
   if(!inCtl && /^[0-9]$/.test(e.key)){
-    e.preventDefault(); numBuf=(numBuf+e.key).slice(-String(units.length).length);
+    e.preventDefault(); numBuf=(numBuf+e.key).slice(-String(TOTAL).length);
     const sc=document.getElementById('sn-cur'); if(sc) sc.textContent=numBuf;   // muestra lo que se va tecleando
     clearTimeout(numTimer); numTimer=setTimeout(jumpBuf,650);
   }
