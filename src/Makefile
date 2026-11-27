@@ -194,9 +194,9 @@ patch-framework:
 
 # ── compile ───────────────────────────────────────────────────
 compile: setup
-	$(call progress,0,Iniciando proceso de compilación...)
+	$(call progress,0,Iniciando proceso de compilacion...)
 	@$(COMPILE_CMD)
-	$(call progress,100,Proceso de compilación finalizado.)
+	$(call progress,100,Proceso de compilacion finalizado.)
 
 WANT            ?= 80
 MAX_SCAN        ?= 150000
@@ -210,24 +210,24 @@ filter:
 
 # ── convert ───────────────────────────────────────────────────
 convert:
-	$(call progress,0,Iniciando conversión de niveles binarios MM2 a texto MAF...)
+	$(call progress,0,Iniciando conversion de niveles binarios MM2 a texto MAF...)
 	@$(PYTHON) dataset/convert_mm2_to_maf.py
-	$(call progress,100,Conversión completada.)
+	$(call progress,100,Conversion completada.)
 
 # ── validate ──────────────────────────────────────────────────
 validate: compile
-	$(call progress,0,Iniciando validación paralela con agente Robin Baumgarten (A*)...)
+	$(call progress,0,Iniciando validacion paralela con agente Robin Baumgarten (A*)...)
 	@cd "$(FRAMEWORK)" && $(JAVA) "-Djava.awt.headless=true" \
 	    -cp bin ValidateLevels ../src/$(LEVELS)/converted ../src/$(LEVELS)/nivel0 $(VALIDATE_TIMER)
-	$(call progress,100,Validación de niveles finalizada.)
+	$(call progress,100,Validacion de niveles finalizada.)
 
 # ── play-human ────────────────────────────────────────────────
 play-human: compile
 	$(call progress,0,Iniciando partida humana de Mario...)
 	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman
-	$(call progress,80,Procesando telemetría y generando prompt...)
+	$(call progress,80,Procesando telemetria y generando prompt...)
 	@$(PYTHON) tools/telemetry_to_mariogpt_prompt.py --telemetry telemetry/latest.json --allow-cloud
-	$(call progress,100,Partida y telemetría registradas.)
+	$(call progress,100,Partida y telemetria registradas.)
 
 # ── play-level ────────────────────────────────────────────────
 LEVEL ?=
@@ -235,18 +235,18 @@ TIMER ?= 60
 play-level: compile
 	$(call progress,0,Iniciando probador de nivel de Mario AI...)
 	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin PlayHuman $(if $(LEVEL),"$(LEVEL)" $(TIMER),$(TIMER))
-	$(call progress,100,Sesión de prueba del nivel finalizada.)
+	$(call progress,100,Sesion de prueba del nivel finalizada.)
 
 # ── play-levels-generated ───────────────────────────────────────
 play-levels-generated: compile
-	$(call progress,0,Abriendo selector gráfico de niveles...)
+	$(call progress,0,Abriendo selector grafico de niveles...)
 	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin LevelSelector
 
 # ── start-experiment ──────────────────────────────────────────
 start-experiment: compile
-	$(call progress,0,Iniciando protocolo de experimentación formal...)
+	$(call progress,0,Iniciando protocolo de experimentacion formal...)
 	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin ExperimentRunner "$(PYTHON)"
-	$(call progress,100,Sesión de experimento finalizada.)
+	$(call progress,100,Sesion de experimento finalizada.)
 
 # ── test-db / sync-db ─────────────────────────────────────────
 test-db: compile
@@ -257,32 +257,32 @@ sync-db: compile
 
 # ── start-experiment-nogen ────────────────────────────────────
 start-experiment-nogen: compile
-	$(call progress,0,Iniciando experimento en modo rápido (sin generación IA)...)
+	$(call progress,0,Iniciando experimento en modo rapido (sin generacion IA)...)
 	@cd "$(FRAMEWORK)" && $(JAVA) -cp bin ExperimentRunner "$(PYTHON)" --skip-generation
-	$(call progress,100,Sesión de experimento finalizada.)
+	$(call progress,100,Sesion de experimento finalizada.)
 
 # ── generate-level ────────────────────────────────────────────
 generate-level: setup-mariogpt
-	$(call progress,0,Iniciando generación procedural con MarioGPT...)
+	$(call progress,0,Iniciando generacion procedural con MarioGPT...)
 	@$(PYTHON) tools/mario_gpt_generate.py --telemetry telemetry/latest.json
-	$(call progress,100,Generación completada exitosamente.)
+	$(call progress,100,Generacion completada exitosamente.)
 
 # ── get-generics-levels ───────────────────────────────────────
 N ?= 15
 OUT ?=
 PROMPT ?=
 get-generics-levels:
-	$(call progress,0,Generando niveles en lote con el servidor del clúster...)
+	$(call progress,0,Generando niveles en lote con el servidor del cluster...)
 	@chmod +x tools/generar_niveles.sh
 	@ARGS="-n $(N)"; \
 	if [ -n "$(OUT)" ]; then ARGS="$$ARGS -o \"$(OUT)\""; fi; \
 	if [ -n "$(PROMPT)" ]; then ARGS="$$ARGS -p \"$(PROMPT)\""; fi; \
 	eval bash tools/generar_niveles.sh $$ARGS
-	$(call progress,100,Generación en lote terminada.)
+	$(call progress,100,Generacion en lote terminada.)
 
 # ── play-and-generate ─────────────────────────────────────────
 play-and-generate:
-	$(call progress,0,Paso 1/2: Jugando nivel para capturar telemetría...)
+	$(call progress,0,Paso 1/2: Jugando nivel para capturar telemetria...)
 	@$(MAKE) play-human
 	$(call progress,50,Paso 2/2: Generando nuevo nivel personalizado con MarioGPT...)
 	@$(MAKE) generate-level
@@ -290,7 +290,7 @@ play-and-generate:
 
 # ── prompt-telemetry ──────────────────────────────────────────
 prompt-telemetry:
-	$(call progress,0,Convirtiendo telemetría a prompt MarioGPT...)
+	$(call progress,0,Convirtiendo telemetria a prompt MarioGPT...)
 	@$(PYTHON) tools/telemetry_to_mariogpt_prompt.py --telemetry telemetry/latest.json
 	$(call progress,100,Prompt generado.)
 
@@ -320,9 +320,9 @@ tunnel:
 
 # ── clean-telemetry ───────────────────────────────────────────
 clean-telemetry:
-	$(call progress,0,Limpiando archivos de telemetría...)
+	$(call progress,0,Limpiando archivos de telemetria...)
 	@$(PYTHON) -c "import os, glob; [os.remove(f) for f in glob.glob('telemetry/*') if os.path.isfile(f) and not f.endswith('.gitkeep')]; print('Telemetry files removed.')"
-	$(call progress,100,Telemetría limpia.)
+	$(call progress,100,Telemetria limpia.)
 
 # ── clean-levels ──────────────────────────────────────────────
 clean-levels:

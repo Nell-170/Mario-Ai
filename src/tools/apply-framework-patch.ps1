@@ -54,29 +54,43 @@ try {
     }
 
     if (-not $applied) {
-        $previousPreference = $ErrorActionPreference
-        try {
-            $ErrorActionPreference = "Continue"
-            $changedFiles = @(& git diff --name-only -- src/ 2>$null)
-            $statusExitCode = $LASTEXITCODE
-        } finally {
-            $ErrorActionPreference = $previousPreference
-        }
-        if ($statusExitCode -ne 0) {
-            throw "Could not inspect framework changes in $Framework (git exit code $statusExitCode)"
-        }
+        # 3. Conflicto o version vieja del parche: respaldar, restaurar solo los
+        #    archivos que toca el parche y volver a aplicarlo (igual que el .sh,
+        #    pero guardando primero un respaldo de los cambios locales).
+        Write-Output "  [*] El framework tiene cambios previos o en conflicto. Restaurando estado limpio..."
         $patchFiles = @(Get-Content $patch | ForEach-Object {
             if ($_ -match '^diff --git a/(.+) b/') {
                 $matches[1]
             }
         })
-        $unmodifiedPatchFiles = @($patchFiles | Where-Object { $_ -notin $changedFiles })
-        if ($changedFiles.Count -gt 0 -and $unmodifiedPatchFiles.Count -eq 0) {
-            Write-Output "  [*] Los archivos del parche ya tienen cambios locales; se conservan sin restablecerlos."
-            $applied = $true
-        } else {
-            throw "Framework patch conflicts with its current source files. No files were reset or overwritten."
+
+        $backupDir = Join-Path $Framework ".patch-backups"
+        New-Item -ItemType Directory -Force -Path $backupDir | Out-Null
+        $backupFile = Join-Path $backupDir ("backup-{0}.diff" -f (Get-Date -Format "yyyyMMdd-HHmmss"))
+        $previousPreference = $ErrorActionPreference
+        try {
+            $ErrorActionPreference = "Continue"
+            $diffLines = @(& git diff -- $patchFiles 2>$null)
+            $diffExitCode = $LASTEXITCODE
+        } finally {
+            $ErrorActionPreference = $previousPreference
         }
+        if ($diffExitCode -ne 0) {
+            throw "Could not back up framework changes in $Framework (git exit code $diffExitCode). No files were reset."
+        }
+        [System.IO.File]::WriteAllLines($backupFile, [string[]]$diffLines, (New-Object System.Text.UTF8Encoding($false)))
+        Write-Output "  [*] Respaldo de cambios locales guardado en: $backupFile"
+
+        $checkoutExitCode = Invoke-GitQuiet -Arguments (@("checkout", "HEAD", "--") + $patchFiles)
+        if ($checkoutExitCode -ne 0) {
+            throw "Could not restore framework files in $Framework (git exit code $checkoutExitCode). Backup: $backupFile"
+        }
+
+        $applyExitCode = Invoke-GitQuiet -Arguments @("apply", "--unidiff-zero", "--ignore-whitespace", $patch)
+        if ($applyExitCode -ne 0) {
+            throw "Could not apply tools/framework.patch to $Framework after restoring files (git exit code $applyExitCode). Backup: $backupFile"
+        }
+        Write-Output "  [OK] Parche del framework aplicado exitosamente tras restablecer estado limpio."
     }
 
     Write-Output "[*] Sincronizando herramientas Java personalizadas..."
